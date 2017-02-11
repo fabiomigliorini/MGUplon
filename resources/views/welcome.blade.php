@@ -1,91 +1,322 @@
-<!DOCTYPE html>
-<html lang="{{ config('app.locale') }}">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.default')
+@section('content')
+    <!-- Start content -->
 
-        <title>Laravel</title>
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
-
-        <!-- Styles -->
-        <style>
-            html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Raleway', sans-serif;
-                font-weight: 100;
-                height: 100vh;
-                margin: 0;
-            }
-
-            .full-height {
-                height: 100vh;
-            }
-
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
-
-            .position-ref {
-                position: relative;
-            }
-
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
-
-            .content {
-                text-align: center;
-            }
-
-            .title {
-                font-size: 84px;
-            }
-
-            .links > a {
-                color: #636b6f;
-                padding: 0 25px;
-                font-size: 12px;
-                font-weight: 600;
-                letter-spacing: .1rem;
-                text-decoration: none;
-                text-transform: uppercase;
-            }
-
-            .m-b-md {
-                margin-bottom: 30px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @if (Auth::check())
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ url('/login') }}">Login</a>
-                        <a href="{{ url('/register') }}">Register</a>
-                    @endif
-                </div>
-            @endif
-
-            <div class="top-right links">
-                <a href="{{ url('/unidade-medida') }}">Unidades de Medida</a>
-            </div>
-
-            <div class="content">
-                <div class="title m-b-md">
-                    Laravel
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="page-title-box">
+                        <h4 class="page-title">Dashboard</h4>
+                        <ol class="breadcrumb p-0">
+                            <li>
+                                <a href="#">Uplon</a>
+                            </li>
+                            <li>
+                                <a href="#">Dashboard</a>
+                            </li>
+                            <li class="active">
+                                Dashboard
+                            </li>
+                        </ol>
+                        <div class="clearfix"></div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </body>
-</html>
+            <!-- end row -->
+
+
+            <div class="row">
+                <div class="col-xs-12 col-md-6 col-lg-6 col-xl-3">
+                    <div class="card-box tilebox-one">
+                        <i class="icon-layers pull-xs-right text-muted"></i>
+                        <h6 class="text-muted text-uppercase m-b-20">Orders</h6>
+                        <h2 class="m-b-20" data-plugin="counterup">1,587</h2>
+                        <span class="label label-success"> +11% </span> <span
+                            class="text-muted">From previous period</span>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-6 col-lg-6 col-xl-3">
+                    <div class="card-box tilebox-one">
+                        <i class="icon-paypal pull-xs-right text-muted"></i>
+                        <h6 class="text-muted text-uppercase m-b-20">Revenue</h6>
+                        <h2 class="m-b-20">$<span data-plugin="counterup">46,782</span></h2>
+                        <span class="label label-danger"> -29% </span> <span
+                            class="text-muted">From previous period</span>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-6 col-lg-6 col-xl-3">
+                    <div class="card-box tilebox-one">
+                        <i class="icon-chart pull-xs-right text-muted"></i>
+                        <h6 class="text-muted text-uppercase m-b-20">Average Price</h6>
+                        <h2 class="m-b-20">$<span data-plugin="counterup">15.9</span></h2>
+                        <span class="label label-pink"> 0% </span> <span class="text-muted">From previous period</span>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-6 col-lg-6 col-xl-3">
+                    <div class="card-box tilebox-one">
+                        <i class="icon-rocket pull-xs-right text-muted"></i>
+                        <h6 class="text-muted text-uppercase m-b-20">Product Sold</h6>
+                        <h2 class="m-b-20" data-plugin="counterup">1,890</h2>
+                        <span class="label label-warning"> +89% </span> <span class="text-muted">Last year</span>
+                    </div>
+                </div>
+            </div>
+            <!-- end row -->
+
+
+            <div class="row">
+                <div class="col-xs-12 col-lg-12 col-xl-8">
+                    <div class="card-box">
+
+                        <h4 class="header-title m-t-0 m-b-20">Sales Statistics</h4>
+
+                        <div class="text-xs-center">
+                            <ul class="list-inline chart-detail-list m-b-0">
+                                <li class="list-inline-item">
+                                    <h6 style="color: #3db9dc;"><i class="zmdi zmdi-circle-o m-r-5"></i>Series A</h6>
+                                </li>
+                                <li class="list-inline-item">
+                                    <h6 style="color: #1bb99a;"><i class="zmdi zmdi-triangle-up m-r-5"></i>Series B</h6>
+                                </li>
+                                <li class="list-inline-item">
+                                    <h6 style="color: #818a91;"><i class="zmdi zmdi-square-o m-r-5"></i>Series C</h6>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div id="morris-bar-stacked" style="height: 320px;"></div>
+
+                    </div>
+                </div><!-- end col-->
+
+                <div class="col-xs-12 col-lg-12 col-xl-4">
+                    <div class="card-box">
+
+                        <h4 class="header-title m-t-0 m-b-30">Trends Monthly</h4>
+
+                        <div class="text-xs-center m-b-20">
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <button type="button" class="btn btn-sm btn-secondary">Today</button>
+                                <button type="button" class="btn btn-sm btn-secondary">This Week</button>
+                                <button type="button" class="btn btn-sm btn-secondary">Last Week</button>
+                            </div>
+                        </div>
+
+                        <div id="morris-donut-example" style="height: 263px;"></div>
+
+                        <div class="text-xs-center">
+                            <ul class="list-inline chart-detail-list m-b-0">
+                                <li class="list-inline-item">
+                                    <h6 style="color: #3db9dc;"><i class="zmdi zmdi-circle-o m-r-5"></i>English</h6>
+                                </li>
+                                <li class="list-inline-item">
+                                    <h6 style="color: #1bb99a;"><i class="zmdi zmdi-triangle-up m-r-5"></i>Italian</h6>
+                                </li>
+                                <li class="list-inline-item">
+                                    <h6 style="color: #818a91;"><i class="zmdi zmdi-square-o m-r-5"></i>French</h6>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div><!-- end col-->
+
+
+            </div>
+            <!-- end row -->
+
+
+            <div class="row">
+                <div class="col-xs-12 col-lg-12 col-xl-7">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <div class="card-box">
+                                <h4 class="header-title m-t-0 m-b-20">Inbox</h4>
+
+                                <div class="inbox-widget nicescroll" style="height: 320px;">
+                                    <a href="#">
+                                        <div class="inbox-item">
+                                            <div class="inbox-item-img"><img src="assets/images/users/avatar-1.jpg"
+                                                                             class="img-circle" alt=""></div>
+                                            <p class="inbox-item-author">Chadengle</p>
+                                            <p class="inbox-item-text">Hey! there I'm available...</p>
+                                            <p class="inbox-item-date">13:40 PM</p>
+                                        </div>
+                                    </a>
+                                    <a href="#">
+                                        <div class="inbox-item">
+                                            <div class="inbox-item-img"><img src="assets/images/users/avatar-2.jpg"
+                                                                             class="img-circle" alt=""></div>
+                                            <p class="inbox-item-author">Tomaslau</p>
+                                            <p class="inbox-item-text">I've finished it! See you so...</p>
+                                            <p class="inbox-item-date">13:34 PM</p>
+                                        </div>
+                                    </a>
+                                    <a href="#">
+                                        <div class="inbox-item">
+                                            <div class="inbox-item-img"><img src="assets/images/users/avatar-3.jpg"
+                                                                             class="img-circle" alt=""></div>
+                                            <p class="inbox-item-author">Stillnotdavid</p>
+                                            <p class="inbox-item-text">This theme is awesome!</p>
+                                            <p class="inbox-item-date">13:17 PM</p>
+                                        </div>
+                                    </a>
+                                    <a href="#">
+                                        <div class="inbox-item">
+                                            <div class="inbox-item-img"><img src="assets/images/users/avatar-4.jpg"
+                                                                             class="img-circle" alt=""></div>
+                                            <p class="inbox-item-author">Kurafire</p>
+                                            <p class="inbox-item-text">Nice to meet you</p>
+                                            <p class="inbox-item-date">12:20 PM</p>
+                                        </div>
+                                    </a>
+                                    <a href="#">
+                                        <div class="inbox-item">
+                                            <div class="inbox-item-img"><img src="assets/images/users/avatar-5.jpg"
+                                                                             class="img-circle" alt=""></div>
+                                            <p class="inbox-item-author">Shahedk</p>
+                                            <p class="inbox-item-text">Hey! there I'm available...</p>
+                                            <p class="inbox-item-date">10:15 AM</p>
+                                        </div>
+                                    </a>
+                                    <a href="#">
+                                        <div class="inbox-item">
+                                            <div class="inbox-item-img"><img src="assets/images/users/avatar-6.jpg"
+                                                                             class="img-circle" alt=""></div>
+                                            <p class="inbox-item-author">Adhamdannaway</p>
+                                            <p class="inbox-item-text">This theme is awesome!</p>
+                                            <p class="inbox-item-date">9:56 AM</p>
+                                        </div>
+                                    </a>
+                                    <a href="#">
+                                        <div class="inbox-item">
+                                            <div class="inbox-item-img"><img src="assets/images/users/avatar-8.jpg"
+                                                                             class="img-circle" alt=""></div>
+                                            <p class="inbox-item-author">Arashasghari</p>
+                                            <p class="inbox-item-text">Hey! there I'm available...</p>
+                                            <p class="inbox-item-date">10:15 AM</p>
+                                        </div>
+                                    </a>
+                                    <a href="#">
+                                        <div class="inbox-item">
+                                            <div class="inbox-item-img"><img src="assets/images/users/avatar-9.jpg"
+                                                                             class="img-circle" alt=""></div>
+                                            <p class="inbox-item-author">Joshaustin</p>
+                                            <p class="inbox-item-text">I've finished it! See you so...</p>
+                                            <p class="inbox-item-date">9:56 AM</p>
+                                        </div>
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-md-6">
+                            <div class="card-box">
+                                <h4 class="header-title m-t-0 m-b-20">Sales Statistics</h4>
+
+                                <p class="font-600 m-b-5">iMacs <span class="text-danger pull-right"><b>79%</b></span>
+                                </p>
+                                <progress class="progress progress-striped progress-xs progress-danger m-b-0" value="79"
+                                          max="100">79%
+                                </progress>
+                            </div>
+
+                            <div class="card-box">
+                                <h4 class="header-title m-t-0 m-b-20">Monthly Sales</h4>
+
+                                <p class="font-600 m-b-5">Macbooks <span
+                                        class="text-success pull-right"><b>30%</b></span></p>
+                                <progress class="progress progress-striped progress-xs progress-success m-b-0"
+                                          value="30" max="100">30%
+                                </progress>
+                            </div>
+
+                            <div class="card-box">
+                                <h4 class="header-title m-t-0 m-b-20">Daily Sales</h4>
+
+                                <p class="font-600 m-b-5">Mobiles <span
+                                        class="text-warning pull-right"><b>50%</b></span></p>
+                                <progress class="progress progress-striped progress-xs progress-warning m-b-0"
+                                          value="50" max="100">50%
+                                </progress>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div><!-- end col-->
+
+                <div class="col-xs-12 col-lg-12 col-xl-5">
+                    <div class="card-box">
+
+                        <h4 class="header-title m-t-0 m-b-30">Top Contracts</h4>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered m-b-0">
+                                <thead>
+                                <tr>
+                                    <th>Company</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th class="text-muted">Apple Technology</th>
+                                    <td>20/02/2014</td>
+                                    <td>19/02/2020</td>
+                                    <td><span class="label label-success">Paid</span></td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Envato Pty Ltd.</th>
+                                    <td>20/02/2014</td>
+                                    <td>19/02/2020</td>
+                                    <td><span class="label label-danger">Unpaid</span></td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Dribbble LLC.</th>
+                                    <td>20/02/2014</td>
+                                    <td>19/02/2020</td>
+                                    <td><span class="label label-success">Paid</span></td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Adobe Family</th>
+                                    <td>20/02/2014</td>
+                                    <td>19/02/2020</td>
+                                    <td><span class="label label-success">Paid</span></td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Apple Technology</th>
+                                    <td>20/02/2014</td>
+                                    <td>19/02/2020</td>
+                                    <td><span class="label label-danger">Unpaid</span></td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Envato Pty Ltd.</th>
+                                    <td>20/02/2014</td>
+                                    <td>19/02/2020</td>
+                                    <td><span class="label label-success">Paid</span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+                </div><!-- end col-->
+
+
+            </div>
+            <!-- end row -->
+
+
+
+@section('inscript')
+<script type="text/javascript"></script>
+@endsection
+@stop

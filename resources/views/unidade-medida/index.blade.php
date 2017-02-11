@@ -1,3 +1,5 @@
+@extends('layouts.default')
+@section('content')
 <h1>Unidades de Medida</h1>
 <p>
     <a href="{{ url("unidade-medida/create") }}">Nova</a>
@@ -13,3 +15,8 @@
     @endforeach
 </ul>
 <?php echo $model->appends(Request::session()->get('unidade-medida.index'))->render();?>
+
+@section('inscript')
+<script type="text/javascript"></script>
+@endsection
+@stop

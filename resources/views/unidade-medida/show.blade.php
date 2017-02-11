@@ -1,3 +1,5 @@
+@extends('layouts.default')
+@section('content')
 <h1>Unidade de Medida | {{ $model->unidademedida }}</h1>
 <p>
     <a href="{{ url("unidade-medida") }}">Listagem</a> | 
@@ -24,3 +26,7 @@
       </table>
   </div>    
 </div>
+@section('inscript')
+<script type="text/javascript"></script>
+@endsection
+@stop
