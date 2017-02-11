@@ -67,7 +67,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => MGLara\User::class,
+            'model' => MGLara\Models\Usuario::class,
         ],
 
         // 'users' => [

@@ -11,10 +11,20 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+
+
+Auth::routes();
+Route::group(['middleware' => 'auth'], function() {
+	Route::get('/', function () {
+	    return view('welcome');
+	});
+
+	Route::resource('unidade-medida', 'UnidadeMedidaController');
+
+
+
+
+
+
+	
 });
-
-
-/* Unidades de medida */
-Route::resource('unidade-medida', 'UnidadeMedidaController');

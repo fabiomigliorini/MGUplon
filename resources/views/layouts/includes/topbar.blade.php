@@ -1,14 +1,11 @@
 <!-- Top Bar Start -->
 <div class="topbar">
-
     <!-- LOGO -->
     <div class="topbar-left">
         <a href="index.php" class="logo" id="logo-tour">
             <img src="{{ URL::asset('public/assets/images/favicon.ico') }}" class="icon-c-logo" style="max-width: 28px">
             <span>MG Uplon</span></a>
     </div>
-
-
     <nav class="navbar navbar-custom">
         <ul class="nav navbar-nav">
             <li class="nav-item">
@@ -167,12 +164,12 @@
                     <!-- item-->
                     <div class="dropdown-item noti-title">
                         <h5 class="text-overflow">
-                            <small>Olá {{ 'Usuário' }}</small>
+                            <small>Olá {{ Auth::user()->usuario }}</small>
                         </h5>
                     </div>
 
                     <!-- item-->
-                    <a href="javascript:void(0);" class="dropdown-item notify-item">
+                    <a href="{{ url('usuario/' . Auth::user()->codusuario) }}" class="dropdown-item notify-item">
                         <i class="zmdi zmdi-account-circle"></i> <span>Perfil</span>
                     </a>
 
@@ -189,9 +186,15 @@
                     -->
 
                     <!-- item-->
-                    <a href="javascript:void(0);" class="dropdown-item notify-item">
+                    <a href="{{ route('logout') }}" class="dropdown-item notify-item"
+                        onclick="event.preventDefault();
+                                 document.getElementById('logout-form').submit();">
                         <i class="zmdi zmdi-power"></i> <span>Sair</span>
                     </a>
+
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        {{ csrf_field() }}
+                    </form>                    
 
                 </div>
             </li>
