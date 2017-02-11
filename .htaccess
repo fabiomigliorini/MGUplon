@@ -1,5 +1,5 @@
 RewriteEngine On 
-RewriteBase /MGLara5.4/MGLara
+RewriteBase /MGUplon/MGLara
 RewriteCond %{REQUEST_FILENAME} -s [OR] 
 RewriteCond %{REQUEST_FILENAME} -l [OR]
 RewriteCond %{REQUEST_FILENAME} -d 
