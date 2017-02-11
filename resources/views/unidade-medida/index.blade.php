@@ -8,7 +8,7 @@
     @foreach($model as $row)
     <li>
         <a href="{{ url("unidade-medida/$row->codunidademedida") }}">
-            {{ $row->codunidademedida }} | {{ $row->unidademedida }} | {{ $row->sigla }}
+            {{ formataCodigo($row->codunidademedida) }} | {{ $row->unidademedida }} | {{ $row->sigla }}
         </a>
         <hr>
     </li>

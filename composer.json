@@ -21,7 +21,11 @@
         ],
         "psr-4": {
             "MGLara\\": "app/"
-        }
+        },
+        "files": [
+            "app/Helpers/MGHelpers.php"
+        ]        
+        
     },
     "autoload-dev": {
         "psr-4": {
