@@ -14,3 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+/* Unidades de medida */
+Route::resource('unidade-medida', 'UnidadeMedidaController');
