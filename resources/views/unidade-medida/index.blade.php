@@ -1,6 +1,6 @@
 @extends('layouts.default')
 @section('content')
-<h1>Unidades de Medida</h1>
+
 <p>
     <a href="{{ url("unidade-medida/create") }}">Nova</a>
 </p>

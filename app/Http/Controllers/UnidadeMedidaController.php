@@ -11,8 +11,64 @@ use MGLara\Http\Controllers\Controller;
 
 use MGLara\Models\UnidadeMedida;
 
+class MGBreadCrumbsItem {
+    public $url;
+    public $label;
+
+    public function __construct($label, $url = null) {
+        $this->url = $url;
+        $this->label = $label;
+    }
+}
+
+class MGBreadCrumbs
+{
+        private $page;
+        private $header;
+        private $breadcrumbs;
+
+        private $page_prefix;
+
+        public function __construct($header = null, $page = null) {
+            $this->header = $header; // PEGAR NOME ROTA
+            $this->page = $page;
+            $this->page_prefix = 'MGLara - ';
+            $this->addItem('MGLara', url('/'));
+        }
+
+
+        public function __get($property) {
+            switch ($property) {
+                case 'page':
+                    if (empty($this->page)) {
+                        return $this->page_prefix . $this->header;
+                    }
+                default:
+                    return $this->$property;
+            }
+
+        }
+
+        public function __set($property, $value) {
+            $this->$property = $value;
+        }
+
+        public function addItem($label, $url = null) {
+            $this->breadcrumbs[] = new MGBreadCrumbsItem($label, $url);
+
+        }
+
+}
+
+
 class UnidadeMedidaController extends Controller
 {
+
+    public function __construct() {
+        $this->bc = new MGBreadCrumbs('Unidades de Medida');
+        $this->bc->addItem('Unidades de Medida', url('unidade-medida'));
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -21,11 +77,10 @@ class UnidadeMedidaController extends Controller
     public function index(Request $request) {
         //$parametros = self::filtroEstatico($request, 'unidade-medida.index');
         //$model = UnidadeMedida::search($parametros)->orderBy('unidademedida', 'ASC')->paginate(20);
+
+        $this->bc->addItem('Listagem');
         $model = UnidadeMedida::paginate(20);
-        return view('unidade-medida.index', compact('model'));
-
-
-
+        return view('unidade-medida.index', ['bc'=>$this->bc, 'model'=>$model]);
     }
 
     /**
@@ -35,8 +90,9 @@ class UnidadeMedidaController extends Controller
      */
     public function create()
     {
+        $this->bc->addItem('Nova');
         $model = new UnidadeMedida();
-        return view('unidade-medida.create', compact('model'));
+        return view('unidade-medida.create', ['bc'=>$this->bc, 'model'=>$model]);
     }
 
     /**
@@ -65,8 +121,11 @@ class UnidadeMedidaController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $model = UnidadeMedida::find($id);
-        return view('unidade-medida.show', compact('model'));
+
+        $model = UnidadeMedida::findOrFail($id);
+        $this->bc->addItem($model->unidademedida);
+        $this->bc->header = $model->unidademedida;
+        return view('unidade-medida.show', ['bc'=>$this->bc, 'model'=>$model]);
     }
 
     /**
@@ -78,7 +137,10 @@ class UnidadeMedidaController extends Controller
     public function edit($id)
     {
         $model = UnidadeMedida::findOrFail($id);
-        return view('unidade-medida.edit',  compact('model'));
+        $this->bc->addItem($model->unidademedida, url('unidade-medida', $model->codunidademedida));
+        $this->bc->header = $model->unidademedida;
+        $this->bc->addItem('Alterar');
+        return view('unidade-medida.edit', ['bc'=>$this->bc, 'model'=>$model]);
     }
 
     /**

@@ -132,7 +132,7 @@
 <!-- /Right-bar -->
 
 <footer class="footer text-right">
-    <?php echo date("Y"); ?> &copy; Uplon - Coderthemes.com
+    {{ date("Y") }} &copy; MG Papelaria
 </footer>
 
 

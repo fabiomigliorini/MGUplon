@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="{{ URL::asset('public/assets/images/favicon.ico') }}">
 
     <!-- App title -->
-    <title>Uplon - Responsive Admin Dashboard Template - TESTE</title>
+    <title>{{ $bc->page }}</title>
 
 
     <!-- Switchery css -->
