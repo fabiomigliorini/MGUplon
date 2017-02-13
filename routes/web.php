@@ -18,6 +18,7 @@ Route::group(['middleware' => 'auth'], function() {
 	Route::get('/', function () {
 	    return view('welcome');
 	});
+    Route::get('unidade-medida/datatable-listagem', 'UnidadeMedidaController@datatableListagem');
 
 	Route::resource('unidade-medida', 'UnidadeMedidaController');
 
