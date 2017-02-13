@@ -184,45 +184,77 @@ class UnidadeMedidaController extends Controller
     
     public function datatableListagem(Request $request) {
         
+        //dd($request->all());
+        
+        // Colunas para Filtro
         $columns[0] = 'codunidademedida';
         $columns[1] = 'unidademedida';
         $columns[2] = 'sigla';
         
-        //dd();
-        
-//        dd($request->all());
-        
-        
-        $ums = UnidadeMedida::orderBy($columns[$request['order'][0]['column']], $request['order'][0]['dir']);
+        // Query da Entidade
+        $ums = UnidadeMedida::query();
     
-        if (!empty($request['search']['value'])) {
-            foreach(explode(' ', $request['search']['value']) as $palavra) {
+        // Filtros
+        if (!empty($request['columns'][0]['search']['value'])) {
+            $ums->where('codunidademedida', '=', $request['columns'][0]['search']['value']);
+        }
+        
+        if (!empty($request['columns'][1]['search']['value'])) {
+            foreach(explode(' ', $request['columns'][1]['search']['value']) as $palavra) {
                 if (!empty($palavra)) {
                     $ums->where('unidademedida', 'ilike', "%$palavra%");
                 }
             }
         }
         
-        //dd($ums->toSql());
-        $ums = $ums->get();
+        if (!empty($request['columns'][2]['search']['value'])) {
+            foreach(explode(' ', $request['columns'][2]['search']['value']) as $palavra) {
+                if (!empty($palavra)) {
+                    $ums->where('sigla', 'ilike', "%$palavra%");
+                }
+            }
+        }
         
+        // Registros
+        $recordsTotal = UnidadeMedida::count();
+        $recordsFiltered = $ums->count();
+        
+        // Paginacao
+        $ums->offset($request['start']);
+        $ums->limit($request['length']);
+        
+        // Ordenacao
+        //dd($request['order'] );
+        foreach ($request['order'] as $order) {
+            $ums->orderBy($columns[$order['column']], $order['dir']);
+        }
+        
+        // Registros
+        $ums = $ums->get();
         $data = [];
         foreach ($ums as $um) {
             $data[] = [
-                formataCodigo($um->codunidademedida),
+                '<a href="' . url('unidade-medida', $um->codunidademedida) . '">' . formataCodigo($um->codunidademedida) . '</a>',
+                $um->unidademedida,
+                $um->sigla,
+                $um->unidademedida,
+                $um->unidademedida,
+                $um->unidademedida,
+                $um->unidademedida,
                 $um->unidademedida,
                 $um->sigla,
             ];
         }
         
+        // Envelope Retorno
         $ret = [
             "draw" => $request['draw'],
-            "recordsTotal" => $ums->count(),
-            "recordsFiltered" => $ums->count(),
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
             "data" => $data,
         ];
         
-        
+        // Retorno
         return $ret;
     }
 }

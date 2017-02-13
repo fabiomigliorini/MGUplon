@@ -9,14 +9,6 @@
     </span>
   </h4>  
     <table class="table table-bordered table-striped table-hover table-sm col-md-6">
-        <thead>
-            <tr>
-              <th>#</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Username</th>
-            </tr>
-        </thead>        
       <tbody>  
         <tr> 
           <th>#</th> 
