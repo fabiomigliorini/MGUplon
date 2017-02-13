@@ -181,4 +181,48 @@ class UnidadeMedidaController extends Controller
         }
         return json_encode($ret);
     }    
+    
+    public function datatableListagem(Request $request) {
+        
+        $columns[0] = 'codunidademedida';
+        $columns[1] = 'unidademedida';
+        $columns[2] = 'sigla';
+        
+        //dd();
+        
+//        dd($request->all());
+        
+        
+        $ums = UnidadeMedida::orderBy($columns[$request['order'][0]['column']], $request['order'][0]['dir']);
+    
+        if (!empty($request['search']['value'])) {
+            foreach(explode(' ', $request['search']['value']) as $palavra) {
+                if (!empty($palavra)) {
+                    $ums->where('unidademedida', 'ilike', "%$palavra%");
+                }
+            }
+        }
+        
+        //dd($ums->toSql());
+        $ums = $ums->get();
+        
+        $data = [];
+        foreach ($ums as $um) {
+            $data[] = [
+                formataCodigo($um->codunidademedida),
+                $um->unidademedida,
+                $um->sigla,
+            ];
+        }
+        
+        $ret = [
+            "draw" => $request['draw'],
+            "recordsTotal" => $ums->count(),
+            "recordsFiltered" => $ums->count(),
+            "data" => $data,
+        ];
+        
+        
+        return $ret;
+    }
 }
