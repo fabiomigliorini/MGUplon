@@ -5,7 +5,4 @@
     @include('unidade-medida.form', ['submitTextButton' => 'Salvar'])
 {!! Form::close() !!}
 </div>
-@section('inscript')
-<script type="text/javascript"></script>
-@endsection
 @stop

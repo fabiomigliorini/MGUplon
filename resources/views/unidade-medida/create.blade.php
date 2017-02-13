@@ -1,14 +1,8 @@
 @extends('layouts.default')
 @section('content')
-<h1>Unidade de Medida | Nova</h1>
-<p>
-    <a href="{{ url("unidade-medida") }}">Listagem</a>
-</p>
-
+<div class="card-box col-md-6">
 {!! Form::model($model, ['method' => 'POST', 'class' => 'form-horizontal', 'id' => 'form-unidade-medida', 'route' => 'unidade-medida.store']) !!}
     @include('unidade-medida.form', ['submitTextButton' => 'Salvar'])
  {!! Form::close() !!}   
-@section('inscript')
-<script type="text/javascript"></script>
-@endsection
+</div>
 @stop
