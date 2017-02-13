@@ -8,7 +8,6 @@
     <![endif]-->
     <!-- Modernizr js -->
     <script src="{{ URL::asset('public/assets/js/modernizr.min.js') }}"></script>
-
 </head>
 
 <body class="fixed-left">
@@ -18,6 +17,4 @@
 
     @include('layouts.includes.topbar')
     @include('layouts.includes.leftbar')
-
-
-
+    

@@ -19,6 +19,6 @@
         });
     });
 </script>
-
+@yield('inscript')
 </body>
 </html>

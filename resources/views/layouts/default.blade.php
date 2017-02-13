@@ -53,7 +53,4 @@
 <script src="{{ URL::asset('public/assets/plugins/raphael/raphael-min.js') }}"></script>
 
 
-<!-- Page specific js -->
-<script src="{{ URL::asset('public/assets/pages/jquery.dashboard.js') }}"></script>
-
 @include('layouts.includes.footer_end')
