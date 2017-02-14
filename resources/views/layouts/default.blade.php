@@ -1,6 +1,4 @@
 @include('layouts.includes.header_start')
-<!--Morris Chart CSS -->
-<link rel="stylesheet" href="{{ URL::asset('public/assets/plugins/morris/morris.css') }}">
 @include('layouts.includes.header_end')
 
 
@@ -31,26 +29,11 @@
 		    </div>
 		</div>
         <div class="container">
-
-        <!-- end row -->
-        @include('errors.flash')
         @yield('content')
         </div>
     </div> <!-- container -->
 </div> <!-- content -->
 <!-- End content-page -->
 
-
-<!-- ============================================================== -->
-<!-- End Right content here -->
-<!-- ============================================================== -->
-
-
 @include('layouts.includes.footer_start')
-
-<!--Morris Chart-->
-<script src="{{ URL::asset('public/assets/plugins/morris/morris.min.js') }}"></script>
-<script src="{{ URL::asset('public/assets/plugins/raphael/raphael-min.js') }}"></script>
-
-
 @include('layouts.includes.footer_end')

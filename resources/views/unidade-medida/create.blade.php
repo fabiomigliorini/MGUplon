@@ -7,7 +7,8 @@
         </h3>
         <div class="card-block">
             {!! Form::model($model, ['method' => 'POST', 'class' => 'form-horizontal', 'id' => 'form-unidade-medida', 'route' => 'unidade-medida.store']) !!}
-               @include('unidade-medida.form')
+                @include('errors.form_error')
+                @include('unidade-medida.form')
             {!! Form::close() !!}   
         </div>
     </div>

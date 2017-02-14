@@ -7,6 +7,7 @@
         </h3>
         <div class="card-block">
             {!! Form::model($model, ['method' => 'PATCH', 'id' => 'form-unidade-medida', 'action' => ['UnidadeMedidaController@update', $model->codunidademedida] ]) !!}
+                @include('errors.form_error')
                 @include('unidade-medida.form')
             {!! Form::close() !!}
         </div>

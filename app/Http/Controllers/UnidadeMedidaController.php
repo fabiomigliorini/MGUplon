@@ -121,7 +121,6 @@ class UnidadeMedidaController extends Controller
      */
     public function show(Request $request, $id)
     {
-
         $model = UnidadeMedida::findOrFail($id);
         $this->bc->addItem($model->unidademedida);
         $this->bc->header = $model->unidademedida;

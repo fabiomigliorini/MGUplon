@@ -87,11 +87,17 @@
             serverSide: true,
             ajax: '{{ url('unidade-medida/datatable') }}',
             lengthChange: false,
-            buttons: ['copy', 'excel', 'pdf', 'print', 'colvis'],
+            buttons: [
+                { extend: 'copy', text: 'Copiar' },
+                'excel', 
+                'pdf', 
+                { extend: 'print', text: 'Imprimir' },
+                { extend: 'colvis', text: 'Colunas' }
+            ],
             initComplete: function(settings, json) {
                 table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
                 $('#datatable_paginate, #datatable_info').addClass('col-md-6');
-            },             
+            }             
         });
         
         
@@ -121,16 +127,5 @@
     });
 
 </script>
-<style type="text/css">
-    table.dataTable.table-sm thead th.sorting:after, 
-    table.dataTable.table-sm thead th.sorting_asc:after, 
-    table.dataTable.table-sm thead th.sorting_desc:after {
-        top: 0px;
-        right: 4px;
-    }
-    html {
-      overflow-y: scroll;
-    }    
-</style>
 @endsection
 @stop

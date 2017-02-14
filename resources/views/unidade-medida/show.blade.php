@@ -6,8 +6,9 @@
         <h3 class="card-header">
             {{ $model->unidademedida }}
             <div class="btn-group pull-right" role="group" aria-label="Controles">
-              <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida/edit") }}"><i class="fa fa-pencil"></i></a>
-              <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida/delete") }}"><i class="fa fa-trash"></i></a>
+                <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida/edit") }}"><i class="fa fa-pencil"></i></a>
+                <!--<a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida/delete") }}"><i class="fa fa-trash"></i></a>-->
+                <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida") }}" data-excluir data-pergunta="Tem certeza que deseja excluir a unidade de medida '{{ $model->unidademedida }}'?" data-after-delete="location.replace(baseUrl + '/unidade-medida');"><i class="fa fa-trash"></i></a>                
             </div>    
         </h3>
         <div class="card-block">

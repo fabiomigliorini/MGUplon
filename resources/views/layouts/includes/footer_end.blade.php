@@ -1,15 +1,10 @@
-<!-- google analytic code -->
-
-
-<!-- google analytic code ends here -->
-
-<!-- following js will activate the menu in left side bar based on url -->
 <script type="text/javascript">
+    var baseUrl = '{{ url('/') }}';    
     $(document).ready(function() {
-            console.log(window.location.href);
+        //console.log(window.location.href);
         $("#sidebar-menu a").each(function() {
-            console.log(this.href);
-            console.log(window.location.href.indexOf(this.href));
+            //console.log(this.href);
+            //console.log(window.location.href.indexOf(this.href));
             if (window.location.href.indexOf(this.href) != -1) {
                 $(this).addClass("active");
                 $(this).parent().addClass("active"); // add active to li of the current link
@@ -23,5 +18,6 @@
     });
 </script>
 @yield('inscript')
+@include('errors.flash')
 </body>
 </html>

@@ -14,12 +14,6 @@
 </fieldset>
 
 @section('inscript')
-<!-- Sweet Alert css -->
-<link href="{{ URL::asset('public/assets/plugins/bootstrap-sweetalert/sweet-alert.css') }}" rel="stylesheet" type="text/css" />
-<!-- Switchery css -->
-<link href="{{ URL::asset('public/assets/plugins/switchery/switchery.min.css') }}" rel="stylesheet" />
-<!-- Sweet Alert js -->
-<script src="{{ URL::asset('public/assets/plugins/bootstrap-sweetalert/sweet-alert.min.js') }}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
     $('#form-unidade-medida').on("submit", function(e) {

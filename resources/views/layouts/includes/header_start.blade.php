@@ -1,20 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ config('app.locale') }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
-    <meta name="author" content="Coderthemes">
-
-    <!-- App Favicon -->
+    <meta name="description" content="ERP MG Papelaria">
+    <meta name="author" content="MG Papelaria">
     <link rel="shortcut icon" href="{{ URL::asset('public/assets/images/favicon.ico') }}">
-
-    <!-- App title -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $bc->page }}</title>
-
-
-    <!-- Switchery css -->
-    <link href="{{ URL::asset('public/assets/plugins/switchery/switchery.min.css') }}" rel="stylesheet" />
 
     
 

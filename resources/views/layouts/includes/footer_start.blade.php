@@ -172,3 +172,25 @@
 <!-- App js -->
 <script src="{{ URL::asset('public/assets/js/jquery.core.js') }}"></script>
 <script src="{{ URL::asset('public/assets/js/jquery.app.js') }}"></script>
+
+<!-- Notification css (Toastr) -->
+<link href="{{ URL::asset('public/assets/plugins/toastr/toastr.min.css') }}" rel="stylesheet" type="text/css" />
+<!-- Toastr js -->
+<script src="{{ URL::asset('public/assets/plugins/toastr/toastr.min.js') }}"></script>
+
+<!-- Sweet Alert css -->
+<link href="{{ URL::asset('public/assets/plugins/bootstrap-sweetalert/sweet-alert.css') }}" rel="stylesheet" type="text/css" />
+<!-- Switchery css -->
+<link href="{{ URL::asset('public/assets/plugins/switchery/switchery.min.css') }}" rel="stylesheet" />
+<!-- Sweet Alert js -->
+<script src="{{ URL::asset('public/assets/plugins/bootstrap-sweetalert/sweet-alert.min.js') }}"></script>
+<!-- Switchery css -->
+<link href="{{ URL::asset('public/assets/plugins/switchery/switchery.min.css') }}" rel="stylesheet" />
+
+
+
+<!-- MG css -->
+<link href="{{ URL::asset('public/css/mglara.css') }}" rel="stylesheet" />
+<!-- MG js -->
+<script src="{{ URL::asset('public/js/mglara.js') }}"></script>
+

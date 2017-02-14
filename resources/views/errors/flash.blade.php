@@ -52,16 +52,21 @@
     </div>
 @endif
 
-@if (Session::has('flash_edit'))
-    <div class="flash alert alert-info">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        {{ Session::get('flash_update') }}
-    </div>
-@endif
+    
+<script type="text/javascript">
+    $(document).ready(function() {
+        toastr.options = {
+          "positionClass": "toast-bottom-right"
+        };    
+        
+        @if (Session::has('flash_update'))
+            toastr.success('{{ Session::get('flash_update') }}');
+        @endif
 
-@if (Session::has('flash_create'))
-    <div class="flash alert alert-info">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        {{ Session::get('flash_create') }}
-    </div>
-@endif
+        @if (Session::has('flash_create'))
+            toastr.success('{{ Session::get('flash_create') }}');
+        @endif
+        
+    });
+</script>
+
