@@ -29,7 +29,7 @@
   
 </div>
 </div>
-<div class="card-box">
+<div class="card-box table-responsive">
  
     <a class="pull-right btn btn-primary " data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
         <i class='fa fa-search'></i>
@@ -78,8 +78,7 @@
     $(document).ready(function () {
         
         var table = $('#datatable-listagem').DataTable({
-            //dom: 'Bfrtip',
-            dom: 'rtipB',
+            dom: 'Brtip',
             pageLength: 100,
             language: {
                 url: "{{ URL::asset('public/assets/plugins/datatables/Portuguese-Brasil.lang') }}"
@@ -89,6 +88,10 @@
             ajax: '{{ url('unidade-medida/datatable-listagem') }}',
             lengthChange: false,
             buttons: ['copy', 'excel', 'pdf', 'print', 'colvis'],
+            initComplete: function(settings, json) {
+                table.buttons().container().appendTo('#datatable-listagem_wrapper .col-md-6:eq(0)');
+                $('#datatable-listagem_paginate, #datatable-listagem_info').addClass('col-md-6');
+            },             
             /*
             columnDefs: [
                 {
@@ -105,7 +108,6 @@
             */
         });
         
-        //table.buttons().container().appendTo('#botoes');
         
         $('#codunidademedida').change(function() {
             $('#datatable-listagem').DataTable().column(0).search(
@@ -133,5 +135,13 @@
     });
 
 </script>
+<style type="text/css">
+    table.dataTable.table-sm thead th.sorting:after, 
+    table.dataTable.table-sm thead th.sorting_asc:after, 
+    table.dataTable.table-sm thead th.sorting_desc:after {
+        top: 0px;
+        right: 4px;
+    }
+</style>
 @endsection
 @stop
