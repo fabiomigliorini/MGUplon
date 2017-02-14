@@ -1,58 +1,58 @@
 @extends('layouts.default')
 @section('content')
-<div class='collapse' id="collapseExample">
-<div class="card-box" >
-<div class='row'>
-      <form accept-charset="UTF-8" class="form-horizontal" id="form-search" role="search" autocomplete="on">
-        <div class="col-md-2">
-            <div class="form-group">
-                <label for="codunidademedida" class="control-label">#</label>
-                <input class="form-control" placeholder="#" name="codunidademedida" type="number" step="1" min="1" id="codunidademedida">
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <label for="unidademedida" class="control-label">Unidade Medida</label>
-                <input class="form-control" placeholder="Unidade Medida" name="unidademedida" type="text" id="unidademedida">
-            </div>
-        </div>
-        <div class="col-md-1">
-            <div class="form-group">
-                <label for="sigla" class="control-label">Sigla</label>
-                <input class="form-control" placeholder="Sigla" name="sigla" type="text" id="sigla">
-            </div>
-        </div>
-        <div class="clearfix"></div>
-    </form>
-      </div>
-      
-  
-</div>
-</div>
-<div class="card-box table-responsive">
- 
-    <a class="pull-right btn btn-primary " data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-        <i class='fa fa-search'></i>
-      </a>
 
+<div class="collapse" id="collapsePesquisa">
+  <div class="card">
+    <h3 class="card-header">Pesquisa</h3>
+    <div class="card-block">
+        <div class="card-text">
+            <form accept-charset="UTF-8" class="form-horizontal" id="form-search" role="search" autocomplete="on">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="codunidademedida" class="control-label">#</label>
+                        <input class="form-control" placeholder="#" name="codunidademedida" type="number" step="1" min="1" id="codunidademedida">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="unidademedida" class="control-label">Unidade Medida</label>
+                        <input class="form-control" placeholder="Unidade Medida" name="unidademedida" type="text" id="unidademedida">
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label for="sigla" class="control-label">Sigla</label>
+                        <input class="form-control" placeholder="Sigla" name="sigla" type="text" id="sigla">
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </form>    
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="card-box table-responsive">
+
+    <div class="btn-group pull-right" role="group" aria-label="Controles">
+        <a class="btn btn-secondary" href="{{ url("unidade-medida/create") }}"><i class="fa fa-plus"></i></a> 
+        <a class="btn btn-secondary" href="#collapsePesquisa" data-toggle="collapse" aria-expanded="false" aria-controls="collapsePesquisa"><i class='fa fa-search'></i></a>
+    </div>    
     
-    <table id="datatable-listagem" class="display table table-hover table-bordered table-striped table-sm" cellspacing="0" width="100%">
+    <table id="datatable" class="display table table-hover table-striped table-sm" cellspacing="0" width="100%">
         <thead>
             <tr>
                 <th>#</th>
                 <th>Unidade Medida</th>
                 <th>Sigla</th>
-                <th>Unidade Medida</th>
-                <th>Unidade Medida</th>
-                <th>Unidade Medida</th>
-                <th>Unidade Medida</th>
-                <th>Unidade Medida</th>
-                <th>Unidade Medida</th>
+                <th>Criação</th>
+                <th>Alteração</th>
             </tr>
         </thead>
     </table>
 </div>
 @section('inscript')
+
 <link href="{{ URL::asset('public/assets/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
 <link href="{{ URL::asset('public/assets/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
 <link href="{{ URL::asset('public/assets/plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
@@ -77,7 +77,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         
-        var table = $('#datatable-listagem').DataTable({
+        var table = $('#datatable').DataTable({
             dom: 'Brtip',
             pageLength: 100,
             language: {
@@ -85,32 +85,18 @@
             },
             processing: true,
             serverSide: true,
-            ajax: '{{ url('unidade-medida/datatable-listagem') }}',
+            ajax: '{{ url('unidade-medida/datatable') }}',
             lengthChange: false,
             buttons: ['copy', 'excel', 'pdf', 'print', 'colvis'],
             initComplete: function(settings, json) {
-                table.buttons().container().appendTo('#datatable-listagem_wrapper .col-md-6:eq(0)');
-                $('#datatable-listagem_paginate, #datatable-listagem_info').addClass('col-md-6');
+                table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
+                $('#datatable_paginate, #datatable_info').addClass('col-md-6');
             },             
-            /*
-            columnDefs: [
-                {
-                    // The `data` parameter refers to the data for the cell (defined by the
-                    // `data` option, which defaults to the column being worked with, in
-                    // this case `data: 0`.
-                    "render": function ( data, type, row ) {
-                        return '<a href="{{ url('unidade-medida') }}/' + row[0] + '">' + data +'</a>';
-                    },
-                    "targets": 1
-                },
-                { "visible": false,  "targets": [ 0 ] }
-            ],      
-            */
         });
         
         
         $('#codunidademedida').change(function() {
-            $('#datatable-listagem').DataTable().column(0).search(
+            $('#datatable').DataTable().column(0).search(
                 $('#codunidademedida').val(),
                 false,
                 true
@@ -118,7 +104,7 @@
         });
         
         $('#unidademedida').change(function() {
-            $('#datatable-listagem').DataTable().column(1).search(
+            $('#datatable').DataTable().column(1).search(
                 $('#unidademedida').val(),
                 false,
                 true
@@ -126,7 +112,7 @@
         });
         
         $('#sigla').change(function() {
-            $('#datatable-listagem').DataTable().column(2).search(
+            $('#datatable').DataTable().column(2).search(
                 $('#sigla').val(),
                 false,
                 true
@@ -142,6 +128,9 @@
         top: 0px;
         right: 4px;
     }
+    html {
+      overflow-y: scroll;
+    }    
 </style>
 @endsection
 @stop

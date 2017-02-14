@@ -28,14 +28,14 @@
                     </a>
                     <ul class="list-unstyled">
 
-                        <li><a href="http://localhost/MGLara/produto">Cadastro</a><li>
-                        <li><a href="http://localhost/MGLara/produto/quiosque">Consulta</a><li>
-                        <li><a href="http://localhost/MGLara/produto-historico-preco">Histórico de Preços</a></li>
-		        <li><a href="http://localhost/MGLara/marca">Marcas</a><li>
-		        <li><a href="http://localhost/MGLara/secao-produto">Seções</a><li>
-		        <li><a href="http://localhost/MGLara/tipo-produto">Tipos</a></li>
-		        <li><a href="http://localhost/MGLara/unidade-medida">Unidades de medida</a></li>
-		        <li><a href="http://localhost/MGLara/ncm">NCM</a></li>
+                        <li><a href="{{ url('produto') }}">Cadastro</a><li>
+                        <li><a href="{{ url('produto/quiosque') }}">Consulta</a><li>
+                        <li><a href="{{ url('produto-historico-preco') }}">Histórico de Preços</a></li>
+		        <li><a href="{{ url('marca') }}">Marcas</a><li>
+		        <li><a href="{{ url('secao-produto') }}">Seções</a><li>
+		        <li><a href="{{ url('tipo-produto') }}">Tipos</a></li>
+		        <li><a href="{{ url('unidade-medida') }}">Unidades de medida</a></li>
+		        <li><a href="{{ url('ncm') }}">NCM</a></li>
 
                     </ul>
                 </li>
@@ -49,11 +49,11 @@
                     </a>
                     <ul class="list-unstyled">
 
-	                <li><a href="http://localhost/MGLara/estoque-saldo">Saldos</a></li>
-	                <li><a href="http://localhost/MGLara/estoque-saldo/relatorio-analise-filtro">Análise</a></li>
-	                <li><a href="http://localhost/MGLara/estoque-saldo/relatorio-comparativo-vendas-filtro">Venda Filial x Depósito</a></li>
-	                <li><a href="http://localhost/MGLara/estoque-saldo/relatorio-fisico-fiscal-filtro">Fisico x Fiscal</a></li>
-	                <li><a href="http://localhost/MGLara/estoque-saldo-conferencia">Conferência</a></li>
+	                <li><a href="{{ url('estoque-saldo') }}">Saldos</a></li>
+	                <li><a href="{{ url('estoque-saldo/relatorio-analise-filtro') }}">Análise</a></li>
+	                <li><a href="{{ url('estoque-saldo/relatorio-comparativo-vendas-filtro') }}">Venda Filial x Depósito</a></li>
+	                <li><a href="{{ url('estoque-saldo/relatorio-fisico-fiscal-filtro') }}">Fisico x Fiscal</a></li>
+	                <li><a href="{{ url('estoque-saldo-conferencia') }}">Conferência</a></li>
 
                     </ul>
                 </li>
@@ -65,9 +65,9 @@
                         <span class="menu-arrow"></span>
                     </a>
                     <ul class="list-unstyled">
-		 	<li><a href="http://localhost/MGLara/cheque">Cadastro</a></li>
-                        <li><a href="http://localhost/MGLara/cheque-repasse">Repasses</a></li>
-                        <li><a href="http://localhost/MGLara/cheque-motivo-devolucao">Motivos de Devolução</a></li>
+                        <li><a href="{{ url('cheque') }}">Cadastro</a></li>
+                        <li><a href="{{ url('cheque-repasse') }}">Repasses</a></li>
+                        <li><a href="{{ url('cheque-motivo-devolucao') }}">Motivos de Devolução</a></li>
                     </ul>
                 </li>
 
@@ -78,13 +78,13 @@
                         <span class="menu-arrow"></span>
                     </a>
                     <ul class="list-unstyled">
-                        <li><a href="http://localhost/MGLara/usuario">Cadastro</a></li>
-                        <li><a href="http://localhost/MGLara/grupo-usuario">Grupos</a></li>
-                        <li><a href="http://localhost/MGLara/permissao">Permissões</a></li>
+                        <li><a href="{{ url('usuario') }}">Cadastro</a></li>
+                        <li><a href="{{ url('grupo-usuario') }}">Grupos</a></li>
+                        <li><a href="{{ url('permissao') }}">Permissões</a></li>
                     </ul>
                 </li>
 		
-                <li><a href="http://localhost/MGLara/usuario"><i class="fa fa-image"></i><span>Imagens</span></a></li>
+                <li><a href="{{ url('usuario') }}"><i class="fa fa-image"></i><span>Imagens</span></a></li>
 
 
 

@@ -10,7 +10,7 @@
     {!! Form::text('sigla', null, ['class'=> 'form-control', 'id'=>'sigla', 'required'=>'required']) !!}
 </fieldset>
 <fieldset class="form-group">
-   {!! Form::submit($submitTextButton, array('class' => 'btn btn-primary')) !!}
+   {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
 </fieldset>
 
 @section('inscript')

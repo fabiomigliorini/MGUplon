@@ -182,7 +182,7 @@ class UnidadeMedidaController extends Controller
         return json_encode($ret);
     }    
     
-    public function datatableListagem(Request $request) {
+    public function datatable(Request $request) {
         
         //dd($request->all());
         
@@ -190,6 +190,8 @@ class UnidadeMedidaController extends Controller
         $columns[0] = 'codunidademedida';
         $columns[1] = 'unidademedida';
         $columns[2] = 'sigla';
+        $columns[3] = 'criacao';
+        $columns[4] = 'alteracao';
         
         // Query da Entidade
         $ums = UnidadeMedida::query();
@@ -237,12 +239,8 @@ class UnidadeMedidaController extends Controller
                 '<a href="' . url('unidade-medida', $um->codunidademedida) . '">' . formataCodigo($um->codunidademedida) . '</a>',
                 $um->unidademedida,
                 $um->sigla,
-                $um->unidademedida,
-                $um->unidademedida,
-                $um->unidademedida,
-                $um->unidademedida,
-                $um->unidademedida,
-                $um->sigla,
+                formataData($um->criacao, 'C'),
+                formataData($um->alteracao, 'C'),
             ];
         }
         
