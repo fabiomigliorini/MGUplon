@@ -25,6 +25,12 @@
                         <input class="form-control" placeholder="Sigla" name="sigla" type="text" id="sigla">
                     </div>
                 </div>
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label for="inativo" class="control-label">Excluídos</label>
+                        {!! Form::select2Ativo('inativo') !!}
+                    </div>
+                </div>
                 <div class="clearfix"></div>
             </form>    
         </div>
@@ -74,6 +80,17 @@
                 false,
                 true
             ).draw();
+        });
+        
+        $('#inativo').change(function() {
+            console.log($('#inativo').val());
+            /*
+            $('#datatable').DataTable().column(2).search(
+                $('#sigla').val(),
+                false,
+                true
+            ).draw();
+            */
         });
     });
 

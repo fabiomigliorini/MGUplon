@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Description of Model
@@ -19,8 +20,12 @@ use Illuminate\Support\Facades\DB;
  */
 abstract class MGModel extends Model {
 
+    use SoftDeletes;
+    
     const CREATED_AT = 'criacao';
     const UPDATED_AT = 'alteracao';
+    const DELETED_AT = 'inativo';
+    
     public $timestamps = true;
     
     protected $_regrasValidacao = [];

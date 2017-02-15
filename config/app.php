@@ -176,7 +176,8 @@ return [
         // MGLara\Providers\BroadcastServiceProvider::class,
         MGLara\Providers\EventServiceProvider::class,
         MGLara\Providers\RouteServiceProvider::class,
-	Collective\Html\HtmlServiceProvider::class,
+        Collective\Html\HtmlServiceProvider::class,
+        MGLara\Providers\FormMacrosProvider::class,
 
     ],
 
