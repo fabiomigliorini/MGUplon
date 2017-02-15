@@ -158,16 +158,6 @@
 <script src="{{ URL::asset('public/assets/plugins/switchery/switchery.min.js') }}"></script>
 <script src="{{ URL::asset('public/assets/js/jquery.fullscreen-min.js') }}"></script>
 
-<!-- Counter Up  -->
-<script src="{{ URL::asset('public/assets/plugins/waypoints/lib/jquery.waypoints.js') }}"></script>
-<script src="{{ URL::asset('public/assets/plugins/counterup/jquery.counterup.min.js') }}"></script>
-
-<!-- Knob -->
-<script src="{{ URL::asset('public/assets/plugins/jquery-knob/jquery.knob.js') }}"></script>
-<!-- multi select -->
-<script type="text/javascript" src="{{ URL::asset('public/assets/plugins/multiselect/js/jquery.multi-select.js') }}"></script>
-<!-- Peity chart js -->
-<script src="{{ URL::asset('public/assets/plugins/peity/jquery.peity.min.js') }}"></script>
 
 <!-- App js -->
 <script src="{{ URL::asset('public/assets/js/jquery.core.js') }}"></script>
@@ -182,8 +172,10 @@
 <link href="{{ URL::asset('public/assets/plugins/bootstrap-sweetalert/sweet-alert.css') }}" rel="stylesheet" type="text/css" />
 <!-- Switchery css -->
 <link href="{{ URL::asset('public/assets/plugins/switchery/switchery.min.css') }}" rel="stylesheet" />
+
 <!-- Sweet Alert js -->
 <script src="{{ URL::asset('public/assets/plugins/bootstrap-sweetalert/sweet-alert.min.js') }}"></script>
+
 <!-- Switchery css -->
 <link href="{{ URL::asset('public/assets/plugins/switchery/switchery.min.css') }}" rel="stylesheet" />
 

@@ -1,18 +1,16 @@
-function formataCodigo(numero)
-{
-    if (numero > 99999999)
+function formataCodigo(numero) {
+    if (numero > 99999999) {
         return numero;
+    }
 
     numero = new String("00000000" + numero);
     numero = numero.substring(numero.length-8, numero.length);
     return numero;
 }
 
-function formataCnpjCpf(numero)
-{
+function formataCnpjCpf(numero) {
     //CNPJ
-    if (numero > 99999999999)
-    {
+    if (numero > 99999999999) {
         numero = new String("00000000000000" + numero);
         numero = numero.substring(numero.length-14, numero.length);
         // 01 234 567 8901 23
@@ -27,10 +25,7 @@ function formataCnpjCpf(numero)
                  + "-"
                  + numero.substring(12, 14)
                  ;
-    }
-    //CPF
-    else
-    {
+    } else { //CPF
         numero = "000000000000" + numero;
         numero = numero.substring(numero.length-11, numero.length);
         // 012 345 678 90
@@ -49,8 +44,51 @@ function formataCnpjCpf(numero)
     return numero;
 }
 
-function excluirClick (tag)
-{
+function recarregaDiv(div, url) {
+    if(url === undefined) {
+        url = $(location).attr('href');
+    };
+
+    if (url.indexOf("?") == -1)
+        url += '?';
+    else
+        url += '&';
+    
+    url += '_div=' + div + ' #' + div + ' > *';
+
+    $('#' + div).load(url, function (){
+        inicializa('#' + div + ' *');
+    });
+}
+
+function recarregaDivS(divs, url) {
+    if (url === undefined) {
+        url = $(location).attr('href');
+    };
+    
+    if (!$.isArray(divs)) {
+        divs = [divs];
+        
+        if (url.indexOf("?") == -1) {
+            url += '?';
+        } else {
+            url += '&';
+        }
+
+        url += '_div=' + divs + ' #' + divs + ' > *';
+    }
+
+    $.get(url).done(function (html) {
+        var newDom = $(html);
+        $.each(divs, function (i, div) {
+            $('#'+div).replaceWith($('#'+div, newDom));
+            inicializa('#' + div + ' *');
+        });
+    });
+}
+
+
+function excluirClick(tag) {
     var url = $(tag).attr('href');
     var pergunta = $(tag).data('pergunta');
     var funcaoAfterDelete = $(tag).data('after-delete');
@@ -76,8 +114,8 @@ function excluirClick (tag)
                 },
                 url: url,
                 dataType: 'json',
-                success: function(retorno){
-                    if (retorno.resultado){
+                success: function(retorno) {
+                    if (retorno.resultado) {
                         var mensagem = retorno.mensagem;
                         var descricao = '';
                         var tipo = 'success';
@@ -94,7 +132,6 @@ function excluirClick (tag)
 
                     
                     swal(mensagem, descricao, tipo);
-                    console.log(funcaoExecutar);
                     if (typeof funcaoExecutar !== 'undefined'){
                         eval(funcaoExecutar);
                     }
@@ -111,13 +148,11 @@ function excluirClick (tag)
         } 
     });     
 
-    
     return true;
 }
 
 
-function inativarClick (tag)
-{
+function inativarClick(tag) {
     var url         = $(tag).attr('href');
     var pergunta    = $(tag).data('pergunta');
     var acao        = $(tag).data('acao');
@@ -127,8 +162,16 @@ function inativarClick (tag)
     
     pergunta = (typeof pergunta === 'undefined') ? 'Tem certeza que deseja inativar o registro?' : pergunta;
     
-    bootbox.confirm('<strong>' + pergunta + '</strong>', function(result) {
-        if (result) {
+    swal({
+      title: pergunta,
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#DD6B55",
+      closeOnConfirm: false,
+      closeOnCancel: true
+    },
+    function(isConfirm) {
+        if (isConfirm) {
             $.ajax({
                 type: 'POST',
                 method: 'POST',
@@ -143,31 +186,32 @@ function inativarClick (tag)
                 },
                 success: function(retorno) {
                     
-                    if (retorno.resultado)
-                    {
-                        var mensagem = '<strong class="text-success">' + retorno.mensagem + '</strong>';
+                    if (retorno.resultado) {
+                        var mensagem = retorno.mensagem;
+                        var descricao = '';
+                        var tipo = 'success';
                         var funcaoExecutar = funcaoAfterInativar;
-                    }
-                    else
-                    {
-                        var mensagem = '<strong class="text-danger">' + retorno.mensagem + '</strong>';
-                        mensagem += '<hr><pre>';
+                    } else {
+                        var mensagem = retorno.mensagem;
+                        var descricao = '';
+                        //mensagem += '<hr><pre>';
                         mensagem += JSON.stringify(retorno, undefined, 2);
-                        mensagem += '</pre>';
+                        //mensagem += '</pre>';
                         var funcaoExecutar = funcaoOnError;
+                        var tipo = 'error';
                     }
                     
-                    bootbox.alert(mensagem, function (){
-                        if (typeof funcaoExecutar !== 'undefined')
-                            eval(funcaoExecutar);
-                    });
+                    swal(mensagem, descricao, tipo);
+                    if (typeof funcaoExecutar !== 'undefined') {
+                        eval(funcaoExecutar);
+                    }
                     
                     console.log(retorno);
                     
                 },
                 error: function (XHR, textStatus) {
                     if(XHR.status === 200) {
-                        bootbox.alert('<h3 class="text-danger">Você não tem acesso a esse recurso!</h3>');
+                        swal('Você não tem acesso a esse recurso!', '', 'error'); 
                     } 
                 }
             });
@@ -179,9 +223,7 @@ function inativarClick (tag)
 }
 
 
-
-function inicializa(elemento)
-{
+function inicializa(elemento) {
     $(elemento).find('a[data-excluir]').click(function(event) {
         event.preventDefault();
         return excluirClick($(this));
@@ -193,9 +235,7 @@ function inicializa(elemento)
 }
 
 $(document).ready(function() {
-    
     inicializa('*');
-    
 });  
 
 
