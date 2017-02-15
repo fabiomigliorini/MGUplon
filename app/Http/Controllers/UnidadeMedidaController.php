@@ -32,8 +32,7 @@ class UnidadeMedidaController extends Controller
      */
     public function index(Request $request) {
         $this->bc->addItem('Listagem');
-        $model = UnidadeMedida::paginate(20);
-        return view('unidade-medida.index', ['bc'=>$this->bc, 'model'=>$model]);
+        return view('unidade-medida.index', ['bc'=>$this->bc]);
     }
 
     /**
