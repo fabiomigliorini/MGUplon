@@ -11,64 +11,18 @@ use MGLara\Http\Controllers\Controller;
 
 use MGLara\Models\UnidadeMedida;
 
-class MGBreadCrumbsItem {
-    public $url;
-    public $label;
-
-    public function __construct($label, $url = null) {
-        $this->url = $url;
-        $this->label = $label;
-    }
-}
-
-class MGBreadCrumbs
-{
-        private $page;
-        private $header;
-        private $breadcrumbs;
-
-        private $page_prefix;
-
-        public function __construct($header = null, $page = null) {
-            $this->header = $header; // PEGAR NOME ROTA
-            $this->page = $page;
-            $this->page_prefix = 'MGLara - ';
-            $this->addItem('MGLara', url('/'));
-        }
-
-
-        public function __get($property) {
-            switch ($property) {
-                case 'page':
-                    if (empty($this->page)) {
-                        return $this->page_prefix . $this->header;
-                    }
-                default:
-                    return $this->$property;
-            }
-
-        }
-
-        public function __set($property, $value) {
-            $this->$property = $value;
-        }
-
-        public function addItem($label, $url = null) {
-            $this->breadcrumbs[] = new MGBreadCrumbsItem($label, $url);
-
-        }
-
-}
+use MGLara\Library\Breadcrumb\Breadcrumb;
+use MGLara\Library\JsonEnvelope\Datatable;
 
 
 class UnidadeMedidaController extends Controller
 {
 
     public function __construct() {
-        $this->bc = new MGBreadCrumbs('Unidades de Medida');
+        $this->bc = new Breadcrumb('Unidades de Medida');
         $this->bc->addItem('Unidades de Medida', url('unidade-medida'));
     }
-
+    
     /**
      * Display a listing of the resource.
      *
@@ -183,8 +137,6 @@ class UnidadeMedidaController extends Controller
     
     public function datatable(Request $request) {
         
-        //dd($request->all());
-        
         // Colunas para Filtro
         $columns[0] = 'codunidademedida';
         $columns[1] = 'unidademedida';
@@ -194,7 +146,7 @@ class UnidadeMedidaController extends Controller
         
         // Query da Entidade
         $ums = UnidadeMedida::query();
-    
+        
         // Filtros
         if (!empty($request['columns'][0]['search']['value'])) {
             $ums->where('codunidademedida', '=', $request['columns'][0]['search']['value']);
@@ -244,14 +196,10 @@ class UnidadeMedidaController extends Controller
         }
         
         // Envelope Retorno
-        $ret = [
-            "draw" => $request['draw'],
-            "recordsTotal" => $recordsTotal,
-            "recordsFiltered" => $recordsFiltered,
-            "data" => $data,
-        ];
+        $ret = new Datatable($request['draw'], $recordsTotal, $recordsFiltered, $data);
         
         // Retorno
-        return $ret;
+        return $ret->response();
+        
     }
 }

@@ -39,67 +39,18 @@
         <a class="btn btn-secondary" href="#collapsePesquisa" data-toggle="collapse" aria-expanded="false" aria-controls="collapsePesquisa"><i class='fa fa-search'></i></a>
     </div>    
     
-    <table id="datatable" class="display table table-hover table-striped table-sm" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Unidade Medida</th>
-                <th>Sigla</th>
-                <th>Criação</th>
-                <th>Alteração</th>
-            </tr>
-        </thead>
-    </table>
+    @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => [ '# ALT', 'Unidade Medida', 'Sigla', 'Criação', 'Alteração']])
+    
 </div>
+
 @section('inscript')
 
-<link href="{{ URL::asset('public/assets/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-<link href="{{ URL::asset('public/assets/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
-<link href="{{ URL::asset('public/assets/plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css"/>
+@include('layouts.includes.datatable.assets')
 
-<!-- Required datatable js -->
-<script src="{{ URL::asset('public/assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ URL::asset('public/assets/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
+@include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('unidade-medida/datatable')])
 
-<!-- Buttons examples -->
-<script src="{{ URL::asset('public/assets/plugins/datatables/dataTables.buttons.min.js') }}"></script>
-<script src="{{ URL::asset('public/assets/plugins/datatables/buttons.bootstrap4.min.js') }}"></script>
-<script src="{{ URL::asset('public/assets/plugins/datatables/jszip.min.js') }}"></script>
-<script src="{{ URL::asset('public/assets/plugins/datatables/pdfmake.min.js') }}"></script>
-<script src="{{ URL::asset('public/assets/plugins/datatables/vfs_fonts.js') }}"></script>
-<script src="{{ URL::asset('public/assets/plugins/datatables/buttons.html5.min.js') }}"></script>
-<script src="{{ URL::asset('public/assets/plugins/datatables/buttons.print.min.js') }}"></script>
-<script src="{{ URL::asset('public/assets/plugins/datatables/buttons.colVis.min.js') }}"></script>
-
-<!-- Responsive examples -->
-<script src="{{ URL::asset('public/assets/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-<script src="{{ URL::asset('public/assets/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        
-        var table = $('#datatable').DataTable({
-            dom: 'Brtip',
-            pageLength: 100,
-            language: {
-                url: "{{ URL::asset('public/assets/plugins/datatables/Portuguese-Brasil.lang') }}"
-            },
-            processing: true,
-            serverSide: true,
-            ajax: '{{ url('unidade-medida/datatable') }}',
-            lengthChange: false,
-            buttons: [
-                { extend: 'copy', text: 'Copiar' },
-                'excel', 
-                'pdf', 
-                { extend: 'print', text: 'Imprimir' },
-                { extend: 'colvis', text: 'Colunas' }
-            ],
-            initComplete: function(settings, json) {
-                table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
-                $('#datatable_paginate, #datatable_info').addClass('col-md-6');
-            }             
-        });
-        
         
         $('#codunidademedida').change(function() {
             $('#datatable').DataTable().column(0).search(

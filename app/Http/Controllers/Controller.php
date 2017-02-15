@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Session;
 
 use Carbon\Carbon;
 
+/**
+ * @property Breadcrumb $bc Breadcrumb
+ */
 abstract class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
