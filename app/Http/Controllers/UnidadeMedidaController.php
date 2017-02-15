@@ -33,7 +33,7 @@ class UnidadeMedidaController extends Controller
         //$model = UnidadeMedida::search($parametros)->orderBy('unidademedida', 'ASC')->paginate(20);
 
         $this->bc->addItem('Listagem');
-        $model = UnidadeMedida::paginate(20);
+        //$model = UnidadeMedida::paginate(20);
         return view('unidade-medida.index', ['bc'=>$this->bc, 'model'=>$model]);
     }
 
