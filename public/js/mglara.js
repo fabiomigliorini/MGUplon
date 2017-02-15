@@ -130,7 +130,6 @@ function excluirClick(tag) {
                         var tipo = 'error';
                     }
 
-                    
                     swal(mensagem, descricao, tipo);
                     if (typeof funcaoExecutar !== 'undefined'){
                         eval(funcaoExecutar);
@@ -153,6 +152,7 @@ function excluirClick(tag) {
 
 
 function inativarClick(tag) {
+    
     var url         = $(tag).attr('href');
     var pergunta    = $(tag).data('pergunta');
     var acao        = $(tag).data('acao');
@@ -173,17 +173,13 @@ function inativarClick(tag) {
     function(isConfirm) {
         if (isConfirm) {
             $.ajax({
-                type: 'POST',
-                method: 'POST',
+                type: 'PUT',
+                method: 'PUT',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 url: url,
                 dataType: 'json',
-                data:{
-                    id:codigo,
-                    acao:acao
-                },
                 success: function(retorno) {
                     
                     if (retorno.resultado) {
@@ -195,7 +191,7 @@ function inativarClick(tag) {
                         var mensagem = retorno.mensagem;
                         var descricao = '';
                         //mensagem += '<hr><pre>';
-                        mensagem += JSON.stringify(retorno, undefined, 2);
+                        descricao += JSON.stringify(retorno, undefined, 2);
                         //mensagem += '</pre>';
                         var funcaoExecutar = funcaoOnError;
                         var tipo = 'error';

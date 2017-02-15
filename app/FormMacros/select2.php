@@ -138,6 +138,10 @@ Form::macro('select2GrupoCliente', function($name, $selected = null, $options = 
 /* ATIVO */
 Form::macro('select2Ativo', function($name, $selected = null, $options = [])
 {
+    return Form::select2Inativo($name, $selected, $options);
+});
+Form::macro('select2Inativo', function($name, $selected = null, $options = [])
+{
     $opcoes = ['' => '', 1 => 'Ativos', 2 => 'Inativos', 9 => 'Todos'];
     $options['placeholder'] = 'Ativos';
     return Form::select2($name, $opcoes, $selected, $options);

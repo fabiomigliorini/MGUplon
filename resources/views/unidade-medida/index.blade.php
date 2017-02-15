@@ -28,7 +28,7 @@
                 <div class="col-md-1">
                     <div class="form-group">
                         <label for="inativo" class="control-label">Excluídos</label>
-                        {!! Form::select2Ativo('inativo') !!}
+                        {!! Form::select2Inativo('inativo') !!}
                     </div>
                 </div>
                 <div class="clearfix"></div>
@@ -45,7 +45,7 @@
         <a class="btn btn-secondary" href="#collapsePesquisa" data-toggle="collapse" aria-expanded="false" aria-controls="collapsePesquisa"><i class='fa fa-search'></i></a>
     </div>    
     
-    @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => [ '# ALT', 'Unidade Medida', 'Sigla', 'Criação', 'Alteração']])
+    @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Unidade Medida', 'Sigla', 'Criação', 'Alteração']])
     
 </div>
 
@@ -53,45 +53,11 @@
 
 @include('layouts.includes.datatable.assets')
 
-@include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('unidade-medida/datatable')])
+@include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('unidade-medida/datatable'), 'order' => 3, 'order_dir' => 'ASC', 'filtros' => ['codunidademedida' => 'codunidademedida', 'unidademedida', 'sigla', 'inativo'] ])
 
 <script type="text/javascript">
     $(document).ready(function () {
         
-        $('#codunidademedida').change(function() {
-            $('#datatable').DataTable().column(0).search(
-                $('#codunidademedida').val(),
-                false,
-                true
-            ).draw();
-        });
-        
-        $('#unidademedida').change(function() {
-            $('#datatable').DataTable().column(1).search(
-                $('#unidademedida').val(),
-                false,
-                true
-            ).draw();
-        });
-        
-        $('#sigla').change(function() {
-            $('#datatable').DataTable().column(2).search(
-                $('#sigla').val(),
-                false,
-                true
-            ).draw();
-        });
-        
-        $('#inativo').change(function() {
-            console.log($('#inativo').val());
-            /*
-            $('#datatable').DataTable().column(2).search(
-                $('#sigla').val(),
-                false,
-                true
-            ).draw();
-            */
-        });
     });
 
 </script>

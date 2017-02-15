@@ -11,10 +11,13 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
+use MGLara\Library\JsonEnvelope\Resultado;
+
 use Carbon\Carbon;
 
 /**
  * @property Breadcrumb $bc Breadcrumb
+ * @property string $model_class Classe do Model Principal
  */
 abstract class Controller extends BaseController
 {
@@ -39,6 +42,49 @@ abstract class Controller extends BaseController
         return $array_dados;
     }
     
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        try{
+            $class = "\\MGLara\\Models\\{$this->model_class}";
+            $class::find($id)->delete();
+            $ret = new Resultado(true);
+        }
+        catch(\Exception $e){
+            $ret = new Resultado(false, null, $e);
+        }
+        return $ret->response();
+    }
+    
+    public function ativar($id) {
+        $class = "\\MGLara\\Models\\{$this->model_class}";
+        $model = $class::findOrFail($id);
+        if (!empty($model->inativo)) {
+            $model->ativar();
+            $ret = new Resultado(true);
+        } else {
+            $ret = new Resultado(false, 'Já está Ativo!');
+        }
+        return $ret->response();
+    }
+    
+    public function inativar($id) {
+        $class = "\\MGLara\\Models\\{$this->model_class}";
+        $model = $class::findOrFail($id);
+        if (empty($model->inativo)) {
+            $model->inativar();
+            $ret = new Resultado(true);
+        } else {
+            $ret = new Resultado(false, 'Já está inativo!');
+        }
+        return $ret->response();
+    }
+        
     /**
      * Decide se vai utilizar filtro Padrao, da Sessao ou do Request
      * 

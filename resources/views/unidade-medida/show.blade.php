@@ -7,11 +7,16 @@
             {{ $model->unidademedida }}
             <div class="btn-group pull-right" role="group" aria-label="Controles">
                 <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida/edit") }}"><i class="fa fa-pencil"></i></a>
-                <!--<a class="btn btn-secondary" href="{{ url('unidade-medida/inativar') }}" data-inativar data-codigo="{{ $model->codunidademedida }}" data-acao="inativar" data-pergunta="Tem certeza que deseja inativar o produto {{ $model->unidademedia }}? " data-after-inativar="location.reload()"><i class="fa fa-ban"></i></a>-->
-                <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida") }}" data-excluir data-pergunta="Tem certeza que deseja excluir a unidade de medida '{{ $model->unidademedida }}'?" data-after-delete="location.replace(baseUrl + '/unidade-medida');"><i class="fa fa-trash"></i></a>                
+                @if (empty($model->inativo))
+                    <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida/inativar") }}" data-inativar data-pergunta="Tem certeza que deseja inativar '{{ $model->unidademedida }}'?" data-after-inativar="location.reload()"><i class="fa fa-ban"></i></a>
+                @else
+                    <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida/ativar") }}" data-inativar data-pergunta="Tem certeza que deseja ativar '{{ $model->unidademedida }}'?" data-after-inativar="location.reload()"><i class="fa fa-circle-o"></i></a>
+                @endif
+                <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida") }}" data-excluir data-pergunta="Tem certeza que deseja excluir '{{ $model->unidademedida }}'?" data-after-delete="location.replace(baseUrl + '/unidade-medida');"><i class="fa fa-trash"></i></a>                
             </div>    
         </h3>
         <div class="card-block">
+            @include('layouts.includes.inativo', [$model])
             <p class="card-text">
                 <table class="table table-bordered table-striped table-hover table-sm col-md-6">
                   <tbody>  
@@ -31,10 +36,7 @@
                 </table>
             </p>
             <p class="card-text">
-              <small class="text-muted">
-                Criado em 07/02/2017 15:54 por <a href=http://192.168.1.205/MGLara/usuario/10000004>alisson</a> 
-                Alterado em 13/02/2017 09:50 por <a href=http://192.168.1.205/MGLara/usuario/1>fabio</a>                  
-              </small>
+            @include('layouts.includes.criacao', [$model])
             </p>
         </div>
     </div>

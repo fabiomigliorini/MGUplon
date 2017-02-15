@@ -13,12 +13,14 @@ use MGLara\Models\UnidadeMedida;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
+use MGLara\Library\JsonEnvelope\Resultado;
 
 
 class UnidadeMedidaController extends Controller
 {
 
     public function __construct() {
+        $this->model_class = 'UnidadeMedida';
         $this->bc = new Breadcrumb('Unidades de Medida');
         $this->bc->addItem('Unidades de Medida', url('unidade-medida'));
     }
@@ -29,9 +31,6 @@ class UnidadeMedidaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request) {
-        //$parametros = self::filtroEstatico($request, 'unidade-medida.index');
-        //$model = UnidadeMedida::search($parametros)->orderBy('unidademedida', 'ASC')->paginate(20);
-
         $this->bc->addItem('Listagem');
         $model = UnidadeMedida::paginate(20);
         return view('unidade-medida.index', ['bc'=>$this->bc, 'model'=>$model]);
@@ -59,11 +58,12 @@ class UnidadeMedidaController extends Controller
     {
         $model = new UnidadeMedida($request->all());
         
-        if (!$model->validate())
+        if (!$model->validate()) {
             $this->throwValidationException($request, $model->_validator);
+        }
         
         $model->save();
-        Session::flash('flash_create', 'Registro inserido.');
+        Session::flash('flash_create', 'Registro criado!');
         return redirect("unidade-medida/$model->codunidademedida");    
     }
 
@@ -113,55 +113,33 @@ class UnidadeMedidaController extends Controller
 
         $model->save();
         
-        Session::flash('flash_update', 'Registro atualizado.');
+        Session::flash('flash_update', 'Registro alterado!');
         return redirect("unidade-medida/$model->codunidademedida"); 
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        try{
-            UnidadeMedida::find($id)->delete();
-            $ret = ['resultado' => true, 'mensagem' => 'Unidade de medida excluída com sucesso!'];
-        }
-        catch(\Exception $e){
-            $ret = ['resultado' => false, 'mensagem' => 'Erro ao excluir unidade de medida!', 'exception' => $e];
-        }
-        return json_encode($ret);
-    }    
     
     public function datatable(Request $request) {
-        
-        // Colunas para Filtro
-        $columns[0] = 'codunidademedida';
-        $columns[1] = 'unidademedida';
-        $columns[2] = 'sigla';
-        $columns[3] = 'criacao';
-        $columns[4] = 'alteracao';
         
         // Query da Entidade
         $ums = UnidadeMedida::query();
         
+        //dd($request['filtros']);
+        
         // Filtros
-        if (!empty($request['columns'][0]['search']['value'])) {
-            $ums->where('codunidademedida', '=', $request['columns'][0]['search']['value']);
+        if (!empty($request['filtros']['codunidademedida'])) {
+            $ums->where('codunidademedida', '=', $request['filtros']['codunidademedida']);
         }
         
-        if (!empty($request['columns'][1]['search']['value'])) {
-            foreach(explode(' ', $request['columns'][1]['search']['value']) as $palavra) {
+        if (!empty($request['filtros']['unidademedida'])) {
+            foreach(explode(' ', $request['filtros']['unidademedida']) as $palavra) {
                 if (!empty($palavra)) {
                     $ums->where('unidademedida', 'ilike', "%$palavra%");
                 }
             }
         }
         
-        if (!empty($request['columns'][2]['search']['value'])) {
-            foreach(explode(' ', $request['columns'][2]['search']['value']) as $palavra) {
+        if (!empty($request['filtros']['sigla'])) {
+            foreach(explode(' ', $request['filtros']['sigla']) as $palavra) {
                 if (!empty($palavra)) {
                     $ums->where('sigla', 'ilike', "%$palavra%");
                 }
@@ -169,6 +147,20 @@ class UnidadeMedidaController extends Controller
         }
         
         // Registros
+        switch ($request['filtros']['inativo']) {
+            case 2: //Inativos
+                $ums = $ums->inativo();
+                break;
+
+            case 9: //Todos
+                break;
+
+            case 1: //Ativos
+            default:
+                $ums = $ums->ativo();
+                break;
+        }
+        
         $recordsTotal = UnidadeMedida::count();
         $recordsFiltered = $ums->count();
         
@@ -177,7 +169,13 @@ class UnidadeMedidaController extends Controller
         $ums->limit($request['length']);
         
         // Ordenacao
-        //dd($request['order'] );
+        $columns[0] = 'url';
+        $columns[1] = 'inativo';
+        $columns[2] = 'codunidademedida';
+        $columns[3] = 'unidademedida';
+        $columns[4] = 'sigla';
+        $columns[5] = 'criacao';
+        $columns[6] = 'alteracao';
         foreach ($request['order'] as $order) {
             $ums->orderBy($columns[$order['column']], $order['dir']);
         }
@@ -187,7 +185,9 @@ class UnidadeMedidaController extends Controller
         $data = [];
         foreach ($ums as $um) {
             $data[] = [
-                '<a href="' . url('unidade-medida', $um->codunidademedida) . '">' . formataCodigo($um->codunidademedida) . '</a>',
+                url('unidade-medida', $um->codunidademedida),
+                formataData($um->inativo, 'C'),
+                formataCodigo($um->codunidademedida),
                 $um->unidademedida,
                 $um->sigla,
                 formataData($um->criacao, 'C'),
@@ -202,4 +202,5 @@ class UnidadeMedidaController extends Controller
         return $ret->response();
         
     }
+    
 }

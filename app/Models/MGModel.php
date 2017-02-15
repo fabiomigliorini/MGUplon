@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\SoftDeletes;
+
+use Carbon\Carbon;
 
 /**
  * Description of Model
@@ -20,11 +21,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 abstract class MGModel extends Model {
 
-    use SoftDeletes;
     
     const CREATED_AT = 'criacao';
     const UPDATED_AT = 'alteracao';
-    const DELETED_AT = 'inativo';
     
     public $timestamps = true;
     
@@ -63,14 +62,16 @@ abstract class MGModel extends Model {
 
         static::creating(function($model)
         {
-            if (Auth::user() !== NULL)
+            if (Auth::user() !== NULL) {
                 $model->attributes['codusuariocriacao'] = Auth::user()->codusuario;
+            }
         });
         
         static::updating(function($model)
         {
-            if (Auth::user() !== NULL)
+            if (Auth::user() !== NULL) {
                 $model->attributes['codusuarioalteracao'] = Auth::user()->codusuario;
+            }
         });
         
         static::saving(function($model)
@@ -106,6 +107,26 @@ abstract class MGModel extends Model {
             return;
         
         $query->where($coluna, $valor);
-    }    
+    }
+    
+    public function scopeAtivo($query) {
+        $query->whereNull('inativo');
+    }
+    
+    public function scopeInativo($query) {
+        $query->whereNotNull('inativo');
+    }
+    
+    public function ativar() {
+        $model = $this->fresh();
+        $model->inativo = null;
+        return $model->save();
+    }
+    
+    public function inativar() {
+        $model = $this->fresh();
+        $model->inativo = new Carbon('now');
+        return $model->save();        
+    }
     
 }

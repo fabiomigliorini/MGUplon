@@ -19,6 +19,8 @@ Route::group(['middleware' => 'auth'], function() {
 	    return view('welcome');
 	});
 
+    Route::put('unidade-medida/{id}/ativar', 'UnidadeMedidaController@ativar');
+    Route::put('unidade-medida/{id}/inativar', 'UnidadeMedidaController@inativar');
     Route::get('unidade-medida/datatable', 'UnidadeMedidaController@datatable');
 	Route::resource('unidade-medida', 'UnidadeMedidaController');
 
