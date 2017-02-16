@@ -28,7 +28,7 @@
 		        </div>
 		    </div>
 		</div>
-        <div class="container">
+        <div class="container" id="main-container">
         @yield('content')
         </div>
     </div> <!-- container -->

@@ -6,33 +6,33 @@
     <h3 class="card-header">Pesquisa</h3>
     <div class="card-block">
         <div class="card-text">
-            <form accept-charset="UTF-8" class="form-horizontal" id="form-search" role="search" autocomplete="on">
+            {!! Form::model($filtro, ['id' => 'form-search', 'autocomplete' => 'on'])!!}
                 <div class="col-md-2">
                     <div class="form-group">
                         <label for="codunidademedida" class="control-label">#</label>
-                        <input class="form-control" placeholder="#" name="codunidademedida" type="number" step="1" min="1" id="codunidademedida">
+                        {!! Form::number('codunidademedida', null, ['class'=> 'form-control', 'id'=>'codunidademedida', 'step'=>1, 'min'=>1]) !!}
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="unidademedida" class="control-label">Unidade Medida</label>
-                        <input class="form-control" placeholder="Unidade Medida" name="unidademedida" type="text" id="unidademedida">
+                        {!! Form::text('unidademedida', null, ['class'=> 'form-control', 'id'=>'unidademedida']) !!}
                     </div>
                 </div>
                 <div class="col-md-1">
                     <div class="form-group">
                         <label for="sigla" class="control-label">Sigla</label>
-                        <input class="form-control" placeholder="Sigla" name="sigla" type="text" id="sigla">
+                        {!! Form::text('sigla', null, ['class'=> 'form-control', 'id'=>'sigla']) !!}
                     </div>
                 </div>
                 <div class="col-md-1">
                     <div class="form-group">
-                        <label for="inativo" class="control-label">Excluídos</label>
-                        {!! Form::select2Inativo('inativo') !!}
+                        <label for="inativo" class="control-label">Ativos</label>
+                        {!! Form::select2Inativo('inativo', null, ['class'=> 'form-control', 'id'=>'inativo']) !!}
                     </div>
                 </div>
                 <div class="clearfix"></div>
-            </form>    
+            {!! Form::close() !!}
         </div>
     </div>
   </div>
