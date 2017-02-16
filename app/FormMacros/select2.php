@@ -117,21 +117,21 @@ Form::macro('select2UnidadeMedida', function($name, $selected = null, $options =
 {
     if (empty($options['campo']))
         $options['campo'] = 'sigla';
-    $medidas = [''=>''] + MGLara\Models\UnidadeMedida::orderBy('unidademedida')->lists($options['campo'], 'codunidademedida')->all();
+    $medidas = [''=>''] + MGLara\Models\UnidadeMedida::orderBy('unidademedida')->pluck($options['campo'], 'codunidademedida')->prepend('', '');
     return Form::select2($name, $medidas, $selected, $options);
 });
 
 /* UNIDADES USUÁRIO */
 Form::macro('select2Usuario', function($name, $selected = null, $options = [])
 {
-    $usuarios = [''=>''] + MGLara\Models\Usuario::orderBy('usuario')->lists('usuario', 'codusuario')->all();
+    $usuarios = [''=>''] + MGLara\Models\Usuario::orderBy('usuario')->pluck('usuario', 'codusuario')->prepend('', '');
     return Form::select2($name, $usuarios, $selected, $options);
 });
 
 /* GRUPO CLIENTE */
 Form::macro('select2GrupoCliente', function($name, $selected = null, $options = [])
 {
-    $grupos = [''=>''] + MGLara\Models\GrupoCliente::orderBy('grupocliente')->lists('grupocliente', 'codgrupocliente')->all();
+    $grupos = [''=>''] + MGLara\Models\GrupoCliente::orderBy('grupocliente')->pluck('grupocliente', 'codgrupocliente')->prepend('', '');
     return Form::select2($name, $grupos, $selected, $options);
 });
 
@@ -228,7 +228,7 @@ Form::macro('select2SecaoProduto', function($name, $selected = null, $options = 
     if (empty($options['placeholder']))
         $options['placeholder'] = 'Seção...';
 
-    $secoes = [''=>''] + MGLara\Models\SecaoProduto::orderBy('secaoproduto')->lists('secaoproduto', 'codsecaoproduto')->all();
+    $secoes = [''=>''] + MGLara\Models\SecaoProduto::orderBy('secaoproduto')->pluck('secaoproduto', 'codsecaoproduto')->prepend('', '');
     $campo = Form::select2($name, $secoes, $selected, $options);
     return $campo;
 });
@@ -568,14 +568,14 @@ END;
 /* TRIBUTAÇÃO */
 Form::macro('select2Tributacao', function($name, $selected = null, $options = [])
 {
-    $tributacoes = [''=>''] + MGLara\Models\Tributacao::orderBy('tributacao')->lists('tributacao', 'codtributacao')->all();
+    $tributacoes = [''=>''] + MGLara\Models\Tributacao::orderBy('tributacao')->pluck('tributacao', 'codtributacao')->prepend('', '');
     return Form::select2($name, $tributacoes, $selected, $options);
 });
 
 /* TIPO PRODUTO */
 Form::macro('select2TipoProduto', function($name, $selected = null, $options = [])
 {
-    $tipos = [''=>''] + MGLara\Models\TipoProduto::orderBy('tipoproduto')->lists('tipoproduto', 'codtipoproduto')->all();
+    $tipos = [''=>''] + MGLara\Models\TipoProduto::orderBy('tipoproduto')->pluck('tipoproduto', 'codtipoproduto')->prepend('', '');
     return Form::select2($name, $tipos, $selected, $options);
 });
 
@@ -583,7 +583,7 @@ Form::macro('select2TipoProduto', function($name, $selected = null, $options = [
 Form::macro('select2Empresa', function($name, $selected = null, $options = [])
 {
     if (empty($options['placeholder'])) $options['placeholder'] = 'Empresa';
-    $regs = [''=>''] + MGLara\Models\Empresa::orderBy('codempresa')->lists('empresa', 'codempresa')->all();
+    $regs = MGLara\Models\Empresa::orderBy('codempresa')->pluck('empresa', 'codempresa')->prepend('', '');
     return Form::select2($name, $regs, $selected, $options);
 });
 
@@ -591,7 +591,7 @@ Form::macro('select2Empresa', function($name, $selected = null, $options = [])
 Form::macro('select2Filial', function($name, $selected = null, $options = [])
 {
     if (empty($options['placeholder'])) $options['placeholder'] = 'Filial';
-    $regs = [''=>''] + MGLara\Models\Filial::orderBy('codfilial')->lists('filial', 'codfilial')->all();
+    $regs = MGLara\Models\Filial::orderBy('codfilial')->pluck('filial', 'codfilial')->prepend('', '');
     return Form::select2($name, $regs, $selected, $options);
 });
 
@@ -599,7 +599,7 @@ Form::macro('select2Filial', function($name, $selected = null, $options = [])
 Form::macro('select2Banco', function($name, $selected = null, $options = [])
 {
     if (empty($options['placeholder'])) $options['placeholder'] = 'Banco';
-    $regs = [''=>''] + MGLara\Models\Banco::orderBy('codbanco')->lists('banco', 'codbanco')->all();
+    $regs = MGLara\Models\Banco::orderBy('codbanco')->pluck('banco', 'codbanco')->prepend('', '');
     return Form::select2($name, $regs, $selected, $options);
 });
 
@@ -607,7 +607,7 @@ Form::macro('select2Banco', function($name, $selected = null, $options = [])
 Form::macro('select2Ecf', function($name, $selected = null, $options = [])
 {
     if (empty($options['placeholder'])) $options['placeholder'] = 'ECF';
-    $regs = [''=>''] + MGLara\Models\Ecf::orderBy('codecf')->lists('ecf', 'codecf')->all();
+    $regs = MGLara\Models\Ecf::orderBy('codecf')->pluck('ecf', 'codecf')->prepend('', '');
     return Form::select2($name, $regs, $selected, $options);
 });
 
@@ -615,7 +615,7 @@ Form::macro('select2Ecf', function($name, $selected = null, $options = [])
 Form::macro('select2Portador', function($name, $selected = null, $options = [])
 {
     if (empty($options['placeholder'])) $options['placeholder'] = 'Portador';
-    $regs = [''=>''] + MGLara\Models\Portador::orderBy('codportador')->lists('portador', 'codportador')->all();
+    $regs = MGLara\Models\Portador::orderBy('codportador')->pluck('portador', 'codportador')->prepend('', '');
     return Form::select2($name, $regs, $selected, $options);
 });
 
@@ -623,7 +623,7 @@ Form::macro('select2Portador', function($name, $selected = null, $options = [])
 Form::macro('select2Operacao', function($name, $selected = null, $options = [])
 {
     if (empty($options['placeholder'])) $options['placeholder'] = 'Operação';
-    $regs = [''=>''] + MGLara\Models\Operacao::orderBy('codoperacao')->lists('operacao', 'codoperacao')->all();
+    $regs = MGLara\Models\Operacao::orderBy('codoperacao')->pluck('operacao', 'codoperacao')->prepend('', '');
     return Form::select2($name, $regs, $selected, $options);
 });
 
@@ -631,7 +631,7 @@ Form::macro('select2Operacao', function($name, $selected = null, $options = [])
 Form::macro('select2EstoqueLocal', function($name, $selected = null, $options = [])
 {
     if (empty($options['placeholder'])) $options['placeholder'] = 'Local Estoque';
-    $regs = [''=>''] + MGLara\Models\EstoqueLocal::orderBy('codestoquelocal')->lists('estoquelocal', 'codestoquelocal')->all();
+    $regs = MGLara\Models\EstoqueLocal::orderBy('codestoquelocal')->pluck('estoquelocal', 'codestoquelocal')->prepend('', '');
     return Form::select2($name, $regs, $selected, $options);
 });
 
@@ -639,7 +639,7 @@ Form::macro('select2EstoqueLocal', function($name, $selected = null, $options = 
 Form::macro('select2NaturezaOperacao', function($name, $selected = null, $options = [])
 {
     if (empty($options['placeholder'])) $options['placeholder'] = 'Natureza de Operação';
-    $regs = [''=>''] + MGLara\Models\NaturezaOperacao::orderBy('naturezaoperacao')->lists('naturezaoperacao', 'codnaturezaoperacao')->all();
+    $regs = MGLara\Models\NaturezaOperacao::orderBy('naturezaoperacao')->pluck('naturezaoperacao', 'codnaturezaoperacao')->prepend('', '');
     return Form::select2($name, $regs, $selected, $options);
 });
 
@@ -1106,12 +1106,10 @@ Form::macro('select2EstoqueMovimentoTipo', function($name, $selected = null, $op
     }
 
     if ($options['manual']) {
-        $op = MGLara\Models\EstoqueMovimentoTipo::where('manual', '=', true)->orderBy('descricao')->lists('descricao', 'codestoquemovimentotipo')->all();
+        $op = MGLara\Models\EstoqueMovimentoTipo::where('manual', '=', true)->orderBy('descricao')->pluck('descricao', 'codestoquemovimentotipo')->prepend('', '');
     } else {
-        $op = MGLara\Models\EstoqueMovimentoTipo::orderBy('descricao')->lists('descricao', 'codestoquemovimentotipo')->all();
+        $op = MGLara\Models\EstoqueMovimentoTipo::orderBy('descricao')->pluck('descricao', 'codestoquemovimentotipo')->prepend('', '');
     }
-
-    $op = [''=>''] + $op;
 
     return Form::select2($name, $op, $selected, $options);
 });
@@ -1131,7 +1129,7 @@ Form::macro('select2ValeCompraModelo', function($name, $selected = null, $option
             $qry->whereNotNull('inativo');
             break;
     }
-    $valores = [''=>''] + $qry->lists('modelo', 'codvalecompramodelo')->all();
+    $valores = [''=>''] + $qry->pluck('modelo', 'codvalecompramodelo')->prepend('', '');
     return Form::select2($name, $valores, $selected, $options);
 });
 
@@ -1154,6 +1152,6 @@ Form::macro('select2FormaPagamento', function($name, $selected = null, $options 
     }
      *
      */
-    $valores = [''=>''] + $qry->lists('formapagamento', 'codformapagamento')->all();
+    $valores = [''=>''] + $qry->pluck('formapagamento', 'codformapagamento')->prepend('', '');
     return Form::select2($name, $valores, $selected, $options);
 });

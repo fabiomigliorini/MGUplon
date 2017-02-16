@@ -17,7 +17,6 @@ use Carbon\Carbon;
 
 /**
  * @property Breadcrumb $bc Breadcrumb
- * @property string $model_class Classe do Model Principal
  */
 abstract class Controller extends BaseController
 {
@@ -42,38 +41,6 @@ abstract class Controller extends BaseController
         return $array_dados;
     }
     
-    /**
-     * Decide se vai utilizar filtro Padrao, da Sessao ou do Request
-     * 
-     * @param Request $request
-     * @param string $chave
-     * @param array $filtro_padrao
-     * @param array $campos_data
-     * @return array
-     */
-    public static function filtroEstatico(Request $request, $chave = null, array $filtro_padrao = [], array $campos_data = [])
-    {
-        $chave = $this->montaChaveFiltro(null, $chave);
-        
-        $filtro_request = $request->all();
-
-        // Se veio request GET com filtro
-        if (count($filtro_request)) {
-            $this->setFiltro($filtro_request, null, $chave);
-            $retorno = $filtro_request;
-        } else {
-            if (!$retorno = $this->getFiltro(null, $chave)) {
-                $retorno = $filtro_padrao;
-            }
-        }
-        
-        // Converte as datas
-        //$retorno = self::datasParaCarbon($retorno, $campos_data);
-        
-        return $retorno;
-
-    }
-
     /**
      * Monta a chave da sessao para armazenar o filtro
      * @param string $sufixo Sufixo a ser utilizado na chave da sessao

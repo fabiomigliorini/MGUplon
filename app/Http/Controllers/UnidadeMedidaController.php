@@ -20,7 +20,6 @@ class UnidadeMedidaController extends Controller
 {
 
     public function __construct() {
-        $this->model_class = 'UnidadeMedida';
         $this->bc = new Breadcrumb('Unidades de Medida');
         $this->bc->addItem('Unidades de Medida', url('unidade-medida'));
     }

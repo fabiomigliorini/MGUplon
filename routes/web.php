@@ -59,6 +59,22 @@ Route::group(['middleware' => 'auth'], function() {
     /* NCM */
     Route::get('ncm/listagem-json', 'NcmController@listagemJson');
     Route::resource('ncm', 'NcmController');
+
+    /* Usuários */
+    Route::put('usuario/{id}/ativar', 'UsuarioController@ativar');
+    Route::put('usuario/{id}/inativar', 'UsuarioController@inativar');
+    Route::get('usuario/datatable', 'UsuarioController@datatable');
+    Route::resource('usuario', 'UsuarioController');
+    Route::post('usuario/inativar', 'UsuarioController@inativar');
+    Route::resource('usuario/{codusuario}/permissao', 'UsuarioController@permissao');
+    Route::post('usuario/attach-permissao', 'UsuarioController@attachPermissao');
+    Route::post('usuario/detach-permissao', 'UsuarioController@detachPermissao');
+
+    /* Grupos de usuários */
+    Route::resource('grupo-usuario', 'GrupoUsuarioController');
+    Route::post('grupo-usuario/attach-permissao', 'GrupoUsuarioController@attachPermissao');
+    Route::post('grupo-usuario/detach-permissao', 'GrupoUsuarioController@detachPermissao');
+
     
     
 });
