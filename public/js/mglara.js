@@ -87,145 +87,112 @@ function recarregaDivS(divs, url) {
     });
 }
 
+function excluirAtivarInativar (type, method, url, pergunta, funcaoAfter, funcaoOnError) {
+ 
+    // Executa Pergunta
+    swal({
+      title: pergunta,
+      type: "warning",
+      showCancelButton: true,
+      closeOnConfirm: false,
+      closeOnCancel: true
+    },
+    function(isConfirm) {
+        
+        // Se confirmou
+        if (isConfirm) {
+            
+            //Faz chamada Ajax
+            $.ajax({
+                type: type,
+                method: method,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: url,
+                dataType: 'json',
+                
+                // Caso veio retorno
+                success: function(retorno) {
+                    
+                    // Se executou
+                    if (retorno.OK) {
+                        swal({
+                            title: 'Excluido!',
+                            text: 'Excluido com sucesso!',
+                            type: 'success',
+                        }, function () {
+                            if (typeof funcaoAfter !== 'undefined') {
+                                eval(funcaoAfter);
+                            }
+                        });
+                        
+                    // Se não executou
+                    } else {
+                        swal({
+                            title: 'Erro ao excluir!',
+                            text: retorno.mensagem,
+                            type: 'error',
+                        }, function () {
+                            if (typeof funcaoOnError !== 'undefined') {
+                                eval(funcaoOnError);
+                            }
+                        });
+                    }
+                    
+                },
+                
+                // Caso Erro
+                error: function (XHR) {
+                    
+                    if(XHR.status === 403) {
+                        var title = 'Permissão Negada!';
+                    } else {
+                       var title = 'Falha na execução!';
+                    }
+                    
+                    swal({
+                        title: title,
+                        text: XHR.status + ' ' + XHR.statusText,
+                        type: 'error',
+                    }, function () {
+                        if (typeof funcaoOnError !== 'undefined') {
+                            eval(funcaoOnError);
+                        }
+                    });
+                }
+            });        
+        } 
+    });     
+    
+    return true;
+}
+
 
 function excluirClick(tag) {
     
     var url = $(tag).attr('href');
     var pergunta = $(tag).data('pergunta');
-    var funcaoAfterDelete = $(tag).data('after-delete');
+    var funcaoAfter = $(tag).data('after');
     var funcaoOnError = $(tag).data('on-error');
     
-    pergunta = (typeof pergunta === 'undefined') ? 'Tem certeza que deseja excluir o registro?' : pergunta;
-    
-    swal({
-      title: pergunta,
-      type: "warning",
-      showCancelButton: true,
-      closeOnConfirm: false,
-      closeOnCancel: true
-    },
-    function(isConfirm) {
-        if (isConfirm) {
-            $.ajax({
-                type: 'POST',
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: url,
-                dataType: 'json',
-                success: function(retorno) {
-                    if (retorno.resultado) {
-                        var mensagem = retorno.mensagem;
-                        var descricao = '';
-                        var tipo = 'success';
-                        var funcaoExecutar = funcaoAfterDelete;
-                    } else {
-                        var mensagem = retorno.mensagem;
-                        var descricao = '';
-                        //descricao += "<hr><code>";
-                        descricao += JSON.stringify(retorno, undefined, 2);
-                        //descricao += "</code>";
-                        var funcaoExecutar = funcaoOnError;
-                        var tipo = 'error';
-                    }
+    pergunta = (typeof pergunta === 'undefined') ? 'Tem certeza?' : pergunta;
 
-                    swal({
-                        title: mensagem,
-                        text: descricao,
-                        type: tipo,
-                    }, function () {
-                        if (typeof funcaoExecutar !== 'undefined') {
-                            eval(funcaoExecutar);
-                        }
-                    });
-                    
-                    console.log(retorno);
-                    
-                },
-                error: function (XHR, textStatus) {
-                    if(XHR.status === 200) {
-                        swal('Você não tem acesso a esse recurso!', '', 'error'); 
-                    } 
-                }
-            });        
-        } 
-    });     
-
-    return true;
+    return excluirAtivarInativar ('POST', 'DELETE', url, pergunta, funcaoAfter, funcaoOnError)
 }
 
 
 function inativarClick(tag) {
     
-    var url         = $(tag).attr('href');
-    var pergunta    = $(tag).data('pergunta');
-    var funcaoAfterInativar = $(tag).data('after-inativar');
+    var url = $(tag).attr('href');
+    var pergunta = $(tag).data('pergunta');
+    var funcaoAfter = $(tag).data('after');
     var funcaoOnError = $(tag).data('on-error');
     
-    pergunta = (typeof pergunta === 'undefined') ? 'Tem certeza que deseja inativar o registro?' : pergunta;
+    pergunta = (typeof pergunta === 'undefined') ? 'Tem certeza?' : pergunta;
     
-    swal({
-      title: pergunta,
-      type: "warning",
-      showCancelButton: true,
-      closeOnConfirm: false,
-      closeOnCancel: true
-    },
-    function(isConfirm) {
-        console.log(isConfirm);
-        if (isConfirm) {
-            $.ajax({
-                type: 'PUT',
-                method: 'PUT',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: url,
-                dataType: 'json',
-                success: function(retorno) {
-                    
-                    if (retorno.resultado) {
-                        var mensagem = retorno.mensagem;
-                        var descricao = '';
-                        var tipo = 'success';
-                        var funcaoExecutar = funcaoAfterInativar;
-                    } else {
-                        var mensagem = retorno.mensagem;
-                        var descricao = '';
-                        //mensagem += '<hr><pre>';
-                        descricao += JSON.stringify(retorno, undefined, 2);
-                        //mensagem += '</pre>';
-                        var funcaoExecutar = funcaoOnError;
-                        var tipo = 'error';
-                    }
-                    
-                    swal({
-                        title: mensagem,
-                        text: descricao,
-                        type: tipo,
-                    }, function () {
-                        if (typeof funcaoExecutar !== 'undefined') {
-                            eval(funcaoExecutar);
-                        }
-                    });
-                    
-                    console.log(retorno);
-                    
-                },
-                error: function (XHR, textStatus) {
-                    
-                    if(XHR.status === 200) {
-                        swal('Você não tem acesso a esse recurso!', '', 'error'); 
-                    } 
-                    
-                }
-            });
-        }
-        
-    });
+    return excluirAtivarInativar ('PUT', 'PUT', url, pergunta, funcaoAfter, funcaoOnError)
     
-    return true;
 }
 
 

@@ -22,6 +22,3 @@ table.dataTable.table-sm thead .sorting_desc_disabled::before,
 table.dataTable.table-sm thead .sorting_desc_disabled::after {
     bottom: 0.5em;
 }
-.sweet-alert .lead {
-    text-align: left;
-}

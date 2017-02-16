@@ -13,7 +13,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        'MGLara\Model' => 'MGLara\Policies\ModelPolicy',
+        \MGLara\Models\UnidadeMedida::class => \MGLara\Policies\UnidadeMedidaPolicy::class,
     ];
 
     /**

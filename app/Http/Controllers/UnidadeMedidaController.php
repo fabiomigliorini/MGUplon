@@ -13,7 +13,6 @@ use MGLara\Models\UnidadeMedida;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
-use MGLara\Library\JsonEnvelope\Resultado;
 
 use Carbon\Carbon;
 
@@ -32,6 +31,7 @@ class UnidadeMedidaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request) {
+        $this->authorize('list', UnidadeMedida::class);
         $this->bc->addItem('Listagem');
         if (!$filtro = $this->getFiltro()) {
             $filtro = [
@@ -48,6 +48,7 @@ class UnidadeMedidaController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', UnidadeMedida::class);
         $this->bc->addItem('Nova');
         $model = new UnidadeMedida();
         return view('unidade-medida.create', ['bc'=>$this->bc, 'model'=>$model]);
@@ -61,6 +62,7 @@ class UnidadeMedidaController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', UnidadeMedida::class);
         $model = new UnidadeMedida($request->all());
         
         if (!$model->validate()) {
@@ -81,6 +83,7 @@ class UnidadeMedidaController extends Controller
     public function show(Request $request, $id)
     {
         $model = UnidadeMedida::findOrFail($id);
+        $this->authorize('view', $model);
         $this->bc->addItem($model->unidademedida);
         $this->bc->header = $model->unidademedida;
         return view('unidade-medida.show', ['bc'=>$this->bc, 'model'=>$model]);
@@ -95,6 +98,7 @@ class UnidadeMedidaController extends Controller
     public function edit($id)
     {
         $model = UnidadeMedida::findOrFail($id);
+        $this->authorize('update', $model);
         $this->bc->addItem($model->unidademedida, url('unidade-medida', $model->codunidademedida));
         $this->bc->header = $model->unidademedida;
         $this->bc->addItem('Alterar');
@@ -111,6 +115,7 @@ class UnidadeMedidaController extends Controller
     public function update(Request $request, $id)
     {
         $model = UnidadeMedida::findOrFail($id);
+        $this->authorize('update', $model);
         $model->fill($request->all());
 
         if (!$model->validate())
@@ -130,43 +135,30 @@ class UnidadeMedidaController extends Controller
      */
     public function destroy($id)
     {
-        try{
-            $class = "\\MGLara\\Models\\{$this->model_class}";
-            $class::find($id)->delete();
-            $ret = new Resultado(true);
+        $model = UnidadeMedida::find($id);
+        $this->authorize('delete', $model);
+        if ($model->ProdutoS->count() > 0) {
+            return ['OK' => false, 'mensagem' => 'Unidade de Medida está sendo utilizada em Produtos!'];
         }
-        catch(\Exception $e){
-            $ret = new Resultado(false, null, $e);
-        }
-        return $ret->response();
+        return ['OK' => $model->delete()];
     }
     
     public function ativar($id) {
-        $class = "\\MGLara\\Models\\{$this->model_class}";
-        $model = $class::findOrFail($id);
-        if (!empty($model->inativo)) {
-            $model->ativar();
-            $ret = new Resultado(true);
-        } else {
-            $ret = new Resultado(false, 'Já está Ativo!');
-        }
-        return $ret->response();
+        $model = UnidadeMedida::find($id);
+        $this->authorize('update', $model);
+        return ['OK' => $model->ativar()];
     }
     
     public function inativar($id) {
-        $class = "\\MGLara\\Models\\{$this->model_class}";
-        $model = $class::findOrFail($id);
-        if (empty($model->inativo)) {
-            $model->inativar();
-            $ret = new Resultado(true);
-        } else {
-            $ret = new Resultado(false, 'Já está inativo!');
-        }
-        return $ret->response();
+        $model = UnidadeMedida::find($id * 200);
+        $this->authorize('update', $model);
+        return ['OK' => $model->inativar()];
     }
         
     
     public function datatable(Request $request) {
+        
+        $this->authorize('list', UnidadeMedida::class);
         
         // Query da Entidade
         $ums = UnidadeMedida::query();
@@ -226,8 +218,10 @@ class UnidadeMedidaController extends Controller
         $columns[4] = 'sigla';
         $columns[5] = 'criacao';
         $columns[6] = 'alteracao';
-        foreach ($request['order'] as $order) {
-            $ums->orderBy($columns[$order['column']], $order['dir']);
+        if (!empty($request['order'])) {
+            foreach ($request['order'] as $order) {
+                $ums->orderBy($columns[$order['column']], $order['dir']);
+            }
         }
         
         // Registros

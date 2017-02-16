@@ -1,5 +1,10 @@
-@extends('layouts.default')
+@extends('layouts.error')
 @section('content')
-<h1 class="header text-danger">Você não tem acesso a esse recurso!</h1>
-<h4><a href="javascript:window.history.back();">Clique para retornar ao Sistema</a></h4>
+
+<div class="m-t-50 text-error text-danger shadow">403</div>
+<h3 class="text-uppercase text-danger font-600">Permissão Negada</h3>
+<p class="m-t-30">
+    Você não tem permissão de acesso à este recurso!
+</p>
+
 @stop

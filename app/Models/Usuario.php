@@ -1249,14 +1249,4 @@ class Usuario extends MGModel implements AuthenticatableContract, CanResetPasswo
             $query->where('usuario', 'ILIKE', "%$str%");
     }
     
-    public function scopeInativo($query)
-    {
-        $query->whereNotNull('inativo');
-    }
-
-    public function scopeAtivo($query)
-    {
-        $query->whereNull('inativo');
-    }    
-    
 }
