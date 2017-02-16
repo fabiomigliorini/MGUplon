@@ -89,6 +89,7 @@ function recarregaDivS(divs, url) {
 
 
 function excluirClick(tag) {
+    
     var url = $(tag).attr('href');
     var pergunta = $(tag).data('pergunta');
     var funcaoAfterDelete = $(tag).data('after-delete');
@@ -100,7 +101,6 @@ function excluirClick(tag) {
       title: pergunta,
       type: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#DD6B55",
       closeOnConfirm: false,
       closeOnCancel: true
     },
@@ -130,10 +130,15 @@ function excluirClick(tag) {
                         var tipo = 'error';
                     }
 
-                    swal(mensagem, descricao, tipo);
-                    if (typeof funcaoExecutar !== 'undefined'){
-                        eval(funcaoExecutar);
-                    }
+                    swal({
+                        title: mensagem,
+                        text: descricao,
+                        type: tipo,
+                    }, function () {
+                        if (typeof funcaoExecutar !== 'undefined') {
+                            eval(funcaoExecutar);
+                        }
+                    });
                     
                     console.log(retorno);
                     
@@ -155,8 +160,6 @@ function inativarClick(tag) {
     
     var url         = $(tag).attr('href');
     var pergunta    = $(tag).data('pergunta');
-    var acao        = $(tag).data('acao');
-    var codigo      = $(tag).data('codigo');
     var funcaoAfterInativar = $(tag).data('after-inativar');
     var funcaoOnError = $(tag).data('on-error');
     
@@ -166,11 +169,11 @@ function inativarClick(tag) {
       title: pergunta,
       type: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#DD6B55",
       closeOnConfirm: false,
       closeOnCancel: true
     },
     function(isConfirm) {
+        console.log(isConfirm);
         if (isConfirm) {
             $.ajax({
                 type: 'PUT',
@@ -197,18 +200,25 @@ function inativarClick(tag) {
                         var tipo = 'error';
                     }
                     
-                    swal(mensagem, descricao, tipo);
-                    if (typeof funcaoExecutar !== 'undefined') {
-                        eval(funcaoExecutar);
-                    }
+                    swal({
+                        title: mensagem,
+                        text: descricao,
+                        type: tipo,
+                    }, function () {
+                        if (typeof funcaoExecutar !== 'undefined') {
+                            eval(funcaoExecutar);
+                        }
+                    });
                     
                     console.log(retorno);
                     
                 },
                 error: function (XHR, textStatus) {
+                    
                     if(XHR.status === 200) {
                         swal('Você não tem acesso a esse recurso!', '', 'error'); 
                     } 
+                    
                 }
             });
         }

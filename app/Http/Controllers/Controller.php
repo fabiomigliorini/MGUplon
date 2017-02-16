@@ -43,49 +43,6 @@ abstract class Controller extends BaseController
     }
     
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        try{
-            $class = "\\MGLara\\Models\\{$this->model_class}";
-            $class::find($id)->delete();
-            $ret = new Resultado(true);
-        }
-        catch(\Exception $e){
-            $ret = new Resultado(false, null, $e);
-        }
-        return $ret->response();
-    }
-    
-    public function ativar($id) {
-        $class = "\\MGLara\\Models\\{$this->model_class}";
-        $model = $class::findOrFail($id);
-        if (!empty($model->inativo)) {
-            $model->ativar();
-            $ret = new Resultado(true);
-        } else {
-            $ret = new Resultado(false, 'Já está Ativo!');
-        }
-        return $ret->response();
-    }
-    
-    public function inativar($id) {
-        $class = "\\MGLara\\Models\\{$this->model_class}";
-        $model = $class::findOrFail($id);
-        if (empty($model->inativo)) {
-            $model->inativar();
-            $ret = new Resultado(true);
-        } else {
-            $ret = new Resultado(false, 'Já está inativo!');
-        }
-        return $ret->response();
-    }
-        
-    /**
      * Decide se vai utilizar filtro Padrao, da Sessao ou do Request
      * 
      * @param Request $request
@@ -96,51 +53,62 @@ abstract class Controller extends BaseController
      */
     public static function filtroEstatico(Request $request, $chave = null, array $filtro_padrao = [], array $campos_data = [])
     {
-        $chave = !empty($chave)?$chave:str_replace('/', '.', $request->route()->getPath());
+        $chave = $this->montaChaveFiltro(null, $chave);
         
         $filtro_request = $request->all();
-        //dd($filtro_request);
 
         // Se veio request GET com filtro
         if (count($filtro_request)) {
-            
-            // Retorno sera o que veio no request
+            $this->setFiltro($filtro_request, null, $chave);
             $retorno = $filtro_request;
-            
-            // Limpa os valores armazenados anteriormente para aquela chave
-            $filtros = $request->session()->get($chave);
-            if (!empty($filtros)) {
-                foreach ($filtros as $filtro => $valor) {
-                    $request->session()->forget("$chave.$filtro");
-                }
-            }
-            
-            // Percorre todos parametros armazenando na sessão, com o prefixo da chave
-            foreach ($filtro_request as $filtro => $valor) {
-                $request->session()->put("$chave.$filtro", $valor);
-            }
-            
         } else {
-            //dd($request->session()->all());
-            // Busca se ja existe filtro na sessao
-            $retorno = $request->session()->get($chave);
-            
-            // Se nao existia, utiliza filtro padrao
-            if (empty($retorno)) {
-                foreach ($filtro_padrao as $filtro => $valor)
-                {
-                    $request->session()->put("$chave.$filtro", $valor);
-                }
-                ///$retorno = $filtro_padrao;
-                $retorno = $request->session()->get($chave);
+            if (!$retorno = $this->getFiltro(null, $chave)) {
+                $retorno = $filtro_padrao;
             }
         }
         
         // Converte as datas
-        $retorno = self::datasParaCarbon($retorno, $campos_data);
+        //$retorno = self::datasParaCarbon($retorno, $campos_data);
         
         return $retorno;
 
+    }
+
+    /**
+     * Monta a chave da sessao para armazenar o filtro
+     * @param string $sufixo Sufixo a ser utilizado na chave da sessao
+     * @param string $chave Chave da sessao a ser utilizada
+     * @return string
+     */
+    public function montaChaveFiltro ($sufixo = null, $chave = null) {
+        $chave = $chave??str_replace('\\', ".", get_class($this));
+        if (!empty($sufixo)) {
+            $chave .= ".$sufixo";
+        }
+        return $chave;
+    }
+
+    /**
+     * Armazena filtro de busca na sessao
+     * @param array $filtros Array com os filtros para gravar na sessao
+     * @param string $sufixo Sufixo a ser utilizado na chave da sessao
+     * @param string $chave Chave da sessao a ser utilizada
+     * @return array
+     */
+    public function setFiltro($filtro, $sufixo = null, $chave = null) {
+        $chave = $this->montaChaveFiltro($sufixo, $chave);
+        return session([$chave => $filtro]);
+    }
+    
+    /**
+     * Recupera filtro de busca armazenado na sessao
+     * @param string $sufixo Sufixo a ser utilizado na chave da sessao
+     * @param string $chave Chave da sessao a ser utilizada
+     * @return array
+     */
+    public function getFiltro($sufixo = null, $chave = null) {
+        $chave = $this->montaChaveFiltro($sufixo, $chave);
+        return session($chave);
     }
     
 }
