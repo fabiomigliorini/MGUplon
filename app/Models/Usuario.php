@@ -306,7 +306,6 @@ class Usuario extends MGModel implements AuthenticatableContract, CanResetPasswo
     
 
     // Tabelas Filhas
-
     public function CestAlteracaoS()
     {
         return $this->hasMany(Cest::class, 'codusuario', 'codusuarioalteracao');
@@ -1142,111 +1141,21 @@ class Usuario extends MGModel implements AuthenticatableContract, CanResetPasswo
         return $this->hasMany(Usuario::class, 'codusuario', 'codusuariocriacao');
     }
     
-    // Métodos
-    public function extractgrupos()
+    public function can($permissao = null, $codfilial = null)
     {
-        $arraygrupos = [];
-        foreach($this->GrupoUsuario as $data) 
-        {
-            $arraygrupos [] = [
-                'filial'=>$data->pivot->codfilial, 
-                'grupo'=>$data->pivot->codgrupousuario
-            ];
+        $query = Permissao::where('permissao', $permissao);
+            
+        $query->join('tblgrupousuariopermissao', 'tblgrupousuariopermissao.codpermissao', '=', 'tblpermissao.codpermissao')
+            ->join('tblgrupousuariousuario', 'tblgrupousuariousuario.codgrupousuario', '=', 'tblgrupousuariopermissao.codgrupousuario')
+            ->where('tblgrupousuariousuario.codusuario', $this->codusuario);
+
+        if (!empty($codfilial)) {
+            $query->where('tblgrupousuariousuario.codfilial', $codfilial);
         }
-        return $arraygrupos;        
-    }
-    
-    public function can($permission = null)
-    {
-        return (!is_null($permission) && $this->checkPermission($permission));
-    }
 
-    public function filiais()
-    {
-        $filiais = $this->GrupoUsuario->load('Filiais')->fetch('filiais')->toArray();
-        return array_map('strtolower', array_unique(array_flatten(array_map(function ($filial) {
-            return array_pluck($filial, 'codfilial');
-        }, $filiais))));
-    }
+        $count = $query->count();
 
-    protected function checkPermission($perm)
-    {
-        $permissions = $this->getAllPermissionsFormAllRoles();      
-        $permissionArray = is_array($perm) ? $perm : [$perm];
-
-        return count(array_intersect($permissions, $permissionArray));
-    }
-    
-    protected function getAllPermissionsFormAllRoles()
-    {
-        $permissions = $this->GrupoUsuario->load('PermissaoS')->fetch('permissao_s')->toArray();
-       
-        return array_map('strtolower', array_unique(array_flatten(array_map(function ($permission) {
-            return array_pluck($permission, 'permissao');
-        }, $permissions))));
-    } 
-
-    static function printers() 
-    {
-        $o = shell_exec("lpstat -d -p");
-        $res = explode("\n", $o);
-        $printers = [];
-        foreach ($res as $r) 
-        {
-            if (strpos($r, "printer") !== FALSE) 
-            {
-                $r = str_replace("printer ", "", $r);
-                $r = explode(" ", $r);
-                $printers[$r[0]] = $r[0];
-            }
-        }
-        
-        return $printers;
-    }    
-    
-    
-    public static function search($parametros)
-    {
-        $query = Usuario::query();
-        
-        if(!empty($parametros['codusuario'])) {
-            $query->where('codusuario', $parametros['codusuario']);
-        }      
-        
-        if(!empty($parametros['usuario'])) {
-            $query->usuario($parametros['usuario']);
-        }        
-        
-        if(!empty($parametros['codfilial'])) {
-            $query->where('codfilial', $parametros['codfilial']);
-        }      
-
-        if(!empty($parametros['codpessoa'])) {
-            $query->where('codpessoa', $parametros['codpessoa']);
-        }      
-        
-        switch (isset($parametros['ativo']) ? $parametros['ativo']:'9') {
-            case 1: //Ativos
-                $query->ativo();
-                break;
-            case 2: //Inativos
-                $query->inativo();
-                break;
-            case 9; //Todos
-            default:
-        }
-        
-        return $query;
-    }
-
-    public function scopeUsuario($query, $usuario)
-    {
-        if (trim($usuario) === '')
-            return;
-        
-        $usuario = explode(' ', removeAcentos($usuario));
-        foreach ($usuario as $str)
-            $query->where('usuario', 'ILIKE', "%$str%");
+        return $count > 0;
     }
     
 }
