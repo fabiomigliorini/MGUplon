@@ -126,25 +126,71 @@ class MarcaController extends Controller
         return json_encode($ret);
     } 
     
-    public function listagemJson(Request $request) 
+    public function select2(Request $request)
     {
-        if($request->get('q')) 
-        {
-            $parametros['marca'] = $request->get('q');
-            $parametros['ativo'] = $request->get('ativo');
-            $marcas = Marca::search($parametros)
-                    ->select('codmarca as id', 'marca')
-                    ->take(10)
-                    ->get();
+        // Parametros que o Selec2 envia
+        $params = $request->get('params');
+        
+        // Quantidade de registros por pagina
+        $registros_por_pagina = 100;
+        
+        // Se veio termo de busca
+        if(!empty($params['term'])) {
+
+            // Numero da Pagina
+            $params['page'] = $params['page']??1;
             
-            return response()->json(['items' => $marcas]);       
+            // Monta Query
+            $qry = Marca::query();
             
-        } elseif($request->get('id')) 
-        {
-            $marca = Marca::find($request->get('id'));
-            return response()->json($marca);
+            // Condicoes de busca
+            foreach (explode(' ', $params['term']) as $palavra) {
+                if (!empty($palavra)) {
+                    $qry->whereRaw("(tblmarca.marca ilike '%{$palavra}%')");
+                }
+            }
+            if ($request->get('somenteAtivos') == 'true') {
+                $qry->ativo();
+            }
+            
+            // Total de registros
+            $total = $qry->count();
+            
+            // Ordenacao e dados para retornar
+            $qry->select('codmarca', 'marca');
+            $qry->orderBy('marca', 'ASC');
+            $qry->limit($registros_por_pagina);
+            $qry->offSet($registros_por_pagina * ($params['page']-1));
+            
+            // Percorre registros
+            $results = [];
+            foreach ($qry->get() as $item) {
+                $results[] = [
+                    'id' => $item->codmarca,
+                    'marca' => $item->marca,
+                ];
+            }
+            
+            // Monta Retorno
+            return [
+                'results' => $results,
+                'params' => $params,
+                'pagination' =>  [
+                    'more' => ($total > $params['page'] * $registros_por_pagina)?true:false,
+                ]
+            ];
+
+        } elseif($request->get('id')) {
+            
+            // Monta Retorno
+            $item = Marca::findOrFail($request->get('id'));
+            return [
+                'id' => $item->codmarca,
+                'marca' => $item->marca,
+            ];
         }
-    } 
+    }
+
     
     public function buscaCodproduto($id)
     {

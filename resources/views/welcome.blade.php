@@ -1,16 +1,13 @@
 @extends('layouts.default')
 @section('content')
+<?php
+use MGLara\Library\Breadcrumb\Breadcrumb;
+$bc = new Breadcrumb('Dashboard');
+$bc->addItem('Dashboard', url(''));
+?>
 <div class="row">
-    <div class="col-xs-12">
-        <div class="page-title-box">
-            <h4 class="page-title">Dashboard</h4>
-            <ol class="breadcrumb p-0">
-                <li class="active">
-                    Dashboard
-                </li>
-            </ol>
-            <div class="clearfix"></div>
-        </div>
+    <div class="col-xs-6">
+        <!-- {!! Form::select2Marca('codmarca', 1, ['class' => 'form-control', 'id'=>'codmarca', 'placeholder' => 'Pessoa', 'ativo' => 9]) !!} -->
     </div>
 </div>
 @section('inscript')

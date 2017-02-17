@@ -42,72 +42,82 @@ END;
 Form::macro('select2Marca', function($name, $value = null, $options = [])
 {
 
-    if (empty($options['id']))
-        $options['id'] = $name;
-
-    if (empty($options['placeholder']))
-        $options['placeholder'] = 'Marca...';
-
-    if (empty($options['allowClear']))
-        $options['allowClear'] = true;
-    $options['allowClear'] = ($options['allowClear'])?'true':'false';
-
-    if (empty($options['closeOnSelect']))
-        $options['closeOnSelect'] = true;
-    $options['closeOnSelect'] = ($options['closeOnSelect'])?'true':'false';
-
-    if (empty($options['ativo']))
-        $options['ativo'] = 1;
+    $options['id'] = $options['id']??$name;
+    $id = $options['id'];
+    
+    $placeholder = $options['placeholder']??'Marca';
+    
+    $minimumInputLength = $options['minimumInputLength']??1;
+    
+    $allowClear = ($options['allowClear']??true)?'true':'false';
+    
+    $closeOnSelect = ($options['closeOnSelect']??true)?'true':'false';
+    
+    $cache = ($options['cache']??true)?'true':'false';
+    
+    $somenteAtivos = ($options['somenteAtivos']??true)?'true':'false';
 
     $script = <<< END
 
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $('#{$options['id']}').select2({
-                    placeholder: '{$options['placeholder']}',
-                    minimumInputLength: 1,
-                    allowClear: {$options['allowClear']},
-                    closeOnSelect: {$options['closeOnSelect']},
-
-                    formatResult: function(item) {
-                        var markup = "<div class='row-fluid'>";
-                        markup    += item.marca;
-                        markup    += "</div>";
-                        return markup;
-                    },
-                    formatSelection: function(item) {
-                        return item.marca;
-                    },
-                    ajax:{
-                        url: baseUrl + "/marca/select2",
-                        dataType: 'json',
-                        quietMillis: 500,
-                        data: function(term,page) {
-                        return {
-                            q: term.term,
-                            ativo: {$options['ativo']}
-                        };
-                    },
-                    results: function(data,page) {
-                        var more = (page * 20) < data.total;
-                        return {results: data.items};
-                    }},
-                    initSelection: function (element, callback) {
-                        $.ajax({
-                          type: "GET",
-                          url: baseUrl + "/marca/select2",
-                          data: "id="+$('#{$options['id']}').val(),
-                          dataType: "json",
-                          success: function(result) { callback(result); }
-                          });
-                    },
-                    width: 'resolve'
+    <script type="text/javascript">
+        
+    $(document).ready(function() {
+        
+        $('#{$id}').select2({
+        
+            placeholder: '{$placeholder}',
+            minimumInputLength: {$minimumInputLength},
+            allowClear: {$allowClear},
+            closeOnSelect: {$closeOnSelect},
+            cache: {$cache},
+            
+            escapeMarkup: function (markup) { return markup; },
+            
+            ajax:{
+                url:baseUrl+'/marca/select2',
+                delay: 300,
+                dataType:'json',
+                data: function (params) {
+                    return {
+                        params: params,
+                        somenteAtivos: {$somenteAtivos},
+                    };
+                },
+            },
+            
+            initSelection:function (element, callback) {
+                console.log('entrou');
+                $.ajax({
+                    type: "GET",
+                    url: baseUrl+"/marca/select2",
+                    data: "id="+$('#{$id}').val(),
+                    dataType: "json",
+                    success: function(result) { 
+                        callback(result); 
+                    }
                 });
-            });
-        </script>
+            },
+                    
+            templateResult: function (repo) {
+                if (repo.loading) return repo.text;
+                var markup = repo.marca;
+                return markup; 
+            },
+                    
+            templateSelection: function (repo) {
+                return repo.marca;
+            },
+                    
+        });
+                    
+    });
+
+    </script>
 END;
 
-    $campo = Form::text($name, $value, $options);
+    $value_form = Form::getValueAttribute($name)??$value;
+    $value_form = empty($value_form)?$value:$value_form;
+    $campo = Form::select($name, [$value_form => ' ... Carregando ... '], $value, $options);
 
     return $campo . $script;
 });

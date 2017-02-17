@@ -1,6 +1,6 @@
 @extends('layouts.default')
 @section('content')
-<div class="col-sm-7 col-xs-12">
+<div class="col-xs-12">
     <div class="card">
         <h3 class="card-header">
             {{ $model->usuario }}
