@@ -35,10 +35,6 @@ class UsuarioController extends Controller
             ];
         }
         return view('usuario.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
-        $filtro = $this->getFiltro();
-        $parametros = self::filtroEstatico($request, 'usuario.index', ['ativo' => 1]);
-        $model = Usuario::search($parametros)->orderBy('usuario', 'ASC')->paginate(20);
-        return view('usuario.index', compact('model'));        
     }
 
     public function create() {
@@ -179,6 +175,14 @@ class UsuarioController extends Controller
         
         // Query da Entidade
         $qry = Usuario::query();
+        $qry->select([
+            'tblusuario.codusuario',
+            'tblusuario.inativo', 
+            'tblusuario.usuario', 
+            'tblpessoa.pessoa', 
+            'tblfilial.filial']);
+        $qry->leftJoin('tblpessoa', 'tblpessoa.codpessoa', '=', 'tblusuario.codpessoa');
+        $qry->leftJoin('tblfilial', 'tblfilial.codfilial', '=', 'tblusuario.codfilial');
 
         $this->setFiltro($request['filtros']);
         
@@ -186,19 +190,23 @@ class UsuarioController extends Controller
         
         // Filtros
         if (!empty($request['filtros']['codusuario'])) {
-            $qry->where('codusuario', '=', $request['filtros']['codusuario']);
+            $qry->where('tblusuario.codusuario', '=', $request['filtros']['codusuario']);
         }
         
         if (!empty($request['filtros']['usuario'])) {
             foreach(explode(' ', $request['filtros']['usuario']) as $palavra) {
                 if (!empty($palavra)) {
-                    $qry->where('usuario', 'ilike', "%$palavra%");
+                    $qry->where('tblusuario.usuario', 'ilike', "%$palavra%");
                 }
             }
         }
         
         if (!empty($request['filtros']['codfilial'])) {
-            $qry->where('codusuario', '=', $request['filtros']['codfilial']);
+            $qry->where('tblusuario.codfilial', '=', $request['filtros']['codfilial']);
+        }
+        
+        if (!empty($request['filtros']['codpessoa'])) {
+            $qry->where('tblusuario.codpessoa', '=', $request['filtros']['codpessoa']);
         }
         
         // Registros
@@ -224,13 +232,12 @@ class UsuarioController extends Controller
         $qry->limit($request['length']);
         
         // Ordenacao
-        $columns[0] = 'url';
-        $columns[1] = 'inativo';
-        $columns[2] = 'codusuario';
-        $columns[3] = 'usuario';
-        $columns[4] = 'codfilial';
-        $columns[5] = 'criacao';
-        $columns[6] = 'alteracao';
+        $columns[0] = 'tblusuario.codusuario';
+        $columns[1] = 'tblusuario.inativo';
+        $columns[2] = 'tblusuario.codusuario';
+        $columns[3] = 'tblusuario.usuario';
+        $columns[4] = 'tblpessoa.pessoa';
+        $columns[5] = 'tblfilial.filial';
         if (!empty($request['order'])) {
             foreach ($request['order'] as $order) {
                 $qry->orderBy($columns[$order['column']], $order['dir']);
@@ -246,9 +253,8 @@ class UsuarioController extends Controller
                 formataData($reg->inativo, 'C'),
                 formataCodigo($reg->codusuario),
                 $reg->usuario,
-                $reg->codfilial,
-                formataData($reg->criacao, 'C'),
-                formataData($reg->alteracao, 'C'),
+                $reg->pessoa,
+                $reg->filial,
             ];
         }
         

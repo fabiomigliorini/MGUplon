@@ -110,11 +110,11 @@ abstract class MGModel extends Model {
     }
     
     public function scopeAtivo($query) {
-        $query->whereNull('inativo');
+        $query->whereNull("{$this->table}.inativo");
     }
     
     public function scopeInativo($query) {
-        $query->whereNotNull('inativo');
+        $query->whereNotNull("{$this->table}.inativo");
     }
     
     public function ativar() {

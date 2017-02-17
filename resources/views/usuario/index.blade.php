@@ -31,7 +31,7 @@
                         {!! Form::select2Filial('codfilial', null, ['class'=> 'form-control', 'id'=>'codfilial']) !!}
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-6">
                     <div class="form-group">
                         <label for="codpessoa" class="control-label">Pessoa</label>
                         {!! Form::select2Pessoa('codpessoa', null, ['class'=> 'form-control', 'id'=>'codpessoa']) !!}
@@ -44,14 +44,14 @@
   </div>
 </div>
 
-<div class="card-box table-responsive">
-
+<div class='card-box table-responsive'>
+  
     <div class="btn-group pull-right" role="group" aria-label="Controles">
         <a class="btn btn-secondary" href="{{ url("usuario/create") }}"><i class="fa fa-plus"></i></a> 
         <a class="btn btn-secondary" href="#collapsePesquisa" data-toggle="collapse" aria-expanded="false" aria-controls="collapsePesquisa"><i class='fa fa-search'></i></a>
     </div>    
     
-    @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Usuario', 'Filial', 'Criação', 'Alteração']])
+    @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Usuario', 'Pessoa', 'Filial']])
     
 </div>
 
@@ -59,7 +59,7 @@
 
 @include('layouts.includes.datatable.assets')
 
-@include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('usuario/datatable'), 'order' => 3, 'order_dir' => 'ASC', 'filtros' => ['codusuario', 'usuario', 'filial', 'pessoa', 'inativo'] ])
+@include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('usuario/datatable'), 'order' => 3, 'order_dir' => 'ASC', 'filtros' => ['codusuario', 'usuario', 'codfilial', 'codpessoa', 'inativo'] ])
 
 <script type="text/javascript">
     $(document).ready(function () {

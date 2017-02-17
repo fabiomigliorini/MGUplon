@@ -399,76 +399,7 @@ class Pessoa extends MGModel
 
         return $query;
     }
-
-    public static function search($parametros)
-    {
-
-        $query = Pessoa::query();
-
-        if (isset($parametros['busca']))
-        {
-            if (strstr($parametros['busca'], '@'))
-                $parametros['email'] = $parametros['busca'];
-            elseif ($parametros['busca'] == numeroLimpo($parametros['busca']))
-                $parametros['cnpj'] = $parametros['busca'];
-            else
-                $parametros['pessoa'] = $parametros['busca'];
-        }
-
-        if (!empty($parametros['codpessoa']))
-            $query->id($parametros['codpessoa']);
-
-        if (!empty($parametros['codgrupocliente']))
-            $query->where('codgrupocliente', $parametros['codgrupocliente']);
-
-        if (!empty($parametros['pessoa']))
-            $query->pessoa($parametros['pessoa']);
-
-        if (!empty($parametros['cnpj']))
-            $query->where(DB::raw("LPAD(CAST(cnpj as VARCHAR), 14, '0')"), 'ILIKE', "%{$parametros['cnpj']}%");
-
-        if (!empty($parametros['telefone']))
-            $query->where(function ($q1) use ($parametros) {
-                $parametros['telefone'] = numeroLimpo($parametros['telefone']);
-                $q1->orWhere(DB::raw("regexp_replace(telefone1, '[^0-9]+', '', 'g')"), 'ILIKE', "%{$parametros['telefone']}%");
-                $q1->orWhere(DB::raw("regexp_replace(telefone2, '[^0-9]+', '', 'g')"), 'ILIKE', "%{$parametros['telefone']}%");
-                $q1->orWhere(DB::raw("regexp_replace(telefone3, '[^0-9]+', '', 'g')"), 'ILIKE', "%{$parametros['telefone']}%");
-
-            });
-
-        if (!empty($parametros['email']))
-            $query->where(function ($q1) use ($parametros) {
-                $q1->orWhere('email', 'ILIKE', "%{$parametros['email']}%");
-                $q1->orWhere('emailnfe', 'ILIKE', "%{$parametros['email']}%");
-                $q1->orWhere('emailcobranca', 'ILIKE', "%{$parametros['email']}%");
-
-            });
-
-        if (!empty($parametros['codcidade']))
-            $query->where(function ($q1) use ($parametros) {
-                $q1->orWhere('codcidade', $parametros['codcidade']);
-                $q1->orWhere('codcidadecobranca', $parametros['codcidade']);
-
-            });
-
-        switch (isset($parametros['ativo'])?$parametros['ativo']:'9')
-        {
-            case 1: //Ativos
-                $query->ativo();
-                break;
-            case 2: //Inativos
-                $query->inativo();
-                break;
-            case 9; //Todos
-            default:
-        }
-
-        if (!empty($parametros['select']))
-            $query->select($parametros['select']);
-
-        return $query;
-    }
-
+    
     public function scopeId($query, $codpessoa)
     {
         if (trim($codpessoa) === '')
