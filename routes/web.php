@@ -71,9 +71,10 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('usuario/detach-permissao', 'UsuarioController@detachPermissao');
 
     /* Grupos de usuários */
+    Route::put('grupo-usuario/{id}/ativar', 'GrupoUsuarioController@ativar');
+    Route::put('grupo-usuario/{id}/inativar', 'GrupoUsuarioController@inativar');
+    Route::get('grupo-usuario/datatable', 'GrupoUsuarioController@datatable');
     Route::resource('grupo-usuario', 'GrupoUsuarioController');
-    Route::post('grupo-usuario/attach-permissao', 'GrupoUsuarioController@attachPermissao');
-    Route::post('grupo-usuario/detach-permissao', 'GrupoUsuarioController@detachPermissao');
 
     /* Pessoa */
     Route::get('pessoa/select2', 'PessoaController@select2');

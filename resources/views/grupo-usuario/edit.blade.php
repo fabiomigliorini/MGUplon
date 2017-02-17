@@ -1,29 +1,16 @@
 @extends('layouts.default')
 @section('content')
-<ol class="breadcrumb header">
-{!! 
-    titulo(
-        $model->codgrupousuario,
-        [
-            url("grupo-usuario/$model->codgrupousuario") => $model->grupousuario,
-            'Alterar',
-        ],
-        $model->inativo
-    ) 
-!!}  
-    <li class='active'>
-        <small>
-            <a title="Novo Grupo" href="{{ url('grupo-usuario/create') }}"><i class="glyphicon glyphicon-plus"></i></a>
-            &nbsp;
-            <a title="Detalhes" href="{{ url("grupo-usuario/$model->codgrupousuario") }}"><i class="glyphicon glyphicon-eye-open"></i></a>
-        </small>
-    </li>   
-
-</ol>
-<hr>
-<br>
-{!! Form::model($model, ['method' => 'PATCH', 'id'=>'form-grupo-usuario', 'class' => 'form-horizontal', 'action' => ['GrupoUsuarioController@update', $model->codgrupousuario] ]) !!}
-    @include('errors.form_error')
-    @include('grupo-usuario.form', ['submitTextButton' => 'Salvar'])
-{!! Form::close() !!}
+<div class="col-sm-5 col-xs-12">
+    <div class="card">
+        <h3 class="card-header">
+            {{ $model->grupousuario }}
+        </h3>
+        <div class="card-block">
+            {!! Form::model($model, ['method' => 'PATCH', 'id' => 'form-grupo-usuario', 'action' => ['GrupoUsuarioController@update', $model->codgrupousuario] ]) !!}
+                @include('errors.form_error')
+                @include('grupo-usuario.form')
+            {!! Form::close() !!}
+        </div>
+    </div>
+</div>
 @stop

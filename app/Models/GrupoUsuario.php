@@ -11,6 +11,7 @@ namespace MGLara\Models;
  * @property  bigint                         $codusuarioalteracao                
  * @property  timestamp                      $criacao                            
  * @property  bigint                         $codusuariocriacao                  
+ * @property  timestamp                      $inativo                            
  *
  * Chaves Estrangeiras
  * @property  Usuario                        $UsuarioAlteracao
@@ -29,10 +30,12 @@ class GrupoUsuario extends MGModel
     protected $fillable = [
         'grupousuario',
         'observacoes',
+        'inativo',
     ];
     protected $dates = [
         'alteracao',
         'criacao',
+        'inativo',
     ];
 
 
@@ -80,54 +83,5 @@ class GrupoUsuario extends MGModel
         
         return parent::validate();
     }
-    
-    public static function search($parametros)
-    {
-        $query = GrupoUsuario::query();
-        
-        if (!empty($parametros['codgrupousuario'])) {
-            $query->where('codgrupousuario', $parametros['codgrupousuario']);
-        }
 
-        if (!empty($parametros['grupousuario'])) {
-            $query->grupousuario($parametros['grupousuario']);
-        }
-
-        switch (isset($parametros['ativo'])?$parametros['ativo']:'9')
-        {
-            case 1: //Ativos
-                $query->ativo();
-                break;
-            case 2: //Inativos
-                $query->inativo();
-                break;
-            case 9; //Todos
-            default:
-        }
-
-        return $query;
-    }
-    
-    
-    public function scopeGrupoUsuario($query, $grupousuario)
-    {
-        if (trim($grupousuario) === '')
-            return;
-        
-        $grupousuario = explode(' ', removeAcentos($grupousuario));
-        foreach ($grupousuario as $str) {
-            $query->where('grupousuario', 'ILIKE', "%$str%");
-        }
-    }
-    
-    public function scopeInativo($query)
-    {
-        $query->whereNotNull('inativo');
-    }
-
-    public function scopeAtivo($query)
-    {
-        $query->whereNull('inativo');
-    }
-         
 }

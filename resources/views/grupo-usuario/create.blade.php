@@ -1,20 +1,16 @@
 @extends('layouts.default')
 @section('content')
-<ol class="breadcrumb header">
-{!! 
-    titulo(
-        null,
-        [
-            url('grupo-usuario') => 'Grupos de Usuários',
-            'Novo grupo'
-        ],
-        $model->inativo
-    ) 
-!!}     
-</ol>
-<hr>
-{!! Form::open(['route'=>'grupo-usuario.store', 'method' => 'POST', 'class' => 'form-horizontal', 'id'=>'form-grupo-usuario']) !!}
-    @include('errors.form_error')
-    @include('grupo-usuario.form', ['submitTextButton' => 'Salvar'])
- {!! Form::close() !!}    
+<div class="col-sm-5 col-xs-12">
+    <div class="card">
+        <h3 class="card-header">
+            Novo Grupo de Usuário
+        </h3>
+        <div class="card-block">
+            {!! Form::model($model, ['method' => 'POST', 'class' => 'form-horizontal', 'id' => 'form-grupo-usuario', 'route' => 'grupo-usuario.store']) !!}
+                @include('errors.form_error')
+                @include('grupo-usuario.form')
+            {!! Form::close() !!}   
+        </div>
+    </div>
+</div>
 @stop
