@@ -11,7 +11,7 @@
                 @else
                     <a class="btn btn-secondary" href="{{ url("grupo-usuario/$model->codgrupousuario/ativar") }}" data-inativar data-pergunta="Tem certeza que deseja ativar '{{ $model->grupousuario }}'?" data-after="recarregaDiv('main-container')"><i class="fa fa-circle-o"></i></a>
                 @endif                
-                <a class="btn btn-secondary" href="{{ url("grupo-usuario/$model->codgrupousuario") }}" data-excluir data-pergunta="Tem certeza que deseja excluir '{{ $model->grupousuario }}'?" data-after-delete="location.replace('{{ url('grupo-usuario') }}');"><i class="fa fa-trash"></i></a>                
+                <a class="btn btn-secondary" href="{{ url("grupo-usuario/$model->codgrupousuario") }}" data-excluir data-pergunta="Tem certeza que deseja excluir '{{ $model->grupousuario }}'?" data-after="location.replace('{{ url('grupo-usuario') }}');"><i class="fa fa-trash"></i></a>                
             </div>    
         </h3>
         <div class="card-block">

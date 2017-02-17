@@ -1,20 +1,16 @@
 @extends('layouts.default')
 @section('content')
-<ol class="breadcrumb header">
-{!! 
-    titulo(
-        null,
-        [
-            url('usuario') => 'Usuários',
-            'Novo usuário'
-        ],
-        $model->inativo
-    ) 
-!!} 
-</ol>
-<hr>
-{!! Form::open(['route'=>'usuario.store', 'method' => 'POST', 'class' => 'form-horizontal', 'id'=>'form-usuario']) !!}
-    @include('errors.form_error')
-    @include('usuario.form', ['submitTextButton' => 'Salvar'])
- {!! Form::close() !!}    
+<div class="col-sm-7 col-xs-12">
+    <div class="card">
+        <h3 class="card-header">
+            Novo Usuário
+        </h3>
+        <div class="card-block">
+            {!! Form::model($model, ['method' => 'POST', 'class' => 'form-horizontal', 'id' => 'form-usuario', 'route' => 'usuario.store']) !!}
+                @include('errors.form_error')
+                @include('usuario.form')
+            {!! Form::close() !!}   
+        </div>
+    </div>
+</div>
 @stop

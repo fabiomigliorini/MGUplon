@@ -42,65 +42,57 @@ class UsuarioController extends Controller
     }
 
     public function create() {
+        //$this->authorize('create', GrupoUsuario::class);
         $model = new Usuario();
-        return view('usuario.create', compact('model'));
+        $this->bc->addItem('Novo');
+        return view('usuario.create', ['bc'=>$this->bc, 'model'=>$model]);
     }
 
     public function store(Request $request) {
+        //$this->authorize('create', GrupoUsuario::class);
         $model = new Usuario($request->all());
         if (!$model->validate())
             $this->throwValidationException($request, $model->_validator);
         $model->senha = bcrypt($model->senha);
         $model->save();
-        Session::flash('flash_success', 'Usuário Criado!');
+        Session::flash('flash_create', 'Usuário Criado!');
         return redirect("usuario/$model->codusuario");  
     }
 
-    public function edit($codusuario) {
-        $model = Usuario::findOrFail($codusuario);
-                
-        $usuario = Usuario::find(Auth::user()->codusuario);
-        $grupos = $usuario->extractgrupos();
-        $admin = false;
-        foreach ($grupos as $grupo)
-        {
-            if ($grupo['grupo'] == '1') {
-                $admin = true;
-            }
-        }
-
-        if($admin) { 
-            return view('usuario.edit',  compact('model'));
-        } elseif(!$admin && $model->codusuario == $usuario->codusuario){
-            return view('usuario.edit',  compact('model'));
-        } else {
-            return view('errors.403');
-        }        
+    public function edit($id) {
+        $model = Usuario::findOrFail($id);
+        //$this->authorize('update', $model);
+        $this->bc->addItem($model->usuario, url('usuario', $model->codusuario));
+        $this->bc->header = $model->usuario;
+        $this->bc->addItem('Alterar');        
+        return view('usuario.edit',  ['bc'=>$this->bc, 'model'=>$model]);                
     }
 
-    public function update($codusuario, Request $request) {
-        $model = Usuario::findOrFail($codusuario);
+    public function update(Request $request, $id) {
+        $model = Usuario::findOrFail($id);
+        //$this->authorize('update', $model);
         $model->fill($request->all());
-        if (!$model->validate()) {
-            $this->throwValidationException($request, $model->_validator);
-        }
-        if(empty($model->senha)) {
+        if(is_null($request->get('senha'))) {
             unset($model->senha);
-        }
-        
-        if(isset($model->senha)) {
+        } else {
             $model->senha = bcrypt($model->senha);
         }
 
+        if (!$model->validate()) {
+            $this->throwValidationException($request, $model->_validator);
+        }
+
         $model->save();        
-        Session::flash('flash_success', "Usuário '{$model->usuario}' Atualizado!");
+        Session::flash('flash_update', "Usuário '{$model->usuario}' Atualizado!");
         return redirect("usuario/$model->codusuario"); 
     }
     
-    public function show($codusuario) {
-        $model = Usuario::find($codusuario);
-        $usuario = Usuario::find(Auth::user()->codusuario);
-        return view('usuario.show', compact('model', 'usuario'));
+    public function show($id) {
+        $model = Usuario::findOrFail($id);
+        //$this->authorize('view', $model);
+        $this->bc->addItem($model->usuario);
+        $this->bc->header = $model->usuario;        
+        return view('usuario.show', ['bc'=>$this->bc, 'model'=>$model]);
     }
 
     /**
@@ -111,33 +103,27 @@ class UsuarioController extends Controller
      */
     public function destroy($id)
     {
-        try{
-            Usuario::find($id)->delete();
-            $ret = ['resultado' => true, 'mensagem' => 'Usuário excluído com sucesso!'];
+        $model = Usuario::findOrFail($id);
+        //$this->authorize('delete', $model);
+        /*
+        if ($model->UsuarioS->count() > 0) {
+            return ['OK' => false, 'mensagem' => 'Grupo de Usuário está sendo utilizada em Usuários!'];
         }
-        catch(\Exception $e){
-            $ret = ['resultado' => false, 'mensagem' => 'Erro ao excluir usuário!', 'exception' => $e];
-        }
-        return json_encode($ret);
+        */
+        return ['OK' => $model->delete()];
     }
     
-    public function inativar(Request $request)
-    {
-        $model = Usuario::find($request->get('codusuario'));
-        if($request->get('acao') == 'ativar')
-        {
-            $model->inativo = null;
-            $msg = "Usuário '{$model->usuario}' Reativado!";
-        }
-        else
-        {
-            $model->inativo = Carbon::now();
-            $msg = "Usuário '{$model->usuario}' Inativado!";
-        }
-        
-        $model->save();
-        Session::flash('flash_success', $msg);
-    }    
+    public function ativar($id) {
+        $model = Usuario::findOrFail($id);
+        //$this->authorize('update', $model);
+        return ['OK' => $model->ativar()];
+    }
+    
+    public function inativar($id) {
+        $model = Usuario::findOrFail($id);
+        //$this->authorize('update', $model);
+        return ['OK' => $model->inativar()];
+    }
     
     public function permissao(Request $request, $codusuario) {
         $model = Usuario::find($codusuario);
@@ -161,17 +147,6 @@ class UsuarioController extends Controller
             ->where( 'codfilial', '=', $request->codfilial )
             ->delete();        
     }
-
-//    public function listagemJson(Request $request){
-//        if($request->get('q')) {
-//            $marcas = Marca::marca($request->get('q'))->select('codmarca as id', 'marca')->take(10)->get();
-//            return response()->json(['items' => $marcas]);       
-//        } elseif($request->get('id')) {
-//            $marca = Marca::find($request->get('id'));
-//            return response()->json($marca);
-//        }
-//    }
-
 
     public function datatable(Request $request) {
         
@@ -246,7 +221,7 @@ class UsuarioController extends Controller
                 formataData($reg->inativo, 'C'),
                 formataCodigo($reg->codusuario),
                 $reg->usuario,
-                $reg->codfilial,
+                $reg->Filial['filial'],
                 formataData($reg->criacao, 'C'),
                 formataData($reg->alteracao, 'C'),
             ];

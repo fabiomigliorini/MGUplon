@@ -49,8 +49,8 @@ class GrupoUsuarioController extends Controller
         return redirect("grupo-usuario/$model->codgrupousuario");  
     }
 
-    public function edit($codgrupousuario) {
-        $model = GrupoUsuario::findOrFail($codgrupousuario);
+    public function edit($id) {
+        $model = GrupoUsuario::findOrFail($id);
         //$this->authorize('update', $model);
         $this->bc->addItem($model->grupousuario, url('grupo-usuario', $model->codgrupousuario));
         $this->bc->header = $model->grupousuario;

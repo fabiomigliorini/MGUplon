@@ -64,11 +64,11 @@ Route::group(['middleware' => 'auth'], function() {
     Route::put('usuario/{id}/ativar', 'UsuarioController@ativar');
     Route::put('usuario/{id}/inativar', 'UsuarioController@inativar');
     Route::get('usuario/datatable', 'UsuarioController@datatable');
-    Route::resource('usuario', 'UsuarioController');
     Route::post('usuario/inativar', 'UsuarioController@inativar');
-    Route::resource('usuario/{codusuario}/permissao', 'UsuarioController@permissao');
     Route::post('usuario/attach-permissao', 'UsuarioController@attachPermissao');
     Route::post('usuario/detach-permissao', 'UsuarioController@detachPermissao');
+    Route::resource('usuario/{codusuario}/permissao', 'UsuarioController@permissao');
+    Route::resource('usuario', 'UsuarioController');
 
     /* Grupos de usuários */
     Route::put('grupo-usuario/{id}/ativar', 'GrupoUsuarioController@ativar');
