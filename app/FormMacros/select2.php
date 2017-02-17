@@ -79,12 +79,12 @@ Form::macro('select2Marca', function($name, $value = null, $options = [])
                         return item.marca;
                     },
                     ajax:{
-                        url: baseUrl + "/marca/listagem-json",
+                        url: baseUrl + "/marca/select2",
                         dataType: 'json',
                         quietMillis: 500,
                         data: function(term,page) {
                         return {
-                            q: term,
+                            q: term.term,
                             ativo: {$options['ativo']}
                         };
                     },
@@ -95,7 +95,7 @@ Form::macro('select2Marca', function($name, $value = null, $options = [])
                     initSelection: function (element, callback) {
                         $.ajax({
                           type: "GET",
-                          url: baseUrl + "/marca/listagem-json",
+                          url: baseUrl + "/marca/select2",
                           data: "id="+$('#{$options['id']}').val(),
                           dataType: "json",
                           success: function(result) { callback(result); }
@@ -184,12 +184,12 @@ Form::macro('select2ProdutoVariacao', function($name, $value = null, $options = 
                         return item.variacao;
                     },
                     ajax:{
-                        url: baseUrl + "/produto-variacao/listagem-json",
+                        url: baseUrl + "/produto-variacao/select2",
                         dataType: 'json',
                         quietMillis: 500,
                         data: function(term,page) {
                         return {
-                            q: term,
+                            q: term.term,
                             codproduto: $('#{$options['codproduto']}').val()
                         };
                     },
@@ -200,7 +200,7 @@ Form::macro('select2ProdutoVariacao', function($name, $value = null, $options = 
                     initSelection: function (element, callback) {
                         $.ajax({
                           type: "GET",
-                          url: baseUrl + "/produto-variacao/listagem-json",
+                          url: baseUrl + "/produto-variacao/select2",
                           data: "id="+$('#{$options['id']}').val(),
                           dataType: "json",
                           success: function(result) { callback(result); }
@@ -273,12 +273,12 @@ Form::macro('select2FamiliaProduto', function($name, $value = null, $options = [
                         return item.familiaproduto;
                     },
                     ajax:{
-                        url:baseUrl+"/familia-produto/listagem-json",
+                        url:baseUrl+"/familia-produto/select2",
                         dataType:'json',
                         quietMillis:500,
                         data:function(term, codsecaoproduto, page) {
                             return {
-                                q: term,
+                                q: term.term,
                                 ativo: {$options['ativo']},
                                 codsecaoproduto: $('#codsecaoproduto').val()
                             };
@@ -291,7 +291,7 @@ Form::macro('select2FamiliaProduto', function($name, $value = null, $options = [
                     initSelection:function (element, callback) {
                         $.ajax({
                             type: "GET",
-                            url: baseUrl+"/familia-produto/listagem-json",
+                            url: baseUrl+"/familia-produto/select2",
                             data: "id="+$('#{$options['id']}').val(),
                             dataType: "json",
                             success: function(result) { callback(result); }
@@ -358,12 +358,12 @@ Form::macro('select2GrupoProduto', function($name, $value = null, $options = [])
                         return item.grupoproduto;
                     },
                     ajax:{
-                        url:baseUrl+"/grupo-produto/listagem-json",
+                        url:baseUrl+"/grupo-produto/select2",
                         dataType:'json',
                         quietMillis:500,
                         data:function(term, codfamiliaproduto, page) {
                             return {
-                                q: term,
+                                q: term.term,
                                 ativo: {$options['ativo']},
                                 codfamiliaproduto: $('#codfamiliaproduto').val()
                             };
@@ -376,7 +376,7 @@ Form::macro('select2GrupoProduto', function($name, $value = null, $options = [])
                     initSelection:function (element, callback) {
                         $.ajax({
                             type: "GET",
-                            url: baseUrl+"/grupo-produto/listagem-json",
+                            url: baseUrl+"/grupo-produto/select2",
                             data: "id="+$('#{$options['id']}').val(),
                             dataType: "json",
                             success: function(result) { callback(result); }
@@ -444,12 +444,12 @@ Form::macro('select2SubGrupoProduto', function($name, $value = null, $options = 
                         return item.subgrupoproduto;
                     },
                     ajax:{
-                        url:baseUrl+"/sub-grupo-produto/listagem-json",
+                        url:baseUrl+"/sub-grupo-produto/select2",
                         dataType:'json',
                         quietMillis:500,
                         data:function(term, codgrupoproduto, page) {
                             return {
-                                q: term,
+                                q: term.term,
                                 ativo: {$options['ativo']},
                                 codgrupoproduto: $('#codgrupoproduto').val()
                             };
@@ -462,7 +462,7 @@ Form::macro('select2SubGrupoProduto', function($name, $value = null, $options = 
                     initSelection:function (element, callback) {
                         $.ajax({
                             type: "GET",
-                            url: baseUrl+"/sub-grupo-produto/listagem-json",
+                            url: baseUrl+"/sub-grupo-produto/select2",
                             data: "id="+$('#{$options['id']}').val(),
                             dataType: "json",
                             success: function(result) { callback(result); }
@@ -531,12 +531,12 @@ Form::macro('select2Ncm', function($name, $value = null, $options = [])
                         return item.ncm + "&nbsp;" + item.descricao;
                     },
                     ajax:{
-                        url:baseUrl+"/ncm/listagem-json",
+                        url:baseUrl+"/ncm/select2",
                         dataType:'json',
                         quietMillis:500,
                         data:function(term, page) {
                             return {
-                                q: term,
+                                q: term.term,
                                 ativo: {$options['ativo']}
                             };
                         },
@@ -548,7 +548,7 @@ Form::macro('select2Ncm', function($name, $value = null, $options = [])
                     initSelection:function (element, callback) {
                         $.ajax({
                             type: "GET",
-                            url: baseUrl+"/ncm/listagem-json",
+                            url: baseUrl+"/ncm/select2",
                             data: "id="+$('#{$options['id']}').val(),
                             dataType: "json",
                             success: function(result) { callback(result); }
@@ -685,7 +685,7 @@ Form::macro('select2Cest', function($name, $value = null, $options = [])
                             return item.ncm + "/" + item.cest + "&nbsp;" + item.descricao;
                     },
                     ajax:{
-                        url:baseUrl+"/cest/listagem-json",
+                        url:baseUrl+"/cest/select2",
                         dataType:'json',
                         quietMillis:500,
                         data:function(codncm, page) {
@@ -699,7 +699,7 @@ Form::macro('select2Cest', function($name, $value = null, $options = [])
                     initSelection:function (element, callback) {
                         $.ajax({
                             type: "GET",
-                            url: baseUrl+"/cest/listagem-json",
+                            url: baseUrl+"/cest/select2",
                             data: "id="+$('#{$options['id']}').val(),
                             dataType: "json",
                             success: function(result) { callback(result); }
@@ -721,95 +721,106 @@ END;
 });
 
 /* PESSOA */
+
 Form::macro('select2Pessoa', function($name, $value = null, $options = [])
 {
-    if (empty($options['id']))
-        $options['id'] = $name;
-
-    if (empty($options['placeholder']))
-        $options['placeholder'] = 'Pessoa';
-
-    if (empty($options['allowClear']))
-        $options['allowClear'] = true;
-    $options['allowClear'] = ($options['allowClear'])?'true':'false';
-
-    if (empty($options['closeOnSelect']))
-        $options['closeOnSelect'] = true;
-    $options['closeOnSelect'] = ($options['closeOnSelect'])?'true':'false';
-
-    if (empty($options['ativo']))
-        $options['ativo'] = 1;
+    $options['id'] = $options['id']??$name;
+    $id = $options['id'];
+    
+    $placeholder = $options['placeholder']??'Pessoa';
+    
+    $minimumInputLength = $options['minimumInputLength']??3;
+    
+    $allowClear = ($options['allowClear']??true)?'true':'false';
+    
+    $closeOnSelect = ($options['closeOnSelect']??true)?'true':'false';
+    
+    $cache = ($options['cache']??true)?'true':'false';
+    
+    $somenteAtivos = ($options['somenteAtivos']??true)?'true':'false';
 
     $script = <<< END
 
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $('#{$options['id']}').select2({
-                    placeholder: '{$options['placeholder']}',
-                    minimumInputLength: 3,
-                    allowClear: {$options['allowClear']},
-                    closeOnSelect: {$options['closeOnSelect']},
-                    'formatResult':function(item) {
-                        var css_titulo = "";
-                        var css_detalhes = "text-muted";
-                        if (item.inativo) {
-                            css_titulo = "text-danger";
-                            css_detalhes = "text-danger";
-                        }
-
-                        var nome = item.fantasia;
-
-                        //if (item.inclusaoSpc != 0)
-                        //  nome += "&nbsp<span class=\"label label-warning\">" + item.inclusaoSpc + "</span>";
-
-                        var markup = "";
-                        markup    += "<strong class='" + css_titulo + "'>" + nome + "</strong>";
-                        markup    += "<small class='pull-right " + css_detalhes + "'>#" + formataCodigo(item.id) + "</small>";
-                        markup    += "<br>";
-                        markup    += "<small class='" + css_detalhes + "'>" + item.pessoa + "</small>";
-                        markup    += "<small class='pull-right " + css_detalhes + "'>" + formataCnpjCpf(item.cnpj) + "</small>";
-                        return markup;
-                    },
-                    'formatSelection':function(item) {
-                        return item.fantasia;
-                    },
-                    'ajax':{
-                        'url':baseUrl+'/pessoa/listagem-json',
-                        'dataType':'json',
-                        'quietMillis':500,
-                        'data':function(term, ativo, current_page) {
-                            return {
-                                q: term,
-                                ativo: {$options['ativo']},
-                                per_page: 10,
-                                current_page: current_page
-                            };
-                        },
-                        'results':function(data,page) {
-                            //var more = (current_page * 20) < data.total;
-                            return {
-                                results: data.data,
-                                //more: data.mais
-                            };
-                        }
-                    },
-                    'initSelection':function (element, callback) {
-                        $.ajax({
-                            type: "GET",
-                            url: baseUrl+'/pessoa/listagem-json',
-                            data: "id="+$('#{$options['id']}').val(),
-                            dataType: "json",
-                            success: function(result) {
-                                callback(result);
-                            }
-                        });
-                    },'width':'resolve'
+    <script type="text/javascript">
+        
+    $(document).ready(function() {
+        
+        $('#{$id}').select2({
+        
+            placeholder: '{$placeholder}',
+            minimumInputLength: {$minimumInputLength},
+            allowClear: {$allowClear},
+            closeOnSelect: {$closeOnSelect},
+            cache: {$cache},
+            
+            escapeMarkup: function (markup) { return markup; },
+            
+            ajax:{
+                url:baseUrl+'/pessoa/select2',
+                delay: 300,
+                dataType:'json',
+                data: function (params) {
+                    return {
+                        params: params,
+                        somenteAtivos: {$somenteAtivos},
+                    };
+                },
+            },
+            
+            initSelection:function (element, callback) {
+                console.log('entrou');
+                $.ajax({
+                    type: "GET",
+                    url: baseUrl+"/pessoa/select2",
+                    data: "id="+$('#{$id}').val(),
+                    dataType: "json",
+                    success: function(result) { 
+                        callback(result); 
+                    }
                 });
-            });
-        </script>
+            },
+                    
+            templateResult: function (repo) {
+
+                if (repo.loading) return repo.text;
+
+                var css_titulo = "";
+                var css_detalhes = "text-muted";
+                if (repo.inativo) {
+                    css_titulo = "text-danger";
+                    css_detalhes = "text-danger";
+                }
+
+                var nome = repo.fantasia;
+
+                //if (repo.inclusaoSpc != 0)
+                //  nome += "&nbsp<span class=\"label label-warning\">" + repo.inclusaoSpc + "</span>";
+
+                var markup = "<div class='clearfix'>";
+                markup    += "<strong class='" + css_titulo + "'>" + nome + "</strong>";
+                markup    += "<small class='pull-right " + css_detalhes + "'>#" + repo.codpessoa + "</small>";
+                markup    += "<br>";
+                markup    += "<small class='" + css_detalhes + "'>" + repo.pessoa + "</small>";
+                markup    += "<small class='pull-right " + css_detalhes + "'>" + repo.cnpj + "</small>";
+                markup    += "</div>";
+
+                return markup; 
+            },
+                    
+            templateSelection: function (repo) {
+                return repo.fantasia;
+            },
+                    
+        });
+                    
+    });
+
+    </script>
 END;
 
-    $campo = Form::text($name, $value, $options);
+    $value_form = Form::getValueAttribute($name)??$value;
+    $value_form = empty($value_form)?$value:$value_form;
+    $campo = Form::select($name, [$value_form => ' ... Carregando ... '], $value, $options);
 
     return $campo . $script;
 });
@@ -852,12 +863,12 @@ Form::macro('select2Cidade', function($name, $value = null, $options = [])
                         return item.cidade;
                     },
                     ajax:{
-                        url: baseUrl+'/cidade/listagem-json',
+                        url: baseUrl+'/cidade/select2',
                         dataType: 'json',
                         quietMillis: 500,
                         data: function(term, current_page) {
                             return {
-                                q: term,
+                                q: term.term,
                                 ativo: {$options['ativo']},
                                 per_page: 10,
                                 current_page: current_page
@@ -874,7 +885,7 @@ Form::macro('select2Cidade', function($name, $value = null, $options = [])
                     initSelection: function (element, callback) {
                         $.ajax({
                             type: "GET",
-                            url: baseUrl+'/cidade/listagem-json',
+                            url: baseUrl+'/cidade/select2',
                             data: "id="+$('#{$options['id']}').val(),
                             dataType: "json",
                             success: function(result) {
@@ -949,12 +960,12 @@ Form::macro('select2Produto', function($name, $value = null, $options = [])
                         return item.produto;
                     },
                     'ajax':{
-                        'url':baseUrl+'/produto/listagem-json',
+                        'url':baseUrl+'/produto/select2',
                         'dataType':'json',
                         'quietMillis':500,
                         'data':function(term, ativo, current_page) {
                             return {
-                                q: term,
+                                q: term.term,
                                 ativo: {$options['ativo']},
                                 per_page: 10,
                                 current_page: current_page
@@ -971,7 +982,7 @@ Form::macro('select2Produto', function($name, $value = null, $options = [])
                     'initSelection':function (element, callback) {
                         $.ajax({
                             type: "GET",
-                            url: baseUrl+'/produto/listagem-json',
+                            url: baseUrl+'/produto/select2',
                             data: "id="+$('#{$options['id']}').val(),
                             dataType: "json",
                             success: function(result) {
@@ -1058,12 +1069,12 @@ Form::macro('select2ProdutoBarra', function($name, $value = null, $options = [])
                         return item.produto;
                     },
                     'ajax':{
-                        'url':baseUrl+'/produto-barra/listagem-json',
+                        'url':baseUrl+'/produto-barra/select2',
                         'dataType':'json',
                         'quietMillis':500,
                         'data':function(term, ativo, current_page) {
                             return {
-                                q: term,
+                                q: term.term,
                                 ativo: {$options['ativo']},
                                 per_page: 10,
                                 current_page: current_page
@@ -1080,7 +1091,7 @@ Form::macro('select2ProdutoBarra', function($name, $value = null, $options = [])
                     'initSelection':function (element, callback) {
                         $.ajax({
                             type: "GET",
-                            url: baseUrl+'/produto-barra/listagem-json',
+                            url: baseUrl+'/produto-barra/select2',
                             data: "id="+$('#{$options['id']}').val(),
                             dataType: "json",
                             success: function(result) {

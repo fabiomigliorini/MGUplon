@@ -210,7 +210,7 @@ class UnidadeMedidaController extends Controller
         $ums->limit($request['length']);
         
         // Ordenacao
-        $columns[0] = 'url';
+        $columns[0] = 'codunidademedida';
         $columns[1] = 'inativo';
         $columns[2] = 'codunidademedida';
         $columns[3] = 'unidademedida';

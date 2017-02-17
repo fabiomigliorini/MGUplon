@@ -76,6 +76,8 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('grupo-usuario/datatable', 'GrupoUsuarioController@datatable');
     Route::resource('grupo-usuario', 'GrupoUsuarioController');
 
+    /* Pessoa */
+    Route::get('pessoa/select2', 'PessoaController@select2');
     
     
 });
