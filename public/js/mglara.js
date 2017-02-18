@@ -178,7 +178,8 @@ function excluirClick(tag) {
     
     pergunta = (typeof pergunta === 'undefined') ? 'Tem certeza?' : pergunta;
 
-    return excluirAtivarInativar ('POST', 'DELETE', url, pergunta, funcaoAfter, funcaoOnError)
+    return excluirAtivarInativar ('POST', 'DELETE', url, pergunta, funcaoAfter, funcaoOnError);
+    
 }
 
 
@@ -191,7 +192,7 @@ function inativarClick(tag) {
     
     pergunta = (typeof pergunta === 'undefined') ? 'Tem certeza?' : pergunta;
     
-    return excluirAtivarInativar ('PUT', 'PUT', url, pergunta, funcaoAfter, funcaoOnError)
+    return excluirAtivarInativar ('PUT', 'PUT', url, pergunta, funcaoAfter, funcaoOnError);
     
 }
 

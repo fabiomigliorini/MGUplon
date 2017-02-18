@@ -16,9 +16,13 @@
 Auth::routes();
 Route::group(['middleware' => 'auth'], function() {
     
+    /*
 	Route::get('/', function () {
 	    return view('welcome');
 	});
+     * 
+     */
+    Route::get('/', 'InicialController@inicial');
 
     /* Marca */
     Route::get('marca/listagem-json', 'MarcaController@listagemJson');
@@ -78,6 +82,9 @@ Route::group(['middleware' => 'auth'], function() {
 
     /* Pessoa */
     Route::get('pessoa/select2', 'PessoaController@select2');
+    
+    /* permissao */
+    Route::get('permissao', 'PermissaoController@index');
     
     
 });

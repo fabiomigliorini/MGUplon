@@ -25,13 +25,18 @@ if(!function_exists('formataData')) {
 
             case 'E':
             case 'EXTENSO':
-                // ('%A %d %B %Y');  // Mittwoch 21 Mai 1975
-                return $data->formatLocalized('%d %B %Y');
+                $locale = setlocale(LC_TIME, '0');
+                setlocale(LC_TIME, 'pt_BR.utf8');
+                return $data->formatLocalized('%A, %d de %B %Y às %k horas, %M minutos e %S segundos');
+                setlocale(LC_ALL, $locale);
                 break;
 
             case 'EC':
             case 'EXTENSOCURTO':
+                $locale = setlocale(LC_TIME, '0');
+                setlocale(LC_TIME, 'pt_BR.utf8');
                 return $data->formatLocalized('%b/%Y');
+                setlocale(LC_ALL, $locale);
                 break;
 
             case 'L':
