@@ -140,19 +140,70 @@ class FamiliaProdutoController extends Controller
         $model->save();
         Session::flash('flash_success', $msg);
     }    
-    
-    public function listagemJson(Request $request)
+
+    public function select2(Request $request)
     {
-        if($request->get('codsecaoproduto')) {
-            $model = FamiliaProduto::where('codsecaoproduto', $request->get('codsecaoproduto'))
-                ->familiaproduto($request->get('q'))
-                ->select('codfamiliaproduto as id', 'familiaproduto', 'inativo')
-                ->get();
-            return response()->json(['items' => $model]);       
-        } elseif($request->get('id')) {
-            $id = numeroLimpo($request->get('id'));
-            $model = FamiliaProduto::where('codfamiliaproduto', $id)->select('codfamiliaproduto as id', 'familiaproduto')->first();            
-            return response()->json($model);
+        // Parametros que o Selec2 envia
+        $params = $request->get('params');
+        
+        // Quantidade de registros por pagina
+        $registros_por_pagina = 100;
+        
+        if($request->get('id')) {
+            
+            // Monta Retorno
+            $item = FamiliaProduto::findOrFail($request->get('id'));
+            return [
+                'id' => $item->codfamiliaproduto,
+                'familiaproduto' => $item->familiaproduto,
+                'inativo' => $item->inativo,
+            ];
+        } else {
+
+            // Numero da Pagina
+            $params['page'] = $params['page']??1;
+            
+            // Monta Query
+            $qry = FamiliaProduto::where('codsecaoproduto', '=', $request->codsecaoproduto);
+            
+            foreach (explode(' ', $params['term']) as $palavra) {
+                if (!empty($palavra)) {
+                    $qry->whereRaw("(tblfamiliaproduto.familiaproduto ilike '%{$palavra}%')");
+                }
+            }
+
+            if ($request->get('somenteAtivos') == 'true') {
+                $qry->ativo();
+            }
+            
+            // Total de registros
+            $total = $qry->count();
+            
+            // Ordenacao e dados para retornar
+            $qry->select('codfamiliaproduto', 'familiaproduto', 'inativo');
+            $qry->orderBy('familiaproduto', 'ASC');
+            $qry->limit($registros_por_pagina);
+            $qry->offSet($registros_por_pagina * ($params['page']-1));
+            
+            // Percorre registros
+            $results = [];
+            foreach ($qry->get() as $item) {
+                $results[] = [
+                    'id' => $item->codfamiliaproduto,
+                    'familiaproduto' => $item->familiaproduto,
+                    'inativo' => $item->inativo,
+                ];
+            }
+            
+            // Monta Retorno
+            return [
+                'results' => $results,
+                'params' => $params,
+                'pagination' =>  [
+                    'more' => ($total > $params['page'] * $registros_por_pagina)?true:false,
+                ]
+            ];
         }
-    } 
+    }
+
 }

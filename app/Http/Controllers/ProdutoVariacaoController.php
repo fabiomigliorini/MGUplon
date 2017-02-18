@@ -145,42 +145,6 @@ class ProdutoVariacaoController extends Controller
         return json_encode($ret);
     }
 
-    public function listagemJson(Request $request)
-    {
-
-        $ret = [];
-
-        if (!empty($request->id)) {
-
-            $model = ProdutoVariacao::findOrFail($request->id);
-            $ret['id'] = $model->codprodutovariacao;
-            $ret['variacao'] = empty($variacao)?'{ Sem Variacao }':$variacao;
-
-        } else {
-
-            $qry = ProdutoVariacao::where('codproduto', '=', $request->codproduto);
-
-            foreach (explode(' ', trim($request->get('q'))) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->where('variacao', 'ilike', "%$palavra%");
-                }
-            }
-
-            $qry->orderByRaw('variacao nulls first');
-
-            $regs = $qry->lists('variacao', 'codprodutovariacao');
-
-            foreach ($regs as $id => $variacao) {
-                $ret[] = [
-                    'id' => $id,
-                    'variacao' => empty($variacao)?'{ Sem Variacao }':$variacao
-                ];
-            }
-        }
-
-        return $ret;
-    }
-
     public function select2(Request $request)
     {
         // Parametros que o Selec2 envia

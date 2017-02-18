@@ -110,9 +110,7 @@ Form::macro('select2Marca', function($name, $value = null, $options = [])
 
                 var markup = "<div class='clearfix'>";
                 markup    += "<strong class='" + css_titulo + "'>" + repo.marca + "</strong>";
-                markup    += "<small class='pull-right " + css_detalhes + "'>#" + repo.id + "</small>";
                 markup    += "</div>";
-
                 return markup; 
             },
                     
@@ -263,7 +261,7 @@ Form::macro('select2SecaoProduto', function($name, $selected = null, $options = 
     if (empty($options['placeholder']))
         $options['placeholder'] = 'Seção...';
 
-    $secoes = [''=>''] + MGLara\Models\SecaoProduto::orderBy('secaoproduto')->pluck('secaoproduto', 'codsecaoproduto')->prepend('', '');
+    $secoes = MGLara\Models\SecaoProduto::orderBy('secaoproduto')->pluck('secaoproduto', 'codsecaoproduto')->prepend('', '');
     $campo = Form::select2($name, $secoes, $selected, $options);
     return $campo;
 });
@@ -272,71 +270,89 @@ Form::macro('select2SecaoProduto', function($name, $selected = null, $options = 
 /* FAMÍLIA DE PRODUTO */
 Form::macro('select2FamiliaProduto', function($name, $value = null, $options = [])
 {
-    if (empty($options['id']))
-        $options['id'] = $name;
-
-    if (empty($options['placeholder']))
-        $options['placeholder'] = 'Família...';
-
-    if (empty($options['allowClear']))
-        $options['allowClear'] = true;
-    $options['allowClear'] = ($options['allowClear'])?'true':'false';
-
-    if (empty($options['closeOnSelect']))
-        $options['closeOnSelect'] = true;
-    $options['closeOnSelect'] = ($options['closeOnSelect'])?'true':'false';
-
-    if (empty($options['ativo']))
-        $options['ativo'] = 1;
+    $options['id'] = $options['id']??$name;
+    $id = $options['id'];
+    
+    $placeholder = $options['placeholder']??'Família';
+    
+    $minimumInputLength = $options['minimumInputLength']??0;
+    
+    $allowClear = ($options['allowClear']??true)?'true':'false';
+    
+    $closeOnSelect = ($options['closeOnSelect']??true)?'true':'false';
+    
+    $cache = ($options['cache']??true)?'true':'false';
+    
+    $somenteAtivos = ($options['somenteAtivos']??true)?'true':'false';
 
     $script = <<< END
 
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $('#{$options['id']}').select2({
-                    placeholder: '{$options['placeholder']}',
-                    minimumInputLength: 0,
-                    allowClear: {$options['allowClear']},
-                    closeOnSelect: {$options['closeOnSelect']},
-                    formatResult:function(item) {
-                        var markup = "<div class='row-fluid'>";
-                        markup    += item.familiaproduto;
-                        markup    += "</div>";
-                        return markup;
-                    },
-                    formatSelection:function(item) {
-                        return item.familiaproduto;
-                    },
-                    ajax:{
-                        url:baseUrl+"/familia-produto/select2",
-                        dataType:'json',
-                        quietMillis:500,
-                        data:function(term, codsecaoproduto, page) {
-                            return {
-                                q: term.term,
-                                ativo: {$options['ativo']},
-                                codsecaoproduto: $('#codsecaoproduto').val()
-                            };
-                        },
-                        results:function(data,page) {
-                            var more = (page * 20) < data.total;
-                            return {results: data.items};
-                        }
-                    },
-                    initSelection:function (element, callback) {
-                        $.ajax({
-                            type: "GET",
-                            url: baseUrl+"/familia-produto/select2",
-                            data: "id="+$('#{$options['id']}').val(),
-                            dataType: "json",
-                            success: function(result) { callback(result); }
-                        });
-                    },
-                    width:'resolve'
+    <script type="text/javascript">
+    $(document).ready(function() {
+        
+        $('#{$id}').select2({
+        
+            placeholder: '{$placeholder}',
+            minimumInputLength: {$minimumInputLength},
+            allowClear: {$allowClear},
+            closeOnSelect: {$closeOnSelect},
+            cache: {$cache},
+            
+            escapeMarkup: function (markup) { return markup; },
+            
+            ajax:{
+                url:baseUrl+'/familia-produto/select2',
+                delay: 300,
+                dataType:'json',
+                data: function (params) {
+                    return {
+                        params: params, 
+                        codsecaoproduto: $('#{$options['codsecaoproduto']}').val()
+                    };
+                },
+            },
+            
+            initSelection:function (element, callback) {
+                console.log('entrou');
+                $.ajax({
+                    type: "GET",
+                    url: baseUrl+"/familia-produto/select2",
+                    data: "id="+$('#{$id}').val(),
+                    dataType: "json",
+                    success: function(result) { 
+                        callback(result); 
+                    }
                 });
-            });
-        </script>
+            },
+                    
+            templateResult: function (repo) {
+
+                if (repo.loading) return repo.text;
+
+                var css_titulo = "";
+                var css_detalhes = "";
+                if (repo.inativo) {
+                    css_titulo = "text-danger";
+                    css_detalhes = "text-danger";
+                }
+
+                var markup = "<div class='clearfix'>";
+                markup    += "<strong class='" + css_titulo + "'>" + repo.familiaproduto + "</strong>";
+                markup    += "</div>";
+                return markup; 
+            },
+                    
+            templateSelection: function (repo) {
+                return repo.familiaproduto;
+            },
+                    
+        });
+                    
+    });
+
+    </script>
 END;
+
     if(isset($options['codsecaoproduto'])) {
     $script .= <<< END
     <script type="text/javascript">
@@ -348,8 +364,11 @@ END;
         });
     </script>
 END;
-    }
-    $campo = Form::text($name, $value, $options);
+}
+    $value_form = Form::getValueAttribute($name)??$value;
+    $value_form = empty($value_form)?$value:$value_form;
+    $campo = Form::select($name, [$value_form => ' ... Carregando ... '], $value, $options);
+
     return $campo . $script;
 });
 
@@ -357,71 +376,87 @@ END;
 /* GRUPO DE PRODUTO */
 Form::macro('select2GrupoProduto', function($name, $value = null, $options = [])
 {
-    if (empty($options['id']))
-        $options['id'] = $name;
-
-    if (empty($options['placeholder']))
-        $options['placeholder'] = 'Grupo...';
-
-    if (empty($options['allowClear']))
-        $options['allowClear'] = true;
-    $options['allowClear'] = ($options['allowClear'])?'true':'false';
-
-    if (empty($options['closeOnSelect']))
-        $options['closeOnSelect'] = true;
-    $options['closeOnSelect'] = ($options['closeOnSelect'])?'true':'false';
-
-    if (empty($options['ativo']))
-        $options['ativo'] = 1;
+    $options['id'] = $options['id']??$name;
+    $id = $options['id'];
+    
+    $placeholder = $options['placeholder']??'Grupo';
+    
+    $minimumInputLength = $options['minimumInputLength']??0;
+    
+    $allowClear = ($options['allowClear']??true)?'true':'false';
+    
+    $closeOnSelect = ($options['closeOnSelect']??true)?'true':'false';
+    
+    $cache = ($options['cache']??true)?'true':'false';
+    
+    $somenteAtivos = ($options['somenteAtivos']??true)?'true':'false';
 
     $script = <<< END
 
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $('#{$options['id']}').select2({
-                    placeholder: '{$options['placeholder']}',
-                    minimumInputLength: 0,
-                    allowClear: {$options['allowClear']},
-                    closeOnSelect: {$options['closeOnSelect']},
-                    formatResult:function(item) {
-                        var markup = "<div class='row-fluid'>";
-                        markup    += item.grupoproduto;
-                        markup    += "</div>";
-                        return markup;
-                    },
-                    formatSelection:function(item) {
-                        return item.grupoproduto;
-                    },
-                    ajax:{
-                        url:baseUrl+"/grupo-produto/select2",
-                        dataType:'json',
-                        quietMillis:500,
-                        data:function(term, codfamiliaproduto, page) {
-                            return {
-                                q: term.term,
-                                ativo: {$options['ativo']},
-                                codfamiliaproduto: $('#codfamiliaproduto').val()
-                            };
-                        },
-                        results:function(data,page) {
-                            var more = (page * 20) < data.total;
-                            return {results: data.items};
-                        }
-                    },
-                    initSelection:function (element, callback) {
-                        $.ajax({
-                            type: "GET",
-                            url: baseUrl+"/grupo-produto/select2",
-                            data: "id="+$('#{$options['id']}').val(),
-                            dataType: "json",
-                            success: function(result) { callback(result); }
-                        });
-                    },
-                    width:'resolve'
+    <script type="text/javascript">
+    $(document).ready(function() {
+        
+        $('#{$id}').select2({
+        
+            placeholder: '{$placeholder}',
+            minimumInputLength: {$minimumInputLength},
+            allowClear: {$allowClear},
+            closeOnSelect: {$closeOnSelect},
+            cache: {$cache},
+            
+            escapeMarkup: function (markup) { return markup; },
+            
+            ajax:{
+                url:baseUrl+'/grupo-produto/select2',
+                delay: 300,
+                dataType:'json',
+                data: function (params) {
+                    return {
+                        params: params, 
+                        codfamiliaproduto: $('#{$options['codfamiliaproduto']}').val()
+                    };
+                },
+            },
+            
+            initSelection:function (element, callback) {
+                console.log('entrou');
+                $.ajax({
+                    type: "GET",
+                    url: baseUrl+"/grupo-produto/select2",
+                    data: "id="+$('#{$id}').val(),
+                    dataType: "json",
+                    success: function(result) { 
+                        callback(result); 
+                    }
                 });
+            },
+                    
+            templateResult: function (repo) {
 
-            });
-        </script>
+                if (repo.loading) return repo.text;
+
+                var css_titulo = "";
+                var css_detalhes = "";
+                if (repo.inativo) {
+                    css_titulo = "text-danger";
+                    css_detalhes = "text-danger";
+                }
+
+                var markup = "<div class='clearfix'>";
+                markup    += "<strong class='" + css_titulo + "'>" + repo.grupoproduto + "</strong>";
+                markup    += "</div>";
+                return markup; 
+            },
+                    
+            templateSelection: function (repo) {
+                return repo.grupoproduto;
+            },
+                    
+        });
+                    
+    });
+
+    </script>
 END;
     if(isset($options['codfamiliaproduto'])) {
     $script .= <<< END
@@ -443,71 +478,87 @@ END;
 /* SUBGRUPO DE PRODUTO */
 Form::macro('select2SubGrupoProduto', function($name, $value = null, $options = [])
 {
-
-    if (empty($options['id']))
-        $options['id'] = $name;
-
-    if (empty($options['placeholder']))
-        $options['placeholder'] = 'Sub Grupo...';
-
-    if (empty($options['allowClear']))
-        $options['allowClear'] = true;
-    $options['allowClear'] = ($options['allowClear'])?'true':'false';
-
-    if (empty($options['closeOnSelect']))
-        $options['closeOnSelect'] = true;
-    $options['closeOnSelect'] = ($options['closeOnSelect'])?'true':'false';
-
-    if (empty($options['ativo']))
-        $options['ativo'] = 1;
+    $options['id'] = $options['id']??$name;
+    $id = $options['id'];
+    
+    $placeholder = $options['placeholder']??'Sub Grupo';
+    
+    $minimumInputLength = $options['minimumInputLength']??0;
+    
+    $allowClear = ($options['allowClear']??true)?'true':'false';
+    
+    $closeOnSelect = ($options['closeOnSelect']??true)?'true':'false';
+    
+    $cache = ($options['cache']??true)?'true':'false';
+    
+    $somenteAtivos = ($options['somenteAtivos']??true)?'true':'false';
 
     $script = <<< END
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $('#{$options['id']}').select2({
-                    placeholder: '{$options['placeholder']}',
-                    minimumInputLength: 0,
-                    allowClear: {$options['allowClear']},
-                    closeOnSelect: {$options['closeOnSelect']},
-                    formatResult:function(item) {
-                        var markup = "<div class='row-fluid'>";
-                        markup    += item.subgrupoproduto;
-                        markup    += "</div>";
-                        return markup;
-                    },
-                    formatSelection:function(item) {
-                        return item.subgrupoproduto;
-                    },
-                    ajax:{
-                        url:baseUrl+"/sub-grupo-produto/select2",
-                        dataType:'json',
-                        quietMillis:500,
-                        data:function(term, codgrupoproduto, page) {
-                            return {
-                                q: term.term,
-                                ativo: {$options['ativo']},
-                                codgrupoproduto: $('#codgrupoproduto').val()
-                            };
-                        },
-                        results:function(data,page) {
-                            var more = (page * 20) < data.total;
-                            return {results: data.items};
-                        }
-                    },
-                    initSelection:function (element, callback) {
-                        $.ajax({
-                            type: "GET",
-                            url: baseUrl+"/sub-grupo-produto/select2",
-                            data: "id="+$('#{$options['id']}').val(),
-                            dataType: "json",
-                            success: function(result) { callback(result); }
-                        });
-                    },
-                    width:'resolve'
-                });
 
-            });
-        </script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        
+        $('#{$id}').select2({
+        
+            placeholder: '{$placeholder}',
+            minimumInputLength: {$minimumInputLength},
+            allowClear: {$allowClear},
+            closeOnSelect: {$closeOnSelect},
+            cache: {$cache},
+            
+            escapeMarkup: function (markup) { return markup; },
+            
+            ajax:{
+                url:baseUrl+'/sub-grupo-produto/select2',
+                delay: 300,
+                dataType:'json',
+                data: function (params) {
+                    return {
+                        params: params, 
+                        codgrupoproduto: $('#{$options['codgrupoproduto']}').val()
+                    };
+                },
+            },
+            
+            initSelection:function (element, callback) {
+                console.log('entrou');
+                $.ajax({
+                    type: "GET",
+                    url: baseUrl+"/sub-grupo-produto/select2",
+                    data: "id="+$('#{$id}').val(),
+                    dataType: "json",
+                    success: function(result) { 
+                        callback(result); 
+                    }
+                });
+            },
+                    
+            templateResult: function (repo) {
+
+                if (repo.loading) return repo.text;
+
+                var css_titulo = "";
+                var css_detalhes = "";
+                if (repo.inativo) {
+                    css_titulo = "text-danger";
+                    css_detalhes = "text-danger";
+                }
+
+                var markup = "<div class='clearfix'>";
+                markup    += "<strong class='" + css_titulo + "'>" + repo.subgrupoproduto + "</strong>";
+                markup    += "</div>";
+                return markup; 
+            },
+                    
+            templateSelection: function (repo) {
+                return repo.subgrupoproduto;
+            },
+                    
+        });
+                    
+    });
+
+    </script>
 END;
     if(isset($options['codgrupoproduto'])) {
     $script .= <<< END
