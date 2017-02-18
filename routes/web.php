@@ -16,16 +16,9 @@
 Auth::routes();
 Route::group(['middleware' => 'auth'], function() {
     
-    Route::get('/', function () {
-        return view('welcome');
-    });
+    Route::get('/', 'InicialController@inicial');
 
-
-/*
-|--------------------------------------------------------------------------
-| Rotas de select2()
-|--------------------------------------------------------------------------
-*/    
+    /* select2 */
     Route::get('pessoa/select2', 'PessoaController@select2');
     Route::get('filial/select2', 'FilialController@select2');
     Route::get('marca/select2', 'MarcaController@select2');
@@ -38,8 +31,6 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('cidade/select2', 'CidadeController@select2');
     Route::get('familia-produto/select2', 'FamiliaProdutoController@select2');
     Route::get('produto-barra/select2', 'ProdutoBarraController@select2');
-
-/* --- */
 
     /* Marca */
     Route::resource('marca/inativar', 'MarcaController@inativar');
@@ -93,6 +84,9 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('grupo-usuario', 'GrupoUsuarioController');
 
     /* Pessoa */
+    
+    /* permissao */
+    Route::get('permissao', 'PermissaoController@index');
     
     
 });
