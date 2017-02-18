@@ -176,6 +176,8 @@ Form::macro('select2ProdutoVariacao', function($name, $value = null, $options = 
     $id = $options['id'];
     
     $placeholder = $options['placeholder']??'Variação...';
+
+    $minimumInputLength = $options['minimumInputLength']??3;
     
     $allowClear = ($options['allowClear']??true)?'true':'false';
     
@@ -191,6 +193,7 @@ Form::macro('select2ProdutoVariacao', function($name, $value = null, $options = 
         $('#{$id}').select2({
         
             placeholder: '{$placeholder}',
+            minimumInputLength: {$minimumInputLength},
             allowClear: {$allowClear},
             closeOnSelect: {$closeOnSelect},
             cache: {$cache},
