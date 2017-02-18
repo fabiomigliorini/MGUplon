@@ -28,16 +28,8 @@
                             <td>{{ $model->usuario }}</td> 
                         </tr>
                         <tr> 
-                            <th>ECF</th> 
-                            <td>{{ $model->Ecf->ecf or '' }}</td> 
-                        </tr>
-                        <tr> 
                             <th>Filial</th> 
                             <td>{{ $model->Filial->filial or '' }}</td> 
-                        </tr>
-                        <tr> 
-                            <th>Operação</th> 
-                            <td>{{ $model->Operacao->operacao }}</td> 
                         </tr>
                         <tr> 
                             <th>Pessoa</th> 

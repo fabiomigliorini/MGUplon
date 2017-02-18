@@ -218,9 +218,7 @@ class Usuario extends MGModel implements AuthenticatableContract, CanResetPasswo
     protected $fillable = [
         'usuario',
         'senha',
-        'codecf',
         'codfilial',
-        'codoperacao',
         'codpessoa',
         'impressoratelanegocio',
         'codportador',
@@ -251,7 +249,6 @@ class Usuario extends MGModel implements AuthenticatableContract, CanResetPasswo
         $this->_regrasValidacao = [
             'usuario' => $unique_usuario, 
             'senha' => 'required_if:codusuario,null|min:6', 
-            'codoperacao' => 'required', 
             'impressoramatricial' => 'required', 
             'impressoratermica' => 'required', 
         ];
@@ -269,19 +266,9 @@ class Usuario extends MGModel implements AuthenticatableContract, CanResetPasswo
     }
     
     // Chaves Estrangeiras
-    public function Ecf()
-    {
-        return $this->belongsTo(Ecf::class, 'codecf', 'codecf');
-    }
-
     public function Filial()
     {
         return $this->belongsTo(Filial::class, 'codfilial', 'codfilial');
-    }
-
-    public function Operacao()
-    {
-        return $this->belongsTo(Operacao::class, 'codoperacao', 'codoperacao');
     }
 
     public function Pessoa()
