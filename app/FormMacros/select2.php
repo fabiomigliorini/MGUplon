@@ -177,7 +177,7 @@ Form::macro('select2ProdutoVariacao', function($name, $value = null, $options = 
     
     $placeholder = $options['placeholder']??'Variação...';
 
-    $minimumInputLength = $options['minimumInputLength']??3;
+    $minimumInputLength = $options['minimumInputLength']??0;
     
     $allowClear = ($options['allowClear']??true)?'true':'false';
     
@@ -206,8 +206,9 @@ Form::macro('select2ProdutoVariacao', function($name, $value = null, $options = 
                 dataType:'json',
                 data: function (params) {
                     return {
-                        params: params,
+                        params: params, 
                         codproduto: $('#{$options['codproduto']}').val()
+                        
                     };
                 },
             },

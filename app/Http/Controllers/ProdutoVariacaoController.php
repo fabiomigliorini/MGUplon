@@ -189,8 +189,15 @@ class ProdutoVariacaoController extends Controller
         // Quantidade de registros por pagina
         $registros_por_pagina = 100;
         
-        // Se veio termo de busca
-        if(!empty($params['term'])) {
+        if($request->get('id')) {
+            
+            // Monta Retorno
+            $item = ProdutoVariacao::findOrFail($request->get('id'));
+            return [
+                'id' => $item->codprodutovariacao,
+                'variacao' => empty($item->variacao)?'{ Sem Variacao }':$item->variacao
+            ];
+        } else {
 
             // Numero da Pagina
             $params['page'] = $params['page']??1;
@@ -236,17 +243,6 @@ class ProdutoVariacaoController extends Controller
                     'more' => ($total > $params['page'] * $registros_por_pagina)?true:false,
                 ]
             ];
-
-        } elseif($request->get('id')) {
-            
-            // Monta Retorno
-            $item = ProdutoVariacao::findOrFail($request->get('id'));
-            return [
-                'id' => $item->codprodutovariacao,
-                'variacao' => empty($item->variacao)?'{ Sem Variacao }':$item->variacao
-            ];
         }
     }
-
-
 }
