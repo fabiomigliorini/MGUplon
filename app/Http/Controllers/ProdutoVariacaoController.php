@@ -19,9 +19,7 @@ class ProdutoVariacaoController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permissao:produto-variacao.inclusao', ['only' => ['create', 'store']]);
-        $this->middleware('permissao:produto-variacao.alteracao', ['only' => ['edit', 'update']]);
-        $this->middleware('permissao:produto-variacao.exclusao', ['only' => ['delete', 'destroy']]);
+        //...
     }
     public function show($id)
     {
@@ -182,5 +180,73 @@ class ProdutoVariacaoController extends Controller
 
         return $ret;
     }
+
+    public function select2(Request $request)
+    {
+        // Parametros que o Selec2 envia
+        $params = $request->get('params');
+        
+        // Quantidade de registros por pagina
+        $registros_por_pagina = 100;
+        
+        // Se veio termo de busca
+        if(!empty($params['term'])) {
+
+            // Numero da Pagina
+            $params['page'] = $params['page']??1;
+            
+            // Monta Query
+            $qry = ProdutoVariacao::where('codproduto', '=', $request->codproduto);
+
+            foreach (explode(' ', trim($request->get('q'))) as $palavra) {
+                if (!empty($palavra)) {
+                    $qry->where('variacao', 'ilike', "%$palavra%");
+                }
+            }
+
+
+
+            //if ($request->get('somenteAtivos') == 'true') {
+            //    $qry->ativo();
+            //}
+            
+            // Total de registros
+            $total = $qry->count();
+            
+            // Ordenacao e dados para retornar
+            $qry->select('variacao', 'codprodutovariacao');
+            $qry->orderByRaw('variacao nulls first');
+            $qry->limit($registros_por_pagina);
+            $qry->offSet($registros_por_pagina * ($params['page']-1));
+            
+            // Percorre registros
+            $results = [];
+            foreach ($qry->get() as $item) {
+                $results[] = [
+                    'id' => $item->codprodutovariacao,
+                    'variacao' => empty($item->variacao)?'{ Sem Variacao }':$item->variacao
+                ];
+            }
+            
+            // Monta Retorno
+            return [
+                'results' => $results,
+                'params' => $params,
+                'pagination' =>  [
+                    'more' => ($total > $params['page'] * $registros_por_pagina)?true:false,
+                ]
+            ];
+
+        } elseif($request->get('id')) {
+            
+            // Monta Retorno
+            $item = ProdutoVariacao::findOrFail($request->get('id'));
+            return [
+                'id' => $item->codprodutovariacao,
+                'variacao' => empty($item->variacao)?'{ Sem Variacao }':$item->variacao
+            ];
+        }
+    }
+
 
 }

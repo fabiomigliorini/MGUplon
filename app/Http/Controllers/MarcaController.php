@@ -157,7 +157,7 @@ class MarcaController extends Controller
             $total = $qry->count();
             
             // Ordenacao e dados para retornar
-            $qry->select('codmarca', 'marca');
+            $qry->select('codmarca', 'marca', 'inativo');
             $qry->orderBy('marca', 'ASC');
             $qry->limit($registros_por_pagina);
             $qry->offSet($registros_por_pagina * ($params['page']-1));
@@ -168,6 +168,7 @@ class MarcaController extends Controller
                 $results[] = [
                     'id' => $item->codmarca,
                     'marca' => $item->marca,
+                    'inativo' => formataData($item->inativo, 'C')
                 ];
             }
             
@@ -187,6 +188,7 @@ class MarcaController extends Controller
             return [
                 'id' => $item->codmarca,
                 'marca' => $item->marca,
+                'inativo' => formataData($item->inativo, 'C')
             ];
         }
     }

@@ -100,7 +100,19 @@ Form::macro('select2Marca', function($name, $value = null, $options = [])
                     
             templateResult: function (repo) {
                 if (repo.loading) return repo.text;
-                var markup = repo.marca;
+
+                var css_titulo = "";
+                var css_detalhes = "";
+                if (repo.inativo) {
+                    css_titulo = "text-danger";
+                    css_detalhes = "text-danger";
+                }
+
+                var markup = "<div class='clearfix'>";
+                markup    += "<strong class='" + css_titulo + "'>" + repo.marca + "</strong>";
+                markup    += "<small class='pull-right " + css_detalhes + "'>#" + repo.id + "</small>";
+                markup    += "</div>";
+
                 return markup; 
             },
                     
@@ -160,72 +172,81 @@ Form::macro('select2Inativo', function($name, $selected = null, $options = [])
 /* PRODUTO VARIAÇÃO */
 Form::macro('select2ProdutoVariacao', function($name, $value = null, $options = [])
 {
-    if (empty($options['id']))
-        $options['id'] = $name;
-
-    if (empty($options['placeholder']))
-        $options['placeholder'] = 'Variação...';
-
-    if (empty($options['allowClear']))
-        $options['allowClear'] = true;
-    $options['allowClear'] = ($options['allowClear'])?'true':'false';
-
-    if (empty($options['closeOnSelect']))
-        $options['closeOnSelect'] = true;
-    $options['closeOnSelect'] = ($options['closeOnSelect'])?'true':'false';
-
+    $options['id'] = $options['id']??$name;
+    $id = $options['id'];
+    
+    $placeholder = $options['placeholder']??'Variação...';
+    
+    $allowClear = ($options['allowClear']??true)?'true':'false';
+    
+    $closeOnSelect = ($options['closeOnSelect']??true)?'true':'false';
+    
+    $cache = ($options['cache']??true)?'true':'false';
+    
     $script = <<< END
-
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $('#{$options['id']}').select2({
-                    placeholder: '{$options['placeholder']}',
-                    minimumInputLength: 0,
-                    allowClear: {$options['allowClear']},
-                    closeOnSelect: {$options['closeOnSelect']},
-
-                    formatResult: function(item) {
-                        var markup = "<div class='row-fluid'>";
-                        markup    += item.variacao;
-                        markup    += "</div>";
-                        return markup;
-                    },
-                    formatSelection: function(item) {
-                        return item.variacao;
-                    },
-                    ajax:{
-                        url: baseUrl + "/produto-variacao/select2",
-                        dataType: 'json',
-                        quietMillis: 500,
-                        data: function(term,page) {
-                        return {
-                            q: term.term,
-                            codproduto: $('#{$options['codproduto']}').val()
-                        };
-                    },
-                    results: function(data,page) {
-                        var more = (page * 20) < data.total;
-                        return {results: data};
-                    }},
-                    initSelection: function (element, callback) {
-                        $.ajax({
-                          type: "GET",
-                          url: baseUrl + "/produto-variacao/select2",
-                          data: "id="+$('#{$options['id']}').val(),
-                          dataType: "json",
-                          success: function(result) { callback(result); }
-                        });
-                    },
-                    width: 'resolve'
+    <script type="text/javascript">
+        
+    $(document).ready(function() {
+        
+        $('#{$id}').select2({
+        
+            placeholder: '{$placeholder}',
+            allowClear: {$allowClear},
+            closeOnSelect: {$closeOnSelect},
+            cache: {$cache},
+            
+            escapeMarkup: function (markup) { return markup; },
+            
+            ajax:{
+                url:baseUrl+'/produto-variacao/select2',
+                delay: 300,
+                dataType:'json',
+                data: function (params) {
+                    return {
+                        params: params,
+                        codproduto: $('#{$options['codproduto']}').val()
+                    };
+                },
+            },
+            
+            initSelection:function (element, callback) {
+                console.log('entrou');
+                $.ajax({
+                    type: "GET",
+                    url: baseUrl+"/produto-variacao/select2",
+                    data: "id="+$('#{$id}').val(),
+                    dataType: "json",
+                    success: function(result) { 
+                        callback(result); 
+                    }
                 });
-                $('#{$options['codproduto']}').change(function () {
-                    $('#{$options['id']}').select2('val', '');
-                });
-            });
-        </script>
+            },
+                    
+            templateResult: function (repo) {
+
+                if (repo.loading) return repo.text;
+
+                var markup = "<div class='clearfix'>";
+                markup    += repo.variacao;
+                markup    += "</div>";
+                return markup; 
+            },
+                    
+            templateSelection: function (repo) {
+                return repo.variacao;
+            },
+                    
+        });
+                    
+    });
+
+    </script>
+
 END;
 
-    $campo = Form::text($name, $value, $options);
+    $value_form = Form::getValueAttribute($name)??$value;
+    $value_form = empty($value_form)?$value:$value_form;
+    $campo = Form::select($name, [$value_form => ' ... Carregando ... '], $value, $options);
 
     return $campo . $script;
 });
