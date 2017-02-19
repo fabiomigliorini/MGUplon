@@ -1,6 +1,7 @@
 @extends('layouts.default')
 @section('content')
-<div class="col-sm-7 col-xs-12">
+<div class='row'>
+<div class="col-sm-8 col-xs-12">
     <div class="card">
         <h3 class="card-header">
             {{ $model->usuario }}
@@ -16,7 +17,6 @@
         </h3>
         <div class="card-block">
             @include('layouts.includes.inativo', [$model])
-            <p class="card-text">
                 <table class="table table-bordered table-striped table-hover table-sm col-md-12">
                     <tbody>  
                         <tr> 
@@ -53,13 +53,54 @@
                         </tr>           
                     </tbody> 
                 </table>
-            </p>
             <p class="card-text">
             @include('layouts.includes.criacao', [$model])
             </p>
         </div>
     </div>
 </div>
+
+<div class="col-sm-4 col-xs-12">
+    <div class="card">
+        <h3 class="card-header">
+            Grupos
+            <div class="btn-group pull-right" role="group" aria-label="Controles">
+                <a class="btn btn-secondary" href="{{ url("usuario/$model->codusuario/grupos") }}"><i class="fa fa-pencil"></i></a>
+            </div>
+        </h3>
+        <div class="card-block">
+            <div class="card-text">
+                <table class="table table-bordered table-striped table-hover table-sm col-md-6">
+                  <tbody>  
+                    <tr> 
+                      <th>Grupo</th> 
+                      <th>Filial</th> 
+                      <th>Desde</th> 
+                    </tr>
+                    @foreach ($model->GrupoUsuarioUsuarioS()->select(['tblgrupousuario.codgrupousuario', 'tblgrupousuario.grupousuario', 'tblfilial.codfilial', 'tblfilial.filial', 'tblgrupousuariousuario.criacao'])->join('tblgrupousuario', 'tblgrupousuario.codgrupousuario', 'tblgrupousuariousuario.codgrupousuario')->join('tblfilial', 'tblfilial.codfilial', 'tblgrupousuariousuario.codfilial')->orderBy('tblgrupousuario.grupousuario')->orderBy('tblfilial.filial')->whereNull('tblgrupousuario.inativo')->get() as $guu)
+                    <tr> 
+                      <td>
+                        <a href='{{ url('grupo-usuario', $guu->codgrupousuario) }}'>
+                          {{ $guu->grupousuario }}
+                        </a>
+                      </td> 
+                      <td>
+                        <a href='{{ url('filial', $guu->codfilial) }}'>
+                          {{ $guu->filial }}
+                        </a>
+                      </td> 
+                      <td>{{ formataData($guu->criacao, 'C') }}</td> 
+                    </tr>
+                    @endforeach
+                  </tbody> 
+                </table>
+            </div>
+            <div class='clearfix'></div>
+        </div>
+    </div>
+</div>
+</div>
+
 @section('inscript')
 <script type="text/javascript">
 </script>

@@ -1,5 +1,6 @@
 @extends('layouts.default')
 @section('content')
+<div class='row'>
 <div class="col-xs-12">
     <div class="card">
         <h3 class="card-header">
@@ -12,5 +13,6 @@
             {!! Form::close() !!}
         </div>
     </div>
+</div>
 </div>
 @stop

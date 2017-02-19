@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 use MGLara\Models\Usuario;
 use MGLara\Models\GrupoUsuario;
+use MGLara\Models\GrupoUsuarioUsuario;
 use MGLara\Models\Filial;
 
 use Carbon\Carbon;
@@ -121,29 +122,60 @@ class UsuarioController extends Controller
         return ['OK' => $model->inativar()];
     }
     
-    public function permissao(Request $request, $codusuario) {
-        $model = Usuario::find($codusuario);
-        $filiais = Filial::orderBy('codfilial', 'asc')->get();
-        $parametros = self::filtroEstatico($request, 'usuario.permissao');        
-        $grupos = GrupoUsuario::search($parametros)->orderBy('grupousuario', 'ASC')->paginate(20);
+    public function grupos(Request $request, $codusuario) {
         
+        $model = Usuario::findOrFail($codusuario);
         
-        return view('usuario.permissao', compact('model', 'grupos', 'filiais'));
-    }
-
-    public function attachPermissao(Request $request) {
-        $model = Usuario::find($request->get('codusuario'));
-        $model->GrupoUsuario()->attach($request->get('codgrupousuario'), ['codfilial' => $request->get('codfilial')]);
+        $this->bc->addItem($model->usuario, url('usuario', $model->codusuario));
+        $this->bc->addItem('Grupos');        
+        
+        $this->bc->header = $model->usuario;
+        
+        $grupos_usuario = [];
+        foreach ($model->GrupoUsuarioUsuarioS as $guu) {
+            $grupos_usuario[$guu->codgrupousuario][$guu->codfilial] = $guu->codgrupousuariousuario;
+        }
+        $filiais = Filial::orderBy('filial')->ativo()->get();
+        $grupos = GrupoUsuario::orderBy('grupousuario')->ativo()->get();
+        
+        return view('usuario.grupos', ['bc' => $this->bc, 'model' => $model, 'grupos' => $grupos, 'filiais' => $filiais, 'grupos_usuario' => $grupos_usuario]);
     }
     
-    public function detachPermissao(Request $request) {
-        DB::table( 'tblgrupousuariousuario' )
-            ->where( 'codgrupousuario', '=', $request->codgrupousuario, 'and' )
-            ->where( 'codusuario', '=', $request->codusuario, 'and' )
-            ->where( 'codfilial', '=', $request->codfilial )
-            ->delete();        
+    public function gruposCreate(Request $request, $id) {
+        
+        $usuario = Usuario::findOrFail($id);
+        
+        // Associa a permissao com o grupo de usuario
+        if (!$grupo_usuario = $usuario->GrupoUsuarioUsuarioS()->where('codgrupousuario', $request->codgrupousuario)->where('codfilial', $request->codfilial)->first()) {
+            $grupo_usuario = GrupoUsuarioUsuario::create(['codusuario' => $id, 'codgrupousuario' => $request->codgrupousuario, 'codfilial'=>$request->codfilial]);
+        }
+        
+        //retorna
+        return [
+            'OK' => $grupo_usuario->codgrupousuariousuario,
+            'grupousuario' => $grupo_usuario->GrupoUsuario->grupousuario,
+            'filial' => $grupo_usuario->Filial->filial,
+        ];
+        
     }
-
+    
+    public function gruposDestroy(Request $request, $id) {
+        
+        $usuario = Usuario::findOrFail($id);
+        
+        // Exclui registros
+        $excluidos = $usuario->GrupoUsuarioUsuarioS()->where('codgrupousuario', $request->codgrupousuario)->where('codfilial', $request->codfilial)->delete();
+        
+        //retorna
+        return [
+            'OK' => $excluidos,
+            'grupousuario' => GrupoUsuario::findOrFail($request->codgrupousuario)->grupousuario,
+            'filial' => Filial::findOrFail($request->codfilial)->filial,
+        ];
+        
+        
+    }
+    
     public function datatable(Request $request) {
         
         //$this->authorize('list', Usuario::class);

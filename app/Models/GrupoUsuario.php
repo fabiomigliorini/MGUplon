@@ -18,9 +18,8 @@ namespace MGLara\Models;
  * @property  Usuario                        $UsuarioCriacao
  *
  * Tabelas Filhas
- * @property  Permissao[]                    $PermissaoS
- * @property  Usuario[]                      $UsuarioS
- * @property  Filial[]                       $FilialS
+ * @property  GrupoUsuarioPermissao[]        $GrupoUsuarioPermissaoS
+ * @property  GrupoUsuarioUsuario[]          $GrupoUsuarioUsuarioS
  */
 
 class GrupoUsuario extends MGModel
@@ -51,19 +50,14 @@ class GrupoUsuario extends MGModel
     }
     
     // // Tabelas Filhas (sem gerador)
-    public function UsuarioS()
+    public function GrupoUsuarioPermissaoS()
     {
-        return $this->belongsToMany(Usuario::class,'tblgrupousuariousuario', 'codgrupousuario', 'codusuario');
-    }   
-
-    public function PermissaoS()
-    {
-        return $this->belongsToMany(Permissao::class, 'tblgrupousuariopermissao', 'codgrupousuario', 'codpermissao');
+        return $this->hasMany(GrupoUsuarioPermissao::class, 'codgrupousuario', 'codgrupousuario');
     }
 
-    public function FilialS()
+    public function GrupoUsuarioUsuarioS()
     {
-        return $this->belongsToMany(Filial::class, 'tblgrupousuariousuario', 'codgrupousuario', 'codfilial');
+        return $this->hasMany(GrupoUsuarioUsuario::class, 'codgrupousuario', 'codgrupousuario');
     }
 
     public function validate() {

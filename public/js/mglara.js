@@ -118,8 +118,8 @@ function excluirAtivarInativar (type, method, url, pergunta, funcaoAfter, funcao
                     // Se executou
                     if (retorno.OK) {
                         swal({
-                            title: 'Excluido!',
-                            text: 'Excluido com sucesso!',
+                            title: 'Sucesso!',
+                            text: 'Operação efetuada com sucesso!',
                             type: 'success',
                         }, function () {
                             if (typeof funcaoAfter !== 'undefined') {
@@ -130,7 +130,7 @@ function excluirAtivarInativar (type, method, url, pergunta, funcaoAfter, funcao
                     // Se não executou
                     } else {
                         swal({
-                            title: 'Erro ao excluir!',
+                            title: 'Erro!',
                             text: retorno.mensagem,
                             type: 'error',
                         }, function () {

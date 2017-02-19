@@ -106,18 +106,7 @@ class GrupoUsuarioController extends Controller
         //$this->authorize('update', $model);
         return ['OK' => $model->inativar()];
     }
-        
     
-    public function attachPermissao(Request $request) {
-        $model = GrupoUsuario::find($request->get('codgrupousuario'));
-        $model->PermissaoS()->attach($request->get('codpermissao'));
-    }
-    
-    public function detachPermissao(Request $request) {
-        $model = GrupoUsuario::find($request->get('codgrupousuario'));
-        $model->PermissaoS()->detach($request->get('codpermissao'));
-    }
-
     public function datatable(Request $request) {
         
         //$this->authorize('list', Usuario::class);

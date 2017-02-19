@@ -71,9 +71,9 @@ Route::group(['middleware' => 'auth'], function() {
     Route::put('usuario/{id}/ativar', 'UsuarioController@ativar');
     Route::put('usuario/{id}/inativar', 'UsuarioController@inativar');
     Route::get('usuario/datatable', 'UsuarioController@datatable');
-    Route::post('usuario/inativar', 'UsuarioController@inativar');
-    Route::post('usuario/attach-permissao', 'UsuarioController@attachPermissao');
-    Route::post('usuario/detach-permissao', 'UsuarioController@detachPermissao');
+    Route::get('usuario/{id}/grupos', 'UsuarioController@grupos');
+    Route::post('usuario/{id}/grupos', 'UsuarioController@gruposCreate');
+    Route::delete('usuario/{id}/grupos', 'UsuarioController@gruposDestroy');
     Route::resource('usuario/{codusuario}/permissao', 'UsuarioController@permissao');
     Route::resource('usuario', 'UsuarioController');
 

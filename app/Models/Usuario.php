@@ -33,6 +33,8 @@ namespace MGLara\Models;
  * @property  Usuario                        $UsuarioCriacao
  *
  * Tabelas Filhas
+ * @property  GrupoUsuarioUsuario[]          $GrupoUsuarioUsuarioS
+ * 
  * @property  Cest[]                         $CestAlteracaoS
  * @property  Cest[]                         $CestCriacaoS
  * @property  EstoqueLocal[]                 $EstoqueLocalAlteracaoS
@@ -293,6 +295,11 @@ class Usuario extends MGModel implements AuthenticatableContract, CanResetPasswo
     
 
     // Tabelas Filhas
+    public function GrupoUsuarioUsuarioS()
+    {
+        return $this->hasMany(GrupoUsuarioUsuario::class, 'codusuario', 'codusuario');
+    }
+    
     public function CestAlteracaoS()
     {
         return $this->hasMany(Cest::class, 'codusuario', 'codusuarioalteracao');

@@ -3,9 +3,9 @@
 
 <div class="row">
 <div class="col-md-3">
-  <div class="card card-block">
-    <h3 class="card-title">Policies</h3>
-    <div class="card-title">
+  <div class="card ">
+    <h3 class="card-header">Policies</h3>
+    <div class="card-block">
       <ul class="nav nav-pills nav-stacked m-b-10" id="myTabalt" role="tablist">
         @foreach ($classes as $classe => $metodos)
           <li class="nav-item">
@@ -20,9 +20,9 @@
   @foreach ($classes as $classe => $metodos)
     <div class="tab-pane fade in" id="{{ $classe }}-tab" aria-labelledby="{{ $classe }}-tab">
       <div class="col-md-9" role="tabpanel" >
-        <div class="card card-block">
-          <h3 class="card-title">Permissões para <i>'{{$classe}}'</i></h3>
-          <br>
+        <div class="card">
+          <h3 class="card-header">Permissões de <i>'{{$classe}}'</i></h3>
+          <div class='card-block'>
           <table class="table table-sm table-striped table-hover table-responsive">
             <thead>
               <tr>
@@ -31,7 +31,9 @@
                 </th>
                 @foreach ($grupos as $grupo)
                   <th>
-                    {{ $grupo->grupousuario }}
+                    <a href='{{ url('grupo-usuario', $grupo->codgrupousuario) }}'>
+                      {{ $grupo->grupousuario }}
+                    </a>
                   </th>
                 @endforeach
               </tr>
@@ -63,6 +65,7 @@
               @endforeach
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>
@@ -73,7 +76,6 @@
 
 @section('inscript')
 <script type="text/javascript">
-    
     
     function create(element, classe, metodo, codgrupousuario) {
         $.ajax({
@@ -129,7 +131,6 @@
         
         $('.permissao').click(function(e) {
             e.preventDefault();
-            var id = $(this).prop('id');
             var classe = $(this).data('classe');
             var metodo = $(this).data('metodo');
             var codgrupousuario = $(this).data('codgrupousuario');
