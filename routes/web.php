@@ -86,7 +86,7 @@ Route::group(['middleware' => 'auth'], function() {
     /* Pessoa */
     
     /* permissao */
-    Route::get('permissao', 'PermissaoController@index');
+    Route::resource('permissao', 'PermissaoController', ['only' => ['index', 'store', 'destroy']]);
     
     
 });
