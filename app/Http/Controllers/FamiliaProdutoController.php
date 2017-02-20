@@ -149,8 +149,7 @@ class FamiliaProdutoController extends Controller
         // Quantidade de registros por pagina
         $registros_por_pagina = 100;
         
-        if($request->get('id')) {
-            
+        if(!empty($request->get('id'))) {    
             // Monta Retorno
             $item = FamiliaProduto::findOrFail($request->get('id'));
             return [
@@ -166,9 +165,11 @@ class FamiliaProdutoController extends Controller
             // Monta Query
             $qry = FamiliaProduto::where('codsecaoproduto', '=', $request->codsecaoproduto);
             
-            foreach (explode(' ', $params['term']) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->whereRaw("(tblfamiliaproduto.familiaproduto ilike '%{$palavra}%')");
+            if(!empty($params['term'])) {
+                foreach (explode(' ', $params['term']) as $palavra) {
+                    if (!empty($palavra)) {
+                        $qry->whereRaw("(tblfamiliaproduto.familiaproduto ilike '%{$palavra}%')");
+                    }
                 }
             }
 

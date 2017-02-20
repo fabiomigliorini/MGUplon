@@ -32,7 +32,7 @@ class GrupoProdutoController extends Controller
     public function create(Request $request)
     {
         $model = new GrupoProduto();
-        $parent = FamiliaProduto::findOrFail($request->get('codfamiliaproduto'));
+        $parent = FamiliaProduto::findOrFail($request->get('codgrupoproduto'));
         return view('grupo-produto.create', compact('model', 'parent'));
     }
 
@@ -45,7 +45,7 @@ class GrupoProdutoController extends Controller
     public function store(Request $request)
     {
         $model = new GrupoProduto($request->all());
-        $model->codfamiliaproduto = $request->get('codfamiliaproduto');
+        $model->codgrupoproduto = $request->get('codgrupoproduto');
         
         if (!$model->validate())
             $this->throwValidationException($request, $model->_validator);
@@ -140,18 +140,69 @@ class GrupoProdutoController extends Controller
         Session::flash('flash_success', $msg);
     }
     
-    public function listagemJson(Request $request)
+    public function select2(Request $request)
     {
-        if($request->get('codfamiliaproduto')) {
-            $model = GrupoProduto::where('codfamiliaproduto', $request->get('codfamiliaproduto'))
-                ->grupoproduto($request->get('q'))
-                ->select('codgrupoproduto as id', 'grupoproduto', 'inativo')
-                ->get();
-            return response()->json(['items' => $model]);       
-        } elseif($request->get('id')) {
-            $id = numeroLimpo($request->get('id'));
-            $model = GrupoProduto::where('codgrupoproduto', $id)->select('codgrupoproduto as id', 'grupoproduto')->first();
-            return response()->json($model);
+        // Parametros que o Selec2 envia
+        $params = $request->get('params');
+        
+        // Quantidade de registros por pagina
+        $registros_por_pagina = 100;
+        
+        if(!empty($request->get('id'))) {    
+            // Monta Retorno
+            $item = GrupoProduto::findOrFail($request->get('id'));
+            return [
+                'id' => $item->codgrupoproduto,
+                'grupoproduto' => $item->grupoproduto,
+                'inativo' => $item->inativo,
+            ];
+        } else {
+
+            // Numero da Pagina
+            $params['page'] = $params['page']??1;
+            
+            // Monta Query
+            $qry = GrupoProduto::where('codfamiliaproduto', '=', $request->codfamiliaproduto);
+            
+            if(!empty($params['term'])) {
+                foreach (explode(' ', $params['term']) as $palavra) {
+                    if (!empty($palavra)) {
+                        $qry->whereRaw("(tblgrupoproduto.grupoproduto ilike '%{$palavra}%')");
+                    }
+                }
+            }
+
+            if ($request->get('somenteAtivos') == 'true') {
+                $qry->ativo();
+            }
+            
+            // Total de registros
+            $total = $qry->count();
+            
+            // Ordenacao e dados para retornar
+            $qry->select('codgrupoproduto', 'grupoproduto', 'inativo');
+            $qry->orderBy('grupoproduto', 'ASC');
+            $qry->limit($registros_por_pagina);
+            $qry->offSet($registros_por_pagina * ($params['page']-1));
+            
+            // Percorre registros
+            $results = [];
+            foreach ($qry->get() as $item) {
+                $results[] = [
+                    'id' => $item->codgrupoproduto,
+                    'grupoproduto' => $item->grupoproduto,
+                    'inativo' => $item->inativo,
+                ];
+            }
+            
+            // Monta Retorno
+            return [
+                'results' => $results,
+                'params' => $params,
+                'pagination' =>  [
+                    'more' => ($total > $params['page'] * $registros_por_pagina)?true:false,
+                ]
+            ];
         }
-    } 
+    }
 }

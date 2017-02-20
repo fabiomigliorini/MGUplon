@@ -288,6 +288,7 @@ Form::macro('select2FamiliaProduto', function($name, $value = null, $options = [
     $script = <<< END
 
     <script type="text/javascript">
+        
     $(document).ready(function() {
         
         $('#{$id}').select2({
@@ -306,7 +307,8 @@ Form::macro('select2FamiliaProduto', function($name, $value = null, $options = [
                 dataType:'json',
                 data: function (params) {
                     return {
-                        params: params, 
+                        params: params,
+                        somenteAtivos: {$somenteAtivos},
                         codsecaoproduto: $('#{$options['codsecaoproduto']}').val()
                     };
                 },
@@ -330,15 +332,18 @@ Form::macro('select2FamiliaProduto', function($name, $value = null, $options = [
                 if (repo.loading) return repo.text;
 
                 var css_titulo = "";
-                var css_detalhes = "";
+                var css_detalhes = "text-muted";
                 if (repo.inativo) {
                     css_titulo = "text-danger";
                     css_detalhes = "text-danger";
                 }
 
+                var nome = repo.fantasia;
+
                 var markup = "<div class='clearfix'>";
                 markup    += "<strong class='" + css_titulo + "'>" + repo.familiaproduto + "</strong>";
                 markup    += "</div>";
+
                 return markup; 
             },
                     
@@ -359,19 +364,19 @@ END;
         $(document).ready(function() {
             $('#{$options['codsecaoproduto']}').on('change', function (e) {
                 e.preventDefault();
-                $('#{$options['id']}').select2('val', null).trigger('change');
+                $('#{$options['id']}').select2('val', null);
             });
         });
     </script>
 END;
 }
+
     $value_form = Form::getValueAttribute($name)??$value;
     $value_form = empty($value_form)?$value:$value_form;
     $campo = Form::select($name, [$value_form => ' ... Carregando ... '], $value, $options);
 
     return $campo . $script;
 });
-
 
 /* GRUPO DE PRODUTO */
 Form::macro('select2GrupoProduto', function($name, $value = null, $options = [])
@@ -394,6 +399,7 @@ Form::macro('select2GrupoProduto', function($name, $value = null, $options = [])
     $script = <<< END
 
     <script type="text/javascript">
+        
     $(document).ready(function() {
         
         $('#{$id}').select2({
@@ -412,7 +418,8 @@ Form::macro('select2GrupoProduto', function($name, $value = null, $options = [])
                 dataType:'json',
                 data: function (params) {
                     return {
-                        params: params, 
+                        params: params,
+                        somenteAtivos: {$somenteAtivos},
                         codfamiliaproduto: $('#{$options['codfamiliaproduto']}').val()
                     };
                 },
@@ -436,15 +443,18 @@ Form::macro('select2GrupoProduto', function($name, $value = null, $options = [])
                 if (repo.loading) return repo.text;
 
                 var css_titulo = "";
-                var css_detalhes = "";
+                var css_detalhes = "text-muted";
                 if (repo.inativo) {
                     css_titulo = "text-danger";
                     css_detalhes = "text-danger";
                 }
 
+                var nome = repo.fantasia;
+
                 var markup = "<div class='clearfix'>";
                 markup    += "<strong class='" + css_titulo + "'>" + repo.grupoproduto + "</strong>";
                 markup    += "</div>";
+
                 return markup; 
             },
                     
@@ -458,19 +468,24 @@ Form::macro('select2GrupoProduto', function($name, $value = null, $options = [])
 
     </script>
 END;
+
     if(isset($options['codfamiliaproduto'])) {
     $script .= <<< END
     <script type="text/javascript">
         $(document).ready(function() {
             $('#{$options['codfamiliaproduto']}').on('change', function (e) {
                 e.preventDefault();
-                $('#{$options['id']}').select2('val', null).trigger('change');
+                $('#{$options['id']}').select2('val', null);
             });
         });
     </script>
 END;
-    }
-    $campo = Form::text($name, $value, $options);
+}
+
+    $value_form = Form::getValueAttribute($name)??$value;
+    $value_form = empty($value_form)?$value:$value_form;
+    $campo = Form::select($name, [$value_form => ' ... Carregando ... '], $value, $options);
+
     return $campo . $script;
 });
 
@@ -496,6 +511,7 @@ Form::macro('select2SubGrupoProduto', function($name, $value = null, $options = 
     $script = <<< END
 
     <script type="text/javascript">
+        
     $(document).ready(function() {
         
         $('#{$id}').select2({
@@ -514,7 +530,8 @@ Form::macro('select2SubGrupoProduto', function($name, $value = null, $options = 
                 dataType:'json',
                 data: function (params) {
                     return {
-                        params: params, 
+                        params: params,
+                        somenteAtivos: {$somenteAtivos},
                         codgrupoproduto: $('#{$options['codgrupoproduto']}').val()
                     };
                 },
@@ -538,15 +555,18 @@ Form::macro('select2SubGrupoProduto', function($name, $value = null, $options = 
                 if (repo.loading) return repo.text;
 
                 var css_titulo = "";
-                var css_detalhes = "";
+                var css_detalhes = "text-muted";
                 if (repo.inativo) {
                     css_titulo = "text-danger";
                     css_detalhes = "text-danger";
                 }
 
+                var nome = repo.fantasia;
+
                 var markup = "<div class='clearfix'>";
                 markup    += "<strong class='" + css_titulo + "'>" + repo.subgrupoproduto + "</strong>";
                 markup    += "</div>";
+
                 return markup; 
             },
                     
@@ -560,20 +580,23 @@ Form::macro('select2SubGrupoProduto', function($name, $value = null, $options = 
 
     </script>
 END;
+
     if(isset($options['codgrupoproduto'])) {
     $script .= <<< END
     <script type="text/javascript">
         $(document).ready(function() {
             $('#{$options['codgrupoproduto']}').on('change', function (e) {
                 e.preventDefault();
-                $('#{$options['id']}').select2('val', null).trigger('change');
+                $('#{$options['id']}').select2('val', null);
             });
         });
     </script>
 END;
-    }
+}
 
-    $campo = Form::text($name, $value, $options);
+    $value_form = Form::getValueAttribute($name)??$value;
+    $value_form = empty($value_form)?$value:$value_form;
+    $campo = Form::select($name, [$value_form => ' ... Carregando ... '], $value, $options);
 
     return $campo . $script;
 });
