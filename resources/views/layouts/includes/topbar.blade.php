@@ -2,7 +2,7 @@
 <div class="topbar">
     <!-- LOGO -->
     <div class="topbar-left">
-        <a href="index.php" class="logo" id="logo-tour">
+        <a href="{{ url('') }}" class="logo" id="logo-tour">
             <img src="{{ URL::asset('public/assets/images/favicon.ico') }}" class="icon-c-logo" style="max-width: 28px">
             <span>MG Uplon</span></a>
     </div>

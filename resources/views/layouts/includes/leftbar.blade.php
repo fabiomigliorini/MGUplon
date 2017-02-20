@@ -92,7 +92,7 @@
 		<hr>
 
                 <li class="has_sub">
-                    <a href="index.php" class="waves-effect"><span
+                    <a href="{{ url('') }}" class="waves-effect"><span
                             class="label label-pill label-primary pull-xs-right">1</span><i
                             class="zmdi zmdi-view-dashboard"></i><span> Dashboard </span> </a>
                 </li>
