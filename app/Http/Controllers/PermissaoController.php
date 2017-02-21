@@ -126,7 +126,7 @@ class PermissaoController extends Controller
         ];
     }
     
-    public function destroy(Request $request)
+    public function destroy($id)
     {
         // monta a chave da permissao
         if ($request->classe == 'OBSOLETAS') {

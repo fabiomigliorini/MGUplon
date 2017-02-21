@@ -3,7 +3,7 @@
 namespace MGLara\Repositories;
 
 use Illuminate\Support\Facades\Gate;
-    
+use Carbon\Carbon;    
 /**
  * Description of Repository
  *

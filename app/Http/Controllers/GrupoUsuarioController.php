@@ -58,8 +58,8 @@ class GrupoUsuarioController extends Controller
         return view('grupo-usuario.edit',  ['bc'=>$this->bc, 'model'=>$model]);
     }
 
-    public function update($codgrupousuario, Request $request) {
-        $model = GrupoUsuario::findOrFail($codgrupousuario);
+    public function update(Request $request, $id) {
+        $model = GrupoUsuario::findOrFail($id);
         //$this->authorize('update', $model);
         $model->fill($request->all());
         if (!$model->validate())

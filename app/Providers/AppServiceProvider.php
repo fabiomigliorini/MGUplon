@@ -13,7 +13,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // Rotas personalizadas com metodos datatable / activate / inactivate
+        $registrar = new \MGLara\Library\Route\ResourceRegistrar($this->app['router']);
+
+        $this->app->bind('Illuminate\Routing\ResourceRegistrar', function () use ($registrar) {
+            return $registrar;
+        });    
+        
     }
 
     /**
