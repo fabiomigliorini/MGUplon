@@ -109,7 +109,7 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            url: '{{ url('permissao/delete') }}',
+            url: '{{ url('permissao') }}',
             dataType: 'json',
             data: {
                 classe: classe,
