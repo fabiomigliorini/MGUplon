@@ -87,11 +87,11 @@ function recarregaDivS(divs, url) {
     });
 }
 
-function excluirAtivarInativar (type, method, url, pergunta, funcaoAfter, funcaoOnError) {
+function deleteActivate (type, method, url, question, after, on_error) {
  
     // Executa Pergunta
     swal({
-      title: pergunta,
+      title: question,
       type: "warning",
       showCancelButton: true,
       closeOnConfirm: false,
@@ -122,8 +122,8 @@ function excluirAtivarInativar (type, method, url, pergunta, funcaoAfter, funcao
                             text: 'Operação efetuada com sucesso!',
                             type: 'success',
                         }, function () {
-                            if (typeof funcaoAfter !== 'undefined') {
-                                eval(funcaoAfter);
+                            if (typeof after !== 'undefined') {
+                                eval(after);
                             }
                         });
                         
@@ -134,8 +134,8 @@ function excluirAtivarInativar (type, method, url, pergunta, funcaoAfter, funcao
                             text: retorno.mensagem,
                             type: 'error',
                         }, function () {
-                            if (typeof funcaoOnError !== 'undefined') {
-                                eval(funcaoOnError);
+                            if (typeof on_error !== 'undefined') {
+                                eval(on_error);
                             }
                         });
                     }
@@ -156,8 +156,8 @@ function excluirAtivarInativar (type, method, url, pergunta, funcaoAfter, funcao
                         text: XHR.status + ' ' + XHR.statusText,
                         type: 'error',
                     }, function () {
-                        if (typeof funcaoOnError !== 'undefined') {
-                            eval(funcaoOnError);
+                        if (typeof on_error !== 'undefined') {
+                            eval(on_error);
                         }
                     });
                 }
@@ -169,42 +169,42 @@ function excluirAtivarInativar (type, method, url, pergunta, funcaoAfter, funcao
 }
 
 
-function excluirClick(tag) {
+function deleteClick(tag) {
     
     var url = $(tag).attr('href');
-    var pergunta = $(tag).data('pergunta');
-    var funcaoAfter = $(tag).data('after');
-    var funcaoOnError = $(tag).data('on-error');
+    var question = $(tag).data('question');
+    var after = $(tag).data('after');
+    var on_error = $(tag).data('on-error');
     
-    pergunta = (typeof pergunta === 'undefined') ? 'Tem certeza?' : pergunta;
+    question = (typeof question === 'undefined') ? 'Tem certeza?' : question;
 
-    return excluirAtivarInativar ('POST', 'DELETE', url, pergunta, funcaoAfter, funcaoOnError);
+    return deleteActivate ('POST', 'DELETE', url, question, after, on_error);
     
 }
 
 
-function inativarClick(tag) {
+function activateClick(tag) {
     
     var url = $(tag).attr('href');
-    var pergunta = $(tag).data('pergunta');
-    var funcaoAfter = $(tag).data('after');
-    var funcaoOnError = $(tag).data('on-error');
+    var question = $(tag).data('question');
+    var after = $(tag).data('after');
+    var on_error = $(tag).data('on-error');
     
-    pergunta = (typeof pergunta === 'undefined') ? 'Tem certeza?' : pergunta;
+    question = (typeof question === 'undefined') ? 'Tem certeza?' : question;
     
-    return excluirAtivarInativar ('PUT', 'PUT', url, pergunta, funcaoAfter, funcaoOnError);
+    return deleteActivate ('PUT', 'PUT', url, question, after, on_error);
     
 }
 
 
 function inicializa(elemento) {
-    $(elemento).find('a[data-excluir]').click(function(event) {
+    $(elemento).find('a[data-delete]').click(function(event) {
         event.preventDefault();
-        return excluirClick($(this));
+        return deleteClick($(this));
     });
-    $(elemento).find('a[data-inativar]').click(function(event) {
+    $(elemento).find('a[data-activate]').click(function(event) {
         event.preventDefault();
-        return inativarClick($(this));
+        return activateClick($(this));
     });
 }
 

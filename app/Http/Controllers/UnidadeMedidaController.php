@@ -9,17 +9,22 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
 
-use MGLara\Models\UnidadeMedida;
+//use MGLara\Models\UnidadeMedida;
+use MGLara\Repositories\UnidadeMedidaRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
 
 use Carbon\Carbon;
 
+/**
+ * @property UnidadeMedidaRepository $repository 
+ */
 class UnidadeMedidaController extends Controller
 {
 
-    public function __construct() {
+    public function __construct(UnidadeMedidaRepository $repository) {
+        $this->repository = $repository;
         $this->bc = new Breadcrumb('Unidades de Medida');
         $this->bc->addItem('Unidades de Medida', url('unidade-medida'));
     }
@@ -30,16 +35,86 @@ class UnidadeMedidaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request) {
-        $this->authorize('list', UnidadeMedida::class);
+        
+        // Permissao
+        $this->repository->authorize('listing');
+        
+        // Breadcrumb
         $this->bc->addItem('Listagem');
+        
+        // Filtro da listagem
         if (!$filtro = $this->getFiltro()) {
             $filtro = [
                 'inativo' => 1,
             ];
         }
+        
+        // retorna View
         return view('unidade-medida.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
     }
 
+    /**
+     * Monta json para alimentar a Datatable do index
+     * 
+     * @param Request $request
+     * @return json
+     */
+    public function datatable(Request $request) {
+        
+        // Autorizacao
+        $this->repository->authorize('listing');
+
+        // Grava Filtro para montar o formulario da proxima vez que o index for carregado
+        $this->setFiltro($request['filtros']);
+        
+        // Ordenacao
+        $columns[0] = 'codunidademedida';
+        $columns[1] = 'inativo';
+        $columns[2] = 'codunidademedida';
+        $columns[3] = 'unidademedida';
+        $columns[4] = 'sigla';
+        $columns[5] = 'criacao';
+        $columns[6] = 'alteracao';
+        $sort = [];
+        if (!empty($request['order'])) {
+            foreach ($request['order'] as $order) {
+                $sort[] = [
+                    'column' => $columns[$order['column']],
+                    'dir' => $order['dir'],
+                ];
+            }
+        }
+
+        // Pega listagem dos registros
+        $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
+        
+        // Monta Totais
+        $recordsTotal = $this->repository->count();
+        $recordsFiltered = $regs->count();
+        
+        // Formata registros para exibir no data table
+        $data = [];
+        foreach ($regs as $reg) {
+            $data[] = [
+                url('unidade-medida', $reg->codunidademedida),
+                formataData($reg->inativo, 'C'),
+                formataCodigo($reg->codunidademedida),
+                $reg->unidademedida,
+                $reg->sigla,
+                formataData($reg->criacao, 'C'),
+                formataData($reg->alteracao, 'C'),
+            ];
+        }
+        
+        // Envelopa os dados no formato do data table
+        $ret = new Datatable($request['draw'], $recordsTotal, $recordsFiltered, $data);
+        
+        // Retorna o JSON
+        return collect($ret);
+        
+    }
+    
+    
     /**
      * Show the form for creating a new resource.
      *
@@ -47,10 +122,17 @@ class UnidadeMedidaController extends Controller
      */
     public function create()
     {
-        $this->authorize('create', UnidadeMedida::class);
+        // cria um registro em branco
+        $this->repository->new();
+        
+        // autoriza
+        $this->repository->authorize('create');
+        
+        // breadcrumb
         $this->bc->addItem('Nova');
-        $model = new UnidadeMedida();
-        return view('unidade-medida.create', ['bc'=>$this->bc, 'model'=>$model]);
+        
+        // retorna view
+        return view('unidade-medida.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -61,16 +143,13 @@ class UnidadeMedidaController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create', UnidadeMedida::class);
-        $model = new UnidadeMedida($request->all());
+        parent::store($request);
         
-        if (!$model->validate()) {
-            $this->throwValidationException($request, $model->_validator);
-        }
+        // Mensagem de registro criado
+        Session::flash('flash_create', 'Unidade de Medida criada!');
         
-        $model->save();
-        Session::flash('flash_create', 'Registro criado!');
-        return redirect("unidade-medida/$model->codunidademedida");    
+        // redireciona para o view
+        return redirect("unidade-medida/{$this->repository->model->codunidademedida}");
     }
 
     /**
@@ -81,11 +160,18 @@ class UnidadeMedidaController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $model = UnidadeMedida::findOrFail($id);
-        $this->authorize('view', $model);
-        $this->bc->addItem($model->unidademedida);
-        $this->bc->header = $model->unidademedida;
-        return view('unidade-medida.show', ['bc'=>$this->bc, 'model'=>$model]);
+        // busca registro
+        $this->repository->findOrFail($id);
+        
+        //autorizacao
+        $this->repository->authorize('view');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->unidademedida);
+        $this->bc->header = $this->repository->model->unidademedida;
+        
+        // retorna show
+        return view('unidade-medida.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -96,12 +182,19 @@ class UnidadeMedidaController extends Controller
      */
     public function edit($id)
     {
-        $model = UnidadeMedida::findOrFail($id);
-        $this->authorize('update', $model);
-        $this->bc->addItem($model->unidademedida, url('unidade-medida', $model->codunidademedida));
-        $this->bc->header = $model->unidademedida;
+        // busca regstro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->unidademedida, url('unidade-medida', $this->repository->model->codunidademedida));
+        $this->bc->header = $this->repository->model->unidademedida;
         $this->bc->addItem('Alterar');
-        return view('unidade-medida.edit', ['bc'=>$this->bc, 'model'=>$model]);
+        
+        // retorna formulario edit
+        return view('unidade-medida.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -113,137 +206,14 @@ class UnidadeMedidaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $model = UnidadeMedida::findOrFail($id);
-        $this->authorize('update', $model);
-        $model->fill($request->all());
-
-        if (!$model->validate())
-            $this->throwValidationException($request, $model->_validator);
-
-        $model->save();
         
+        parent::update($request, $id);
+        
+        // mensagem re registro criado
         Session::flash('flash_update', 'Registro alterado!');
-        return redirect("unidade-medida/$model->codunidademedida"); 
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        $model = UnidadeMedida::find($id);
-        $this->authorize('delete', $model);
-        if ($model->ProdutoS->count() > 0) {
-            return ['OK' => false, 'mensagem' => 'Unidade de Medida está sendo utilizada em Produtos!'];
-        }
-        return ['OK' => $model->delete()];
-    }
-    
-    public function ativar($id) {
-        $model = UnidadeMedida::find($id);
-        $this->authorize('update', $model);
-        return ['OK' => $model->ativar()];
-    }
-    
-    public function inativar($id) {
-        $model = UnidadeMedida::find($id * 200);
-        $this->authorize('update', $model);
-        return ['OK' => $model->inativar()];
-    }
         
-    
-    public function datatable(Request $request) {
-        
-        $this->authorize('list', UnidadeMedida::class);
-        
-        // Query da Entidade
-        $ums = UnidadeMedida::query();
-
-        $this->setFiltro($request['filtros']);
-        
-        //dd($request['filtros']);
-        
-        // Filtros
-        if (!empty($request['filtros']['codunidademedida'])) {
-            $ums->where('codunidademedida', '=', $request['filtros']['codunidademedida']);
-        }
-        
-        if (!empty($request['filtros']['unidademedida'])) {
-            foreach(explode(' ', $request['filtros']['unidademedida']) as $palavra) {
-                if (!empty($palavra)) {
-                    $ums->where('unidademedida', 'ilike', "%$palavra%");
-                }
-            }
-        }
-        
-        if (!empty($request['filtros']['sigla'])) {
-            foreach(explode(' ', $request['filtros']['sigla']) as $palavra) {
-                if (!empty($palavra)) {
-                    $ums->where('sigla', 'ilike', "%$palavra%");
-                }
-            }
-        }
-        
-        // Registros
-        switch ($request['filtros']['inativo']) {
-            case 2: //Inativos
-                $ums = $ums->inativo();
-                break;
-
-            case 9: //Todos
-                break;
-
-            case 1: //Ativos
-            default:
-                $ums = $ums->ativo();
-                break;
-        }
-        
-        $recordsTotal = UnidadeMedida::count();
-        $recordsFiltered = $ums->count();
-        
-        // Paginacao
-        $ums->offset($request['start']);
-        $ums->limit($request['length']);
-        
-        // Ordenacao
-        $columns[0] = 'codunidademedida';
-        $columns[1] = 'inativo';
-        $columns[2] = 'codunidademedida';
-        $columns[3] = 'unidademedida';
-        $columns[4] = 'sigla';
-        $columns[5] = 'criacao';
-        $columns[6] = 'alteracao';
-        if (!empty($request['order'])) {
-            foreach ($request['order'] as $order) {
-                $ums->orderBy($columns[$order['column']], $order['dir']);
-            }
-        }
-        
-        // Registros
-        $ums = $ums->get();
-        $data = [];
-        foreach ($ums as $um) {
-            $data[] = [
-                url('unidade-medida', $um->codunidademedida),
-                formataData($um->inativo, 'C'),
-                formataCodigo($um->codunidademedida),
-                $um->unidademedida,
-                $um->sigla,
-                formataData($um->criacao, 'C'),
-                formataData($um->alteracao, 'C'),
-            ];
-        }
-        
-        // Envelope Retorno
-        $ret = new Datatable($request['draw'], $recordsTotal, $recordsFiltered, $data);
-        
-        // Retorno
-        return $ret->response();
-        
+        // redireciona para view
+        return redirect("unidade-medida/{$this->repository->model->codunidademedida}"); 
     }
     
 }

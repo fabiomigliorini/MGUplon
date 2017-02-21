@@ -8,11 +8,11 @@
             <div class="btn-group pull-right" role="group" aria-label="Controles">
                 <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida/edit") }}"><i class="fa fa-pencil"></i></a>
                 @if (empty($model->inativo))
-                    <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida/inativar") }}" data-inativar data-pergunta="Tem certeza que deseja inativar '{{ $model->unidademedida }}'?" data-after="recarregaDiv('main-container')"><i class="fa fa-ban"></i></a>
+                    <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida/inactivate") }}" data-activate data-question="Tem certeza que deseja inativar '{{ $model->unidademedida }}'?" data-after="recarregaDiv('main-container')"><i class="fa fa-ban"></i></a>
                 @else
-                    <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida/ativar") }}" data-inativar data-pergunta="Tem certeza que deseja ativar '{{ $model->unidademedida }}'?" data-after="recarregaDiv('main-container')"><i class="fa fa-circle-o"></i></a>
+                    <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida/activate") }}" data-activate data-question="Tem certeza que deseja ativar '{{ $model->unidademedida }}'?" data-after="recarregaDiv('main-container')"><i class="fa fa-circle-o"></i></a>
                 @endif
-                <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida") }}" data-excluir data-pergunta="Tem certeza que deseja excluir '{{ $model->unidademedida }}'?" data-after-delete="location.replace('{{ url('unidade-medida') }}');"><i class="fa fa-trash"></i></a>                
+                <a class="btn btn-secondary" href="{{ url("unidade-medida/$model->codunidademedida") }}" data-delete data-question="Tem certeza que deseja excluir '{{ $model->unidademedida }}'?" data-after="location.replace('{{ url('unidade-medida') }}');"><i class="fa fa-trash"></i></a>                
             </div>    
         </h3>
         <div class="card-block">

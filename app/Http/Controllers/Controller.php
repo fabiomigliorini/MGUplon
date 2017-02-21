@@ -23,26 +23,8 @@ abstract class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     /**
-     * Converte os campos com string de data em um array para Carbon
-     * 
-     * @param array $array_dados
-     * @param array $campos_data
-     * @param string $formato da Data
-     */
-    public static function datasParaCarbon ($array_dados = [], $campos_data = [], $formato = null)
-    {
-        foreach ($campos_data as $campo) {
-            if (!empty($array_dados[$campo])) {
-                if (!($array_dados[$campo] instanceof Carbon)) {
-                    $array_dados[$campo] = new Carbon($array_dados[$campo], $formato);
-                }
-            }
-        }
-        return $array_dados;
-    }
-    
-    /**
      * Monta a chave da sessao para armazenar o filtro
+     * 
      * @param string $sufixo Sufixo a ser utilizado na chave da sessao
      * @param string $chave Chave da sessao a ser utilizada
      * @return string
@@ -57,6 +39,7 @@ abstract class Controller extends BaseController
 
     /**
      * Armazena filtro de busca na sessao
+     * 
      * @param array $filtros Array com os filtros para gravar na sessao
      * @param string $sufixo Sufixo a ser utilizado na chave da sessao
      * @param string $chave Chave da sessao a ser utilizada
@@ -69,6 +52,7 @@ abstract class Controller extends BaseController
     
     /**
      * Recupera filtro de busca armazenado na sessao
+     * 
      * @param string $sufixo Sufixo a ser utilizado na chave da sessao
      * @param string $chave Chave da sessao a ser utilizada
      * @return array
@@ -78,4 +62,121 @@ abstract class Controller extends BaseController
         return session($chave);
     }
     
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        // Busca o registro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('delete');
+        
+        // se esta sendo usado
+        if ($mensagem = $this->repository->used()) {
+            return ['OK' => false, 'mensagem' => $mensagem];
+        }
+        
+        // apaga
+        return ['OK' => $this->repository->delete()];
+    }
+
+    /**
+     * Ativa um registro
+     * 
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function activate($id) {
+        
+        // Busca o registro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // ativa
+        return ['OK' => $this->repository->activate()];
+        
+    }
+    
+    /**
+     * Inativa um registro
+     * 
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function inactivate($id) {
+        
+        // Busca o registro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // ativa
+        return ['OK' => $this->repository->inactivate()];
+        
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        // Busca registro para autorizar
+        $this->repository->findOrFail($id);
+
+        // Valida dados
+        $data = $request->all();
+        if (!$this->repository->validate($data, $id)) {
+            $this->throwValidationException($request, $this->repository->validator);
+        }
+        
+        // autorizacao
+        $this->repository->fill($data);
+        $this->repository->authorize('update');
+        
+        // salva
+        if (!$this->repository->update()) {
+            abort(500);
+        }
+        
+    } 
+    
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        // busca dados do formulario
+        $data = $request->all();
+        
+        // valida dados
+        if (!$this->repository->validate($data)) {
+            $this->throwValidationException($request, $this->repository->validator);
+        }
+
+        // preenche dados 
+        $this->repository->new($data);
+        
+        // autoriza
+        $this->repository->authorize('create');
+        
+        // cria
+        if (!$this->repository->create()) {
+            abort(500);
+        }
+    }    
 }

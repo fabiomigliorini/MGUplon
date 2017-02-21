@@ -21,7 +21,7 @@ class MGPolicy
      * @param  \MGLara\Models\Usuario  $user
      * @return mixed
      */
-    public function list(Usuario $user) {
+    public function listing(Usuario $user) {
         return $user->can(class_basename($this) . '.' . __FUNCTION__);
     }
 

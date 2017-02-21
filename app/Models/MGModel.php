@@ -8,11 +8,7 @@
 
 namespace MGLara\Models;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-
-use Carbon\Carbon;
 
 /**
  * Description of Model
@@ -27,86 +23,31 @@ abstract class MGModel extends Model {
     
     public $timestamps = true;
     
-    protected $_regrasValidacao = [];
-    protected $_mensagensErro = [];
-    public $_validator;
-    
-    /*
-    public function UsuarioCriacao()
-    {
-        return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
-    }
-    
-    public function UsuarioAlteracao()
-    {
-        return $this->belongsTo(Usuario::class, 'codusuarioalteracao', 'codusuario');
-    }     
-    */
-    
-    #public function __construct() {
-        
-    #}
-
-
-    /*
-    public function nullIfBlank($field)
-    {
-        return trim($field) !== '' ? $field : null;
-    }
-     * 
-     */
-    
     public static function boot()
     {
         parent::boot();
 
-        static::creating(function($model)
-        {
+        static::creating(function($model) {
             if (Auth::user() !== NULL) {
                 $model->attributes['codusuariocriacao'] = Auth::user()->codusuario;
+                $model->attributes['codusuarioalteracao'] = Auth::user()->codusuario;
             }
         });
         
-        static::updating(function($model)
-        {
+        static::updating(function($model) {
             if (Auth::user() !== NULL) {
                 $model->attributes['codusuarioalteracao'] = Auth::user()->codusuario;
             }
         });
         
-        static::saving(function($model)
-        {
+        static::saving(function($model) {
             foreach ($model->toArray() as $fieldName => $fieldValue) {
                 if ( $fieldValue === '' ) {
                     $model->attributes[$fieldName] = null;
                 }
             }
-
             return true;
         });
-    }
-    
-    public function validate() {
-        
-        $this->_validator = Validator::make(
-            $this->getAttributes(), 
-            $this->_regrasValidacao, 
-            $this->_mensagensErro
-        );
-        
-        if ($this->_validator->fails())
-            return false;
-        else
-            return true;        
-        
-    }
-    
-    public function scopeCompare($query, $coluna,  $valor)
-    {
-        if (trim($valor) === '')
-            return;
-        
-        $query->where($coluna, $valor);
     }
     
     public function scopeAtivo($query) {
@@ -115,18 +56,6 @@ abstract class MGModel extends Model {
     
     public function scopeInativo($query) {
         $query->whereNotNull("{$this->table}.inativo");
-    }
-    
-    public function ativar() {
-        $model = $this->fresh();
-        $model->inativo = null;
-        return $model->save();
-    }
-    
-    public function inativar() {
-        $model = $this->fresh();
-        $model->inativo = new Carbon('now');
-        return $model->save();        
     }
     
 }
