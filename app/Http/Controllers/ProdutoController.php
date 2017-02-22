@@ -392,6 +392,93 @@ class ProdutoController extends Controller
             return response()->json($query);
         }
     }
+    
+    public function select2(Request $request)
+    {
+        // Parametros que o Selec2 envia
+        $params = $request->get('params');
+        
+        // Quantidade de registros por pagina
+        $registros_por_pagina = 100;
+        
+        // Se veio termo de busca
+        if(!empty($params['term'])) {
+
+            // Numero da Pagina
+            $params['page'] = $params['page']??1;
+            
+            // Monta Query
+            $qry = Produto::query();
+            $qry->join('tblsubgrupoproduto', 'tblsubgrupoproduto.codsubgrupoproduto', '=', 'tblproduto.codsubgrupoproduto')
+                ->join('tblgrupoproduto', 'tblgrupoproduto.codgrupoproduto', '=', 'tblsubgrupoproduto.codgrupoproduto')
+                ->join('tblfamiliaproduto','tblfamiliaproduto.codfamiliaproduto', '=', 'tblgrupoproduto.codfamiliaproduto')
+                ->join('tblsecaoproduto', 'tblsecaoproduto.codsecaoproduto', '=', 'tblfamiliaproduto.codsecaoproduto')
+                ->join('tblmarca', 'tblmarca.codmarca', '=', 'tblproduto.codmarca');
+                
+            // Condicoes de busca
+            if (strlen($params['term']) == 6 & is_numeric($params['term'])) {
+                $qry->where('codproduto', '=', $params['term']);
+            }
+            else {
+                foreach (explode(' ', $params['term']) as $palavra) {
+                    $qry->whereRaw("(tblproduto.produto ilike '%{$palavra}%')");
+                }
+            }            
+            
+            if ($request->get('somenteAtivos') == 'true') {
+                $qry->ativo();
+            }
+            
+            // Total de registros
+            $total = $qry->count();
+            
+            // Ordenacao e dados para retornar
+            $qry->select('codproduto', 'produto', 'preco', 'referencia', 'tblproduto.inativo', 'tblsecaoproduto.secaoproduto', 'tblfamiliaproduto.familiaproduto', 'tblgrupoproduto.grupoproduto', 'tblsubgrupoproduto.subgrupoproduto', 'tblmarca.marca');
+            $qry->orderBy('produto', 'ASC');
+            $qry->limit($registros_por_pagina);
+            $qry->offSet($registros_por_pagina * ($params['page']-1));
+            
+            // Percorre registros
+            $results = [];
+            foreach ($qry->get() as $item) {
+                $results[] = [
+                    'id'        =>  $item->codproduto,
+                    'codigo'    => formataCodigo($item->codproduto, 6),
+                    'produto'   => $item->produto,
+                    'preco'     => formataNumero($item->preco),
+                    'referencia'=> $item->referencia,
+                    'inativo'   => $item->inativo,
+                    'secaoproduto'     => $item->secaoproduto,
+                    'familiaproduto'   => $item->familiaproduto,
+                    'grupoproduto'     => $item->grupoproduto,
+                    'subgrupoproduto'  => $item->subgrupoproduto,
+                    'marca'     => $item->marca
+                ];
+            }
+            
+            // Monta Retorno
+            return [
+                'results' => $results,
+                'params' => $params,
+                'pagination' =>  [
+                    'more' => ($total > $params['page'] * $registros_por_pagina)?true:false,
+                ]
+            ];
+
+        } elseif($request->get('id')) {
+            
+            // Monta Retorno
+            $item = Produto::findOrFail($request->get('id'));
+            return [
+                'id' => $item->codproduto,
+                'produto' => $item->produto,
+                'referencia' => $item->referencia,
+                'preco' => $item->preco,
+                'inativo' => formataData($item->inativo, 'C')
+            ];
+        }
+    }
+    
 
     public function listagemJsonDescricao(Request $request) 
     {
