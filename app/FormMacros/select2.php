@@ -1134,6 +1134,113 @@ END;
 /* PRODUTO Barra */
 Form::macro('select2ProdutoBarra', function($name, $value = null, $options = [])
 {
+    $options['id'] = $options['id']??$name;
+    $id = $options['id'];
+    $placeholder = $options['placeholder']??'Produto';
+    $minimumInputLength = $options['minimumInputLength']??3;
+    $allowClear = ($options['allowClear']??true)?'true':'false';
+    $closeOnSelect = ($options['closeOnSelect']??true)?'true':'false';
+    $cache = ($options['cache']??true)?'true':'false';
+    $somenteAtivos = ($options['somenteAtivos']??true)?'true':'false';
+    $script = <<< END
+    <script type="text/javascript">
+    $(document).ready(function() {
+        
+        $('#{$id}').select2({
+        
+            placeholder: '{$placeholder}',
+            minimumInputLength: {$minimumInputLength},
+            allowClear: {$allowClear},
+            closeOnSelect: {$closeOnSelect},
+            cache: {$cache},
+            
+            escapeMarkup: function (markup) { return markup; },
+            
+            ajax:{
+                url:baseUrl+'/produto-barra/select2',
+                delay: 300,
+                dataType:'json',
+                data: function (params) {
+                    return {
+                        params: params,
+                        somenteAtivos: {$somenteAtivos},
+                    };
+                },
+            },
+            
+            initSelection:function (element, callback) {
+                console.log('entrou');
+                $.ajax({
+                    type: "GET",
+                    url: baseUrl+"/produto-barra/select2",
+                    data: "id="+$('#{$id}').val(),
+                    dataType: "json",
+                    success: function(result) { 
+                        callback(result); 
+                    }
+                });
+            },
+                    
+            templateResult: function (repo) {
+                if (repo.loading) return repo.text;
+
+                var css_titulo = "";
+                var css_detalhes = "";
+                if (repo.inativo) {
+                    css_titulo = "text-danger";
+                    css_detalhes = "text-danger";
+                }
+
+                var markup = "";
+                markup    += "<div class='row "+ css_titulo +"'>";
+
+                markup    += "<strong class='col-md-9'>";
+                markup    += repo.produto + "";
+                markup    += "</strong>";
+
+                markup    += "<div class='col-md-3'>";
+                markup    += "<small class='pull-left'>" + repo.unidademedida + "</small>";
+                markup    += "<span class='pull-right'> " + repo.preco + "</span>";
+                markup    += "</div>";
+
+                markup    += "</div>";
+
+                markup    += "<small class='" + css_detalhes + "'>";
+                markup    += "<strong>" + repo.barras + "</strong>";
+                markup    += " » " + repo.codproduto;
+                markup    += " » " + repo.secaoproduto;
+                markup    += " » " + repo.familiaproduto;
+                markup    += " » " + repo.grupoproduto;
+                markup    += " » " + repo.subgrupoproduto;
+                markup    += " » " + repo.marca;
+                if (repo.referencia) {
+                    markup    += " » " + repo.referencia;
+                }
+                markup    += "</small>";
+                return markup; 
+            },
+                    
+            templateSelection: function (repo) {
+                return repo.produto;
+            },
+                    
+        });
+                    
+    });
+
+    </script>
+END;
+
+    $value_form = Form::getValueAttribute($name)??$value;
+    $value_form = empty($value_form)?$value:$value_form;
+    $campo = Form::select($name, [$value_form => ' ... Carregando ... '], $value, $options);
+
+    return $campo . $script;
+});
+
+
+Form::macro('select2ProdutoBarra2', function($name, $value = null, $options = [])
+{
     if (empty($options['id']))
         $options['id'] = $name;
 
