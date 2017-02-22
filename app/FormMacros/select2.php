@@ -338,8 +338,6 @@ Form::macro('select2FamiliaProduto', function($name, $value = null, $options = [
                     css_detalhes = "text-danger";
                 }
 
-                var nome = repo.fantasia;
-
                 var markup = "<div class='clearfix'>";
                 markup    += "<strong class='" + css_titulo + "'>" + repo.familiaproduto + "</strong>";
                 markup    += "</div>";
@@ -448,8 +446,6 @@ Form::macro('select2GrupoProduto', function($name, $value = null, $options = [])
                     css_titulo = "text-danger";
                     css_detalhes = "text-danger";
                 }
-
-                var nome = repo.fantasia;
 
                 var markup = "<div class='clearfix'>";
                 markup    += "<strong class='" + css_titulo + "'>" + repo.grupoproduto + "</strong>";
@@ -560,8 +556,6 @@ Form::macro('select2SubGrupoProduto', function($name, $value = null, $options = 
                     css_titulo = "text-danger";
                     css_detalhes = "text-danger";
                 }
-
-                var nome = repo.fantasia;
 
                 var markup = "<div class='clearfix'>";
                 markup    += "<strong class='" + css_titulo + "'>" + repo.subgrupoproduto + "</strong>";
@@ -771,79 +765,93 @@ Form::macro('select2NaturezaOperacao', function($name, $selected = null, $option
 /* CEST */
 Form::macro('select2Cest', function($name, $value = null, $options = [])
 {
-    if (empty($options['id']))
-        $options['id'] = $name;
-
-    if (empty($options['codncm']))
-        $options['codncm'] = '';
-
-    if (empty($options['placeholder']))
-        $options['placeholder'] = 'CEST...';
-
-    if (empty($options['allowClear']))
-        $options['allowClear'] = true;
-    $options['allowClear'] = ($options['allowClear'])?'true':'false';
-
-    if (empty($options['closeOnSelect']))
-        $options['closeOnSelect'] = true;
-    $options['closeOnSelect'] = ($options['closeOnSelect'])?'true':'false';
-
-    if (empty($options['ativo']))
-        $options['ativo'] = 1;
-
+    $options['id'] = $options['id']??$name;
+    $id = $options['id'];
+    $placeholder = $options['placeholder']??'Família';
+    $minimumInputLength = $options['minimumInputLength']??0;
+    $allowClear = ($options['allowClear']??true)?'true':'false';
+    $closeOnSelect = ($options['closeOnSelect']??true)?'true':'false';
+    $cache = ($options['cache']??true)?'true':'false';
+    $somenteAtivos = ($options['somenteAtivos']??true)?'true':'false';
     $script = <<< END
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $('#{$options['id']}').select2({
-                    placeholder: '{$options['placeholder']}',
-                    minimumInputLength: 0,
-                    allowClear: {$options['allowClear']},
-                    closeOnSelect: {$options['closeOnSelect']},
-                    formatResult: function(item) {
-                        var markup = "";
-                        markup    += "<b>" + item.ncm + "</b>/";
-                        markup    += "<b>" + item.cest + "</b>&nbsp;";
-                        markup    += "<span>" + item.descricao + "</span>";
-                        return markup;
-                    },
-                    formatSelection: function(item) {
-                            return item.ncm + "/" + item.cest + "&nbsp;" + item.descricao;
-                    },
-                    ajax:{
-                        url:baseUrl+"/cest/select2",
-                        dataType:'json',
-                        quietMillis:500,
-                        data:function(codncm, page) {
-                            return {codncm: $('#codncm').val()};
-                        },
-                        results:function(data, page) {
-                            var more = (page * 20) < data.total;
-                            return {results: data};
-                        }
-                    },
-                    initSelection:function (element, callback) {
-                        $.ajax({
-                            type: "GET",
-                            url: baseUrl+"/cest/select2",
-                            data: "id="+$('#{$options['id']}').val(),
-                            dataType: "json",
-                            success: function(result) { callback(result); }
-                        });
-                    },
-                    width:'resolve'
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#{$id}').select2({
+        
+            placeholder: '{$placeholder}',
+            minimumInputLength: {$minimumInputLength},
+            allowClear: {$allowClear},
+            closeOnSelect: {$closeOnSelect},
+            cache: {$cache},
+            
+            escapeMarkup: function (markup) { return markup; },
+            
+            ajax:{
+                url:baseUrl+'/cest/select2',
+                delay: 300,
+                dataType:'json',
+                data: function (params) {
+                    return {
+                        params: params,
+                        somenteAtivos: {$somenteAtivos},
+                        codncm: $('#{$options['codncm']}').val()
+                    };
+                },
+            },
+            
+            initSelection:function (element, callback) {
+                console.log('entrou');
+                $.ajax({
+                    type: "GET",
+                    url: baseUrl+"/cest/select2",
+                    data: "id="+$('#{$id}').val(),
+                    dataType: "json",
+                    success: function(result) { 
+                        callback(result); 
+                    }
                 });
+            },
+                    
+            templateResult: function (repo) {
 
-                $('#{$options['codncm']}').change(function () {
-                    $('#{$options['id']}').select2('val', '');
-                });
-            });
-        </script>
+                if (repo.loading) return repo.text;
+
+                var css_titulo = "";
+                var css_detalhes = "text-muted";
+                if (repo.inativo) {
+                    css_titulo = "text-danger";
+                    css_detalhes = "text-danger";
+                }
+
+                var markup = "";
+                markup += "<b>" + repo.ncm + "</b>/";
+                markup += "<b>" + repo.cest + "</b>&nbsp;";
+                markup += "<span>" + repo.descricao + "</span>";
+
+                return markup; 
+            },
+                    
+            templateSelection: function (repo) {
+                return repo.ncm + "/" + repo.cest + "&nbsp;" + repo.descricao;
+            },
+                    
+        });
+        $('#{$options['codncm']}').change(function () {
+            $('#{$options['id']}').select2('val', '');
+        });                    
+    });
+
+    </script>
 END;
 
-    $campo = Form::text($name, $value, $options);
+    $value_form = Form::getValueAttribute($name)??$value;
+    $value_form = empty($value_form)?$value:$value_form;
+    $campo = Form::select($name, [$value_form => ' ... Carregando ... '], $value, $options);
 
     return $campo . $script;
 });
+
+
 
 /* PESSOA */
 
