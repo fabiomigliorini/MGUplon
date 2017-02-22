@@ -1,7 +1,6 @@
 @include('layouts.includes.header_start')
 @include('layouts.includes.header_end')
 
-
 <!-- ============================================================== -->
 <!-- Start right Content here -->
 <!-- ============================================================== -->
@@ -10,7 +9,16 @@
 		<div class="row">
 		    <div class="col-xs-12">
 		        <div class="page-title-box">
-		            <h4 class="page-title">{{ $bc->header }}</h4>
+		            <h3 class="page-title">
+                        {{ $bc->header }}
+                        <small class='text-muted'>
+                            @yield('inactive')
+                        </small>
+                        <div class="btn-group" role="group" aria-label="Controles">
+                            &nbsp;
+                            @yield ('buttons')
+                        </div>
+                    </h3>
 		            <ol class="breadcrumb p-0">
 		            	@foreach($bc->breadcrumbs as $item)
 		            		@if (empty($item->url))
@@ -24,6 +32,7 @@
 		            		@endif
 		            	@endforeach
 		            </ol>
+                    
 		            <div class="clearfix"></div>
 		        </div>
 		    </div>

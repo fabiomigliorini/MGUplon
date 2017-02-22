@@ -16,7 +16,7 @@
             </div>    
         </h3>
         <div class="card-block">
-            @include('layouts.includes.inativo', [$model])
+            
             <p class="card-text">
                 <table class="table table-bordered table-striped table-hover table-sm col-md-6">
                   <tbody>  
@@ -36,12 +36,17 @@
                 </table>
             </p>
             <p class="card-text">
-            @include('layouts.includes.criacao', [$model])
             </p>
         </div>
     </div>
 </div>
 
+@section('inactive')
+    @include('layouts.includes.inativo', [$model])
+@endsection
+@section('creation')
+    @include('layouts.includes.criacao', [$model])
+@endsection
 @section('inscript')
 <script type="text/javascript"></script>
 @endsection
