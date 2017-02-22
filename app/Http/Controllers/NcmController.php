@@ -134,4 +134,76 @@ class NcmController extends Controller
         }
     } 
     
+    public function select2(Request $request)
+    {
+
+        // Parametros que o Selec2 envia
+        $params = $request->get('params');
+        
+        // Quantidade de registros por pagina
+        $registros_por_pagina = 100;
+        
+        // Se veio termo de busca
+        if(!empty($params['term'])) {
+
+            // Numero da Pagina
+            $params['page'] = $params['page']??1;
+            
+            // Monta Query
+            $qry = Ncm::query();
+            
+            // Condicoes de busca
+            $numero = numeroLimpo(trim($params['term']));
+            $qry->where('descricao', 'ILIKE', "%{$params['term']}%");
+
+            if (!empty($numero)) {
+                $qry->orWhere('ncm', 'ILIKE', "%$numero%");
+            }
+            
+            
+            //if ($request->get('somenteAtivos') == 'true') {
+            //    $qry->ativo();
+            //}
+            
+            // Total de registros
+            $total = $qry->count();
+            
+            // Ordenacao e dados para retornar
+            $qry->select('codncm', 'ncm', 'descricao');
+            $qry->orderBy('ncm', 'ASC');
+            $qry->limit($registros_por_pagina);
+            $qry->offSet($registros_por_pagina * ($params['page']-1));
+            
+            // Percorre registros
+            $results = [];
+            foreach ($qry->get() as $item) {
+                $results[] = [
+                    'id' => $item->codncm,
+                    'ncm' => formataNcm($item->ncm),
+                    'descricao' => $item->descricao,
+                    //'inativo' => formataData($item->inativo, 'C'),
+                ];
+            }
+            
+            // Monta Retorno
+            return [
+                'results' => $results,
+                'params' => $params,
+                'pagination' =>  [
+                    'more' => ($total > $params['page'] * $registros_por_pagina)?true:false,
+                ]
+            ];
+
+        } elseif($request->get('id')) {
+            
+            // Monta Retorno
+            $item = Ncm::findOrFail($request->get('id'));
+            return [
+                'id' => $item->codncm,
+                'ncm' => formataNcm($item->ncm),
+                'descricao' => $item->descricao,
+                //'inativo' => formataData($item->inativo, 'C'),
+            ];
+        }
+    }    
 }

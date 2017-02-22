@@ -137,21 +137,21 @@ Form::macro('select2UnidadeMedida', function($name, $selected = null, $options =
 {
     if (empty($options['campo']))
         $options['campo'] = 'sigla';
-    $medidas = [''=>''] + MGLara\Models\UnidadeMedida::orderBy('unidademedida')->pluck($options['campo'], 'codunidademedida')->prepend('', '');
+    $medidas = MGLara\Models\UnidadeMedida::orderBy('unidademedida')->pluck($options['campo'], 'codunidademedida')->prepend('', '');
     return Form::select2($name, $medidas, $selected, $options);
 });
 
 /* UNIDADES USUÁRIO */
 Form::macro('select2Usuario', function($name, $selected = null, $options = [])
 {
-    $usuarios = [''=>''] + MGLara\Models\Usuario::orderBy('usuario')->pluck('usuario', 'codusuario')->prepend('', '');
+    $usuarios = MGLara\Models\Usuario::orderBy('usuario')->pluck('usuario', 'codusuario')->prepend('', '');
     return Form::select2($name, $usuarios, $selected, $options);
 });
 
 /* GRUPO CLIENTE */
 Form::macro('select2GrupoCliente', function($name, $selected = null, $options = [])
 {
-    $grupos = [''=>''] + MGLara\Models\GrupoCliente::orderBy('grupocliente')->pluck('grupocliente', 'codgrupocliente')->prepend('', '');
+    $grupos = MGLara\Models\GrupoCliente::orderBy('grupocliente')->pluck('grupocliente', 'codgrupocliente')->prepend('', '');
     return Form::select2($name, $grupos, $selected, $options);
 });
 
@@ -605,86 +605,102 @@ END;
 /* NCM */
 Form::macro('select2Ncm', function($name, $value = null, $options = [])
 {
-    if (empty($options['id']))
-        $options['id'] = $name;
-
-    if (empty($options['placeholder']))
-        $options['placeholder'] = 'Sub Grupo...';
-
-    if (empty($options['allowClear']))
-        $options['allowClear'] = true;
-    $options['allowClear'] = ($options['allowClear'])?'true':'false';
-
-    if (empty($options['closeOnSelect']))
-        $options['closeOnSelect'] = true;
-    $options['closeOnSelect'] = ($options['closeOnSelect'])?'true':'false';
-
-    if (empty($options['ativo']))
-        $options['ativo'] = 1;
-
+    $options['id'] = $options['id']??$name;
+    $id = $options['id'];
+    $placeholder = $options['placeholder']??'Ncm';
+    $minimumInputLength = $options['minimumInputLength']??1;
+    $allowClear = ($options['allowClear']??true)?'true':'false';
+    $closeOnSelect = ($options['closeOnSelect']??true)?'true':'false';
+    $cache = ($options['cache']??true)?'true':'false';
+    $somenteAtivos = ($options['somenteAtivos']??true)?'true':'false';
     $script = <<< END
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $('#{$options['id']}').select2({
-                    placeholder: '{$options['placeholder']}',
-                    minimumInputLength: 1,
-                    allowClear: {$options['allowClear']},
-                    closeOnSelect: {$options['closeOnSelect']},
-                    formatResult:function(item) {
-                        var markup = "";
-                        markup    += "<b>" + item.ncm + "</b>&nbsp;";
-                        markup    += "<span>" + item.descricao + "</span>";
-                        return markup;
-                    },
-                    formatSelection:function(item) {
-                        return item.ncm + "&nbsp;" + item.descricao;
-                    },
-                    ajax:{
-                        url:baseUrl+"/ncm/select2",
-                        dataType:'json',
-                        quietMillis:500,
-                        data:function(term, page) {
-                            return {
-                                q: term.term,
-                                ativo: {$options['ativo']}
-                            };
-                        },
-                        results:function(data, page) {
-                            var more = (page * 20) < data.total;
-                            return {results: data.data};
-                        }
-                    },
-                    initSelection:function (element, callback) {
-                        $.ajax({
-                            type: "GET",
-                            url: baseUrl+"/ncm/select2",
-                            data: "id="+$('#{$options['id']}').val(),
-                            dataType: "json",
-                            success: function(result) { callback(result); }
-                        });
-                    },
-                    width:'resolve'
+    <script type="text/javascript">
+    $(document).ready(function() {
+        
+        $('#{$id}').select2({
+        
+            placeholder: '{$placeholder}',
+            minimumInputLength: {$minimumInputLength},
+            allowClear: {$allowClear},
+            closeOnSelect: {$closeOnSelect},
+            cache: {$cache},
+            
+            escapeMarkup: function (markup) { return markup; },
+            
+            ajax:{
+                url:baseUrl+'/ncm/select2',
+                delay: 300,
+                dataType:'json',
+                data: function (params) {
+                    return {
+                        params: params,
+                        somenteAtivos: {$somenteAtivos},
+                    };
+                },
+            },
+            
+            initSelection:function (element, callback) {
+                console.log('entrou');
+                $.ajax({
+                    type: "GET",
+                    url: baseUrl+"/ncm/select2",
+                    data: "id="+$('#{$id}').val(),
+                    dataType: "json",
+                    success: function(result) { 
+                        callback(result); 
+                    }
                 });
-            });
-        </script>
+            },
+                    
+            templateResult: function (repo) {
+
+                if (repo.loading) return repo.text;
+
+                var css_titulo = "";
+                var css_detalhes = "text-muted";
+                if (repo.inativo) {
+                    css_titulo = "text-danger";
+                    css_detalhes = "text-danger";
+                }
+
+                var markup = "<div class='clearfix'>";
+                markup    += "<b>" + repo.ncm + "</b>&nbsp;";
+                markup    += "<span>" + repo.descricao + "</span>";
+                markup    += "</div>";
+
+                return markup; 
+            },
+                    
+            templateSelection: function (repo) {
+                return '<strong>' + repo.ncm + '</strong>' + "&nbsp;" + repo.descricao;
+            },
+                    
+        });
+                    
+    });
+
+    </script>
 END;
 
-    $campo = Form::text($name, $value, $options);
+    $value_form = Form::getValueAttribute($name)??$value;
+    $value_form = empty($value_form)?$value:$value_form;
+    $campo = Form::select($name, [$value_form => ' ... Carregando ... '], $value, $options);
 
     return $campo . $script;
 });
 
+
 /* TRIBUTAÇÃO */
 Form::macro('select2Tributacao', function($name, $selected = null, $options = [])
 {
-    $tributacoes = [''=>''] + MGLara\Models\Tributacao::orderBy('tributacao')->pluck('tributacao', 'codtributacao')->prepend('', '');
+    $tributacoes = MGLara\Models\Tributacao::orderBy('tributacao')->pluck('tributacao', 'codtributacao')->prepend('', '');
     return Form::select2($name, $tributacoes, $selected, $options);
 });
 
 /* TIPO PRODUTO */
 Form::macro('select2TipoProduto', function($name, $selected = null, $options = [])
 {
-    $tipos = [''=>''] + MGLara\Models\TipoProduto::orderBy('tipoproduto')->pluck('tipoproduto', 'codtipoproduto')->prepend('', '');
+    $tipos = MGLara\Models\TipoProduto::orderBy('tipoproduto')->pluck('tipoproduto', 'codtipoproduto')->prepend('', '');
     return Form::select2($name, $tipos, $selected, $options);
 });
 
@@ -1249,7 +1265,7 @@ Form::macro('select2ValeCompraModelo', function($name, $selected = null, $option
             $qry->whereNotNull('inativo');
             break;
     }
-    $valores = [''=>''] + $qry->pluck('modelo', 'codvalecompramodelo')->prepend('', '');
+    $valores = $qry->pluck('modelo', 'codvalecompramodelo')->prepend('', '');
     return Form::select2($name, $valores, $selected, $options);
 });
 
@@ -1272,6 +1288,6 @@ Form::macro('select2FormaPagamento', function($name, $selected = null, $options 
     }
      *
      */
-    $valores = [''=>''] + $qry->pluck('formapagamento', 'codformapagamento')->prepend('', '');
+    $valores = $qry->pluck('formapagamento', 'codformapagamento')->prepend('', '');
     return Form::select2($name, $valores, $selected, $options);
 });
