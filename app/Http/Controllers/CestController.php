@@ -88,31 +88,55 @@ class CestController extends Controller
         //
     }
     
-    public function listagemJson(Request $request) {
+    public function select2(Request $request)
+    {
+        // Parametros que o Selec2 envia
+        $params = $request->get('params');
         
-        if($request->get('codncm')) {
+        // Quantidade de registros por pagina
+        $registros_por_pagina = 100;
+        
+        if(!empty($request->get('id'))) {    
+            // Monta Retorno
+            $item = Cest::findOrFail($request->get('id'));
+            return [
+                'id'        => $item->codcest,
+                'ncm'       => formataNcm($item->Ncm->ncm),
+                'cest'      => formataNcm($item->cest),
+                'descricao' => $item->descricao
+            ];
+        } else {
+
+            // Numero da Pagina
+            $params['page'] = $params['page']??1;
+            
+            // Monta Query
             $ncm = Ncm::find($request->get('codncm'));
             $cests = $ncm->cestsDisponiveis();            
-            $resultados = [];
+            $results = [];
             foreach($cests as $cest)
             {
-                $resultados[] = array(
+                $results[] = array(
                     'id'        => $cest['codcest'],
                     'ncm'       => formataNcm($cest['ncm']),
                     'cest'      => formataCest($cest['cest']),
                     'descricao' => $cest['descricao'],
                 );
-            }            
-            return response()->json($resultados);
+            }  
             
-        } elseif($request->get('id')) {
-            $model = Cest::find($request->get('id'));
-            return response()->json([
-                'id'        => $model->codcest,
-                'ncm'       => formataNcm($model->Ncm->ncm),
-                'cest'      => formataNcm($model->cest),
-                'descricao' => $model->descricao
-            ]);
+            // Total de registros
+            $total = count($cests);
+            
+            // Monta Retorno
+            return [
+                'results' => $results,
+                'params' => $params,
+                'pagination' =>  [
+                    'more' => ($total > $params['page'] * $registros_por_pagina)?true:false,
+                ]
+            ];
         }
     }
+    
+    
 }
