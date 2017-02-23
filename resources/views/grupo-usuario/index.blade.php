@@ -32,15 +32,16 @@
   </div>
 </div>
 
-<div class="card-box table-responsive">
-    <div class="btn-group pull-right" role="group" aria-label="Controles">
-        <a class="btn btn-secondary" href="{{ url("grupo-usuario/create") }}"><i class="fa fa-plus"></i></a> 
-        <a class="btn btn-secondary" href="#collapsePesquisa" data-toggle="collapse" aria-expanded="false" aria-controls="collapsePesquisa"><i class='fa fa-search'></i></a>
-    </div>    
+<div class="card-box table-responsive">  
     
     @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Grupo de Usuário']])
     
 </div>
+
+@section('buttons')
+    <a class="btn btn-secondary btn-sm" href="{{ url("grupo-usuario/create") }}"><i class="fa fa-plus"></i></a> 
+    <a class="btn btn-secondary btn-sm" href="#collapsePesquisa" data-toggle="collapse" aria-expanded="false" aria-controls="collapsePesquisa"><i class='fa fa-search'></i></a>
+@endsection 
 
 @section('inscript')
 
