@@ -17,7 +17,6 @@
         });
     });
 </script>
-@yield('inscript-layout')
 @yield('inscript')
 @include('errors.flash')
 </body>
