@@ -961,78 +961,81 @@ END;
 /* CIDADE*/
 Form::macro('select2Cidade', function($name, $value = null, $options = [])
 {
-    if (empty($options['id']))
-        $options['id'] = $name;
-
-    if (empty($options['placeholder']))
-        $options['placeholder'] = 'Cidade';
-
-    if (empty($options['allowClear']))
-        $options['allowClear'] = true;
-    $options['allowClear'] = ($options['allowClear'])?'true':'false';
-
-    if (empty($options['closeOnSelect']))
-        $options['closeOnSelect'] = true;
-    $options['closeOnSelect'] = ($options['closeOnSelect'])?'true':'false';
-
-    if (empty($options['ativo']))
-        $options['ativo'] = 1;
-
+    $options['id'] = $options['id']??$name;
+    $id = $options['id'];
+    $placeholder = $options['placeholder']??'Cidade';
+    $minimumInputLength = $options['minimumInputLength']??3;
+    $allowClear = ($options['allowClear']??true)?'true':'false';
+    $closeOnSelect = ($options['closeOnSelect']??true)?'true':'false';
+    $cache = ($options['cache']??true)?'true':'false';
+    $somenteAtivos = ($options['somenteAtivos']??true)?'true':'false';
     $script = <<< END
-
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $('#{$options['id']}').select2({
-                    placeholder: '{$options['placeholder']}',
-                    minimumInputLength: 3,
-                    allowClear: {$options['allowClear']},
-                    closeOnSelect: {$options['closeOnSelect']},
-                    formatResult: function(item) {
-                        var markup = "";
-                        markup    += item.cidade + "<span class='pull-right'>" + item.uf + "</span>";
-                        return markup;
-                    },
-                    formatSelection: function(item) {
-                        return item.cidade;
-                    },
-                    ajax:{
-                        url: baseUrl+'/cidade/select2',
-                        dataType: 'json',
-                        quietMillis: 500,
-                        data: function(term, current_page) {
-                            return {
-                                q: term.term,
-                                ativo: {$options['ativo']},
-                                per_page: 10,
-                                current_page: current_page
-                            };
-                        },
-                        results:function(data,page) {
-                            //var more = (current_page * 20) < data.total;
-                            return {
-                                results: data.data,
-                                //more: data.mais
-                            };
-                        }
-                    },
-                    initSelection: function (element, callback) {
-                        $.ajax({
-                            type: "GET",
-                            url: baseUrl+'/cidade/select2',
-                            data: "id="+$('#{$options['id']}').val(),
-                            dataType: "json",
-                            success: function(result) {
-                                callback(result);
-                            }
-                        });
-                    },
-                    width:'resolve'
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#{$id}').select2({
+        
+            placeholder: '{$placeholder}',
+            minimumInputLength: {$minimumInputLength},
+            allowClear: {$allowClear},
+            closeOnSelect: {$closeOnSelect},
+            cache: {$cache},
+            
+            escapeMarkup: function (markup) { return markup; },
+            
+            ajax:{
+                url:baseUrl+'/cidade/select2',
+                delay: 300,
+                dataType:'json',
+                data: function (params) {
+                    return {
+                        params: params,
+                        somenteAtivos: {$somenteAtivos},
+                    };
+                },
+            },
+            
+            initSelection:function (element, callback) {
+                console.log('entrou');
+                $.ajax({
+                    type: "GET",
+                    url: baseUrl+"/cidade/select2",
+                    data: "id="+$('#{$id}').val(),
+                    dataType: "json",
+                    success: function(result) { 
+                        callback(result); 
+                    }
                 });
-            });
-        </script>
+            },
+                    
+            templateResult: function (repo) {
+                if (repo.loading) return repo.text;
+
+                var css_titulo = "";
+                var css_detalhes = "";
+                if (repo.inativo) {
+                    css_titulo = "text-danger";
+                    css_detalhes = "text-danger";
+                }
+
+                var markup = "";
+                markup    += repo.cidade + "<span class='pull-right'>" + repo.uf + "</span>";
+                return markup; 
+            },
+                    
+            templateSelection: function (repo) {
+                return repo.cidade;
+            },
+                    
+        });
+                    
+    });
+
+    </script>
 END;
 
-    $campo = Form::text($name, $value, $options);
+    $value_form = Form::getValueAttribute($name)??$value;
+    $value_form = empty($value_form)?$value:$value_form;
+    $campo = Form::select($name, [$value_form => ' ... Carregando ... '], $value, $options);
 
     return $campo . $script;
 });
@@ -1234,115 +1237,6 @@ END;
     $value_form = Form::getValueAttribute($name)??$value;
     $value_form = empty($value_form)?$value:$value_form;
     $campo = Form::select($name, [$value_form => ' ... Carregando ... '], $value, $options);
-
-    return $campo . $script;
-});
-
-
-Form::macro('select2ProdutoBarra2', function($name, $value = null, $options = [])
-{
-    if (empty($options['id']))
-        $options['id'] = $name;
-
-    if (empty($options['placeholder']))
-        $options['placeholder'] = 'Produto';
-
-    if (empty($options['allowClear']))
-        $options['allowClear'] = true;
-    $options['allowClear'] = ($options['allowClear'])?'true':'false';
-
-    if (empty($options['closeOnSelect']))
-        $options['closeOnSelect'] = true;
-    $options['closeOnSelect'] = ($options['closeOnSelect'])?'true':'false';
-
-    if (empty($options['ativo']))
-        $options['ativo'] = 1;
-
-    $script = <<< END
-
-        <script type="text/javascript">
-            $(document).ready(function() {
-                $('#{$options['id']}').select2({
-                    placeholder: '{$options['placeholder']}',
-                    minimumInputLength: 3,
-                    allowClear: {$options['allowClear']},
-                    closeOnSelect: {$options['closeOnSelect']},
-                    'formatResult':function(item) {
-                        var css_titulo = "";
-                        var css_detalhes = "";
-                        if (item.inativo) {
-                            css_titulo = "text-danger";
-                            css_detalhes = "text-danger";
-                        }
-
-                        var markup = "";
-                        markup    += "<div class='row "+ css_titulo +"'>";
-
-                        markup    += "<strong class='col-md-9'>";
-                        markup    += item.produto + "";
-                        markup    += "</strong>";
-
-                        markup    += "<div class='col-md-3'>";
-                        markup    += "<small class='pull-left'>" + item.unidademedida + "</small>";
-                        markup    += "<span class='pull-right'> " + item.preco + "</span>";
-                        markup    += "</div>";
-
-                        markup    += "</div>";
-
-                        markup    += "<small class='" + css_detalhes + "'>";
-                        markup    += "<strong>" + item.barras + "</strong>";
-                        markup    += " » " + item.codproduto;
-                        markup    += " » " + item.secaoproduto;
-                        markup    += " » " + item.familiaproduto;
-                        markup    += " » " + item.grupoproduto;
-                        markup    += " » " + item.subgrupoproduto;
-                        markup    += " » " + item.marca;
-                        if (item.referencia) {
-                            markup    += " » " + item.referencia;
-                        }
-                        markup    += "</small>";
-                        return markup;
-                    },
-                    'formatSelection':function(item) {
-                        return item.produto;
-                    },
-                    'ajax':{
-                        'url':baseUrl+'/produto-barra/select2',
-                        'dataType':'json',
-                        'quietMillis':500,
-                        'data':function(term, ativo, current_page) {
-                            return {
-                                q: term.term,
-                                ativo: {$options['ativo']},
-                                per_page: 10,
-                                current_page: current_page
-                            };
-                        },
-                        'results':function(data,page) {
-                            //var more = (current_page * 20) < data.total;
-                            return {
-                                results: data,
-                                //more: data.mais
-                            };
-                        }
-                    },
-                    'initSelection':function (element, callback) {
-                        $.ajax({
-                            type: "GET",
-                            url: baseUrl+'/produto-barra/select2',
-                            data: "id="+$('#{$options['id']}').val(),
-                            dataType: "json",
-                            success: function(result) {
-                                callback(result);
-                            }
-                        });
-                    },'width':'resolve'
-                });
-            });
-        </script>
-END;
-
-    $campo = Form::text($name, $value, $options);
 
     return $campo . $script;
 });
