@@ -1,10 +1,10 @@
 
 
-<footer class="footer text-right">
+<footer class="footer">
+    @yield('creation')
     <div class='pull-right'>
         {{ date("Y") }} &copy; MG Papelaria
     </div>
-    @yield('creation')
 </footer>
 
 </div>
