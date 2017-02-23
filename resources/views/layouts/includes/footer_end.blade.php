@@ -1,3 +1,6 @@
+<!-- App js -->
+<script src="{{ URL::asset('public/assets/js/jquery.core.js') }}"></script>
+<script src="{{ URL::asset('public/assets/js/jquery.app.js') }}"></script>
 <script type="text/javascript">
     var baseUrl = '{{ url('/') }}';    
     $(document).ready(function() {
