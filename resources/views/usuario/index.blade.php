@@ -45,16 +45,17 @@
 </div>
 
 <div class='card-box table-responsive'>
-  
-    <div class="btn-group pull-right" role="group" aria-label="Controles">
-        <a class="btn btn-secondary" href="{{ url("usuario/create") }}"><i class="fa fa-plus"></i></a> 
-        <a class="btn btn-secondary" href="#collapsePesquisa" data-toggle="collapse" aria-expanded="false" aria-controls="collapsePesquisa"><i class='fa fa-search'></i></a>
-    </div>    
+    
     
     @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Usuario', 'Pessoa', 'Filial']])
     
 </div>
+@section('buttons')
 
+    <a class="btn btn-secondary btn-sm" href="{{ url("usuario/create") }}"><i class="fa fa-plus"></i></a> 
+    <a class="btn btn-secondary btn-sm" href="#collapsePesquisa" data-toggle="collapse" aria-expanded="false" aria-controls="collapsePesquisa"><i class='fa fa-search'></i></a>
+    
+@endsection
 @section('inscript')
 
 @include('layouts.includes.datatable.assets')
