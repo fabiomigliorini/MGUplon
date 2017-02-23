@@ -115,14 +115,73 @@ class CidadeController extends Controller
             return view('errors.fk');
         }     
     }
-    
-    public function listagemJson(Request $request){
-        if($request->get('q')) {
-            $model = Cidade::select2($request->get('q'));
-            return response()->json($model);       
+
+    public function select2(Request $request)
+    {
+        // Parametros que o Selec2 envia
+        $params = $request->get('params');
+        
+        // Quantidade de registros por pagina
+        $registros_por_pagina = 100;
+        
+        // Se veio termo de busca
+        if(!empty($params['term'])) {
+
+            // Numero da Pagina
+            $params['page'] = $params['page']??1;
+            
+            // Monta Query
+            $qry = Cidade::query();
+            $qry->join('tblestado', 'tblcidade.codestado', '=', 'tblestado.codestado');
+            
+            // Condicoes de busca
+            foreach (explode(' ', $params['term']) as $palavra) {
+                if (!empty($palavra)) {
+                    $qry->whereRaw("(tblcidade.cidade ilike '%{$palavra}%')");
+                }
+            }
+            
+            //if ($request->get('somenteAtivos') == 'true') {
+            //    $qry->ativo();
+            //}
+            
+            // Total de registros
+            $total = $qry->count();
+            
+            // Ordenacao e dados para retornar
+            $qry->select('codcidade', 'cidade', 'tblestado.sigla as uf');
+            $qry->orderBy('cidade', 'ASC');
+            $qry->limit($registros_por_pagina);
+            $qry->offSet($registros_por_pagina * ($params['page']-1));
+            
+            // Percorre registros
+            $results = [];
+            foreach ($qry->get() as $item) {
+                $results[] = [
+                    'id' => $item->codcidade,
+                    'cidade' => $item->cidade,
+                    'uf' => $item->uf
+                ];
+            }
+            
+            // Monta Retorno
+            return [
+                'results' => $results,
+                'params' => $params,
+                'pagination' =>  [
+                    'more' => ($total > $params['page'] * $registros_por_pagina)?true:false,
+                ]
+            ];
+
         } elseif($request->get('id')) {
-            $model = Cidade::find($request->get('id'));
-            return response()->json($model);
+            
+            // Monta Retorno
+            $item = Cidade::findOrFail($request->get('id'));
+            return [
+                'id' => $item->codcidade,
+                'cidade' => $item->cidade,
+                'uf' => $item->sigla
+            ];
         }
-    } 
+    }
 }

@@ -28,11 +28,11 @@ $(document).ready(function () {
         },
         lengthChange: false,
         buttons: [
-            { extend: 'copy', text: 'Copiar', exportOptions: { columns: ':visible' } },
-            { extend: 'excel', text: 'Excel', exportOptions: { columns: ':visible' } },
-            { extend: 'pdf', text: 'PDF', exportOptions: { columns: ':visible' } },
-            { extend: 'print', text: 'Imprimir', exportOptions: { columns: ':visible' } },
-            { extend: 'colvis', text: 'Colunas', exportOptions: { columns: ':visible' } },
+            { extend: 'copy', text: '<i class="fa fa-clipboard" aria-hidden="true"></i>', exportOptions: { columns: ':visible' } },
+            { extend: 'excel', text: '<i class="fa fa-file-excel-o" aria-hidden="true"></i>', exportOptions: { columns: ':visible' } },
+            { extend: 'pdf', text: '<i class="fa fa-file-pdf-o" aria-hidden="true"></i>', exportOptions: { columns: ':visible' } },
+            { extend: 'print', text: '<i class="fa fa-print" aria-hidden="true"></i>', exportOptions: { columns: ':visible' } },
+            { extend: 'colvis', text: '<i class="fa fa-columns" aria-hidden="true"></i>', exportOptions: { columns: ':visible' } },
         ],
         columnDefs: [
             {

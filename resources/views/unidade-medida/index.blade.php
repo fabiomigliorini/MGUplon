@@ -3,7 +3,7 @@
 
 <div class="collapse" id="collapsePesquisa">
   <div class="card">
-    <h3 class="card-header">Pesquisa</h3>
+    <h4 class="card-header">Pesquisa</h4>
     <div class="card-block">
         <div class="card-text">
             {!! Form::model($filtro, ['id' => 'form-search', 'autocomplete' => 'on'])!!}
@@ -33,33 +33,35 @@
                 </div>
                 <div class="clearfix"></div>
             {!! Form::close() !!}
+            <div class='clearfix'></div>
         </div>
     </div>
   </div>
 </div>
 
-<div class="card-box table-responsive">
-
-    <div class="btn-group pull-right" role="group" aria-label="Controles">
-        <a class="btn btn-secondary" href="{{ url("unidade-medida/create") }}"><i class="fa fa-plus"></i></a> 
-        <a class="btn btn-secondary" href="#collapsePesquisa" data-toggle="collapse" aria-expanded="false" aria-controls="collapsePesquisa"><i class='fa fa-search'></i></a>
-    </div>    
-    
-    @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Unidade Medida', 'Sigla', 'Criação', 'Alteração']])
-    
+<div class='card'>
+    <div class='card-block'>
+        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Unidade Medida', 'Sigla', 'Criação', 'Alteração']])
+        <div class='clearfix'></div>
+    </div>
 </div>
 
+@section('buttons')
+
+    <a class="btn btn-secondary btn-sm" href="{{ url("unidade-medida/create") }}"><i class="fa fa-plus"></i></a> 
+    <a class="btn btn-secondary btn-sm" href="#collapsePesquisa" data-toggle="collapse" aria-expanded="false" aria-controls="collapsePesquisa"><i class='fa fa-search'></i></a>
+    
+@endsection
 @section('inscript')
 
-@include('layouts.includes.datatable.assets')
+    @include('layouts.includes.datatable.assets')
 
-@include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('unidade-medida/datatable'), 'order' => 3, 'order_dir' => 'ASC', 'filtros' => ['codunidademedida' => 'codunidademedida', 'unidademedida', 'sigla', 'inativo'] ])
+    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('unidade-medida/datatable'), 'order' => 3, 'order_dir' => 'ASC', 'filtros' => ['codunidademedida' => 'codunidademedida', 'unidademedida', 'sigla', 'inativo'] ])
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        
-    });
+    <script type="text/javascript">
+        $(document).ready(function () {
+        });
+    </script>
 
-</script>
 @endsection
 @stop

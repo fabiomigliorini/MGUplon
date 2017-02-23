@@ -24,10 +24,6 @@
     <script src="{{ URL::asset('public/assets/js/jquery.slimscroll.js') }}"></script>
     <script src="{{ URL::asset('public/assets/js/jquery.fullscreen-min.js') }}"></script>
 
-    <!-- App js -->
-    <script src="{{ URL::asset('public/assets/js/jquery.core.js') }}"></script>
-    <script src="{{ URL::asset('public/assets/js/jquery.app.js') }}"></script>
-
     <!-- Toastr Notification  -->
     <link href="{{ URL::asset('public/assets/plugins/toastr/toastr.min.css') }}" rel="stylesheet" type="text/css" />
     <script src="{{ URL::asset('public/assets/plugins/toastr/toastr.min.js') }}"></script>

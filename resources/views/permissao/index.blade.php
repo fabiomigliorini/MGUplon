@@ -4,7 +4,7 @@
 <div class="row">
 <div class="col-md-3">
   <div class="card ">
-    <h3 class="card-header">Policies</h3>
+    <h4 class="card-header">Policies</h4>
     <div class="card-block">
       <ul class="nav nav-pills nav-stacked m-b-10" id="myTabalt" role="tablist">
         @foreach ($classes as $classe => $metodos)
@@ -21,7 +21,7 @@
     <div class="tab-pane fade in" id="{{ $classe }}-tab" aria-labelledby="{{ $classe }}-tab">
       <div class="col-md-9" role="tabpanel" >
         <div class="card">
-          <h3 class="card-header">Permissões de <i>'{{$classe}}'</i></h3>
+          <h4 class="card-header">Permissões de <i>'{{$classe}}'</i></h4>
           <div class='card-block'>
           <table class="table table-sm table-striped table-hover table-responsive">
             <thead>

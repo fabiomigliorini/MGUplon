@@ -1,22 +1,10 @@
 @extends('layouts.default')
 @section('content')
 <div class='row'>
-<div class="col-sm-8 col-xs-12">
-    <div class="card">
-        <h3 class="card-header">
-            {{ $model->usuario }}
-            <div class="btn-group pull-right" role="group" aria-label="Controles">
-                <a class="btn btn-secondary" href="{{ url("usuario/$model->codusuario/edit") }}"><i class="fa fa-pencil"></i></a>
-                @if (empty($model->inativo))
-                    <a class="btn btn-secondary" href="{{ url("usuario/$model->codusuario/inativar") }}" data-inativar data-pergunta="Tem certeza que deseja inativar '{{ $model->usuario }}'?" data-after="recarregaDiv('main-container')"><i class="fa fa-ban"></i></a>
-                @else
-                    <a class="btn btn-secondary" href="{{ url("usuario/$model->codusuario/ativar") }}" data-inativar data-pergunta="Tem certeza que deseja ativar '{{ $model->usuario }}'?" data-after="recarregaDiv('main-container')"><i class="fa fa-circle-o"></i></a>
-                @endif                
-                <a class="btn btn-secondary" href="{{ url("usuario/$model->codusuario") }}" data-excluir data-pergunta="Tem certeza que deseja excluir '{{ $model->usuario }}'?" data-after="location.replace('{{ url('usuario') }}');"><i class="fa fa-trash"></i></a>                
-            </div>    
-        </h3>
-        <div class="card-block">
-            @include('layouts.includes.inativo', [$model])
+    <div class='col-md-6'>
+        <div class='card'>
+            <h4 class="card-header">Detalhes</h4>
+            <div class='card-block'>
                 <table class="table table-bordered table-striped table-hover table-sm col-md-12">
                     <tbody>  
                         <tr> 
@@ -53,57 +41,76 @@
                         </tr>           
                     </tbody> 
                 </table>
-            <p class="card-text">
-            @include('layouts.includes.criacao', [$model])
-            </p>
+                <div class='clearfix'></div>
+            </div>
+        </div>
+    </div>
+
+    @section('buttons')
+        <div class="btn-group pull-right" role="group" aria-label="Controles">
+            <a class="btn btn-secondary btn-sm" href="{{ url("usuario/$model->codusuario/edit") }}"><i class="fa fa-pencil"></i></a>
+            @if (empty($model->inativo))
+                <a class="btn btn-secondary btn-sm" href="{{ url("usuario/$model->codusuario/inativar") }}" data-inativar data-pergunta="Tem certeza que deseja inativar '{{ $model->usuario }}'?" data-after="recarregaDiv('main-container')"><i class="fa fa-ban"></i></a>
+            @else
+                <a class="btn btn-secondary btn-sm" href="{{ url("usuario/$model->codusuario/ativar") }}" data-inativar data-pergunta="Tem certeza que deseja ativar '{{ $model->usuario }}'?" data-after="recarregaDiv('main-container')"><i class="fa fa-circle-o"></i></a>
+            @endif                
+            <a class="btn btn-secondary btn-sm" href="{{ url("usuario/$model->codusuario") }}" data-excluir data-pergunta="Tem certeza que deseja excluir '{{ $model->usuario }}'?" data-after="location.replace('{{ url('usuario') }}');"><i class="fa fa-trash"></i></a>                
+        </div> 
+    @endsection
+    
+    <div class="col-sm-6 col-xs-12">
+        <div class="card">
+            <h4 class="card-header">
+                Grupos
+                <div class="btn-group pull-right" role="group" aria-label="Controles">
+                    <a class="btn btn-secondary btn-sm" href="{{ url("usuario/$model->codusuario/grupos") }}"><i class="fa fa-pencil"></i></a>
+                </div>
+            </h4>
+            <div class="card-block">
+                <div class="card-text">
+                    <table class="table table-bordered table-striped table-hover table-sm col-md-6">
+                      <tbody>  
+                        <tr> 
+                          <th>Grupo</th> 
+                          <th>Filial</th> 
+                          <th>Desde</th> 
+                        </tr>
+                        @foreach ($model->GrupoUsuarioUsuarioS()->select(['tblgrupousuario.codgrupousuario', 'tblgrupousuario.grupousuario', 'tblfilial.codfilial', 'tblfilial.filial', 'tblgrupousuariousuario.criacao'])->join('tblgrupousuario', 'tblgrupousuario.codgrupousuario', 'tblgrupousuariousuario.codgrupousuario')->join('tblfilial', 'tblfilial.codfilial', 'tblgrupousuariousuario.codfilial')->orderBy('tblgrupousuario.grupousuario')->orderBy('tblfilial.filial')->whereNull('tblgrupousuario.inativo')->get() as $guu)
+                        <tr> 
+                          <td>
+                            <a href='{{ url('grupo-usuario', $guu->codgrupousuario) }}'>
+                              {{ $guu->grupousuario }}
+                            </a>
+                          </td> 
+                          <td>
+                            <a href='{{ url('filial', $guu->codfilial) }}'>
+                              {{ $guu->filial }}
+                            </a>
+                          </td> 
+                          <td>{{ formataData($guu->criacao, 'C') }}</td> 
+                        </tr>
+                        @endforeach
+                      </tbody> 
+                    </table>
+                </div>
+                <div class='clearfix'></div>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="col-sm-4 col-xs-12">
-    <div class="card">
-        <h3 class="card-header">
-            Grupos
-            <div class="btn-group pull-right" role="group" aria-label="Controles">
-                <a class="btn btn-secondary" href="{{ url("usuario/$model->codusuario/grupos") }}"><i class="fa fa-pencil"></i></a>
-            </div>
-        </h3>
-        <div class="card-block">
-            <div class="card-text">
-                <table class="table table-bordered table-striped table-hover table-sm col-md-6">
-                  <tbody>  
-                    <tr> 
-                      <th>Grupo</th> 
-                      <th>Filial</th> 
-                      <th>Desde</th> 
-                    </tr>
-                    @foreach ($model->GrupoUsuarioUsuarioS()->select(['tblgrupousuario.codgrupousuario', 'tblgrupousuario.grupousuario', 'tblfilial.codfilial', 'tblfilial.filial', 'tblgrupousuariousuario.criacao'])->join('tblgrupousuario', 'tblgrupousuario.codgrupousuario', 'tblgrupousuariousuario.codgrupousuario')->join('tblfilial', 'tblfilial.codfilial', 'tblgrupousuariousuario.codfilial')->orderBy('tblgrupousuario.grupousuario')->orderBy('tblfilial.filial')->whereNull('tblgrupousuario.inativo')->get() as $guu)
-                    <tr> 
-                      <td>
-                        <a href='{{ url('grupo-usuario', $guu->codgrupousuario) }}'>
-                          {{ $guu->grupousuario }}
-                        </a>
-                      </td> 
-                      <td>
-                        <a href='{{ url('filial', $guu->codfilial) }}'>
-                          {{ $guu->filial }}
-                        </a>
-                      </td> 
-                      <td>{{ formataData($guu->criacao, 'C') }}</td> 
-                    </tr>
-                    @endforeach
-                  </tbody> 
-                </table>
-            </div>
-            <div class='clearfix'></div>
-        </div>
-    </div>
-</div>
-</div>
+@section('inactive')
 
+    @include('layouts.includes.inactive', [$model])
+    
+@endsection
+@section('creation')
+
+    @include('layouts.includes.creation', [$model])
+    
+@endsection
 @section('inscript')
-<script type="text/javascript">
-</script>
+<script type="text/javascript"></script>
 @endsection
 @stop
 

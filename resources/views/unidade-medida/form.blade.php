@@ -1,6 +1,3 @@
-<?php
-    //...
-?>
 <fieldset class="form-group">
     {!! Form::label('unidademedida', 'Descrição') !!}
     {!! Form::text('unidademedida', null, ['class'=> 'form-control', 'id'=>'unidademedida', 'required'=>'required']) !!}
@@ -17,14 +14,13 @@
 <script src="{{ URL::asset('public/assets/js/setcase.js') }}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-    $('#form-unidade-medida').on("submit", function(e) {
+    $('#form-principal').on("submit", function(e) {
         e.preventDefault();
         var currentForm = this;
         swal({
           title: "Tem certeza que deseja salvar?",
           type: "warning",
           showCancelButton: true,
-          confirmButtonColor: "#DD6B55",
           closeOnConfirm: false,
           closeOnCancel: true
         },

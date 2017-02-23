@@ -26,7 +26,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('ncm/select2', 'NcmController@select2');
     Route::get('cest/select2', 'CestController@select2');
     Route::get('sub-grupo-produto/select2', 'SubGrupoProdutoController@select2');
-    Route::get('produto/select2', 'ProdutoController@select2Produto');
+    Route::get('produto/select2', 'ProdutoController@select2');
     Route::get('produto-variacao/select2', 'ProdutoVariacaoController@select2');
     Route::get('cidade/select2', 'CidadeController@select2');
     Route::get('familia-produto/select2', 'FamiliaProdutoController@select2');
