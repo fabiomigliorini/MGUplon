@@ -1,48 +1,39 @@
 @extends('layouts.default')
 @section('content')
-<ol class="breadcrumb header">
-    {!! 
-        titulo(
-            $model->codmarca,
-            [
-                url("marca") => 'Marcas',
-                $model->marca,
-            ],
-            $model->inativo
-        ) 
-    !!} 
-    <li class='active'>
-        <small>
-            <a title="Novo" href="{{ url('marca/create') }}"><i class="glyphicon glyphicon-plus"></i></a>
-            &nbsp;
-            <a title="Alterar" href="{{ url("marca/$model->codmarca/edit") }}"><i class="glyphicon glyphicon-pencil"></i></a>
-            &nbsp;
-            @if(empty($model->inativo))
-            <a title="Inativar" href="" id="inativo-marca"><i class="glyphicon glyphicon-ban-circle"></i></a>
-            &nbsp;
-            @else
-            <a title="Ativar" href="" id="inativo-marca"><i class="glyphicon glyphicon-ok-sign"></i></a>
-            &nbsp;
-            @endif
-            <a title="Excluir" href="{{ url("marca/$model->codmarca") }}" data-excluir data-pergunta="Tem certeza que deseja excluir a Marca '{{ $model->marca }}'?" data-after-delete="location.replace(baseUrl + '/marca');"><i class="glyphicon glyphicon-trash"></i></a>
-        </small>
-    </li>   
-</ol>
-@include('includes.autor')
-<div class="row">
-    <div class="col-lg-9 col-sm-8">
-        <table class="detail-view table table-striped table-condensed"> 
-          <tbody>  
-            <tr> 
-              <th class="col-md-2">Descrição site</th> 
-              <td class="col-md-10">{{ $model->observacoes }}</td> 
-            </tr>
-          </tbody> 
-        </table>
+
+<div class='row'>
+    <div class='col-md-4'>
+        <div class='card'>
+            <h4 class="card-header">Detalhes</h4>
+            <div class='card-block'>
+                <table class="table table-bordered table-striped table-hover table-sm col-md-6">
+                  <tbody>  
+                    <tr> 
+                      <th>#</th> 
+                      <td>{{ formataCodigo($model->codmarca) }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Marca</th> 
+                      <td>{{ $model->marca }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Disponível no site</th> 
+                      <td>{{ $model->site }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Descrição</th> 
+                      <td>{{ $model->descricaosite }}</td> 
+                    </tr>
+                  </tbody> 
+                </table>
+                <div class='clearfix'></div>
+            </div>
+        </div>
     </div>
-    <div class="col-lg-3 col-sm-4">
-        <div class="panel panel-default">
-            <div class="panel-body">
+    <div class='col-md-4'>
+        <div class='card'>
+            <h4 class="card-header">Imagem</h4>
+            <div class='card-block'>
                 @if($model->codimagem)
                 <div class="text-right">
                     <a href="{{ url("/imagem/$model->codmarca/delete/?model=Marca&imagem={$model->Imagem->codimagem}") }}" class="btn btn-default btn-sm"><i class="glyphicon glyphicon-trash"></i> Excluir</a>
@@ -52,95 +43,39 @@
                     <img class="img-responsive pull-right" src='<?php echo URL::asset('public/imagens/'.$model->Imagem->observacoes);?>'>
                 </a>
                 @else
-                <a title="Carregar imagem" href="{{ url("/imagem/edit?id=$model->codmarca&model=Marca") }}">
-                    <i class="glyphicon glyphicon-picture"></i>
+                <a title="Carregar imagem" href="{{ url("/imagem/edit?id=$model->codmarca&model=Marca") }}" class="btn btn-secondary">
+                    <i class="fa fa-picture-o"></i>
                     Cadastrar imagem
                 </a>
                 @endif
+                <div class='clearfix'></div>
             </div>
         </div>
-    </div>    
+    </div>
 </div>
-@section('inscript')
-<script type="text/javascript">
-function atualizaFiltro()
-{
-    scroll();
-    var frmValues = $("#familia-produto-search").serialize();
-    $.ajax({
-        type: 'GET',
-        url: baseUrl + '/marca/'+ {{$model->codmarca}},
-        data: frmValues
-    })
-    .done(function (data) {
-        $('#items').html(jQuery(data).find('#items').html()); 
-    })
-    .fail(function () {
-        console.log('Erro no filtro');
-    });
 
-    $('#items').infinitescroll('update', {
-        state: {
-            currPage: 1,
-            isDestroyed: false,
-            isDone: false             
-        },
-        path: ['?page=', '&'+frmValues]
-    });
-}
+@section('buttons')
 
-function scroll()
-{
-    var loading_options = {
-        finishedMsg: "<div class='end-msg'>Fim dos registros</div>",
-        msgText: "<div class='center'>Carregando mais itens...</div>",
-        img: baseUrl + '/public/img/ajax-loader.gif'
-    };
-
-    $('#items').infinitescroll({
-        loading : loading_options,
-        navSelector : "#registros .pagination",
-        nextSelector : "#registros .pagination li.active + li a",
-        itemSelector : "#items div.list-group-item",
-    });    
-}
-$(document).ready(function() {
-    scroll();
-    $("#familia-produto-search").on("change", function (event) {
-        $('#items').infinitescroll('destroy');
-        atualizaFiltro();
-    }).on('submit', function (event){
-        event.preventDefault();
-        $('#items').infinitescroll('destroy');
-        atualizaFiltro();
-    });        
+    <a class="btn btn-secondary btn-sm" href="{{ url("marca/$model->codmarca/edit") }}"><i class="fa fa-pencil"></i></a>
+    @if (empty($model->inativo))
+        <a class="btn btn-secondary btn-sm" href="{{ url("marca/$model->codmarca/inactivate") }}" data-activate data-question="Tem certeza que deseja inativar '{{ $model->marca }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-ban"></i></a>
+    @else
+        <a class="btn btn-secondary btn-sm" href="{{ url("marca/$model->codmarca/activate") }}" data-activate data-question="Tem certeza que deseja ativar '{{ $model->marca }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-circle-o"></i></a>
+    @endif
+    <a class="btn btn-secondary btn-sm" href="{{ url("marca/$model->codmarca") }}" data-delete data-question="Tem certeza que deseja excluir '{{ $model->marca }}'?" data-after="location.replace('{{ url('marca') }}');"><i class="fa fa-trash"></i></a>                
     
-    $('#inativo-marca').on("click", function(e) {
-        e.preventDefault();
-        var codmarca = {{ $model->codmarca }};
-        var token = '{{ csrf_token() }}';
-        var inativo = '{{ $model->inativo }}';
-        if(inativo.length === 0) {
-            acao = 'inativar';
-        } else {
-            acao = 'ativar';
-        }        
-        bootbox.confirm("Tem certeza que deseja "+acao+"?", function(result) {
-            if(result) {
-                $.post(baseUrl + '/marca/inativar', {
-                    codmarca: codmarca,
-                    acao: acao,
-                    _token: token
-                }).done(function (data) {
-                    location.reload();
-                }).fail(function (error){
-                  location.reload();          
-              });
-            }  
-        });
-    });
+@endsection
+@section('inactive')
 
-});
-</script>
+    @include('layouts.includes.inactive', [$model])
+    
+@endsection
+@section('creation')
+
+    @include('layouts.includes.creation', [$model])
+    
+@endsection
+@section('inscript')
+
 @endsection
 @stop
