@@ -5,7 +5,7 @@ namespace MGLara\Repositories;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
-
+use Illuminate\Validation\Rule;
 
 use MGLara\Models\UnidadeMedida;
 
@@ -25,27 +25,26 @@ class UnidadeMedidaRepository extends MGRepository {
     public function validate($data = null, $id = null) {
         
         if (empty($data)) {
-            $data = $model->getAttributes();
+            $data = $this->modell->getAttributes();
         }
         
         if (empty($id)) {
-            $id = $model->codunidademedida;
+            $id = $this->model->codunidademedida;
         }
         
-        if (!empty($id)) {
-            $unique_unidademedida = 'unique:tblunidademedida,unidademedida,'.$id.',codunidademedida';
-            $unique_sigla = 'unique:tblunidademedida,sigla,'.$id.',codunidademedida';
-        } else {
-            $unique_unidademedida = 'unique:tblunidademedida,unidademedida';
-            $unique_sigla = 'unique:tblunidademedida,sigla';
-        }           
-        
         $this->validator = Validator::make($data, [
-            'unidademedida' => "required|$unique_unidademedida",  
-            'sigla' => "required|$unique_sigla",  
+            'unidademedida' => [
+                'required',
+                Rule::unique('tblunidademedida')->ignore($id, 'codunidademedida')
+            ],            
+            'sigla' => [
+                'required',
+                Rule::unique('tblunidademedida')->ignore($id, 'codunidademedida')
+            ],            
+            
         ], [
             'unidademedida.required' => 'O campo Descrição não pode ser vazio',
-            'unidademedida.unique' => 'Esta descrição já esta cadastrada',
+            'unidademedida.unique' => 'Esta Unidade de Medida já esta cadastrada',
             'sigla.required' => 'O campo Sigla não pode ser vazio',
             'sigla.unique' => 'Esta sigla já esta cadastrado',
         ]);

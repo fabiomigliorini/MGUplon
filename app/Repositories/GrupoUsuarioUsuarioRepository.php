@@ -33,9 +33,15 @@ class GrupoUsuarioUsuarioRepository extends MGRepository {
         }
         
         $this->validator = Validator::make($data, [
-            //...            
+            'grupousuario' => [
+                'required',
+                'min:5',
+                Rule::unique('tblgrupousuario')->ignore($id, 'codgrupousuario')
+            ],            
         ], [
-            //..
+            'grupousuario.required' => 'O campo Grupo Usuário não pode ser vazio!',
+            'grupousuario.min' => 'O campo Grupo Usuário deve ter mais de 3 caracteres!',
+            'grupousuario.unique' => 'Esta Grupo de Usuário já esta cadastrado!',
         ]);
 
         return $this->validator->passes();

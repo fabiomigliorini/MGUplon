@@ -55,9 +55,6 @@ class UsuarioRepository extends MGRepository {
         if ($this->model->NegocioS->count() > 0) {
             return 'Usuário sendo utilizada em Negócios!';
         }
-        if ($this->model->ProdutoS->count() > 0) {
-            return 'Usuário sendo utilizada em Produtos!';
-        }
         return false;
     }
     

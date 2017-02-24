@@ -38,7 +38,7 @@ class MarcaRepository extends MGRepository {
             'marca' => [
                 'required',
                 Rule::unique('tblmarca')->ignore($id, 'codmarca')
-        ],            
+            ],            
         ], [
             'marca.required' => 'O campo Descrição não pode ser vazio',
             'marca.unique' => 'Esta Marca já esta cadastrada',
