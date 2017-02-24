@@ -7,18 +7,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 
 
-use MGLara\Models\Permissao;
+use MGLara\Models\Filial;
 
 /**
- * Description of PermissaoRepository
+ * Description of FilialRepository
  * 
  * @property Validator $validator
- * @property Permissao $model
+ * @property Filial $model
  */
-class PermissaoRepository extends MGRepository {
+class FilialRepository extends MGRepository {
     
     public function boot() {
-        $this->model = new Permissao();
+        $this->model = new Filial();
     }
     
     //put your code here
@@ -29,13 +29,13 @@ class PermissaoRepository extends MGRepository {
         }
         
         if (empty($id)) {
-            $id = $model->codpermissao;
+            $id = $model->codfilial;
         }
-        
+
         $this->validator = Validator::make($data, [
-            // ...
-        ], [
             //...
+        ], [
+            //..
         ]);
 
         return $this->validator->passes();
@@ -46,36 +46,42 @@ class PermissaoRepository extends MGRepository {
         if (!empty($id)) {
             $this->findOrFail($id);
         }
-        if ($this->model->GrupoUsuario->count() > 0) {
-            return 'Permissão sendo utilizada em Grupo Usuario!';
-        }
+        // ...
         return false;
     }
     
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
         /*
         // Query da Entidade
-        $qry = Permissao::query();
-        
+        $qry = Filial::query();
+        $qry->select([
+            'tblusuario.codusuario',
+            'tblusuario.inativo', 
+            'tblusuario.usuario', 
+            'tblpessoa.pessoa', 
+            'tblfilial.filial']);
+        $qry->leftJoin('tblpessoa', 'tblpessoa.codpessoa', '=', 'tblusuario.codpessoa');
+        $qry->leftJoin('tblfilial', 'tblfilial.codfilial', '=', 'tblusuario.codfilial');
+
         // Filtros
-        if (!empty($filters['codpermissao'])) {
-            $qry->where('codpermissao', '=', $filters['codpermissao']);
+        if (!empty($filters['codusuario'])) {
+            $qry->where('tblusuario.codusuario', '=', $filters['codusuario']);
         }
         
-        if (!empty($filters['permissao'])) {
-            foreach(explode(' ', $filters['permissao']) as $palavra) {
+        if (!empty($filters['usuario'])) {
+            foreach(explode(' ', $filters['usuario']) as $palavra) {
                 if (!empty($palavra)) {
-                    $qry->where('permissao', 'ilike', "%$palavra%");
+                    $qry->where('tblusuario.usuario', 'ilike', "%$palavra%");
                 }
             }
         }
         
-        if (!empty($filters['sigla'])) {
-            foreach(explode(' ', $filters['sigla']) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->where('sigla', 'ilike', "%$palavra%");
-                }
-            }
+        if (!empty($filters['codfilial'])) {
+            $qry->where('tblusuario.codfilial', '=', $filters['codfilial']);
+        }
+        
+        if (!empty($filters['codpessoa'])) {
+            $qry->where('tblusuario.codpessoa', '=', $filters['codpessoa']);
         }
         
         switch ($filters['inativo']) {
@@ -107,7 +113,7 @@ class PermissaoRepository extends MGRepository {
         
         // Registros
         return $qry->get();
-        */
+         * 
+         */
     }
-    
 }

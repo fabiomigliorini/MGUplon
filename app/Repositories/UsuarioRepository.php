@@ -5,7 +5,7 @@ namespace MGLara\Repositories;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
-
+use Illuminate\Validation\Rule;
 
 use MGLara\Models\Usuario;
 
@@ -25,29 +25,23 @@ class UsuarioRepository extends MGRepository {
     public function validate($data = null, $id = null) {
         
         if (empty($data)) {
-            $data = $model->getAttributes();
+            $data = $this->model->getAttributes();
         }
         
         if (empty($id)) {
-            $id = $model->codusuario;
+            $id = $this->model->codusuario;
         }
         
-        if (!empty($id)) {
-            $unique_usuario = 'unique:tblusuario,usuario,'.$id.',codusuario';
-            $unique_sigla = 'unique:tblusuario,sigla,'.$id.',codusuario';
-        } else {
-            $unique_usuario = 'unique:tblusuario,usuario';
-            $unique_sigla = 'unique:tblusuario,sigla';
-        }           
-        
         $this->validator = Validator::make($data, [
-            'usuario' => "required|$unique_usuario",  
-            'sigla' => "required|$unique_sigla",  
+            'usuario' => ['required','min:2', Rule::unique('tblusuario')->ignore($id, 'codusuario')],  
+            //'senha' => 'required_if:codusuario,null|min:6', 
+            'impressoramatricial' => 'required', 
+            'impressoratermica' => 'required',  
         ], [
-            'usuario.required' => 'O campo Descrição não pode ser vazio',
-            'usuario.unique' => 'Esta descrição já esta cadastrada',
-            'sigla.required' => 'O campo Sigla não pode ser vazio',
-            'sigla.unique' => 'Esta sigla já esta cadastrado',
+            'usuario.required' => 'O campo usuário não pode ser vazio!',
+            'usuario.unique' => 'Este usuário já esta cadastrado!',
+            'impressoramatricial.required' => 'Selecione uma impressora térmica!',
+            'impressoratermica.required' => 'Selecione uma impressora matricial!',
         ]);
 
         return $this->validator->passes();
@@ -58,11 +52,11 @@ class UsuarioRepository extends MGRepository {
         if (!empty($id)) {
             $this->findOrFail($id);
         }
-        if ($this->model->ProdutoS->count() > 0) {
-            return 'Unidade de medida sendo utilizada em Produtos!';
+        if ($this->model->NegocioS->count() > 0) {
+            return 'Usuário sendo utilizada em Negócios!';
         }
-        if ($this->model->ProdutoEmbalagemS->count() > 0) {
-            return 'Unidade de medida sendo utilizada em Embalagens!';
+        if ($this->model->ProdutoS->count() > 0) {
+            return 'Usuário sendo utilizada em Produtos!';
         }
         return false;
     }
@@ -71,26 +65,34 @@ class UsuarioRepository extends MGRepository {
         
         // Query da Entidade
         $qry = Usuario::query();
-        
+        $qry->select([
+            'tblusuario.codusuario',
+            'tblusuario.inativo', 
+            'tblusuario.usuario', 
+            'tblpessoa.pessoa', 
+            'tblfilial.filial']);
+        $qry->leftJoin('tblpessoa', 'tblpessoa.codpessoa', '=', 'tblusuario.codpessoa');
+        $qry->leftJoin('tblfilial', 'tblfilial.codfilial', '=', 'tblusuario.codfilial');
+
         // Filtros
         if (!empty($filters['codusuario'])) {
-            $qry->where('codusuario', '=', $filters['codusuario']);
+            $qry->where('tblusuario.codusuario', '=', $filters['codusuario']);
         }
         
         if (!empty($filters['usuario'])) {
             foreach(explode(' ', $filters['usuario']) as $palavra) {
                 if (!empty($palavra)) {
-                    $qry->where('usuario', 'ilike', "%$palavra%");
+                    $qry->where('tblusuario.usuario', 'ilike', "%$palavra%");
                 }
             }
         }
         
-        if (!empty($filters['sigla'])) {
-            foreach(explode(' ', $filters['sigla']) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->where('sigla', 'ilike', "%$palavra%");
-                }
-            }
+        if (!empty($filters['codfilial'])) {
+            $qry->where('tblusuario.codfilial', '=', $filters['codfilial']);
+        }
+        
+        if (!empty($filters['codpessoa'])) {
+            $qry->where('tblusuario.codpessoa', '=', $filters['codpessoa']);
         }
         
         switch ($filters['inativo']) {
@@ -122,7 +124,6 @@ class UsuarioRepository extends MGRepository {
         
         // Registros
         return $qry->get();
-        
     }
     
 }

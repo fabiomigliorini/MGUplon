@@ -41,7 +41,7 @@ class MarcaRepository extends MGRepository {
         ],            
         ], [
             'marca.required' => 'O campo Descrição não pode ser vazio',
-            'marca.unique' => 'Esta descrição já esta cadastrada',
+            'marca.unique' => 'Esta Marca já esta cadastrada',
         ]);
 
         return $this->validator->passes();

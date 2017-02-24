@@ -50,10 +50,10 @@
         <div class="btn-group pull-right" role="group" aria-label="Controles">
             <a class="btn btn-secondary btn-sm" href="{{ url("usuario/$model->codusuario/edit") }}"><i class="fa fa-pencil"></i></a>
             @if (empty($model->inativo))
-                <a class="btn btn-secondary btn-sm" href="{{ url("usuario/$model->codusuario/inativar") }}" data-inativar data-pergunta="Tem certeza que deseja inativar '{{ $model->usuario }}'?" data-after="recarregaDiv('main-container')"><i class="fa fa-ban"></i></a>
+                <a class="btn btn-secondary btn-sm" href="{{ url("usuario/$model->codusuario/inactivate") }}" data-activate data-question="Tem certeza que deseja inativar '{{ $model->usuario }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-ban"></i></a>
             @else
-                <a class="btn btn-secondary btn-sm" href="{{ url("usuario/$model->codusuario/ativar") }}" data-inativar data-pergunta="Tem certeza que deseja ativar '{{ $model->usuario }}'?" data-after="recarregaDiv('main-container')"><i class="fa fa-circle-o"></i></a>
-            @endif                
+                <a class="btn btn-secondary btn-sm" href="{{ url("usuario/$model->codusuario/activate") }}" data-activate data-question="Tem certeza que deseja ativar '{{ $model->usuario }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-circle-o"></i></a>
+            @endif
             <a class="btn btn-secondary btn-sm" href="{{ url("usuario/$model->codusuario") }}" data-excluir data-pergunta="Tem certeza que deseja excluir '{{ $model->usuario }}'?" data-after="location.replace('{{ url('usuario') }}');"><i class="fa fa-trash"></i></a>                
         </div> 
     @endsection

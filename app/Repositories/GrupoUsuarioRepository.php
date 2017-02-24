@@ -32,22 +32,10 @@ class GrupoUsuarioRepository extends MGRepository {
             $id = $model->codgrupousuario;
         }
         
-        if (!empty($id)) {
-            $unique_grupousuario = 'unique:tblgrupousuario,grupousuario,'.$id.',codgrupousuario';
-            $unique_sigla = 'unique:tblgrupousuario,sigla,'.$id.',codgrupousuario';
-        } else {
-            $unique_grupousuario = 'unique:tblgrupousuario,grupousuario';
-            $unique_sigla = 'unique:tblgrupousuario,sigla';
-        }           
-        
         $this->validator = Validator::make($data, [
-            'grupousuario' => "required|$unique_grupousuario",  
-            'sigla' => "required|$unique_sigla",  
+            //...
         ], [
-            'grupousuario.required' => 'O campo Descrição não pode ser vazio',
-            'grupousuario.unique' => 'Esta descrição já esta cadastrada',
-            'sigla.required' => 'O campo Sigla não pode ser vazio',
-            'sigla.unique' => 'Esta sigla já esta cadastrado',
+            //...
         ]);
 
         return $this->validator->passes();
@@ -58,11 +46,11 @@ class GrupoUsuarioRepository extends MGRepository {
         if (!empty($id)) {
             $this->findOrFail($id);
         }
-        if ($this->model->ProdutoS->count() > 0) {
-            return 'Unidade de medida sendo utilizada em Produtos!';
+        if ($this->model->GrupoUsuarioPermissaoS->count() > 0) {
+            return 'Grupo de usuário sendo utilizada em Permissões!';
         }
-        if ($this->model->ProdutoEmbalagemS->count() > 0) {
-            return 'Unidade de medida sendo utilizada em Embalagens!';
+        if ($this->model->GrupoUsuarioUsuarioS->count() > 0) {
+            return 'Grupo de usuário sendo utilizada em Usuarios!';
         }
         return false;
     }

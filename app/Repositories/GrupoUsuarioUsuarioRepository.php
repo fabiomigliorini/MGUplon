@@ -7,18 +7,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 
 
-use MGLara\Models\Permissao;
+use MGLara\Models\GrupoUsuarioUsuario;
 
 /**
- * Description of PermissaoRepository
+ * Description of GrupoUsuarioUsuarioRepository
  * 
  * @property Validator $validator
- * @property Permissao $model
+ * @property GrupoUsuarioUsuario $model
  */
-class PermissaoRepository extends MGRepository {
+class GrupoUsuarioUsuarioRepository extends MGRepository {
     
     public function boot() {
-        $this->model = new Permissao();
+        $this->model = new GrupoUsuarioUsuario();
     }
     
     //put your code here
@@ -29,13 +29,13 @@ class PermissaoRepository extends MGRepository {
         }
         
         if (empty($id)) {
-            $id = $model->codpermissao;
+            $id = $model->codgrupousuariousuario;
         }
         
         $this->validator = Validator::make($data, [
-            // ...
+            //...            
         ], [
-            //...
+            //..
         ]);
 
         return $this->validator->passes();
@@ -46,26 +46,24 @@ class PermissaoRepository extends MGRepository {
         if (!empty($id)) {
             $this->findOrFail($id);
         }
-        if ($this->model->GrupoUsuario->count() > 0) {
-            return 'Permissão sendo utilizada em Grupo Usuario!';
-        }
+        //...
         return false;
     }
     
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
         /*
         // Query da Entidade
-        $qry = Permissao::query();
+        $qry = GrupoUsuarioUsuario::query();
         
         // Filtros
-        if (!empty($filters['codpermissao'])) {
-            $qry->where('codpermissao', '=', $filters['codpermissao']);
+        if (!empty($filters['codgrupousuario'])) {
+            $qry->where('codgrupousuario', '=', $filters['codgrupousuario']);
         }
         
-        if (!empty($filters['permissao'])) {
-            foreach(explode(' ', $filters['permissao']) as $palavra) {
+        if (!empty($filters['grupousuario'])) {
+            foreach(explode(' ', $filters['grupousuario']) as $palavra) {
                 if (!empty($palavra)) {
-                    $qry->where('permissao', 'ilike', "%$palavra%");
+                    $qry->where('grupousuario', 'ilike', "%$palavra%");
                 }
             }
         }
