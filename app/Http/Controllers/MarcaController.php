@@ -6,31 +6,102 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Session;
 use MGLara\Http\Controllers\Controller;
-use MGLara\Models\Marca;
-use Carbon\Carbon;
+use MGLara\Repositories\MarcaRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
 
 class MarcaController extends Controller
 {
-    public function __construct() {
-        $this->bc = new Breadcrumb('Unidades de Medida');
-        $this->bc->addItem('Unidades de Medida', url('unidade-medida'));
-    }    
+    public function __construct(MarcaRepository $repository) {
+        $this->repository = $repository;
+        $this->bc = new Breadcrumb('Marcas');
+        $this->bc->addItem('Marcas', url('marca'));
+    }
+    
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
-    {
+    public function index(Request $request) {
+        
+        // Permissao
+        $this->repository->authorize('listing');
+        
+        // Breadcrumb
         $this->bc->addItem('Listagem');
-        //$parametros = self::filtroEstatico($request, 'marca.index', ['ativo' => 1]);
-        //$model = Marca::search($parametros)->orderBy('marca', 'ASC')->paginate(20);
-        return view('marca.index', ['bc'=>$this->bc, 'model'=>$model]);
+        
+        // Filtro da listagem
+        if (!$filtro = $this->getFiltro()) {
+            $filtro = [
+                'inativo' => 1,
+            ];
+        }
+        
+        // retorna View
+        return view('marca.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
     }
 
+    /**
+     * Monta json para alimentar a Datatable do index
+     * 
+     * @param Request $request
+     * @return json
+     */
+    public function datatable(Request $request) {
+        
+        // Autorizacao
+        $this->repository->authorize('listing');
+
+        // Grava Filtro para montar o formulario da proxima vez que o index for carregado
+        $this->setFiltro($request['filtros']);
+        
+        // Ordenacao
+        $columns[0] = 'codmarca';
+        $columns[1] = 'inativo';
+        $columns[2] = 'codmarca';
+        $columns[3] = 'marca';
+        $columns[4] = 'criacao';
+        $columns[5] = 'alteracao';
+        $sort = [];
+        if (!empty($request['order'])) {
+            foreach ($request['order'] as $order) {
+                $sort[] = [
+                    'column' => $columns[$order['column']],
+                    'dir' => $order['dir'],
+                ];
+            }
+        }
+
+        // Pega listagem dos registros
+        $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
+        
+        // Monta Totais
+        $recordsTotal = $this->repository->count();
+        $recordsFiltered = $regs->count();
+        
+        // Formata registros para exibir no data table
+        $data = [];
+        foreach ($regs as $reg) {
+            $data[] = [
+                url('marca', $reg->codmarca),
+                formataData($reg->inativo, 'C'),
+                formataCodigo($reg->codmarca),
+                $reg->marca,
+                formataData($reg->criacao, 'C'),
+                formataData($reg->alteracao, 'C'),
+            ];
+        }
+        
+        // Envelopa os dados no formato do data table
+        $ret = new Datatable($request['draw'], $recordsTotal, $recordsFiltered, $data);
+        
+        // Retorna o JSON
+        return collect($ret);
+        
+    }
+    
     /**
      * Show the form for creating a new resource.
      *
@@ -38,8 +109,17 @@ class MarcaController extends Controller
      */
     public function create()
     {
-        $model = new Marca();
-        return view('marca.create', compact('model'));
+        // cria um registro em branco
+        $this->repository->new();
+        
+        // autoriza
+        $this->repository->authorize('create');
+        
+        // breadcrumb
+        $this->bc->addItem('Nova');
+        
+        // retorna view
+        return view('marca.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -50,12 +130,13 @@ class MarcaController extends Controller
      */
     public function store(Request $request)
     {
-        $model = new Marca($request->all());
-        if (!$model->validate())
-            $this->throwValidationException($request, $model->_validator);
-        $model->save();
-        Session::flash('flash_success', 'Marca Criada!');
-        return redirect("marca/$model->codmarca"); 
+        parent::store($request);
+        
+        // Mensagem de registro criado
+        Session::flash('flash_create', 'Marca criada!');
+        
+        // redireciona para o view
+        return redirect("marca/{$this->repository->model->codmarca}");
     }
 
     /**
@@ -64,10 +145,20 @@ class MarcaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $model = Marca::findOrFail($id);
-        return view('marca.show', compact('model'));
+        // busca registro
+        $this->repository->findOrFail($id);
+        
+        //autorizacao
+        $this->repository->authorize('view');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->marca);
+        $this->bc->header = $this->repository->model->marca;
+        
+        // retorna show
+        return view('marca.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
 
@@ -79,8 +170,19 @@ class MarcaController extends Controller
      */
     public function edit($id)
     {
-        $model = Marca::findOrFail($id);
-        return view('marca.edit',  compact('model'));
+        // busca regstro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->marca, url('marca', $this->repository->model->codmarca));
+        $this->bc->header = $this->repository->model->marca;
+        $this->bc->addItem('Alterar');
+        
+        // retorna formulario edit
+        return view('marca.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -92,39 +194,15 @@ class MarcaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $model = Marca::findOrFail($id);
-        $model->fill($request->all());
         
-        if(is_null($request->input('site'))) {
-            $model->site = FALSE;
-        }
-
-        if (!$model->validate()) {
-            $this->throwValidationException($request, $model->_validator);
-        }
-
-        $model->save();
-        Session::flash('flash_success', "Marca '{$model->marca}' Atualizada!");
-        return redirect("marca/$model->codmarca");         
+        parent::update($request, $id);
+        
+        // mensagem re registro criado
+        Session::flash('flash_update', 'Registro alterado!');
+        
+        // redireciona para view
+        return redirect("marca/{$this->repository->model->codmarca}"); 
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        try{
-            Marca::find($id)->delete();
-            $ret = ['resultado' => true, 'mensagem' => 'Marca excluída com sucesso!'];
-        }
-        catch(\Exception $e){
-            $ret = ['resultado' => false, 'mensagem' => 'Erro ao excluir marca!', 'exception' => $e];
-        }
-        return json_encode($ret);
-    } 
     
     public function select2(Request $request)
     {
@@ -201,22 +279,4 @@ class MarcaController extends Controller
             $arr_codproduto[] = $prod->codproduto;
         echo json_encode($arr_codproduto);        
     }
-
-    public function inativar(Request $request)
-    {
-        $model = Marca::find($request->get('codmarca'));
-        if($request->get('acao') == 'ativar')
-        {
-            $model->inativo = null;
-            $msg = "Marca '{$model->marca}' Reativada!";
-        }
-        else
-        {
-            $model->inativo = Carbon::now();
-            $msg = "Marca '{$model->marca}' Inativada!";
-        }
-        
-        $model->save();
-        Session::flash('flash_success', $msg);
-    }     
 }

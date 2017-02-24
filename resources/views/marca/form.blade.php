@@ -1,42 +1,45 @@
-<div class="form-group">
-    {!! Form::label('marca', 'Marca:', ['class'=>'col-sm-2 control-label']) !!}
-    <div class="col-md-3 col-xs-4">
-        {!! Form::text('marca', null, ['class'=> 'form-control', 'id'=>'marca', 'required'=>'required']) !!}
-    </div>
-</div>
+<fieldset class="form-group">
+    {!! Form::label('marca', 'Marca') !!}
+    {!! Form::text('marca', null, ['class'=> 'form-control', 'id'=>'marca', 'required'=>'required']) !!}
+</fieldset>
 
-<div class="form-group">
-    {!! Form::label('site', 'Disponível no Site:', ['class'=>'col-sm-2 control-label']) !!}
-    <div class="col-sm-9" id="wrapper-site">{!! Form::checkbox('site', true, null, ['id'=>'site', 'data-off-text' => 'Não', 'data-on-text' => 'Sim']) !!}</div>
-</div>
-
-<div class="form-group">
-    {!! Form::label('descricaosite', 'Descrição Site:', ['class'=>'col-sm-2 control-label']) !!}
-    <div class="col-md-4 col-xs-4">
-        {!! Form::textarea('descricaosite', null, ['class'=> 'form-control', 'id'=>'descricaosite']) !!}
+<fieldset class="form-group">
+    <div class="checkbox checkbox-primary">
+    {!! Form::checkbox('site', true, null, ['class'=> 'form-control', 'id'=>'site']) !!}
+    {!! Form::label('site', 'Disponível no Site') !!}
     </div>
-</div>
+</fieldset>
 
-<div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-        {!! Form::submit($submitTextButton, array('class' => 'btn btn-primary')) !!}
-    </div>
-</div>
+<fieldset class="form-group">
+    {!! Form::label('descricaosite', 'Descrição no Site') !!}
+    {!! Form::textarea('descricaosite', null, ['class'=> 'form-control', 'id'=>'descricaosite']) !!}
+</fieldset>
+
+<fieldset class="form-group">
+   {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
+</fieldset>
 
 @section('inscript')
+<script src="{{ URL::asset('public/assets/js/setcase.js') }}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-    $('#form-marca').on("submit", function(e){
-        var currentForm = this;
+    $('#form-principal').on("submit", function(e) {
         e.preventDefault();
-        bootbox.confirm("Tem certeza que deseja salvar?", function(result) {
-            if (result) {
-                currentForm.submit();
-            }
-        });
+        var currentForm = this;
+        swal({
+          title: "Tem certeza que deseja salvar?",
+          type: "warning",
+          showCancelButton: true,
+          closeOnConfirm: false,
+          closeOnCancel: true
+        },
+        function(isConfirm){
+          if (isConfirm) {
+            currentForm.submit();
+          } 
+        });       
     });
-    $('#site').bootstrapSwitch();    
-    $('#marca').Setcase();     
+    $("#marca").Setcase();  
 });
 </script>
 @endsection

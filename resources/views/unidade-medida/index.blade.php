@@ -40,7 +40,7 @@
 </div>
 
 <div class='card'>
-    <div class='card-block'>
+    <div class='card-block table-responsive'>
         @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Unidade Medida', 'Sigla', 'Criação', 'Alteração']])
         <div class='clearfix'></div>
     </div>

@@ -28,7 +28,7 @@ class UsuarioController extends Controller
     }
     
     public function index(Request $request) {
-        //$this->authorize('list', Usuario::class);
+        $this->authorize('listing', Usuario::class);
         $this->bc->addItem('Listagem');
         if (!$filtro = $this->getFiltro()) {
             $filtro = [
@@ -39,14 +39,14 @@ class UsuarioController extends Controller
     }
 
     public function create() {
-        //$this->authorize('create', GrupoUsuario::class);
+        $this->authorize('create', GrupoUsuario::class);
         $model = new Usuario();
         $this->bc->addItem('Novo');
         return view('usuario.create', ['bc'=>$this->bc, 'model'=>$model]);
     }
 
     public function store(Request $request) {
-        //$this->authorize('create', GrupoUsuario::class);
+        $this->authorize('create', GrupoUsuario::class);
         $model = new Usuario($request->all());
         if (!$model->validate())
             $this->throwValidationException($request, $model->_validator);
@@ -58,7 +58,7 @@ class UsuarioController extends Controller
 
     public function edit($id) {
         $model = Usuario::findOrFail($id);
-        //$this->authorize('update', $model);
+        $this->authorize('update', $model);
         $this->bc->addItem($model->usuario, url('usuario', $model->codusuario));
         $this->bc->header = $model->usuario;
         $this->bc->addItem('Alterar');        
@@ -67,7 +67,7 @@ class UsuarioController extends Controller
 
     public function update(Request $request, $id) {
         $model = Usuario::findOrFail($id);
-        //$this->authorize('update', $model);
+        $this->authorize('update', $model);
         $model->fill($request->all());
         if(is_null($request->get('senha'))) {
             unset($model->senha);
@@ -86,7 +86,7 @@ class UsuarioController extends Controller
     
     public function show($id) {
         $model = Usuario::findOrFail($id);
-        //$this->authorize('view', $model);
+        $this->authorize('view', $model);
         $this->bc->addItem($model->usuario);
         $this->bc->header = $model->usuario;        
         return view('usuario.show', ['bc'=>$this->bc, 'model'=>$model]);
@@ -101,7 +101,7 @@ class UsuarioController extends Controller
     public function destroy($id)
     {
         $model = Usuario::findOrFail($id);
-        //$this->authorize('delete', $model);
+        $this->authorize('delete', $model);
         /*
         if ($model->UsuarioS->count() > 0) {
             return ['OK' => false, 'mensagem' => 'Grupo de Usuário está sendo utilizada em Usuários!'];
@@ -112,13 +112,13 @@ class UsuarioController extends Controller
     
     public function ativar($id) {
         $model = Usuario::findOrFail($id);
-        //$this->authorize('update', $model);
+        $this->authorize('update', $model);
         return ['OK' => $model->ativar()];
     }
     
     public function inativar($id) {
         $model = Usuario::findOrFail($id);
-        //$this->authorize('update', $model);
+        $this->authorize('update', $model);
         return ['OK' => $model->inativar()];
     }
     
@@ -178,7 +178,7 @@ class UsuarioController extends Controller
     
     public function datatable(Request $request) {
         
-        //$this->authorize('list', Usuario::class);
+        $this->authorize('listing', Usuario::class);
         
         // Query da Entidade
         $qry = Usuario::query();
