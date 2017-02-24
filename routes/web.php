@@ -83,7 +83,8 @@ Route::group(['middleware' => 'auth'], function() {
     /* Pessoa */
     
     /* permissao */
-    Route::resource('permissao', 'PermissaoController', ['only' => ['index', 'store', 'destroy']]);
+    Route::delete('permissao', 'PermissaoController@destroyPermissao');
+    Route::resource('permissao', 'PermissaoController', ['only' => ['index', 'store']]);
     
     
 });
