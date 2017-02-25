@@ -3,168 +3,82 @@
 namespace MGLara\Http\Controllers;
 
 use MGLara\Http\Controllers\Controller;
-use MGLara\Models\GrupoUsuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Redirect;
-use MGLara\Models\Permissao;
 
+use MGLara\Repositories\GrupoUsuarioRepository;
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
 
 class GrupoUsuarioController extends Controller
 {
-    
-    public function __construct() {
+    public function __construct(GrupoUsuarioRepository $repository) {
+        $this->repository = $repository;
         $this->bc = new Breadcrumb('Grupos de Usuários');
         $this->bc->addItem('Grupos de Usuários', url('grupo-usuario'));
     }
     
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request) {
-        $this->authorize('listing', GrupoUsuario::class);
+        
+        // Permissao
+        $this->repository->authorize('listing');
+        
+        // Breadcrumb
         $this->bc->addItem('Listagem');
+        
+        // Filtro da listagem
         if (!$filtro = $this->getFiltro()) {
             $filtro = [
                 'inativo' => 1,
             ];
         }
-
+        
+        // retorna View
         return view('grupo-usuario.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
     }
 
-    public function create() {
-        $this->authorize('create', GrupoUsuario::class);
-        $model = new GrupoUsuario;
-        $this->bc->addItem('Novo');
-        return view('grupo-usuario.create', ['bc'=>$this->bc, 'model'=>$model]);
-    }
-
-    public function store(Request $request) {
-        $this->authorize('create', GrupoUsuario::class);
-        $model = new GrupoUsuario($request->all());
-        if (!$model->validate())
-            $this->throwValidationException($request, $model->_validator);
-        $model->save();
-        Session::flash('flash_create', 'Registro criado!');
-        return redirect("grupo-usuario/$model->codgrupousuario");  
-    }
-
-    public function edit($id) {
-        $model = GrupoUsuario::findOrFail($id);
-        $this->authorize('update', $model);
-        $this->bc->addItem($model->grupousuario, url('grupo-usuario', $model->codgrupousuario));
-        $this->bc->header = $model->grupousuario;
-        $this->bc->addItem('Alterar');        
-        return view('grupo-usuario.edit',  ['bc'=>$this->bc, 'model'=>$model]);
-    }
-
-    public function update(Request $request, $id) {
-        $model = GrupoUsuario::findOrFail($id);
-        $this->authorize('update', $model);
-        $model->fill($request->all());
-        if (!$model->validate())
-            $this->throwValidationException($request, $model->_validator);
-        $model->save();
-        
-        Session::flash('flash_update', 'Registro alterado!');
-        return redirect("grupo-usuario/$model->codgrupousuario"); 
-    }
-    
-    public function show(Request $request, $id) {
-        $model = GrupoUsuario::findOrFail($id);
-        $this->authorize('view', $model);
-        $this->bc->addItem($model->grupousuario);
-        $this->bc->header = $model->grupousuario;
-
-        return view('grupo-usuario.show', ['bc'=>$this->bc, 'model'=>$model]);
-    }
-
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Monta json para alimentar a Datatable do index
+     * 
+     * @param Request $request
+     * @return json
      */
-    public function destroy($id)
-    {
-        $model = GrupoUsuario::findOrFail($id);
-        $this->authorize('delete', $model);
-        if ($model->UsuarioS->count() > 0) {
-            return ['OK' => false, 'mensagem' => 'Grupo de Usuário está sendo utilizada em Usuários!'];
-        }
-        return ['OK' => $model->delete()];
-    }
-    
-    public function ativar($id) {
-        $model = GrupoUsuario::findOrFail($id);
-        $this->authorize('update', $model);
-        return ['OK' => $model->ativar()];
-    }
-    
-    public function inativar($id) {
-        $model = GrupoUsuario::findOrFail($id);
-        $this->authorize('update', $model);
-        return ['OK' => $model->inativar()];
-    }
-    
     public function datatable(Request $request) {
         
-        $this->authorize('listing', Usuario::class);
-        
-        // Query da Entidade
-        $qry = GrupoUsuario::query();
+        // Autorizacao
+        $this->repository->authorize('listing');
 
+        // Grava Filtro para montar o formulario da proxima vez que o index for carregado
         $this->setFiltro($request['filtros']);
-        
-        // Filtros
-        if (!empty($request['filtros']['codgrupousuario'])) {
-            $qry->where('codgrupousuario', '=', $request['filtros']['codgrupousuario']);
-        }
-        
-        if (!empty($request['filtros']['grupousuario'])) {
-            foreach(explode(' ', $request['filtros']['grupousuario']) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->where('grupousuario', 'ilike', "%$palavra%");
-                }
-            }
-        }
-
-        switch ($request['filtros']['inativo']) {
-            case 2: //Inativos
-                $qry = $qry->inativo();
-                break;
-
-            case 9: //Todos
-                break;
-
-            case 1: //Ativos
-            default:
-                $qry = $qry->ativo();
-                break;
-        }
-
-               
-        $recordsTotal = GrupoUsuario::count();
-        $recordsFiltered = $qry->count();
-        
-        // Paginacao
-        $qry->offset($request['start']);
-        $qry->limit($request['length']);
         
         // Ordenacao
         $columns[0] = 'codgrupousuario';
         $columns[1] = 'inativo';
         $columns[2] = 'codgrupousuario';
         $columns[3] = 'grupousuario';
-
+        $sort = [];
         if (!empty($request['order'])) {
             foreach ($request['order'] as $order) {
-                $qry->orderBy($columns[$order['column']], $order['dir']);
+                $sort[] = [
+                    'column' => $columns[$order['column']],
+                    'dir' => $order['dir'],
+                ];
             }
         }
+
+        // Pega listagem dos registros
+        $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
         
-        // Registros
-        $regs = $qry->get();
+        // Monta Totais
+        $recordsTotal = $this->repository->count();
+        $recordsFiltered = $regs->count();
+        
+        // Formata registros para exibir no data table
         $data = [];
         foreach ($regs as $reg) {
             $data[] = [
@@ -175,12 +89,111 @@ class GrupoUsuarioController extends Controller
             ];
         }
         
-        // Envelope Retorno
+        // Envelopa os dados no formato do data table
         $ret = new Datatable($request['draw'], $recordsTotal, $recordsFiltered, $data);
         
-        // Retorno
-        return $ret->response();
+        // Retorna o JSON
+        return collect($ret);
         
     }
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        // cria um registro em branco
+        $this->repository->new();
+        
+        // autoriza
+        $this->repository->authorize('create');
+        
+        // breadcrumb
+        $this->bc->addItem('Nova');
+        
+        // retorna view
+        return view('grupo-usuario.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+    }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        parent::store($request);
+        
+        // Mensagem de registro criado
+        Session::flash('flash_create', 'Grupo de Usuário criado!');
+        
+        // redireciona para o view
+        return redirect("grupo-usuario/{$this->repository->model->codgrupousuario}");
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Request $request, $id)
+    {
+        // busca registro
+        $this->repository->findOrFail($id);
+        
+        //autorizacao
+        $this->repository->authorize('view');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->grupousuario);
+        $this->bc->header = $this->repository->model->grupousuario;
+        
+        // retorna show
+        return view('grupo-usuario.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        // busca regstro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->grupousuario, url('grupo-usuario', $this->repository->model->codgrupousuario));
+        $this->bc->header = $this->repository->model->grupousuario;
+        $this->bc->addItem('Alterar');
+        
+        // retorna formulario edit
+        return view('grupo-usuario.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        
+        parent::update($request, $id);
+        
+        // mensagem re registro criado
+        Session::flash('flash_update', 'Registro alterado!');
+        
+        // redireciona para view
+        return redirect("grupo-usuario/{$this->repository->model->codgrupousuario}"); 
+    }
 }

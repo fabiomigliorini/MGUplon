@@ -5,18 +5,18 @@ namespace MGLara\Repositories;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-use MGLara\Models\GrupoUsuario;
+use MGLara\Models\TipoProduto;
 
 /**
- * Description of GrupoUsuarioRepository
+ * Description of TipoProdutoRepository
  * 
  * @property Validator $validator
- * @property GrupoUsuario $model
+ * @property TipoProduto $model
  */
-class GrupoUsuarioRepository extends MGRepository {
+class TipoProdutoRepository extends MGRepository {
     
     public function boot() {
-        $this->model = new GrupoUsuario();
+        $this->model = new TipoProduto();
     }
     
     //put your code here
@@ -27,17 +27,17 @@ class GrupoUsuarioRepository extends MGRepository {
         }
         
         if (empty($id)) {
-            $this->model->codgrupousuario;
+            $this->model->codtipoproduto;
         }
         
         $this->validator = Validator::make($data, [
-            'grupousuario' => [
+            'tipoproduto' => [
                 'required',
-                Rule::unique('tblgrupousuario')->ignore($id, 'codgrupousuario')
+                Rule::unique('tbltipoproduto')->ignore($id, 'codtipoproduto')
             ],            
         ], [
-            'grupousuario.required' => 'O campo Grupo Usuário não pode ser vazio',
-            'grupousuario.unique' => 'Esta Descrição já esta cadastrada',
+            'tipoproduto.required' => 'O campo Tipo Produto não pode ser vazio',
+            'tipoproduto.unique' => 'Esta Descrição já esta cadastrada',
         ]);
 
         return $this->validator->passes();
@@ -48,11 +48,8 @@ class GrupoUsuarioRepository extends MGRepository {
         if (!empty($id)) {
             $this->findOrFail($id);
         }
-        if ($this->model->GrupoUsuarioPermissaoS->count() > 0) {
-            return 'Grupo de usuário sendo utilizada em Permissões!';
-        }
-        if ($this->model->GrupoUsuarioUsuarioS->count() > 0) {
-            return 'Grupo de usuário sendo utilizada em Usuarios!';
+        if ($this->model->ProdutoS->count() > 0) {
+            return 'Tipo Produto sendo utilizada em Produto!';
         }
         return false;
     }
@@ -60,17 +57,17 @@ class GrupoUsuarioRepository extends MGRepository {
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
         
         // Query da Entidade
-        $qry = GrupoUsuario::query();
+        $qry = TipoProduto::query();
         
         // Filtros
-        if (!empty($filters['codgrupousuario'])) {
-            $qry->where('codgrupousuario', '=', $filters['codgrupousuario']);
+        if (!empty($filters['codtipoproduto'])) {
+            $qry->where('codtipoproduto', '=', $filters['codtipoproduto']);
         }
         
-        if (!empty($filters['grupousuario'])) {
-            foreach(explode(' ', $filters['grupousuario']) as $palavra) {
+        if (!empty($filters['tipoproduto'])) {
+            foreach(explode(' ', $filters['tipoproduto']) as $palavra) {
                 if (!empty($palavra)) {
-                    $qry->where('grupousuario', 'ilike', "%$palavra%");
+                    $qry->where('tipoproduto', 'ilike', "%$palavra%");
                 }
             }
         }

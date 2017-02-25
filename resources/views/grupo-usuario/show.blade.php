@@ -86,13 +86,15 @@
         </div>
     </div>
     @section('buttons')
+
         <a class="btn btn-secondary btn-sm" href="{{ url("grupo-usuario/$model->codgrupousuario/edit") }}"><i class="fa fa-pencil"></i></a>
         @if (empty($model->inativo))
-            <a class="btn btn-secondary btn-sm" href="{{ url("grupo-usuario/$model->codgrupousuario/inativar") }}" data-inativar data-pergunta="Tem certeza que deseja inativar '{{ $model->grupousuario }}'?" data-after="recarregaDiv('main-container')"><i class="fa fa-ban"></i></a>
+            <a class="btn btn-secondary btn-sm" href="{{ url("grupo-usuario/$model->codgrupousuario/inactivate") }}" data-activate data-question="Tem certeza que deseja inativar '{{ $model->grupousuario }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-ban"></i></a>
         @else
-            <a class="btn btn-secondary btn-sm" href="{{ url("grupo-usuario/$model->codgrupousuario/ativar") }}" data-inativar data-pergunta="Tem certeza que deseja ativar '{{ $model->grupousuario }}'?" data-after="recarregaDiv('main-container')"><i class="fa fa-circle-o"></i></a>
-        @endif                
-        <a class="btn btn-secondary btn-sm" href="{{ url("grupo-usuario/$model->codgrupousuario") }}" data-excluir data-pergunta="Tem certeza que deseja excluir '{{ $model->grupousuario }}'?" data-after="location.replace('{{ url('grupo-usuario') }}');"><i class="fa fa-trash"></i></a>                
+            <a class="btn btn-secondary btn-sm" href="{{ url("grupo-usuario/$model->codgrupousuario/activate") }}" data-activate data-question="Tem certeza que deseja ativar '{{ $model->grupousuario }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-circle-o"></i></a>
+        @endif
+        <a class="btn btn-secondary btn-sm" href="{{ url("grupo-usuario/$model->codgrupousuario") }}" data-delete data-question="Tem certeza que deseja excluir '{{ $model->grupousuario }}'?" data-after="location.replace('{{ url('grupo-usuario') }}');"><i class="fa fa-trash"></i></a>  
+
     @endsection    
 </div>
 @section('inactive')

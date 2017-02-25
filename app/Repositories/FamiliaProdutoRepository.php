@@ -5,18 +5,18 @@ namespace MGLara\Repositories;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-use MGLara\Models\GrupoUsuario;
+use MGLara\Models\FamiliaProduto;
 
 /**
- * Description of GrupoUsuarioRepository
+ * Description of FamiliaProdutoRepository
  * 
  * @property Validator $validator
- * @property GrupoUsuario $model
+ * @property FamiliaProduto $model
  */
-class GrupoUsuarioRepository extends MGRepository {
+class FamiliaProdutoRepository extends MGRepository {
     
     public function boot() {
-        $this->model = new GrupoUsuario();
+        $this->model = new FamiliaProduto();
     }
     
     //put your code here
@@ -27,17 +27,21 @@ class GrupoUsuarioRepository extends MGRepository {
         }
         
         if (empty($id)) {
-            $this->model->codgrupousuario;
+            $this->model->codfamiliaproduto;
         }
         
         $this->validator = Validator::make($data, [
-            'grupousuario' => [
+            'codsecaoproduto' => 'required', 
+            'familiaproduto' => [
                 'required',
-                Rule::unique('tblgrupousuario')->ignore($id, 'codgrupousuario')
+                'min:3',
+                Rule::unique('tblfamiliaproduto')->ignore($id, 'codfamiliaproduto')
             ],            
         ], [
-            'grupousuario.required' => 'O campo Grupo Usuário não pode ser vazio',
-            'grupousuario.unique' => 'Esta Descrição já esta cadastrada',
+            'codsecaoproduto.required'  => 'Selecione uma Seção de produto!',
+            'familiaproduto.required'   => 'Família de produto nao pode ser vazio!',
+            'familiaproduto.min'        => 'Família de produto deve ter mais de 3 caracteres!',
+            'familiaproduto.unique'     => 'Esta Família já esta cadastrada nessa seção!',            
         ]);
 
         return $this->validator->passes();
@@ -48,11 +52,8 @@ class GrupoUsuarioRepository extends MGRepository {
         if (!empty($id)) {
             $this->findOrFail($id);
         }
-        if ($this->model->GrupoUsuarioPermissaoS->count() > 0) {
-            return 'Grupo de usuário sendo utilizada em Permissões!';
-        }
-        if ($this->model->GrupoUsuarioUsuarioS->count() > 0) {
-            return 'Grupo de usuário sendo utilizada em Usuarios!';
+        if ($this->model->GrupoProdutoS->count() > 0) {
+            return 'Familia Produto sendo utilizada em Grupo Produto!';
         }
         return false;
     }
@@ -60,17 +61,20 @@ class GrupoUsuarioRepository extends MGRepository {
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
         
         // Query da Entidade
-        $qry = GrupoUsuario::query();
+        $qry = FamiliaProduto::query();
         
         // Filtros
-        if (!empty($filters['codgrupousuario'])) {
-            $qry->where('codgrupousuario', '=', $filters['codgrupousuario']);
+        if(!empty($filters['codsecaoproduto']))
+            $query->where('codsecaoproduto', $filters['codsecaoproduto']);
+
+        if (!empty($filters['codfamiliaproduto'])) {
+            $qry->where('codfamiliaproduto', '=', $filters['codfamiliaproduto']);
         }
         
-        if (!empty($filters['grupousuario'])) {
-            foreach(explode(' ', $filters['grupousuario']) as $palavra) {
+        if (!empty($filters['familiaproduto'])) {
+            foreach(explode(' ', $filters['familiaproduto']) as $palavra) {
                 if (!empty($palavra)) {
-                    $qry->where('grupousuario', 'ilike', "%$palavra%");
+                    $qry->where('familiaproduto', 'ilike', "%$palavra%");
                 }
             }
         }
