@@ -48,8 +48,9 @@ class GrupoUsuario extends MGModel
     {
         return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
     }
-    
-    // // Tabelas Filhas (sem gerador)
+
+
+    // Tabelas Filhas
     public function GrupoUsuarioPermissaoS()
     {
         return $this->hasMany(GrupoUsuarioPermissao::class, 'codgrupousuario', 'codgrupousuario');
@@ -60,22 +61,5 @@ class GrupoUsuario extends MGModel
         return $this->hasMany(GrupoUsuarioUsuario::class, 'codgrupousuario', 'codgrupousuario');
     }
 
-    public function validate() {
-    	
-    	if ($this->codgrupousuario)
-    		$unique_grupousuario = "unique:tblgrupousuario,grupousuario,$this->codgrupousuario,codgrupousuario|required|min:5";
-    	else 
-    		$unique_grupousuario = "unique:tblgrupousuario,grupousuario|required|min:5";
-        
-        $this->_regrasValidacao = [
-            'grupousuario' => $unique_grupousuario,
-        ];
-    
-        $this->_mensagensErro = [
-            'grupousuario.unique' => 'Esse nome de grupo já esta utilizado',
-        ];
-        
-        return parent::validate();
-    }
 
 }

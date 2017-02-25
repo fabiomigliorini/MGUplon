@@ -58,4 +58,12 @@ abstract class MGModel extends Model {
         $query->whereNotNull("{$this->table}.inativo");
     }
     
+    public function scopePalavras($query, $campo, $palavras) {
+        foreach(explode(' ', trim($palavras)) as $palavra) {
+            if (!empty($palavra)) {
+                $query->where($campo, 'ilike', "%$palavra%");
+            }
+        }
+    }
+    
 }

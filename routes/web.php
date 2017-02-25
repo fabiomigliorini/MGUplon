@@ -86,5 +86,12 @@ Route::group(['middleware' => 'auth'], function() {
     Route::delete('permissao', 'PermissaoController@destroyPermissao');
     Route::resource('permissao', 'PermissaoController', ['only' => ['index', 'store']]);
     
+    /* Gerador de Codigo */
+    Route::get('gerador-codigo/{tabela}/model', 'GeradorCodigoController@showModel');
+    Route::post('gerador-codigo/{tabela}/model', 'GeradorCodigoController@storeModel');
+    Route::get('gerador-codigo/{tabela}/repository', 'GeradorCodigoController@showRepository');
+    Route::post('gerador-codigo/{tabela}/repository', 'GeradorCodigoController@storeRepository');
+    Route::resource('gerador-codigo', 'GeradorCodigoController', ['only' => ['index', 'show']]);
+    //Route::resource('gerador-codigo','GeradorCodigoController');
     
 });

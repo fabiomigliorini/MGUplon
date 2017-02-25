@@ -1,4 +1,5 @@
-<?php
+<?php //dd($validacoes) ?>
+<?php echo '<?php'; ?>
 
 namespace MGLara\Repositories;
     
@@ -7,18 +8,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
-use MGLara\Models\UnidadeMedida;
+use MGLara\Models\{{ $model }};
 
 /**
- * Description of UnidadeMedidaRepository
+ * Description of {{ $model }}Repository
  * 
  * @property Validator $validator
- * @property UnidadeMedida $model
+ * @property {{ $model }} $model
  */
-class UnidadeMedidaRepository extends MGRepository {
+class {{ $model }}Repository extends MGRepository {
     
     public function boot() {
-        $this->model = new UnidadeMedida();
+        $this->model = new {{ $model }}();
     }
     
     //put your code here
@@ -29,24 +30,23 @@ class UnidadeMedidaRepository extends MGRepository {
         }
         
         if (empty($id)) {
-            $id = $this->model->codunidademedida;
+            $id = $this->model->{{ $instancia_model->getKeyName() }};
         }
         
         $this->validator = Validator::make($data, [
-            'unidademedida' => [
-                'required',
-                Rule::unique('tblunidademedida')->ignore($id, 'codunidademedida')
-            ],            
-            'sigla' => [
-                'required',
-                Rule::unique('tblunidademedida')->ignore($id, 'codunidademedida')
-            ],            
-            
+@foreach ($validacoes as $campo => $regras)
+            '{{ $campo }}' => [
+@foreach ($regras as $regra => $validacao)
+                '{{ $validacao['rule'] }}',
+@endforeach
+            ],
+@endforeach
         ], [
-            'unidademedida.required' => 'O campo Descrição não pode ser vazio',
-            'unidademedida.unique' => 'Esta Descrição já esta cadastrada',
-            'sigla.required' => 'O campo Sigla não pode ser vazio',
-            'sigla.unique' => 'Esta sigla já esta cadastrado',
+@foreach ($validacoes as $campo => $regras)
+@foreach ($regras as $regra => $validacao)
+            '{{ $campo }}.{{ $regra }}' => '{!! $validacao['mensagem'] !!}',
+@endforeach
+@endforeach
         ]);
 
         return $this->validator->passes();
@@ -57,32 +57,32 @@ class UnidadeMedidaRepository extends MGRepository {
         if (!empty($id)) {
             $this->findOrFail($id);
         }
-        if ($this->model->ProdutoS->count() > 0) {
-            return 'Unidade de medida sendo utilizada em Produtos!';
+        
+@foreach ($filhas as $filha)
+        if ($this->model->{{ $filha->model }}S->count() > 0) {
+            return '{{ $titulo }} sendo utilizada em "{{ $filha->model }}"!';
         }
-        if ($this->model->ProdutoEmbalagemS->count() > 0) {
-            return 'Unidade de medida sendo utilizada em Embalagens!';
-        }
+        
+@endforeach
         return false;
     }
     
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
         
         // Query da Entidade
-        $qry = UnidadeMedida::query();
+        $qry = {{ $model }}::query();
         
         // Filtros
-        if (!empty($filters['codunidademedida'])) {
-            $qry->where('codunidademedida', '=', $filters['codunidademedida']);
+@foreach ($cols as $col) <?php if ($col->column_name == 'inativo') continue; ?>
+        if (!empty($filters['{{ $col->column_name }}'])) {
+@if ($col->udt_name == 'varchar')
+            $qry->palavras('{{ $col->column_name }}', $filters['{{ $col->column_name }}']);
+@else
+            $qry->where('{{ $col->column_name }}', '=', $filters['{{ $col->column_name }}']);
+@endif
         }
-        
-        if (!empty($filters['unidademedida'])) {
-            $qry->palavras('unidademedida', $filters['unidademedida']);
-        }
-        
-        if (!empty($filters['sigla'])) {
-            $qry->palavras('sigla', $filters['sigla']);
-        }
+
+@endforeach
         
         switch ($filters['inativo']) {
             case 2: //Inativos
