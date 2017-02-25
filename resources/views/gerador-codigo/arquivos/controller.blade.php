@@ -1,4 +1,4 @@
-<?php
+<?php echo "<?php\n"; ?>
 
 namespace MGLara\Http\Controllers;
 
@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
 
-use MGLara\Repositories\UnidadeMedidaRepository;
+use MGLara\Repositories\{{ $model }}Repository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
@@ -16,15 +16,15 @@ use MGLara\Library\JsonEnvelope\Datatable;
 use Carbon\Carbon;
 
 /**
- * @property UnidadeMedidaRepository $repository 
+ * @property {{ $model }}Repository $repository 
  */
-class UnidadeMedidaController extends Controller
+class {{ $model }}Controller extends Controller
 {
 
-    public function __construct(UnidadeMedidaRepository $repository) {
+    public function __construct({{ $model }}Repository $repository) {
         $this->repository = $repository;
-        $this->bc = new Breadcrumb('Unidades de Medida');
-        $this->bc->addItem('Unidades de Medida', url('unidade-medida'));
+        $this->bc = new Breadcrumb('{{ $titulo }}');
+        $this->bc->addItem('{{ $titulo }}', url('{{ $url }}'));
     }
     
     /**
@@ -48,7 +48,7 @@ class UnidadeMedidaController extends Controller
         }
         
         // retorna View
-        return view('unidade-medida.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
+        return view('{{ $url }}.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
     }
 
     /**
@@ -66,13 +66,20 @@ class UnidadeMedidaController extends Controller
         $this->setFiltro($request['filtros']);
         
         // Ordenacao
-        $columns[0] = 'codunidademedida';
+        $columns[0] = '{{ $instancia_model->getKeyName() }}';
         $columns[1] = 'inativo';
-        $columns[2] = 'codunidademedida';
-        $columns[3] = 'unidademedida';
-        $columns[4] = 'sigla';
-        $columns[5] = 'criacao';
-        $columns[6] = 'alteracao';
+        $columns[2] = '{{ $instancia_model->getKeyName() }}';
+        $columns[3] = '{{ $coluna_titulo }}';
+<?php $i=3; ?>
+@foreach ($cols as $col)<?php 
+    if (in_array($col->column_name, [$instancia_model->getKeyName(), $coluna_titulo, 'codusuariocriacao', 'codusuarioalteracao', 'alteracao', 'criacao', 'inativo'])) {
+        continue; 
+    }
+    $i++; 
+?>
+        $columns[{{ $i }}] = '{{ $col->column_name }}';
+@endforeach
+
         $sort = [];
         if (!empty($request['order'])) {
             foreach ($request['order'] as $order) {
@@ -94,13 +101,17 @@ class UnidadeMedidaController extends Controller
         $data = [];
         foreach ($regs as $reg) {
             $data[] = [
-                url('unidade-medida', $reg->codunidademedida),
+                url('{{ $url }}', $reg->{{ $instancia_model->getKeyName() }}),
                 formataData($reg->inativo, 'C'),
-                formataCodigo($reg->codunidademedida),
-                $reg->unidademedida,
-                $reg->sigla,
-                formataData($reg->criacao, 'C'),
-                formataData($reg->alteracao, 'C'),
+                formataCodigo($reg->{{ $instancia_model->getKeyName() }}),
+                $reg->{{ $coluna_titulo }},
+@foreach ($cols as $col)<?php 
+    if (in_array($col->column_name, [$instancia_model->getKeyName(), $coluna_titulo, 'codusuariocriacao', 'codusuarioalteracao', 'alteracao', 'criacao', 'inativo'])) {
+        continue; 
+    }
+?>
+                $reg->{{ $col->column_name }},
+@endforeach
             ];
         }
         
@@ -127,10 +138,10 @@ class UnidadeMedidaController extends Controller
         $this->repository->authorize('create');
         
         // breadcrumb
-        $this->bc->addItem('Nova');
+        $this->bc->addItem('Novo');
         
         // retorna view
-        return view('unidade-medida.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('{{ $url }}.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -144,10 +155,10 @@ class UnidadeMedidaController extends Controller
         parent::store($request);
         
         // Mensagem de registro criado
-        Session::flash('flash_create', 'Unidade de Medida criada!');
+        Session::flash('flash_create', '{{ $titulo }} criado!');
         
         // redireciona para o view
-        return redirect("unidade-medida/{$this->repository->model->codunidademedida}");
+        return redirect("{{ $url }}/{$this->repository->model->{{ $instancia_model->getKeyName() }}}");
     }
 
     /**
@@ -165,11 +176,11 @@ class UnidadeMedidaController extends Controller
         $this->repository->authorize('view');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->unidademedida);
-        $this->bc->header = $this->repository->model->unidademedida;
+        $this->bc->addItem($this->repository->model->{{ $coluna_titulo }});
+        $this->bc->header = $this->repository->model->{{ $coluna_titulo }};
         
         // retorna show
-        return view('unidade-medida.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('{{ $url }}.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -187,12 +198,12 @@ class UnidadeMedidaController extends Controller
         $this->repository->authorize('update');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->unidademedida, url('unidade-medida', $this->repository->model->codunidademedida));
-        $this->bc->header = $this->repository->model->unidademedida;
+        $this->bc->addItem($this->repository->model->{{ $coluna_titulo }}, url('{{ $url }}', $this->repository->model->{{ $instancia_model->getKeyName() }}));
+        $this->bc->header = $this->repository->model->{{ $coluna_titulo }};
         $this->bc->addItem('Alterar');
         
         // retorna formulario edit
-        return view('unidade-medida.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('{{ $url }}.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -208,10 +219,10 @@ class UnidadeMedidaController extends Controller
         parent::update($request, $id);
         
         // mensagem re registro criado
-        Session::flash('flash_update', 'Registro alterado!');
+        Session::flash('flash_update', '{{ $titulo }} alterado!');
         
         // redireciona para view
-        return redirect("unidade-medida/{$this->repository->model->codunidademedida}"); 
+        return redirect("{{ $url }}/{$this->repository->model->{{ $instancia_model->getKeyName() }}}"); 
     }
     
 }

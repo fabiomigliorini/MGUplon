@@ -4,7 +4,6 @@ namespace MGLara\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use MGLara\Http\Requests;
 use MGLara\Http\Controllers\Controller;
 
 use Illuminate\Support\Facades\DB;
@@ -34,7 +33,13 @@ class GeradorCodigoController extends Controller
 
     public function show(Request $request, $id) {
         $model = $this->repository->buscaArquivoModel($id);
-        return view('gerador-codigo.show', ['model'=>$model, 'tabela' => $id]);
+        $cols_original = $this->repository->buscaCamposTabela($id);
+        $cols = [];
+        foreach ($cols_original as $col) {
+            $cols[$col->column_name] = $col->column_name;
+        }
+        
+        return view('gerador-codigo.show', ['model'=>$model, 'tabela' => $id, 'cols' => $cols]);
     }
     
     public function showModel(Request $request, $tabela) {
@@ -81,5 +86,25 @@ class GeradorCodigoController extends Controller
 
     public function storePolicy(Request $request, $tabela) {
         return ['OK' => $this->repository->salvaPolicy($request->model)];
+    }
+    
+    public function showController(Request $request, $tabela) {
+        $conteudo = $this->repository->geraController($tabela, $request->model, $request->titulo, $request->url, $request->coluna_titulo);
+        $registrado = $this->repository->verificaRegistroRota($request->url);
+        $string_registro = $this->repository->stringRegistroRota($request->model, $request->url);
+        return view('gerador-codigo.controller', [
+            'tabela'=>$request->tabela, 
+            'model'=>$request->model, 
+            'titulo'=>$request->titulo,
+            'conteudo'=>$conteudo,
+            'url'=>$request->url,
+            'coluna_titulo'=>$request->coluna_titulo,
+            'registrado'=>$registrado,
+            'string_registro'=>$string_registro,
+        ]);
+    }
+
+    public function storeController(Request $request, $tabela) {
+        return ['OK' => $this->repository->salvaController($tabela, $request->model, $request->titulo, $request->url, $request->coluna_titulo)];
     }
 }

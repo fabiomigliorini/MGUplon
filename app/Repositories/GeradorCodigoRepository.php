@@ -3,6 +3,7 @@
 namespace MGLara\Repositories;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 
 /**
  * Description of UnidadeMedidaRepository
@@ -37,6 +38,15 @@ class GeradorCodigoRepository {
             }
         }
         return app_path() . '/Policies/' . $arquivo;
+    }
+    
+    public function caminhoController ($arquivo = '') {
+        if (!empty($arquivo)) {
+            if (!strstr(strtolower($arquivo), 'Controller.php')) {
+                $arquivo .= 'Controller.php';
+            }
+        }
+        return app_path() . '/Http/Controllers/' . $arquivo;
     }
     
     public function buscaTabelas() {
@@ -258,6 +268,13 @@ class GeradorCodigoRepository {
         return view('gerador-codigo.arquivos.policy', compact('model'))->render();
     }    
     
+    public function geraController($tabela, $model, $titulo, $url, $coluna_titulo) {
+        $instancia_model = "\\MGLara\\Models\\{$model}";
+        $instancia_model = new $instancia_model();
+        $cols = $this->buscaCamposTabela($tabela);
+        return view('gerador-codigo.arquivos.controller', compact('tabela', 'model', 'titulo', 'url', 'instancia_model', 'coluna_titulo', 'cols'))->render();
+    }    
+    
     public function salvaArquivo($arquivo, $conteudo) {
         
         if (file_exists($arquivo)) {
@@ -293,6 +310,12 @@ class GeradorCodigoRepository {
         return ($this->salvaArquivo($arquivo, $conteudo));
     }
     
+    public function salvaController($tabela, $model, $titulo, $url, $coluna_titulo) {
+        $conteudo = $this->geraController($tabela, $model, $titulo, $url, $coluna_titulo);
+        $arquivo = $this->caminhoController($model);
+        return ($this->salvaArquivo($arquivo, $conteudo));
+    }
+    
     public function stringRegistroPolicy($model) {
         return "\\MGLara\\Models\\{$model}::class => \\MGLara\\Policies\\{$model}Policy::class";
     }
@@ -304,4 +327,19 @@ class GeradorCodigoRepository {
         return $registro == $esperado;
     }
     
+    public function stringRegistroRota($model, $url) {
+        return "Route::resource('{$url}', '{$model}Controller');";
+    }
+    
+    public function verificaRegistroRota($url) {
+        $routes = Route::getRoutes();
+        foreach ($routes as $route) {
+            if (in_array($route->getName(), ["$url.index", "$url.show", "$url.create", "$url.edit", "$url.update", "$url.store"]) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+
 }
