@@ -298,9 +298,10 @@ class GeradorCodigoRepository {
     }
     
     public function verificaRegistroPolicy($model) {
-        $file = file_get_contents(app_path() . '/Providers/AuthServiceProvider.php');
-        $string = $this->stringRegistroPolicy($model);
-        return strstr($file, $string);
+        $registro = "MGLara\\Models\\{$model}";
+        $registro = app()->getProvider('MGLara\Providers\AuthServiceProvider')->getPolicies($registro);
+        $esperado = "MGLara\\Policies\\{$model}Policy";
+        return $registro == $esperado;
     }
     
 }

@@ -37,4 +37,16 @@ class AuthServiceProvider extends ServiceProvider
 
         //
     }
+    
+    public function getPolicies($model = null) 
+    {
+        if (!empty($model)) {
+            if (isset($this->policies[$model])) {
+                return $this->policies[$model];
+            } else {
+                return false;
+            }
+        }
+        return $this->policies;
+    }
 }
