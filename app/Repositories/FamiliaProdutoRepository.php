@@ -3,50 +3,45 @@
 namespace MGLara\Repositories;
     
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
-use MGLara\Models\UnidadeMedida;
+use MGLara\Models\FamiliaProduto;
 
 /**
- * Description of UnidadeMedidaRepository
+ * Description of FamiliaProdutoRepository
  * 
  * @property Validator $validator
- * @property UnidadeMedida $model
+ * @property FamiliaProduto $model
  */
-class UnidadeMedidaRepository extends MGRepository {
+class FamiliaProdutoRepository extends MGRepository {
     
     public function boot() {
-        $this->model = new UnidadeMedida();
+        $this->model = new FamiliaProduto();
     }
     
     //put your code here
     public function validate($data = null, $id = null) {
         
         if (empty($data)) {
-            $data = $this->model->getAttributes();
+            $this->model->getAttributes();
         }
         
         if (empty($id)) {
-            $id = $this->model->codunidademedida;
+            $this->model->codfamiliaproduto;
         }
         
         $this->validator = Validator::make($data, [
-            'unidademedida' => [
+            'codsecaoproduto' => 'required', 
+            'familiaproduto' => [
                 'required',
-                Rule::unique('tblunidademedida')->ignore($id, 'codunidademedida')
+                'min:3',
+                Rule::unique('tblfamiliaproduto')->ignore($id, 'codfamiliaproduto')
             ],            
-            'sigla' => [
-                'required',
-                Rule::unique('tblunidademedida')->ignore($id, 'codunidademedida')
-            ],            
-            
         ], [
-            'unidademedida.required' => 'O campo Descrição não pode ser vazio',
-            'unidademedida.unique' => 'Esta Descrição já esta cadastrada',
-            'sigla.required' => 'O campo Sigla não pode ser vazio',
-            'sigla.unique' => 'Esta sigla já esta cadastrado',
+            'codsecaoproduto.required'  => 'Selecione uma Seção de produto!',
+            'familiaproduto.required'   => 'Família de produto nao pode ser vazio!',
+            'familiaproduto.min'        => 'Família de produto deve ter mais de 3 caracteres!',
+            'familiaproduto.unique'     => 'Esta Família já esta cadastrada nessa seção!',            
         ]);
 
         return $this->validator->passes();
@@ -57,11 +52,8 @@ class UnidadeMedidaRepository extends MGRepository {
         if (!empty($id)) {
             $this->findOrFail($id);
         }
-        if ($this->model->ProdutoS->count() > 0) {
-            return 'Unidade de medida sendo utilizada em Produtos!';
-        }
-        if ($this->model->ProdutoEmbalagemS->count() > 0) {
-            return 'Unidade de medida sendo utilizada em Embalagens!';
+        if ($this->model->GrupoProdutoS->count() > 0) {
+            return 'Familia Produto sendo utilizada em Grupo Produto!';
         }
         return false;
     }
@@ -69,19 +61,22 @@ class UnidadeMedidaRepository extends MGRepository {
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
         
         // Query da Entidade
-        $qry = UnidadeMedida::query();
+        $qry = FamiliaProduto::query();
         
         // Filtros
-        if (!empty($filters['codunidademedida'])) {
-            $qry->where('codunidademedida', '=', $filters['codunidademedida']);
+        if(!empty($filters['codsecaoproduto']))
+            $query->where('codsecaoproduto', $filters['codsecaoproduto']);
+
+        if (!empty($filters['codfamiliaproduto'])) {
+            $qry->where('codfamiliaproduto', '=', $filters['codfamiliaproduto']);
         }
         
-        if (!empty($filters['unidademedida'])) {
-            $qry->palavras('unidademedida', $filters['unidademedida']);
-        }
-        
-        if (!empty($filters['sigla'])) {
-            $qry->palavras('sigla', $filters['sigla']);
+        if (!empty($filters['familiaproduto'])) {
+            foreach(explode(' ', $filters['familiaproduto']) as $palavra) {
+                if (!empty($palavra)) {
+                    $qry->where('familiaproduto', 'ilike', "%$palavra%");
+                }
+            }
         }
         
         switch ($filters['inativo']) {
@@ -115,5 +110,4 @@ class UnidadeMedidaRepository extends MGRepository {
         return $qry->get();
         
     }
-    
 }

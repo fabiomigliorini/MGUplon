@@ -3,50 +3,41 @@
 namespace MGLara\Repositories;
     
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
-use MGLara\Models\UnidadeMedida;
+use MGLara\Models\TipoProduto;
 
 /**
- * Description of UnidadeMedidaRepository
+ * Description of TipoProdutoRepository
  * 
  * @property Validator $validator
- * @property UnidadeMedida $model
+ * @property TipoProduto $model
  */
-class UnidadeMedidaRepository extends MGRepository {
+class TipoProdutoRepository extends MGRepository {
     
     public function boot() {
-        $this->model = new UnidadeMedida();
+        $this->model = new TipoProduto();
     }
     
     //put your code here
     public function validate($data = null, $id = null) {
         
         if (empty($data)) {
-            $data = $this->model->getAttributes();
+            $this->model->getAttributes();
         }
         
         if (empty($id)) {
-            $id = $this->model->codunidademedida;
+            $this->model->codtipoproduto;
         }
         
         $this->validator = Validator::make($data, [
-            'unidademedida' => [
+            'tipoproduto' => [
                 'required',
-                Rule::unique('tblunidademedida')->ignore($id, 'codunidademedida')
+                Rule::unique('tbltipoproduto')->ignore($id, 'codtipoproduto')
             ],            
-            'sigla' => [
-                'required',
-                Rule::unique('tblunidademedida')->ignore($id, 'codunidademedida')
-            ],            
-            
         ], [
-            'unidademedida.required' => 'O campo Descrição não pode ser vazio',
-            'unidademedida.unique' => 'Esta Descrição já esta cadastrada',
-            'sigla.required' => 'O campo Sigla não pode ser vazio',
-            'sigla.unique' => 'Esta sigla já esta cadastrado',
+            'tipoproduto.required' => 'O campo Tipo Produto não pode ser vazio',
+            'tipoproduto.unique' => 'Esta Descrição já esta cadastrada',
         ]);
 
         return $this->validator->passes();
@@ -58,10 +49,7 @@ class UnidadeMedidaRepository extends MGRepository {
             $this->findOrFail($id);
         }
         if ($this->model->ProdutoS->count() > 0) {
-            return 'Unidade de medida sendo utilizada em Produtos!';
-        }
-        if ($this->model->ProdutoEmbalagemS->count() > 0) {
-            return 'Unidade de medida sendo utilizada em Embalagens!';
+            return 'Tipo Produto sendo utilizada em Produto!';
         }
         return false;
     }
@@ -69,19 +57,19 @@ class UnidadeMedidaRepository extends MGRepository {
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
         
         // Query da Entidade
-        $qry = UnidadeMedida::query();
+        $qry = TipoProduto::query();
         
         // Filtros
-        if (!empty($filters['codunidademedida'])) {
-            $qry->where('codunidademedida', '=', $filters['codunidademedida']);
+        if (!empty($filters['codtipoproduto'])) {
+            $qry->where('codtipoproduto', '=', $filters['codtipoproduto']);
         }
         
-        if (!empty($filters['unidademedida'])) {
-            $qry->palavras('unidademedida', $filters['unidademedida']);
-        }
-        
-        if (!empty($filters['sigla'])) {
-            $qry->palavras('sigla', $filters['sigla']);
+        if (!empty($filters['tipoproduto'])) {
+            foreach(explode(' ', $filters['tipoproduto']) as $palavra) {
+                if (!empty($palavra)) {
+                    $qry->where('tipoproduto', 'ilike', "%$palavra%");
+                }
+            }
         }
         
         switch ($filters['inativo']) {
@@ -115,5 +103,4 @@ class UnidadeMedidaRepository extends MGRepository {
         return $qry->get();
         
     }
-    
 }

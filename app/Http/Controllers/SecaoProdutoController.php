@@ -3,27 +3,101 @@
 namespace MGLara\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-use MGLara\Http\Requests;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
-use MGLara\Models\SecaoProduto;
+use MGLara\Repositories\SecaoProdutoRepository;
 use MGLara\Models\FamiliaProduto;
-use Carbon\Carbon;
+use MGLara\Library\Breadcrumb\Breadcrumb;
+use MGLara\Library\JsonEnvelope\Datatable;
 
 class SecaoProdutoController extends Controller
 {
+    public function __construct(SecaoProdutoRepository $repository) {
+        $this->repository = $repository;
+        $this->bc = new Breadcrumb('Seções de Produto');
+        $this->bc->addItem('Seções de Produto', url('secao-produto'));
+    }
+    
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request) {
-        $parametros = self::filtroEstatico($request, 'secao-produto.index', ['ativo' => 1]);
-        $model = SecaoProduto::search($parametros)->orderBy('secaoproduto', 'ASC')->paginate(20);
-        return view('secao-produto.index', compact('model'));
+        
+        // Permissao
+        $this->repository->authorize('listing');
+        
+        // Breadcrumb
+        $this->bc->addItem('Listagem');
+        
+        // Filtro da listagem
+        if (!$filtro = $this->getFiltro()) {
+            $filtro = [
+                'inativo' => 1,
+            ];
+        }
+        
+        // retorna View
+        return view('secao-produto.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
     }
+
+    /**
+     * Monta json para alimentar a Datatable do index
+     * 
+     * @param Request $request
+     * @return json
+     */
+    public function datatable(Request $request) {
+        
+        // Autorizacao
+        $this->repository->authorize('listing');
+
+        // Grava Filtro para montar o formulario da proxima vez que o index for carregado
+        $this->setFiltro($request['filtros']);
+        
+        // Ordenacao
+        $columns[0] = 'codsecaoproduto';
+        $columns[1] = 'inativo';
+        $columns[2] = 'codsecaoproduto';
+        $columns[3] = 'secaoproduto';
+        $sort = [];
+        if (!empty($request['order'])) {
+            foreach ($request['order'] as $order) {
+                $sort[] = [
+                    'column' => $columns[$order['column']],
+                    'dir' => $order['dir'],
+                ];
+            }
+        }
+
+        // Pega listagem dos registros
+        $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
+        
+        // Monta Totais
+        $recordsTotal = $this->repository->count();
+        $recordsFiltered = $regs->count();
+        
+        // Formata registros para exibir no data table
+        $data = [];
+        foreach ($regs as $reg) {
+            $data[] = [
+                url('secao-produto', $reg->codsecaoproduto),
+                formataData($reg->inativo, 'C'),
+                formataCodigo($reg->codsecaoproduto),
+                $reg->secaoproduto,
+            ];
+        }
+        
+        // Envelopa os dados no formato do data table
+        $ret = new Datatable($request['draw'], $recordsTotal, $recordsFiltered, $data);
+        
+        // Retorna o JSON
+        return collect($ret);
+        
+    }
+    
+    
     /**
      * Show the form for creating a new resource.
      *
@@ -31,8 +105,17 @@ class SecaoProdutoController extends Controller
      */
     public function create()
     {
-        $model = new SecaoProduto();
-        return view('secao-produto.create', compact('model'));
+        // cria um registro em branco
+        $this->repository->new();
+        
+        // autoriza
+        $this->repository->authorize('create');
+        
+        // breadcrumb
+        $this->bc->addItem('Nova');
+        
+        // retorna view
+        return view('secao-produto.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -43,14 +126,13 @@ class SecaoProdutoController extends Controller
      */
     public function store(Request $request)
     {
-        $model = new SecaoProduto($request->all());
+        parent::store($request);
         
-        if (!$model->validate())
-            $this->throwValidationException($request, $model->_validator);
+        // Mensagem de registro criado
+        Session::flash('flash_create', 'Seções de Produto criada!');
         
-        $model->save();
-        Session::flash('flash_success', 'Seção Criada!');
-        return redirect("secao-produto/$model->codsecaoproduto");    
+        // redireciona para o view
+        return redirect("secao-produto/{$this->repository->model->codsecaoproduto}");
     }
 
     /**
@@ -76,8 +158,19 @@ class SecaoProdutoController extends Controller
      */
     public function edit($id)
     {
-        $model = SecaoProduto::findOrFail($id);
-        return view('secao-produto.edit',  compact('model'));
+        // busca regstro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->secaoproduto, url('secao-produto', $this->repository->model->codsecaoproduto));
+        $this->bc->header = $this->repository->model->secaoproduto;
+        $this->bc->addItem('Alterar');
+        
+        // retorna formulario edit
+        return view('secao-produto.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -89,52 +182,13 @@ class SecaoProdutoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $model = SecaoProduto::findOrFail($id);
-        $model->fill($request->all());
-
-        if (!$model->validate())
-            $this->throwValidationException($request, $model->_validator);
-
-        $model->save();
         
-        Session::flash('flash_success', "Seção '{$model->secaoproduto}' Atualizada!");
-        return redirect("secao-produto/$model->codsecaoproduto"); 
+        parent::update($request, $id);
+        
+        // mensagem re registro criado
+        Session::flash('flash_update', 'Registro alterado!');
+        
+        // redireciona para view
+        return redirect("secao-produto/{$this->repository->model->codsecaoproduto}"); 
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        try{
-            SecaoProduto::find($id)->delete();
-            $ret = ['resultado' => true, 'mensagem' => 'Seção excluída com sucesso!'];
-        }
-        catch(\Exception $e){
-            $ret = ['resultado' => false, 'mensagem' => 'Erro ao excluir seção!', 'exception' => $e];
-        }
-        return json_encode($ret);
-    }    
-
-    public function inativar(Request $request)
-    {
-        $model = SecaoProduto::find($request->get('codsecaoproduto'));
-        if($request->get('acao') == 'ativar')
-        {
-            $model->inativo = null;
-            $msg = "Seção '{$model->secaoproduto}' Reativada!";
-        }
-        else
-        {
-            $model->inativo = Carbon::now();
-            $msg = "Seção '{$model->secaoproduto}' Inativada!";
-        }
-        
-        $model->save();
-        Session::flash('flash_success', $msg);
-    }    
-    
 }

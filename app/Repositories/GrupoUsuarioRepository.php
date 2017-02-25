@@ -3,9 +3,7 @@
 namespace MGLara\Repositories;
     
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Gate;
-
+use Illuminate\Validation\Rule;
 
 use MGLara\Models\GrupoUsuario;
 
@@ -25,17 +23,21 @@ class GrupoUsuarioRepository extends MGRepository {
     public function validate($data = null, $id = null) {
         
         if (empty($data)) {
-            $data = $model->getAttributes();
+            $this->model->getAttributes();
         }
         
         if (empty($id)) {
-            $id = $model->codgrupousuario;
+            $this->model->codgrupousuario;
         }
         
         $this->validator = Validator::make($data, [
-            //...
+            'grupousuario' => [
+                'required',
+                Rule::unique('tblgrupousuario')->ignore($id, 'codgrupousuario')
+            ],            
         ], [
-            //...
+            'grupousuario.required' => 'O campo Grupo Usuário não pode ser vazio',
+            'grupousuario.unique' => 'Esta Descrição já esta cadastrada',
         ]);
 
         return $this->validator->passes();
@@ -73,14 +75,6 @@ class GrupoUsuarioRepository extends MGRepository {
             }
         }
         
-        if (!empty($filters['sigla'])) {
-            foreach(explode(' ', $filters['sigla']) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->where('sigla', 'ilike', "%$palavra%");
-                }
-            }
-        }
-        
         switch ($filters['inativo']) {
             case 2: //Inativos
                 $qry = $qry->inativo();
@@ -112,5 +106,4 @@ class GrupoUsuarioRepository extends MGRepository {
         return $qry->get();
         
     }
-    
 }
