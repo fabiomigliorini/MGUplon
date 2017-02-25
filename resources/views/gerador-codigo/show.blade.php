@@ -89,6 +89,19 @@
         });
     }
     
+    function abrePolicy() {
+        var model = $('#model').val();
+        var titulo = $('#titulo').val();
+        
+        $.get('{{ url("gerador-codigo/$tabela/policy") }}', {
+            model: model,
+            titulo: titulo,
+        }).done(function(data) {
+            $('#tab-policy').html(data);
+            mostraResultados();
+        });
+    }
+    
     function geraTitulo() {
         var s = $('#model').val();
         s = s.replace(/([A-Z])/g, ' $1').trim()
@@ -105,6 +118,9 @@
                     break;
                 case '#tab-repository':
                     abreRepository();
+                    break;
+                case '#tab-policy':
+                    abrePolicy();
                     break;
             }
         });

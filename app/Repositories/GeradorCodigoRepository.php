@@ -30,6 +30,15 @@ class GeradorCodigoRepository {
         return app_path() . '/Repositories/' . $arquivo;
     }
     
+    public function caminhoPolicy ($arquivo = '') {
+        if (!empty($arquivo)) {
+            if (!strstr(strtolower($arquivo), 'Policy.php')) {
+                $arquivo .= 'Policy.php';
+            }
+        }
+        return app_path() . '/Policies/' . $arquivo;
+    }
+    
     public function buscaTabelas() {
         return DB::select('SELECT table_name FROM information_schema.tables WHERE table_schema = \'mgsis\' ORDER BY table_schema,table_name;');
     }
@@ -245,6 +254,10 @@ class GeradorCodigoRepository {
         
     }    
     
+    public function geraPolicy($model) {
+        return view('gerador-codigo.arquivos.policy', compact('model'))->render();
+    }    
+    
     public function salvaArquivo($arquivo, $conteudo) {
         
         if (file_exists($arquivo)) {
@@ -272,6 +285,22 @@ class GeradorCodigoRepository {
         $conteudo = $this->geraRepository($tabela, $model, $titulo);
         $arquivo = $this->caminhoRepository($model);
         return ($this->salvaArquivo($arquivo, $conteudo));
+    }
+    
+    public function salvaPolicy($model) {
+        $conteudo = $this->geraPolicy($model);
+        $arquivo = $this->caminhoPolicy($model);
+        return ($this->salvaArquivo($arquivo, $conteudo));
+    }
+    
+    public function stringRegistroPolicy($model) {
+        return "\\MGLara\\Models\\{$model}::class => \\MGLara\\Policies\\{$model}Policy::class";
+    }
+    
+    public function verificaRegistroPolicy($model) {
+        $file = file_get_contents(app_path() . '/Providers/AuthServiceProvider.php');
+        $string = $this->stringRegistroPolicy($model);
+        return strstr($file, $string);
     }
     
 }

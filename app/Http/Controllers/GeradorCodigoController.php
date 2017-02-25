@@ -64,4 +64,22 @@ class GeradorCodigoController extends Controller
     public function storeRepository(Request $request, $tabela) {
         return ['OK' => $this->repository->salvaRepository($tabela, $request->model, $request->titulo)];
     }
+    
+    public function showPolicy(Request $request, $tabela) {
+        $conteudo = $this->repository->geraPolicy($request->model);
+        $registrada = $this->repository->verificaRegistroPolicy($request->model);
+        $string_registro = $this->repository->stringRegistroPolicy($request->model);
+        return view('gerador-codigo.policy', [
+            'tabela'=>$request->tabela, 
+            'model'=>$request->model, 
+            'titulo'=>$request->titulo,
+            'conteudo'=>$conteudo,
+            'registrada'=>$registrada,
+            'string_registro'=>$string_registro,
+        ]);
+    }
+
+    public function storePolicy(Request $request, $tabela) {
+        return ['OK' => $this->repository->salvaPolicy($request->model)];
+    }
 }

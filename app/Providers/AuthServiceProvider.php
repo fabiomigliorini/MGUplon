@@ -18,6 +18,7 @@ class AuthServiceProvider extends ServiceProvider
         \MGLara\Models\Permissao::class => \MGLara\Policies\PermissaoPolicy::class,
         \MGLara\Models\UnidadeMedida::class => \MGLara\Policies\UnidadeMedidaPolicy::class,
         \MGLara\Models\Usuario::class => \MGLara\Policies\UsuarioPolicy::class,
+        \MGLara\Models\Banco::class => \MGLara\Policies\BancoPolicy::class,
     ];
 
     /**

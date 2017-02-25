@@ -1,5 +1,4 @@
-<?php //dd($validacoes) ?>
-<?php echo '<?php'; ?>
+<?php echo "<?php\n"; ?>
 
 namespace MGLara\Repositories;
     
