@@ -93,6 +93,8 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('gerador-codigo/{tabela}/repository', 'GeradorCodigoController@storeRepository');
     Route::get('gerador-codigo/{tabela}/policy', 'GeradorCodigoController@showPolicy');
     Route::post('gerador-codigo/{tabela}/policy', 'GeradorCodigoController@storePolicy');
+    Route::get('gerador-codigo/{tabela}/controller', 'GeradorCodigoController@showController');
+    Route::post('gerador-codigo/{tabela}/controller', 'GeradorCodigoController@storeController');
     Route::resource('gerador-codigo', 'GeradorCodigoController', ['only' => ['index', 'show']]);
     //Route::resource('gerador-codigo','GeradorCodigoController');
     

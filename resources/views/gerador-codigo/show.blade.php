@@ -15,6 +15,20 @@
           </label>
           <input type='text' name='titulo' id='titulo' class='form-control' required='required'>
         </div>
+        <div class='col-md-3'>
+          <label for='url'>
+              URL
+          </label>
+          <input type='text' name='url' id='url' class='form-control' required='required'>
+        </div>
+        <div class='col-md-3'>
+          <label for='coluna_titulo'>
+              Coluna de Título
+          </label>
+          {!! Form::select2('coluna_titulo', $cols, null, ['id' => 'coluna_titulo', 'class' => 'form-control', 'required' => 'required']) !!}
+        </div>
+      </div><br>
+      <div class='row'>
         <div class='col-md-6'>
             <label for="tab-arquivos">
                 Arquivos
@@ -102,14 +116,38 @@
         });
     }
     
+    function abreController() {
+        var model = $('#model').val();
+        var titulo = $('#titulo').val();
+        var url = $('#url').val();
+        var coluna_titulo = $('#coluna_titulo').val();
+        
+        $.get('{{ url("gerador-codigo/$tabela/controller") }}', {
+            model: model,
+            titulo: titulo,
+            url: url,
+            coluna_titulo: coluna_titulo,
+        }).done(function(data) {
+            $('#tab-controller').html(data);
+            mostraResultados();
+        });
+    }
+    
     function geraTitulo() {
         var s = $('#model').val();
         s = s.replace(/([A-Z])/g, ' $1').trim()
-        $('#titulo').val(s);
+        $('#titulo').val(s + 's');
+    }
+    
+    function geraUrl() {
+        var s = $('#model').val();
+        s = s.replace(/([A-Z])/g, '-$1').trim()
+        $('#url').val(s.toLowerCase().substr(1));
     }
 
     $(document).ready(function () {
         geraTitulo();
+        geraUrl();
         $('#model').focus();
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             switch ($(e.target).attr('href')) {
@@ -122,15 +160,27 @@
                 case '#tab-policy':
                     abrePolicy();
                     break;
+                case '#tab-controller':
+                    abreController();
+                    break;
             }
         });
         
         $('#model').keyup(function () {
             escondeResultados();
             geraTitulo();
+            geraUrl();
         });
         
         $('#titulo').keyup(function () {
+            escondeResultados();
+        });
+        
+        $('#url').keyup(function () {
+            escondeResultados();
+        });
+        
+        $('#coluna_titulo').change(function () {
             escondeResultados();
         });
     });
