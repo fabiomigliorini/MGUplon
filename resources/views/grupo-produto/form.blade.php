@@ -1,28 +1,33 @@
-<div class="form-group">
-    {!! Form::label('grupoproduto', 'Grupo de Produtos:', ['class' => 'col-sm-2 control-label']) !!}
-    <div class="col-md-4 col-xs-4">
-        {!! Form::text('grupoproduto', null, ['class'=> 'form-control', 'id'=>'grupoproduto', 'required'=>'required']) !!}
-    </div>
-</div>
-<div class="form-group">
-	<div class="col-sm-offset-2 col-sm-10">
-  {!! Form::submit($submitTextButton, array('class' => 'btn btn-primary')) !!}
-  </div>
-</div>
+<fieldset class="form-group">
+    {!! Form::label('grupoproduto', 'Grupo Produto') !!}
+    {!! Form::text('grupoproduto', null, ['class'=> 'form-control', 'id'=>'grupoproduto', 'required'=>'required', 'autofocus']) !!}
+</fieldset>
+
+<fieldset class="form-group">
+   {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
+</fieldset>
 
 @section('inscript')
+<script src="{{ URL::asset('public/assets/js/setcase.js') }}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-    $('#form-grupo-produto').on("submit", function(e){
-        var currentForm = this;
+    $('#form-principal').on("submit", function(e) {
         e.preventDefault();
-        bootbox.confirm("Tem certeza que deseja salvar?", function(result) {
-            if (result) {
-                currentForm.submit();
-            }
-        });
+        var currentForm = this;
+        swal({
+          title: "Tem certeza que deseja salvar?",
+          type: "warning",
+          showCancelButton: true,
+          closeOnConfirm: false,
+          closeOnCancel: true
+        },
+        function(isConfirm){
+          if (isConfirm) {
+            currentForm.submit();
+          } 
+        });       
     });
-    $('#grupoproduto').Setcase();     
+    $("#grupoproduto").Setcase();  
 });
 </script>
 @endsection

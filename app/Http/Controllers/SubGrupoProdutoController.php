@@ -7,21 +7,73 @@ use Illuminate\Http\Request;
 use MGLara\Http\Requests;
 use MGLara\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
-use MGLara\Models\GrupoProduto;
-use MGLara\Models\SubGrupoProduto;
+
+use MGLara\Repositories\SubGrupoProdutoRepository;
+use MGLara\Models\SubSubGrupoProduto;
 use MGLara\Models\Produto;
-use Carbon\Carbon;
+use MGLara\Library\Breadcrumb\Breadcrumb;
+use MGLara\Library\JsonEnvelope\Datatable;
 
 class SubGrupoProdutoController extends Controller
 {
+    public function __construct(SubGrupoProdutoRepository $repository) {
+        $this->repository = $repository;
+        $this->bc = new Breadcrumb('Sub Grupos de Produto');
+        $this->bc->addItem('Seções', url('grupo-produto'));
+    }
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Monta json para alimentar a Datatable do index
+     * 
+     * @param Request $request
+     * @return json
      */
-    public function index()
-    {
-        //
+    public function datatable(Request $request) {
+        
+        // Autorizacao
+        $this->repository->authorize('listing');
+
+        // Grava Filtro para montar o formulario da proxima vez que o index for carregado
+        $this->setFiltro($request['filtros']);
+        
+        // Ordenacao
+        $columns[0] = 'codsubgrupoproduto';
+        $columns[1] = 'inativo';
+        $columns[2] = 'codsubgrupoproduto';
+        $columns[3] = 'subgrupoproduto';
+        $sort = [];
+        if (!empty($request['order'])) {
+            foreach ($request['order'] as $order) {
+                $sort[] = [
+                    'column' => $columns[$order['column']],
+                    'dir' => $order['dir'],
+                ];
+            }
+        }
+
+        // Pega listagem dos registros
+        $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
+
+        // Monta Totais
+        $recordsTotal = $this->repository->count();
+        $recordsFiltered = $regs->count();
+        
+        // Formata registros para exibir no data table
+        $data = [];
+        foreach ($regs as $reg) {
+            $data[] = [
+                url('sub-grupo-produto', $reg->codsubgrupoproduto),
+                formataData($reg->inativo, 'C'),
+                formataCodigo($reg->codsubgrupoproduto),
+                $reg->subgrupoproduto,
+            ];
+        }
+        
+        // Envelopa os dados no formato do data table
+        $ret = new Datatable($request['draw'], $recordsTotal, $recordsFiltered, $data);
+        
+        // Retorna o JSON
+        return collect($ret);
     }
 
     /**
@@ -29,11 +81,19 @@ class SubGrupoProdutoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function create()
     {
-        $model = new SubGrupoProduto();
-        $parent = GrupoProduto::findOrFail($request->get('codsubgrupoproduto'));
-        return view('sub-grupo-produto.create', compact('model','parent', 'request'));
+        // cria um registro em branco
+        $this->repository->new();
+        
+        // autoriza
+        $this->repository->authorize('create');
+        
+        // breadcrumb
+        $this->bc->addItem('Novo');
+        
+        // retorna view
+        return view('sub-grupo-produto.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -44,16 +104,13 @@ class SubGrupoProdutoController extends Controller
      */
     public function store(Request $request)
     {
-        $model = new SubGrupoProduto($request->all());
+        parent::store($request);
         
-        if (!$model->validate())
-            $this->throwValidationException($request, $model->_validator);
+        // Mensagem de registro criado
+        Session::flash('flash_create', 'Seções de Produto criada!');
         
-        $model->codsubgrupoproduto = $request->get('codsubgrupoproduto');
-        $model->save();
-        
-        Session::flash('flash_success', 'Sub Grupo Criado!');
-        return redirect("sub-grupo-produto/$model->codsubsubgrupoproduto");
+        // redireciona para o view
+        return redirect("sub-grupo-produto/{$this->repository->model->codsubgrupoproduto}"); 
     }
 
     /**
@@ -64,11 +121,28 @@ class SubGrupoProdutoController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $model = SubGrupoProduto::findOrFail($id);
-        $parametros = self::filtroEstatico($request, 'sub-grupo-produto.show', ['ativo' => 1]);
-        $parametros['codsubsubgrupoproduto'] = $id;
-        $produtos = Produto::search($parametros)->orderBy('produto', 'ASC')->paginate(15);
-        return view('sub-grupo-produto.show', compact('model', 'produtos'));
+        // busca registro
+        $this->repository->findOrFail($id);
+        
+        //autorizacao
+        $this->repository->authorize('view');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->GrupoProduto->FamiliaProduto->SecaoProduto->secaoproduto, url('secao-produto', $this->repository->model->GrupoProduto->FamiliaProduto->SecaoProduto->codsecaoproduto));
+        $this->bc->addItem($this->repository->model->GrupoProduto->FamiliaProduto->familiaproduto, url('familia-produto', $this->repository->model->GrupoProduto->FamiliaProduto->codfamiliaproduto));
+        $this->bc->addItem($this->repository->model->GrupoProduto->grupoproduto, url('grupo-produto', $this->repository->model->GrupoProduto->codgrupoproduto));
+        $this->bc->addItem($this->repository->model->subgrupoproduto);
+
+        $this->bc->header = $this->repository->model->subgrupoproduto;
+        
+        if (!$filtro = $this->getFiltro()) {
+            $filtro = [
+                'inativo' => 1,
+            ];
+        }
+
+        // retorna show
+        return view('sub-grupo-produto.show', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'filtro'=>$filtro]);
     }
 
     /**
@@ -79,8 +153,23 @@ class SubGrupoProdutoController extends Controller
      */
     public function edit($id)
     {
-        $model = SubGrupoProduto::findOrFail($id);
-        return view('sub-grupo-produto.edit',  compact('model'));
+        // busca regstro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->GrupoProduto->FamiliaProduto->SecaoProduto->secaoproduto, url('secao-produto', $this->repository->model->GrupoProduto->FamiliaProduto->SecaoProduto->codsecaoproduto));
+        $this->bc->addItem($this->repository->model->GrupoProduto->FamiliaProduto->familiaproduto, url('familia-produto', $this->repository->model->GrupoProduto->FamiliaProduto->codfamiliaproduto));
+        $this->bc->addItem($this->repository->model->GrupoProduto->grupoproduto, url('grupo-produto', $this->repository->model->GrupoProduto->codgrupoproduto));
+        $this->bc->addItem($this->repository->model->subgrupoproduto, url($this->repository->model->codsubgrupoproduto));
+
+        $this->bc->header = $this->repository->model->subgrupoproduto;
+        $this->bc->addItem('Alterar');
+        
+        // retorna formulario edit
+        return view('sub-grupo-produto.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -92,52 +181,15 @@ class SubGrupoProdutoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $model = SubGrupoProduto::findOrFail($id);
-        $model->fill($request->all());
-        if (!$model->validate())
-            $this->throwValidationException($request, $model->_validator);
         
-        $model->save();
+        parent::update($request, $id);
         
-        Session::flash('flash_success', "Sub Grupo '{$model->subsubgrupoproduto}' Atualizado!");
-        return redirect("sub-grupo-produto/$model->codsubsubgrupoproduto");         
+        // mensagem re registro criado
+        Session::flash('flash_update', 'Registro alterado!');
+        
+        // redireciona para view
+        return redirect("sub-grupo-produto/{$this->repository->model->codsubgrupoproduto}"); 
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        try{
-            SubGrupoProduto::find($id)->delete();
-            $ret = ['resultado' => true, 'mensagem' => 'Sub Grupo excluído com sucesso!'];
-        }
-        catch(\Exception $e){
-            $ret = ['resultado' => false, 'mensagem' => 'Erro ao excluir sub grupo!', 'exception' => $e];
-        }
-        return json_encode($ret);
-    }   
-    
-    public function inativar(Request $request)
-    {
-        $model = SubGrupoProduto::find($request->get('codsubsubgrupoproduto'));
-        if($request->get('acao') == 'ativar')
-        {
-            $model->inativo = null;
-            $msg = "Sub Grupo '{$model->subsubgrupoproduto}' Reativado!";
-        }
-        else
-        {
-            $model->inativo = Carbon::now();
-            $msg = "Sub Grupo '{$model->subsubgrupoproduto}' Inativado!";
-        }
-        
-        $model->save();
-        Session::flash('flash_success', $msg);
-    }    
 
     public function select2(Request $request)
     {
@@ -149,7 +201,7 @@ class SubGrupoProdutoController extends Controller
         
         if(!empty($request->get('id'))) {    
             // Monta Retorno
-            $item = SubGrupoProduto::findOrFail($request->get('id'));
+            $item = SubSubGrupoProduto::findOrFail($request->get('id'));
             return [
                 'id' => $item->codsubgrupoproduto,
                 'subgrupoproduto' => $item->subgrupoproduto,
@@ -161,7 +213,7 @@ class SubGrupoProdutoController extends Controller
             $params['page'] = $params['page']??1;
             
             // Monta Query
-            $qry = SubGrupoProduto::where('codgrupoproduto', '=', $request->codgrupoproduto);
+            $qry = SubSubGrupoProduto::where('codgrupoproduto', '=', $request->codgrupoproduto);
             
             if(!empty($params['term'])) {
                 foreach (explode(' ', $params['term']) as $palavra) {

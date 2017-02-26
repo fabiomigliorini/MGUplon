@@ -1,6 +1,6 @@
 <fieldset class="form-group">
     {!! Form::label('marca', 'Marca') !!}
-    {!! Form::text('marca', null, ['class'=> 'form-control', 'id'=>'marca', 'required'=>'required']) !!}
+    {!! Form::text('marca', null, ['class'=> 'form-control', 'id'=>'marca', 'required'=>'required', 'autofocus']) !!}
 </fieldset>
 
 <fieldset class="form-group">

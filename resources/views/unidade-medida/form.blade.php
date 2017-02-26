@@ -4,7 +4,7 @@
 </fieldset>
 <fieldset class="form-group">
     {!! Form::label('sigla', 'Sigla') !!}
-    {!! Form::text('sigla', null, ['class'=> 'form-control', 'id'=>'sigla', 'required'=>'required', 'maxlength'=>'3']) !!}
+    {!! Form::text('sigla', null, ['class'=> 'form-control', 'id'=>'sigla', 'required'=>'required', 'maxlength'=>'3', 'autofocus']) !!}
 </fieldset>
 <fieldset class="form-group">
    {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}

@@ -6,16 +6,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use MGLara\Http\Controllers\Controller;
 use MGLara\Repositories\SecaoProdutoRepository;
-use MGLara\Models\FamiliaProduto;
+use MGLara\Repositories\FamiliaProdutoRepository;
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
 
 class SecaoProdutoController extends Controller
 {
-    public function __construct(SecaoProdutoRepository $repository) {
+    public function __construct(SecaoProdutoRepository $repository, FamiliaProdutoRepository $familiaProdutoRepository) {
         $this->repository = $repository;
-        $this->bc = new Breadcrumb('Seções de Produto');
-        $this->bc->addItem('Seções de Produto', url('secao-produto'));
+        $this->familiaProdutoRepository = $familiaProdutoRepository;
+        $this->bc = new Breadcrumb('Seções');
+        $this->bc->addItem('Seções', url('secao-produto'));
     }
     
     /**
@@ -143,11 +144,24 @@ class SecaoProdutoController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $model = SecaoProduto::find($id);
-        $parametros = self::filtroEstatico($request, 'secao-produto.show', ['ativo' => 1]);
-        $parametros['codsecaoproduto'] = $id;
-        $familias = FamiliaProduto::search($parametros);
-        return view('secao-produto.show', compact('model', 'familias'));
+        // busca registro
+        $this->repository->findOrFail($id);
+        
+        //autorizacao
+        $this->repository->authorize('view');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->secaoproduto);
+        $this->bc->header = $this->repository->model->secaoproduto;
+        
+        if (!$filtro = $this->getFiltro()) {
+            $filtro = [
+                'inativo' => 1,
+            ];
+        }
+
+        // retorna show
+        return view('secao-produto.show', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'filtro'=>$filtro]);
     }
 
     /**

@@ -31,17 +31,20 @@ class SubGrupoProdutoRepository extends MGRepository {
         }
         
         $this->validator = Validator::make($data, [
-            'codgrupoproduto' => 'required', 
             'subgrupoproduto' => [
                 'required',
                 'min:3',
-                Rule::unique('tblsubgrupoproduto')->ignore($id, 'codsubgrupoproduto')
+                Rule::unique('tblsubgrupoproduto')->ignore($id, 'codsubgrupoproduto')->where(function ($query) use ($data) {
+                    if(!isset($data['codgrupoproduto'])){
+                        return true;
+                    }                    
+                    $query->where('codgrupoproduto', $data['codgrupoproduto']);
+                })
             ],            
         ], [
-            'codgrupoproduto.required'  => 'Selecione um Grupo de produto!',
-            'subgrupoproduto.required'   => 'Família de produto nao pode ser vazio!',
-            'subgrupoproduto.min'        => 'Família de produto deve ter mais de 3 caracteres!',
-            'subgrupoproduto.unique'     => 'Esta Família já esta cadastrada nessa seção!',            
+            'subgrupoproduto.required'   => 'Sub Grupo de produto nao pode ser vazio!',
+            'subgrupoproduto.min'        => 'Sub grupo de produto deve ter mais de 3 caracteres!',
+            'subgrupoproduto.unique'     => 'Esta Sub Grupo já esta cadastrada nesse Grupo!',            
         ]);
 
         return $this->validator->passes();
@@ -65,7 +68,7 @@ class SubGrupoProdutoRepository extends MGRepository {
         
         // Filtros
         if(!empty($filters['codgrupoproduto']))
-            $query->where('codgrupoproduto', $filters['codgrupoproduto']);
+            $qry->where('codgrupoproduto', $filters['codgrupoproduto']);
 
         if (!empty($filters['codsubgrupoproduto'])) {
             $qry->where('codsubgrupoproduto', '=', $filters['codsubgrupoproduto']);
