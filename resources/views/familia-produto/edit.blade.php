@@ -1,29 +1,26 @@
 @extends('layouts.default')
 @section('content')
-<ol class="breadcrumb header">
-{!! 
-    titulo(
-        $model->codfamiliaproduto,
-        [
-            url("secao-produto/$model->codsecaoproduto") => $model->SecaoProduto->secaoproduto,
-            url("familia-produto/$model->codfamiliaproduto") => $model->familiaproduto,
-            'Alterar'
-        ],
-        $model->inativo
-    ) 
-!!} 
-    <li class='active'>
-        <small>
-            <a title="Nova Família" href="{{ url("familia-produto/create?codsecaoproduto=$model->codsecaoproduto") }}"><i class="glyphicon glyphicon-plus"></i></a>
-            &nbsp;
-            <a title="Detalhes" href="{{ url("familia-produto/$model->codfamiliaproduto") }}"><i class="glyphicon glyphicon-eye-open"></i></a>
-        </small>
-    </li>
-</ol>
-<hr>
-<br>
-{!! Form::model($model, ['method' => 'PATCH', 'class' => 'form-horizontal', 'id' => 'form-familia-produto', 'action' => ['FamiliaProdutoController@update', $model->codfamiliaproduto] ]) !!}
-    @include('errors.form_error')
-    @include('familia-produto.form', ['submitTextButton' => 'Salvar'])
-{!! Form::close() !!}
+<div class='row'>
+    <div class="col-md-4">
+        <div class="card">
+            <h4 class="card-header">Alterar</h4>
+            <div class="card-block">
+                {!! Form::model($model, ['method' => 'PATCH', 'id' => 'form-principal', 'action' => ['FamiliaProdutoController@update', $model->codfamiliaproduto, 'codsecaoproduto'=>$model->codsecaoproduto] ]) !!}
+                    @include('errors.form_error')
+                    @include('familia-produto.form')
+                {!! Form::close() !!}
+            </div>
+        </div>
+    </div>
+</div>
+@section('inactive')
+
+    @include('layouts.includes.inactive', [$model])
+    
+@endsection
+@section('creation')
+
+    @include('layouts.includes.creation', [$model])
+    
+@endsection
 @stop

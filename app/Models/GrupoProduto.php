@@ -27,6 +27,7 @@ class GrupoProduto extends MGModel
     protected $primaryKey = 'codgrupoproduto';
     protected $fillable = [
         'grupoproduto',
+        'codfamiliaproduto',
     ];
     protected $dates = [
         'inativo',

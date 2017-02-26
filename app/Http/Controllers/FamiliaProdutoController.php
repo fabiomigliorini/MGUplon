@@ -8,21 +8,71 @@ use MGLara\Http\Requests;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
-use MGLara\Models\SecaoProduto;
-use MGLara\Models\FamiliaProduto;
-use MGLara\Models\GrupoProduto;
-use Carbon\Carbon;
+
+use MGLara\Repositories\FamiliaProdutoRepository;
+use MGLara\Library\Breadcrumb\Breadcrumb;
+use MGLara\Library\JsonEnvelope\Datatable;
 
 class FamiliaProdutoController extends Controller
 {
+    public function __construct(FamiliaProdutoRepository $repository) {
+        $this->repository = $repository;
+        $this->bc = new Breadcrumb('Seções');
+        $this->bc->addItem('Seções', url('secao-produto'));
+    }
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Monta json para alimentar a Datatable do index
+     * 
+     * @param Request $request
+     * @return json
      */
-    public function index()
-    {
-        //
+    public function datatable(Request $request) {
+        
+        // Autorizacao
+        $this->repository->authorize('listing');
+
+        // Grava Filtro para montar o formulario da proxima vez que o index for carregado
+        $this->setFiltro($request['filtros']);
+        
+        // Ordenacao
+        $columns[0] = 'codfamiliaproduto';
+        $columns[1] = 'inativo';
+        $columns[2] = 'codfamiliaproduto';
+        $columns[3] = 'familiaproduto';
+        $sort = [];
+        if (!empty($request['order'])) {
+            foreach ($request['order'] as $order) {
+                $sort[] = [
+                    'column' => $columns[$order['column']],
+                    'dir' => $order['dir'],
+                ];
+            }
+        }
+
+        // Pega listagem dos registros
+        $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
+        
+        // Monta Totais
+        $recordsTotal = $this->repository->count();
+        $recordsFiltered = $regs->count();
+        
+        // Formata registros para exibir no data table
+        $data = [];
+        foreach ($regs as $reg) {
+            $data[] = [
+                url('familia-produto', $reg->codfamiliaproduto),
+                formataData($reg->inativo, 'C'),
+                formataCodigo($reg->codfamiliaproduto),
+                $reg->familiaproduto,
+            ];
+        }
+        
+        // Envelopa os dados no formato do data table
+        $ret = new Datatable($request['draw'], $recordsTotal, $recordsFiltered, $data);
+        
+        // Retorna o JSON
+        return collect($ret);
     }
 
     /**
@@ -30,11 +80,19 @@ class FamiliaProdutoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function create()
     {
-        $model = new FamiliaProduto();
-        $parent = SecaoProduto::findOrFail($request->get('codsecaoproduto'));
-        return view('familia-produto.create', compact('model', 'request', 'parent'));
+        // cria um registro em branco
+        $this->repository->new();
+        
+        // autoriza
+        $this->repository->authorize('create');
+        
+        // breadcrumb
+        $this->bc->addItem('Nova');
+        
+        // retorna view
+        return view('familia-produto.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -45,15 +103,13 @@ class FamiliaProdutoController extends Controller
      */
     public function store(Request $request)
     {
-        $model = new FamiliaProduto($request->all());
+        parent::store($request);
         
-        if (!$model->validate())
-            $this->throwValidationException($request, $model->_validator);
+        // Mensagem de registro criado
+        Session::flash('flash_create', 'Seções de Produto criada!');
         
-        $model->codsecaoproduto = $request->get('codsecaoproduto');
-        $model->save();
-        Session::flash('flash_success', 'Família Criada!');
-        return redirect("familia-produto/$model->codfamiliaproduto");    
+        // redireciona para o view
+        return redirect("familia-produto/{$this->repository->model->codfamiliaproduto}"); 
     }
 
     /**
@@ -64,12 +120,25 @@ class FamiliaProdutoController extends Controller
      */
     public function show(Request $request, $id)
     {
+        // busca registro
+        $this->repository->findOrFail($id);
         
-        $model = FamiliaProduto::find($id);
-        $parametros = self::filtroEstatico($request, 'familia-produto.show', ['ativo' => 1]);
-        $parametros['codfamiliaproduto'] = $id;
-        $grupos = GrupoProduto::search($parametros);
-        return view('familia-produto.show', compact('model', 'grupos'));
+        //autorizacao
+        $this->repository->authorize('view');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->SecaoProduto->secaoproduto, url('secao-produto', $this->repository->model->codsecaoproduto));
+        $this->bc->addItem($this->repository->model->familiaproduto);
+        $this->bc->header = $this->repository->model->familiaproduto;
+        
+        if (!$filtro = $this->getFiltro()) {
+            $filtro = [
+                'inativo' => 1,
+            ];
+        }
+
+        // retorna show
+        return view('familia-produto.show', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'filtro'=>$filtro]);
     }
 
     /**
@@ -80,8 +149,19 @@ class FamiliaProdutoController extends Controller
      */
     public function edit($id)
     {
-        $model = FamiliaProduto::findOrFail($id);
-        return view('familia-produto.edit',  compact('model'));
+        // busca regstro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->familiaproduto, url('familia-produto', $this->repository->model->codsecaoproduto));
+        $this->bc->header = $this->repository->model->familiaproduto;
+        $this->bc->addItem('Alterar');
+        
+        // retorna formulario edit
+        return view('familia-produto.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -93,53 +173,15 @@ class FamiliaProdutoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $model = FamiliaProduto::findOrFail($id);
-        $model->fill($request->all());
-
-        if (!$model->validate())
-            $this->throwValidationException($request, $model->_validator);
-
-        $model->save();
         
-        Session::flash('flash_success', "Família '{$model->familiaproduto}' Atualizada!");
-        return redirect("familia-produto/$model->codfamiliaproduto"); 
+        parent::update($request, $id);
+        
+        // mensagem re registro criado
+        Session::flash('flash_update', 'Registro alterado!');
+        
+        // redireciona para view
+        return redirect("familia-produto/{$this->repository->model->codfamiliaproduto}"); 
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        try{
-            FamiliaProduto::find($id)->delete();
-            $ret = ['resultado' => true, 'mensagem' => 'Família excluída com sucesso!'];
-        }
-        catch(\Exception $e){
-            $ret = ['resultado' => false, 'mensagem' => 'Erro ao excluir família!', 'exception' => $e];
-        }
-        return json_encode($ret);
-    }    
-
-    public function inativar(Request $request)
-    {
-        $model = FamiliaProduto::find($request->get('codfamiliaproduto'));
-        if($request->get('acao') == 'ativar')
-        {
-            $model->inativo = null;
-            $msg = "Família '{$model->familiaproduto}' Reativada!";
-        }
-        else
-        {
-            $model->inativo = Carbon::now();
-            $msg = "Família '{$model->familiaproduto}' Inativada!";
-        }
-        
-        $model->save();
-        Session::flash('flash_success', $msg);
-    }    
 
     public function select2(Request $request)
     {
@@ -151,7 +193,7 @@ class FamiliaProdutoController extends Controller
         
         if(!empty($request->get('id'))) {    
             // Monta Retorno
-            $item = FamiliaProduto::findOrFail($request->get('id'));
+            $item = $this->repository->model->findOrFail($request->get('id'));
             return [
                 'id' => $item->codfamiliaproduto,
                 'familiaproduto' => $item->familiaproduto,
@@ -163,7 +205,7 @@ class FamiliaProdutoController extends Controller
             $params['page'] = $params['page']??1;
             
             // Monta Query
-            $qry = FamiliaProduto::where('codsecaoproduto', '=', $request->codsecaoproduto);
+            $qry = $this->repository->model->where('codfamiliaproduto', '=', $request->codfamiliaproduto);
             
             if(!empty($params['term'])) {
                 foreach (explode(' ', $params['term']) as $palavra) {
@@ -206,5 +248,4 @@ class FamiliaProdutoController extends Controller
             ];
         }
     }
-
 }

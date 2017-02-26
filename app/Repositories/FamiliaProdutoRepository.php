@@ -31,14 +31,18 @@ class FamiliaProdutoRepository extends MGRepository {
         }
         
         $this->validator = Validator::make($data, [
-            'codsecaoproduto' => 'required', 
             'familiaproduto' => [
                 'required',
                 'min:3',
-                Rule::unique('tblfamiliaproduto')->ignore($id, 'codfamiliaproduto')
+                Rule::unique('tblfamiliaproduto')->ignore($id, 'codfamiliaproduto')->where(function ($query) use ($data) {
+                    if(!isset($data['codsecaoproduto'])){
+                        return true;
+                    }
+                    
+                    $query->where('codsecaoproduto', $data['codsecaoproduto']);
+                })
             ],            
         ], [
-            'codsecaoproduto.required'  => 'Selecione uma Seção de produto!',
             'familiaproduto.required'   => 'Família de produto nao pode ser vazio!',
             'familiaproduto.min'        => 'Família de produto deve ter mais de 3 caracteres!',
             'familiaproduto.unique'     => 'Esta Família já esta cadastrada nessa seção!',            
@@ -65,7 +69,7 @@ class FamiliaProdutoRepository extends MGRepository {
         
         // Filtros
         if(!empty($filters['codsecaoproduto']))
-            $query->where('codsecaoproduto', $filters['codsecaoproduto']);
+            $qry->where('codsecaoproduto', $filters['codsecaoproduto']);
 
         if (!empty($filters['codfamiliaproduto'])) {
             $qry->where('codfamiliaproduto', '=', $filters['codfamiliaproduto']);
