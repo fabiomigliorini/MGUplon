@@ -47,7 +47,7 @@
                 <a class="nav-link" data-toggle="tab" href="#tab-controller" role="tab">Controller</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#tab-view" role="tab">View</a>
+                <a class="nav-link" data-toggle="tab" href="#tab-view-index" role="tab">View Index</a>
               </li>
             </ul>
         </div>
@@ -64,7 +64,7 @@
   <div class="tab-pane" id="tab-repository" role="tabpanel"></div>
   <div class="tab-pane" id="tab-policy" role="tabpanel"></div>
   <div class="tab-pane" id="tab-controller" role="tabpanel"></div>
-  <div class="tab-pane" id="tab-view" role="tabpanel"></div>
+  <div class="tab-pane" id="tab-view-index" role="tabpanel"></div>
 </div>        
 
 <script type="text/javascript">
@@ -133,6 +133,23 @@
         });
     }
     
+    function abreViewIndex() {
+        var model = $('#model').val();
+        var titulo = $('#titulo').val();
+        var url = $('#url').val();
+        var coluna_titulo = $('#coluna_titulo').val();
+        
+        $.get('{{ url("gerador-codigo/$tabela/view/index") }}', {
+            model: model,
+            titulo: titulo,
+            url: url,
+            coluna_titulo: coluna_titulo,
+        }).done(function(data) {
+            $('#tab-view-index').html(data);
+            mostraResultados();
+        });
+    }
+    
     function geraTitulo() {
         var s = $('#model').val();
         s = s.replace(/([A-Z])/g, ' $1').trim()
@@ -162,6 +179,9 @@
                     break;
                 case '#tab-controller':
                     abreController();
+                    break;
+                case '#tab-view-index':
+                    abreViewIndex();
                     break;
             }
         });

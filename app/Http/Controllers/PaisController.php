@@ -1,4 +1,4 @@
-<?php echo "<?php\n"; ?>
+<?php
 
 namespace MGLara\Http\Controllers;
 
@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
 
-use MGLara\Repositories\{{ $model }}Repository;
+use MGLara\Repositories\PaisRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
@@ -16,21 +16,21 @@ use MGLara\Library\JsonEnvelope\Datatable;
 use Carbon\Carbon;
 
 /**
- * @property {{ $model }}Repository $repository 
+ * @property  PaisRepository $repository 
  */
-class {{ $model }}Controller extends Controller
+class PaisController extends Controller
 {
 
-    public function __construct({{ $model }}Repository $repository) {
+    public function __construct(PaisRepository $repository) {
         $this->repository = $repository;
-        $this->bc = new Breadcrumb('{{ $titulo }}');
-        $this->bc->addItem('{{ $titulo }}', url('{{ $url }}'));
+        $this->bc = new Breadcrumb('País');
+        $this->bc->addItem('País', url('pais'));
     }
     
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return  \Illuminate\Http\Response
      */
     public function index(Request $request) {
         
@@ -48,14 +48,14 @@ class {{ $model }}Controller extends Controller
         }
         
         // retorna View
-        return view('{{ $url }}.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
+        return view('pais.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
     }
 
     /**
      * Monta json para alimentar a Datatable do index
      * 
-     * @param Request $request
-     * @return json
+     * @param  Request $request
+     * @return  json
      */
     public function datatable(Request $request) {
         
@@ -66,14 +66,12 @@ class {{ $model }}Controller extends Controller
         $this->setFiltro($request['filtros']);
         
         // Ordenacao
-        $columns[0] = '{{ $instancia_model->getKeyName() }}';
+        $columns[0] = 'codpais';
         $columns[1] = 'inativo';
-        $columns[2] = '{{ $instancia_model->getKeyName() }}';
-        $columns[3] = '{{ $coluna_titulo }}';
-<?php $i=3; ?>
-@foreach ($cols_listagem as $col)<?php $i++; ?>
-        $columns[{{ $i }}] = '{{ $col->column_name }}';
-@endforeach
+        $columns[2] = 'codpais';
+        $columns[3] = 'pais';
+        $columns[4] = 'sigla';
+        $columns[5] = 'codigooficial';
 
         $sort = [];
         if (!empty($request['order'])) {
@@ -96,13 +94,12 @@ class {{ $model }}Controller extends Controller
         $data = [];
         foreach ($regs as $reg) {
             $data[] = [
-                url('{{ $url }}', $reg->{{ $instancia_model->getKeyName() }}),
+                url('pais', $reg->codpais),
                 formataData($reg->inativo, 'C'),
-                formataCodigo($reg->{{ $instancia_model->getKeyName() }}),
-                $reg->{{ $coluna_titulo }},
-@foreach ($cols_listagem as $col)
-                $reg->{{ $col->column_name }},
-@endforeach
+                formataCodigo($reg->codpais),
+                $reg->pais,
+                $reg->sigla,
+                $reg->codigooficial,
             ];
         }
         
@@ -118,7 +115,7 @@ class {{ $model }}Controller extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return  \Illuminate\Http\Response
      */
     public function create()
     {
@@ -132,31 +129,31 @@ class {{ $model }}Controller extends Controller
         $this->bc->addItem('Novo');
         
         // retorna view
-        return view('{{ $url }}.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('pais.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param    \Illuminate\Http\Request  $request
+     * @return  \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         parent::store($request);
         
         // Mensagem de registro criado
-        Session::flash('flash_create', '{{ $titulo }} criado!');
+        Session::flash('flash_create', 'País criado!');
         
         // redireciona para o view
-        return redirect("{{ $url }}/{$this->repository->model->{{ $instancia_model->getKeyName() }}}");
+        return redirect("pais/{$this->repository->model->codpais}");
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param    int  $id
+     * @return  \Illuminate\Http\Response
      */
     public function show(Request $request, $id)
     {
@@ -167,18 +164,18 @@ class {{ $model }}Controller extends Controller
         $this->repository->authorize('view');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->{{ $coluna_titulo }});
-        $this->bc->header = $this->repository->model->{{ $coluna_titulo }};
+        $this->bc->addItem($this->repository->model->pais);
+        $this->bc->header = $this->repository->model->pais;
         
         // retorna show
-        return view('{{ $url }}.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('pais.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param    int  $id
+     * @return  \Illuminate\Http\Response
      */
     public function edit($id)
     {
@@ -189,20 +186,20 @@ class {{ $model }}Controller extends Controller
         $this->repository->authorize('update');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->{{ $coluna_titulo }}, url('{{ $url }}', $this->repository->model->{{ $instancia_model->getKeyName() }}));
-        $this->bc->header = $this->repository->model->{{ $coluna_titulo }};
+        $this->bc->addItem($this->repository->model->pais, url('pais', $this->repository->model->codpais));
+        $this->bc->header = $this->repository->model->pais;
         $this->bc->addItem('Alterar');
         
         // retorna formulario edit
-        return view('{{ $url }}.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('pais.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param    \Illuminate\Http\Request  $request
+     * @param    int  $id
+     * @return  \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
@@ -210,10 +207,10 @@ class {{ $model }}Controller extends Controller
         parent::update($request, $id);
         
         // mensagem re registro criado
-        Session::flash('flash_update', '{{ $titulo }} alterado!');
+        Session::flash('flash_update', 'País alterado!');
         
         // redireciona para view
-        return redirect("{{ $url }}/{$this->repository->model->{{ $instancia_model->getKeyName() }}}"); 
+        return redirect("pais/{$this->repository->model->codpais}"); 
     }
     
 }

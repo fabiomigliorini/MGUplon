@@ -80,7 +80,11 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('grupo-usuario/datatable', 'GrupoUsuarioController@datatable');
     Route::resource('grupo-usuario', 'GrupoUsuarioController');
 
-    /* Pessoa */
+    /* Banco */
+    Route::resource('banco', 'BancoController');
+    
+    /* Pais */
+    Route::resource('pais', 'PaisController');
     
     /* permissao */
     Route::delete('permissao', 'PermissaoController@destroyPermissao');
@@ -95,6 +99,8 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('gerador-codigo/{tabela}/policy', 'GeradorCodigoController@storePolicy');
     Route::get('gerador-codigo/{tabela}/controller', 'GeradorCodigoController@showController');
     Route::post('gerador-codigo/{tabela}/controller', 'GeradorCodigoController@storeController');
+    Route::get('gerador-codigo/{tabela}/view/index', 'GeradorCodigoController@showViewIndex');
+    Route::post('gerador-codigo/{tabela}/view/index', 'GeradorCodigoController@storeViewIndex');
     Route::resource('gerador-codigo', 'GeradorCodigoController', ['only' => ['index', 'show']]);
     //Route::resource('gerador-codigo','GeradorCodigoController');
     

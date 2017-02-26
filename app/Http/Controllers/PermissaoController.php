@@ -44,6 +44,10 @@ class PermissaoController extends Controller
                 continue;
             }
             
+            if (strstr($arquivo, '.old.')) {
+                continue;
+            }
+            
             // Tira a extensao do arquivo
             $classe = str_replace('.php', '', $arquivo);
             

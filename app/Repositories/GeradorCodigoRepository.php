@@ -49,6 +49,22 @@ class GeradorCodigoRepository {
         return app_path() . '/Http/Controllers/' . $arquivo;
     }
     
+    public function caminhoViewIndex ($url) {
+        return $this->caminhoDirView($url) . '/index.blade.php';
+    }
+    
+    public function caminhoDirView ($url) {
+        return base_path() . '/resources/views/' . $url;
+    }
+    
+    public function criaCaminhoDirView($url) {
+        $pasta = $this->caminhoDirView($url);
+        if (!is_dir($pasta)) {
+            return mkdir($pasta, 0777);
+        }
+        return true;
+    }
+    
     public function buscaTabelas() {
         return DB::select('SELECT table_name FROM information_schema.tables WHERE table_schema = \'mgsis\' ORDER BY table_schema,table_name;');
     }
@@ -183,6 +199,22 @@ class GeradorCodigoRepository {
         return $filhas;
     }
     
+    public function buscaCamposListagem ($tabela, $instancia_model, $coluna_titulo) {
+        
+        $cols = $this->buscaCamposTabela($tabela);
+        
+        $cols_listagem = [];
+        foreach ($cols as $col) {
+            if (in_array($col->column_name, [$instancia_model->getKeyName(), $coluna_titulo, 'codusuariocriacao', 'codusuarioalteracao', 'alteracao', 'criacao', 'inativo'])) {
+                continue; 
+            }
+            $cols_listagem[] = $col;
+        }
+        
+        return collect($cols_listagem);
+        
+    }
+    
     public function geraModel($tabela, $model, $titulo) {
         
         $cols = $this->buscaCamposTabela($tabela);
@@ -271,8 +303,15 @@ class GeradorCodigoRepository {
     public function geraController($tabela, $model, $titulo, $url, $coluna_titulo) {
         $instancia_model = "\\MGLara\\Models\\{$model}";
         $instancia_model = new $instancia_model();
-        $cols = $this->buscaCamposTabela($tabela);
-        return view('gerador-codigo.arquivos.controller', compact('tabela', 'model', 'titulo', 'url', 'instancia_model', 'coluna_titulo', 'cols'))->render();
+        $cols_listagem = $this->buscaCamposListagem($tabela, $instancia_model, $coluna_titulo);
+        return view('gerador-codigo.arquivos.controller', compact('tabela', 'model', 'titulo', 'url', 'instancia_model', 'coluna_titulo', 'cols_listagem'))->render();
+    }    
+    
+    public function geraViewIndex($tabela, $model, $titulo, $url, $coluna_titulo) {
+        $instancia_model = "\\MGLara\\Models\\{$model}";
+        $instancia_model = new $instancia_model();
+        $cols_listagem = $this->buscaCamposListagem($tabela, $instancia_model, $coluna_titulo);
+        return view('gerador-codigo.arquivos.view-index', compact('tabela', 'model', 'titulo', 'url', 'instancia_model', 'coluna_titulo', 'cols_listagem'))->render();
     }    
     
     public function salvaArquivo($arquivo, $conteudo) {
@@ -313,6 +352,13 @@ class GeradorCodigoRepository {
     public function salvaController($tabela, $model, $titulo, $url, $coluna_titulo) {
         $conteudo = $this->geraController($tabela, $model, $titulo, $url, $coluna_titulo);
         $arquivo = $this->caminhoController($model);
+        return ($this->salvaArquivo($arquivo, $conteudo));
+    }
+    
+    public function salvaViewIndex($tabela, $model, $titulo, $url, $coluna_titulo) {
+        $conteudo = $this->geraViewIndex($tabela, $model, $titulo, $url, $coluna_titulo);
+        $arquivo = $this->caminhoViewIndex($url);
+        $this->criaCaminhoDirView($url);
         return ($this->salvaArquivo($arquivo, $conteudo));
     }
     
