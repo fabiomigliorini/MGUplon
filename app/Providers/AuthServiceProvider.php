@@ -27,6 +27,7 @@ class AuthServiceProvider extends ServiceProvider
         \MGLara\Models\Pais::class              => \MGLara\Policies\PaisPolicy::class,
         \MGLara\Models\EstadoCivil::class       => \MGLara\Policies\EstadoCivilPolicy::class,        
         \MGLara\Models\ValeCompra::class        => \MGLara\Policies\ValeCompraPolicy::class,
+        \MGLara\Models\Feriado::class           => \MGLara\Policies\FeriadoPolicy::class,
     ];
 
     /**

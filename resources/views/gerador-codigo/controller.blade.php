@@ -13,7 +13,7 @@
     @else
         <strong class='text-danger'>Falta Registrar a Rota!</strong> 
     @endif
-
+    <br>
     <code>{{ $string_registro }}</code>
     
     <pre class=""><code><?php 

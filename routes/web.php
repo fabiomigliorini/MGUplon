@@ -92,6 +92,10 @@ Route::group(['middleware' => 'auth'], function() {
     
     /* estado civil */
     Route::resource('estado-civil', 'EstadoCivilController');    
+    
+    /* Feriados */
+    Route::resource('feriado', 'FeriadoController');
+    
     /* Vale Compras */
     Route::resource('vale-compra', 'ValeCompraController');    
     
