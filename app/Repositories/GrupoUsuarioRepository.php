@@ -68,12 +68,8 @@ class GrupoUsuarioRepository extends MGRepository {
         }
         
         if (!empty($filters['grupousuario'])) {
-            foreach(explode(' ', $filters['grupousuario']) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->where('grupousuario', 'ilike', "%$palavra%");
-                }
-            }
-        }
+            $qry->palavras('grupousuario', $filters['grupousuario']);
+        }          
         
         switch ($filters['inativo']) {
             case 2: //Inativos

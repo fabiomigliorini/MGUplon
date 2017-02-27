@@ -65,12 +65,8 @@ class SecaoProdutoRepository extends MGRepository {
         }
         
         if (!empty($filters['secaoproduto'])) {
-            foreach(explode(' ', $filters['secaoproduto']) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->where('secaoproduto', 'ilike', "%$palavra%");
-                }
-            }
-        }
+            $qry->palavras('secaoproduto', $filters['secaoproduto']);
+        }        
         
         switch ($filters['inativo']) {
             case 2: //Inativos
