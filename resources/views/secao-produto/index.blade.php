@@ -15,7 +15,7 @@
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="secaoproduto" class="control-label">Seção Produto</label>
+                        <label for="secaoproduto" class="control-label">Seção</label>
                         {!! Form::text('secaoproduto', null, ['class'=> 'form-control', 'id'=>'secaoproduto']) !!}
                     </div>
                 </div>

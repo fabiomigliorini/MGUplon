@@ -77,12 +77,8 @@ class UsuarioRepository extends MGRepository {
         }
         
         if (!empty($filters['usuario'])) {
-            foreach(explode(' ', $filters['usuario']) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->where('tblusuario.usuario', 'ilike', "%$palavra%");
-                }
-            }
-        }
+            $qry->palavras('usuario', $filters['usuario']);
+        }        
         
         if (!empty($filters['codfilial'])) {
             $qry->where('tblusuario.codfilial', '=', $filters['codfilial']);

@@ -69,20 +69,8 @@ class MarcaRepository extends MGRepository {
         }
         
         if (!empty($filters['marca'])) {
-            foreach(explode(' ', $filters['marca']) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->where('marca', 'ilike', "%$palavra%");
-                }
-            }
-        }
-        
-        if (!empty($filters['sigla'])) {
-            foreach(explode(' ', $filters['sigla']) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->where('sigla', 'ilike', "%$palavra%");
-                }
-            }
-        }
+            $qry->palavras('marca', $filters['marca']);
+        }         
         
         switch ($filters['inativo']) {
             case 2: //Inativos

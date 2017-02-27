@@ -75,12 +75,8 @@ class SubGrupoProdutoRepository extends MGRepository {
         }
         
         if (!empty($filters['subgrupoproduto'])) {
-            foreach(explode(' ', $filters['subgrupoproduto']) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->where('subgrupoproduto', 'ilike', "%$palavra%");
-                }
-            }
-        }
+            $qry->palavras('subgrupoproduto', $filters['subgrupoproduto']);
+        }        
         
         switch ($filters['inativo']) {
             case 2: //Inativos

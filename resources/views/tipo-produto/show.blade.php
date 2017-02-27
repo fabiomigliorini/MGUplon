@@ -1,51 +1,51 @@
 @extends('layouts.default')
 @section('content')
-<ol class="breadcrumb header">
-    {!! 
-        titulo(
-            $model->codtipoproduto,
-            [
-                url("tipo-produto") => 'Tipos de Produto',
-                $model->tipoproduto
-            ],
-            $model->inativo
-        ) 
-    !!}    
-    <li class='active'>
-        <small>
-            <a title="Novo Tipo" href="{{ url('tipo-produto/create') }}"><span class="glyphicon glyphicon-plus"></span></a>
-            &nbsp;
-            <a title="Alterar" href="{{ url("tipo-produto/$model->codtipoproduto/edit") }}"><span class="glyphicon glyphicon-pencil"></span></a>
-            &nbsp;
-            <a href="{{ url("tipo-produto/$model->codtipoproduto") }}" data-excluir data-pergunta="Tem certeza que deseja excluir o tipo de produto '{{ $model->tipoproduto }}'?" data-after-delete="location.replace(baseUrl + '/tipo-produto');"><i class="glyphicon glyphicon-trash"></i></a>
-        </small>
-    </li>   
-</ol>
-<hr>
-<div class="row">
-  <div class="col-lg-12">
-      <table class="detail-view table table-striped table-condensed"> 
-        <tbody>  
-          <tr> 
-            <th class="col-md-2">#</th> 
-            <td class="col-md-10">{{ formataCodigo($model->codtipoproduto) }}</td> 
-          </tr>
-          <tr> 
-            <th>Tipo produto</th> 
-            <td>{{ $model->tipoproduto }}</td> 
-          </tr>
-        </tbody> 
-      </table>
-  </div>    
+
+<div class='row'>
+    <div class='col-md-4'>
+        <div class='card'>
+            <h4 class="card-header">Detalhes</h4>
+            <div class='card-block'>
+                <table class="table table-bordered table-striped table-hover table-sm col-md-6">
+                  <tbody>  
+                    <tr> 
+                      <th>#</th> 
+                      <td>{{ formataCodigo($model->codtipoproduto) }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Tipo de Produto</th> 
+                      <td>{{ $model->tipoproduto }}</td> 
+                    </tr>
+                  </tbody> 
+                </table>
+                <div class='clearfix'></div>
+            </div>
+        </div>
+    </div>
 </div>
-<hr>
-@include('includes.autor')
+
+@section('buttons')
+
+    <a class="btn btn-secondary btn-sm" href="{{ url("tipo-produto/$model->codtipoproduto/edit") }}"><i class="fa fa-pencil"></i></a>
+    @if (empty($model->inativo))
+        <a class="btn btn-secondary btn-sm" href="{{ url("tipo-produto/$model->codtipoproduto/inactivate") }}" data-activate data-question="Tem certeza que deseja inativar '{{ $model->tipoproduto }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-ban"></i></a>
+    @else
+        <a class="btn btn-secondary btn-sm" href="{{ url("tipo-produto/$model->codtipoproduto/activate") }}" data-activate data-question="Tem certeza que deseja ativar '{{ $model->tipoproduto }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-circle-o"></i></a>
+    @endif
+    <a class="btn btn-secondary btn-sm" href="{{ url("tipo-produto/$model->codtipoproduto") }}" data-delete data-question="Tem certeza que deseja excluir '{{ $model->tipoproduto }}'?" data-after="location.replace('{{ url('tipo-produto') }}');"><i class="fa fa-trash"></i></a>                
+    
+@endsection
+@section('inactive')
+
+    @include('layouts.includes.inactive', [$model])
+    
+@endsection
+@section('creation')
+
+    @include('layouts.includes.creation', [$model])
+    
+@endsection
 @section('inscript')
-<script type="text/javascript">
-$(document).ready(function() {
-    
-    
-});
-</script>
+
 @endsection
 @stop

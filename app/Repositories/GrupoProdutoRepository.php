@@ -74,12 +74,8 @@ class GrupoProdutoRepository extends MGRepository {
         }
         
         if (!empty($filters['grupoproduto'])) {
-            foreach(explode(' ', $filters['grupoproduto']) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->where('grupoproduto', 'ilike', "%$palavra%");
-                }
-            }
-        }
+            $qry->palavras('grupoproduto', $filters['grupoproduto']);
+        }           
         
         switch ($filters['inativo']) {
             case 2: //Inativos

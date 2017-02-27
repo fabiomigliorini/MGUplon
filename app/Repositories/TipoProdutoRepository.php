@@ -48,9 +48,15 @@ class TipoProdutoRepository extends MGRepository {
         if (!empty($id)) {
             $this->findOrFail($id);
         }
+        
         if ($this->model->ProdutoS->count() > 0) {
-            return 'Tipo Produto sendo utilizada em Produto!';
+            return 'Tipo Produtos sendo utilizada em "Produto"!';
         }
+        
+        if ($this->model->TributacaoNaturezaOperacaoS->count() > 0) {
+            return 'Tipo Produtos sendo utilizada em "TributacaoNaturezaOperacao"!';
+        }
+        
         return false;
     }
     
@@ -65,13 +71,9 @@ class TipoProdutoRepository extends MGRepository {
         }
         
         if (!empty($filters['tipoproduto'])) {
-            foreach(explode(' ', $filters['tipoproduto']) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->where('tipoproduto', 'ilike', "%$palavra%");
-                }
-            }
-        }
-        
+            $qry->palavras('tipoproduto', $filters['tipoproduto']);
+        }        
+
         switch ($filters['inativo']) {
             case 2: //Inativos
                 $qry = $qry->inativo();

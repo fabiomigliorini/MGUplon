@@ -76,12 +76,8 @@ class FamiliaProdutoRepository extends MGRepository {
         }
         
         if (!empty($filters['familiaproduto'])) {
-            foreach(explode(' ', $filters['familiaproduto']) as $palavra) {
-                if (!empty($palavra)) {
-                    $qry->where('familiaproduto', 'ilike', "%$palavra%");
-                }
-            }
-        }
+            $qry->palavras('familiaproduto', $filters['familiaproduto']);
+        }         
         
         switch ($filters['inativo']) {
             case 2: //Inativos
