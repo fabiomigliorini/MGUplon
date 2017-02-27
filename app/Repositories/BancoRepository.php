@@ -34,34 +34,22 @@ class BancoRepository extends MGRepository {
         
         $this->validator = Validator::make($data, [
             'banco' => [
-                'size:50',
+                'max:50',
+                'required',
             ],
             'sigla' => [
-                'size:3',
+                'max:3',
+                'nullable',
             ],
             'numerobanco' => [
                 'numeric',
-            ],
-            'alteracao' => [
-                'date',
-            ],
-            'codusuarioalteracao' => [
-                'numeric',
-            ],
-            'criacao' => [
-                'date',
-            ],
-            'codusuariocriacao' => [
-                'numeric',
+                'nullable',
             ],
         ], [
-            'banco.size' => 'O campo "banco" não pode conter mais que 50 caracteres!',
-            'sigla.size' => 'O campo "sigla" não pode conter mais que 3 caracteres!',
+            'banco.max' => 'O campo "banco" não pode conter mais que 50 caracteres!',
+            'banco.required' => 'O campo "banco" deve ser preenchido!',
+            'sigla.max' => 'O campo "sigla" não pode conter mais que 3 caracteres!',
             'numerobanco.numeric' => 'O campo "numerobanco" deve ser um número!',
-            'alteracao.date' => 'O campo "alteracao" deve ser uma data!',
-            'codusuarioalteracao.numeric' => 'O campo "codusuarioalteracao" deve ser um número!',
-            'criacao.date' => 'O campo "criacao" deve ser uma data!',
-            'codusuariocriacao.numeric' => 'O campo "codusuariocriacao" deve ser um número!',
         ]);
 
         return $this->validator->passes();
@@ -74,11 +62,11 @@ class BancoRepository extends MGRepository {
         }
         
         if ($this->model->ChequeS->count() > 0) {
-            return 'Bancos sendo utilizada em "Cheque"!';
+            return 'Banco sendo utilizada em "Cheque"!';
         }
         
         if ($this->model->PortadorS->count() > 0) {
-            return 'Bancos sendo utilizada em "Portador"!';
+            return 'Banco sendo utilizada em "Portador"!';
         }
         
         return false;
@@ -122,7 +110,7 @@ class BancoRepository extends MGRepository {
             $qry->where('codusuariocriacao', '=', $filters['codusuariocriacao']);
         }
 
-        
+         
         switch ($filters['inativo']) {
             case 2: //Inativos
                 $qry = $qry->inativo();

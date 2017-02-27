@@ -23,8 +23,8 @@ class BancoController extends Controller
 
     public function __construct(BancoRepository $repository) {
         $this->repository = $repository;
-        $this->bc = new Breadcrumb('Bancos');
-        $this->bc->addItem('Bancos', url('banco'));
+        $this->bc = new Breadcrumb('Banco');
+        $this->bc->addItem('Banco', url('banco'));
     }
     
     /**
@@ -143,7 +143,7 @@ class BancoController extends Controller
         parent::store($request);
         
         // Mensagem de registro criado
-        Session::flash('flash_create', 'Bancos criado!');
+        Session::flash('flash_create', 'Banco criado!');
         
         // redireciona para o view
         return redirect("banco/{$this->repository->model->codbanco}");
@@ -207,7 +207,7 @@ class BancoController extends Controller
         parent::update($request, $id);
         
         // mensagem re registro criado
-        Session::flash('flash_update', 'Bancos alterado!');
+        Session::flash('flash_update', 'Banco alterado!');
         
         // redireciona para view
         return redirect("banco/{$this->repository->model->codbanco}"); 

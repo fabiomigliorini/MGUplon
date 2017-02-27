@@ -15,19 +15,19 @@
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="banco" class="control-label">Bancos</label>
+                        <label for="banco" class="control-label">Banco</label>
                         {!! Form::text('banco', null, ['class'=> 'form-control', 'id'=>'banco']) !!}
                     </div>
                 </div>
                 <div class="col-md-1">
                     <div class="form-group">
-                        <label for="sigla" class="control-label">sigla</label>
+                        <label for="sigla" class="control-label">Sigla</label>
                         {!! Form::text('sigla', null, ['class'=> 'form-control', 'id'=>'sigla']) !!}
                     </div>
                 </div>
                 <div class="col-md-1">
                     <div class="form-group">
-                        <label for="numerobanco" class="control-label">numerobanco</label>
+                        <label for="numerobanco" class="control-label">Numerobanco</label>
                         {!! Form::text('numerobanco', null, ['class'=> 'form-control', 'id'=>'numerobanco']) !!}
                     </div>
                 </div>
@@ -47,7 +47,7 @@
 
 <div class='card'>
     <div class='card-block table-responsive'>
-        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Bancos', 'sigla', 'numerobanco', ]])
+        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Banco', 'Sigla', 'Numerobanco', ]])
         <div class='clearfix'></div>
     </div>
 </div>

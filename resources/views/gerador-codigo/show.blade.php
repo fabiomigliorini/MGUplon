@@ -183,10 +183,61 @@
         });
     }
     
+    function abreViewCreate() {
+        var model = $('#model').val();
+        var titulo = $('#titulo').val();
+        var url = $('#url').val();
+        var coluna_titulo = $('#coluna_titulo').val();
+        
+        $.get('{{ url("gerador-codigo/$tabela/view/create") }}', {
+            model: model,
+            titulo: titulo,
+            url: url,
+            coluna_titulo: coluna_titulo,
+        }).done(function(data) {
+            $('#tab-view-create').html(data);
+            mostraResultados();
+        });
+    }
+    
+    function abreViewEdit() {
+        var model = $('#model').val();
+        var titulo = $('#titulo').val();
+        var url = $('#url').val();
+        var coluna_titulo = $('#coluna_titulo').val();
+        
+        $.get('{{ url("gerador-codigo/$tabela/view/edit") }}', {
+            model: model,
+            titulo: titulo,
+            url: url,
+            coluna_titulo: coluna_titulo,
+        }).done(function(data) {
+            $('#tab-view-edit').html(data);
+            mostraResultados();
+        });
+    }
+    
+    function abreViewForm() {
+        var model = $('#model').val();
+        var titulo = $('#titulo').val();
+        var url = $('#url').val();
+        var coluna_titulo = $('#coluna_titulo').val();
+        
+        $.get('{{ url("gerador-codigo/$tabela/view/form") }}', {
+            model: model,
+            titulo: titulo,
+            url: url,
+            coluna_titulo: coluna_titulo,
+        }).done(function(data) {
+            $('#tab-view-form').html(data);
+            mostraResultados();
+        });
+    }
+    
     function geraTitulo() {
         var s = $('#model').val();
         s = s.replace(/([A-Z])/g, ' $1').trim()
-        $('#titulo').val(s + 's');
+        $('#titulo').val(s);
     }
     
     function geraUrl() {

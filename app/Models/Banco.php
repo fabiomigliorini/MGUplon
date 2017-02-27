@@ -5,13 +5,14 @@ namespace MGLara\Models;
 /**
  * Campos
  * @property  bigint                         $codbanco                           NOT NULL DEFAULT nextval('tblbanco_codbanco_seq'::regclass)
- * @property  varchar(50)                    $banco                              
+ * @property  varchar(50)                    $banco                              NOT NULL
  * @property  varchar(3)                     $sigla                              
  * @property  bigint                         $numerobanco                        
  * @property  timestamp                      $alteracao                          
  * @property  bigint                         $codusuarioalteracao                
  * @property  timestamp                      $criacao                            
  * @property  bigint                         $codusuariocriacao                  
+ * @property  timestamp                      $inativo                            
  *
  * Chaves Estrangeiras
  * @property  Usuario                        $UsuarioAlteracao
@@ -30,10 +31,11 @@ class Banco extends MGModel
           'banco',
          'sigla',
          'numerobanco',
-        ];
+         ];
     protected $dates = [
         'alteracao',
         'criacao',
+        'inativo',
     ];
 
 

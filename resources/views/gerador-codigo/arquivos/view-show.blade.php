@@ -18,7 +18,7 @@
                     </tr>
 @foreach ($cols_listagem as $col)
                     <tr> 
-                      <th>{{ $col->column_name }}</th> 
+                      <th>{{ ucfirst($col->column_name) }}</th> 
                       <td>{{ '{{' }} $model->{{ $col->column_name }} }}</td> 
                     </tr>
 @endforeach
