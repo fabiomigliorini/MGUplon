@@ -13,10 +13,10 @@
                         <span class="menu-arrow"></span>
                     </a>
                     <ul class="list-unstyled">
-                        <li><a href="teste-fabio.php">Totais de Caixa</a></li>
-                        <li><a href="teste-fabio.php">Vale Compras</a></li>
-                        <li><a href="teste-fabio.php">Modelos de Vale</a></li>
-                        <li><a href="components-ratings.php">Meta</a></li>
+                        <li><a href="{{ url("caixa") }}">Totais de Caixa</a></li>
+                        <li><a href="{{ url("vale-compra") }}">Vale Compras</a></li>
+                        <li><a href="{{ url("vale-compra-modelo") }}">Modelos de Vale</a></li>
+                        <li><a href="{{ url("meta") }}">Meta</a></li>
                     </ul>
                 </li>
 
