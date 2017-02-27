@@ -75,10 +75,13 @@ class GeradorCodigoRepository {
     
     public function criaCaminhoDirView($url) {
         $pasta = $this->caminhoDirView($url);
-        if (!is_dir($pasta)) {
-            return mkdir($pasta, 0777);
+        if (is_dir($pasta)) {
+            return true;
         }
-        return true;
+        if (!mkdir($pasta)) {
+            return false;
+        }
+        return chmod($pasta, 0777);
     }
     
     public function buscaTabelas() {
