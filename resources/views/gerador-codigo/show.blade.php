@@ -29,7 +29,7 @@
         </div>
       </div><br>
       <div class='row'>
-        <div class='col-md-6'>
+        <div class='col-md-12'>
             <label for="tab-arquivos">
                 Arquivos
             </label>
@@ -49,6 +49,18 @@
               <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#tab-view-index" role="tab">View Index</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#tab-view-show" role="tab">View Show</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#tab-view-create" role="tab">View Create</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#tab-view-edit" role="tab">View Edit</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#tab-view-form" role="tab">View Form</a>
+              </li>
             </ul>
         </div>
       </div>
@@ -65,6 +77,10 @@
   <div class="tab-pane" id="tab-policy" role="tabpanel"></div>
   <div class="tab-pane" id="tab-controller" role="tabpanel"></div>
   <div class="tab-pane" id="tab-view-index" role="tabpanel"></div>
+  <div class="tab-pane" id="tab-view-show" role="tabpanel"></div>
+  <div class="tab-pane" id="tab-view-create" role="tabpanel"></div>
+  <div class="tab-pane" id="tab-view-edit" role="tabpanel"></div>
+  <div class="tab-pane" id="tab-view-form" role="tabpanel"></div>
 </div>        
 
 <script type="text/javascript">
@@ -150,6 +166,23 @@
         });
     }
     
+    function abreViewShow() {
+        var model = $('#model').val();
+        var titulo = $('#titulo').val();
+        var url = $('#url').val();
+        var coluna_titulo = $('#coluna_titulo').val();
+        
+        $.get('{{ url("gerador-codigo/$tabela/view/show") }}', {
+            model: model,
+            titulo: titulo,
+            url: url,
+            coluna_titulo: coluna_titulo,
+        }).done(function(data) {
+            $('#tab-view-show').html(data);
+            mostraResultados();
+        });
+    }
+    
     function geraTitulo() {
         var s = $('#model').val();
         s = s.replace(/([A-Z])/g, ' $1').trim()
@@ -182,6 +215,18 @@
                     break;
                 case '#tab-view-index':
                     abreViewIndex();
+                    break;
+                case '#tab-view-show':
+                    abreViewShow();
+                    break;
+                case '#tab-view-create':
+                    abreViewCreate();
+                    break;
+                case '#tab-view-edit':
+                    abreViewEdit();
+                    break;
+                case '#tab-view-form':
+                    abreViewForm();
                     break;
             }
         });

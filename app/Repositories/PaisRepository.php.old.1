@@ -54,9 +54,6 @@ class PaisRepository extends MGRepository {
             'codigooficial' => [
                 'numeric',
             ],
-            'inativo' => [
-                'date',
-            ],
         ], [
             'pais.size' => 'O campo "pais" não pode conter mais que 50 caracteres!',
             'sigla.size' => 'O campo "sigla" não pode conter mais que 2 caracteres!',
@@ -65,7 +62,6 @@ class PaisRepository extends MGRepository {
             'criacao.date' => 'O campo "criacao" deve ser uma data!',
             'codusuariocriacao.numeric' => 'O campo "codusuariocriacao" deve ser um número!',
             'codigooficial.numeric' => 'O campo "codigooficial" deve ser um número!',
-            'inativo.date' => 'O campo "inativo" deve ser uma data!',
         ]);
 
         return $this->validator->passes();
@@ -122,7 +118,7 @@ class PaisRepository extends MGRepository {
             $qry->where('codigooficial', '=', $filters['codigooficial']);
         }
 
-         
+        
         switch ($filters['inativo']) {
             case 2: //Inativos
                 $qry = $qry->inativo();

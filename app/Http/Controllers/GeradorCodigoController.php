@@ -123,4 +123,20 @@ class GeradorCodigoController extends Controller
     public function storeViewIndex(Request $request, $tabela) {
         return ['OK' => $this->repository->salvaViewIndex($tabela, $request->model, $request->titulo, $request->url, $request->coluna_titulo)];
     }
+    
+    public function showViewShow(Request $request, $tabela) {
+        $conteudo = $this->repository->geraViewShow($tabela, $request->model, $request->titulo, $request->url, $request->coluna_titulo);
+        return view('gerador-codigo.view-show', [
+            'tabela'=>$request->tabela, 
+            'model'=>$request->model, 
+            'titulo'=>$request->titulo,
+            'conteudo'=>$conteudo,
+            'url'=>$request->url,
+            'coluna_titulo'=>$request->coluna_titulo,
+        ]);
+    }
+
+    public function storeViewShow(Request $request, $tabela) {
+        return ['OK' => $this->repository->salvaViewShow($tabela, $request->model, $request->titulo, $request->url, $request->coluna_titulo)];
+    }
 }

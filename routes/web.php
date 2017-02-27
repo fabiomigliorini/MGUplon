@@ -101,6 +101,10 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('gerador-codigo/{tabela}/controller', 'GeradorCodigoController@storeController');
     Route::get('gerador-codigo/{tabela}/view/index', 'GeradorCodigoController@showViewIndex');
     Route::post('gerador-codigo/{tabela}/view/index', 'GeradorCodigoController@storeViewIndex');
+    Route::get('gerador-codigo/{tabela}/view/show', 'GeradorCodigoController@showViewShow');
+    Route::post('gerador-codigo/{tabela}/view/show', 'GeradorCodigoController@storeViewShow');
+    Route::get('gerador-codigo/{tabela}/view/create', 'GeradorCodigoController@showViewCreate');
+    Route::post('gerador-codigo/{tabela}/view/create', 'GeradorCodigoController@storeViewCreate');
     Route::resource('gerador-codigo', 'GeradorCodigoController', ['only' => ['index', 'show']]);
     //Route::resource('gerador-codigo','GeradorCodigoController');
     
