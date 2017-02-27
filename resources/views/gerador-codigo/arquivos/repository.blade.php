@@ -43,7 +43,9 @@ class {{ $model }}Repository extends MGRepository {
         ], [
 @foreach ($validacoes as $campo => $regras)
 @foreach ($regras as $regra => $validacao)
+@if (isset($validacao['mensagem']))
             '{{ $campo }}.{{ $regra }}' => '{!! $validacao['mensagem'] !!}',
+@endif
 @endforeach
 @endforeach
         ]);

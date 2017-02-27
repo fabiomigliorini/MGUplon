@@ -7,18 +7,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
-use MGLara\Models\Pais;
+use MGLara\Models\EstadoCivil;
 
 /**
- * Description of PaisRepository
+ * Description of EstadoCivilRepository
  * 
  * @property  Validator $validator
- * @property  Pais $model
+ * @property  EstadoCivil $model
  */
-class PaisRepository extends MGRepository {
+class EstadoCivilRepository extends MGRepository {
     
     public function boot() {
-        $this->model = new Pais();
+        $this->model = new EstadoCivil();
     }
     
     //put your code here
@@ -29,43 +29,17 @@ class PaisRepository extends MGRepository {
         }
         
         if (empty($id)) {
-            $id = $this->model->codpais;
+            $id = $this->model->codestadocivil;
         }
         
         $this->validator = Validator::make($data, [
-            'pais' => [
-                'size:50',
-            ],
-            'sigla' => [
-                'size:2',
-            ],
-            'alteracao' => [
-                'date',
-            ],
-            'codusuarioalteracao' => [
-                'numeric',
-            ],
-            'criacao' => [
-                'date',
-            ],
-            'codusuariocriacao' => [
-                'numeric',
-            ],
-            'codigooficial' => [
-                'numeric',
-            ],
-            'inativo' => [
-                'date',
+            'estadocivil' => [
+                'max:50',
+                'required',
             ],
         ], [
-            'pais.size' => 'O campo "pais" não pode conter mais que 50 caracteres!',
-            'sigla.size' => 'O campo "sigla" não pode conter mais que 2 caracteres!',
-            'alteracao.date' => 'O campo "alteracao" deve ser uma data!',
-            'codusuarioalteracao.numeric' => 'O campo "codusuarioalteracao" deve ser um número!',
-            'criacao.date' => 'O campo "criacao" deve ser uma data!',
-            'codusuariocriacao.numeric' => 'O campo "codusuariocriacao" deve ser um número!',
-            'codigooficial.numeric' => 'O campo "codigooficial" deve ser um número!',
-            'inativo.date' => 'O campo "inativo" deve ser uma data!',
+            'estadocivil.max' => 'O campo "estadocivil" não pode conter mais que 50 caracteres!',
+            'estadocivil.required' => 'O campo "estadocivil" deve ser preenchido!',
         ]);
 
         return $this->validator->passes();
@@ -77,8 +51,8 @@ class PaisRepository extends MGRepository {
             $this->findOrFail($id);
         }
         
-        if ($this->model->EstadoS->count() > 0) {
-            return 'País sendo utilizada em "Estado"!';
+        if ($this->model->PessoaS->count() > 0) {
+            return 'Estado Civil sendo utilizada em "Pessoa"!';
         }
         
         return false;
@@ -87,19 +61,15 @@ class PaisRepository extends MGRepository {
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
         
         // Query da Entidade
-        $qry = Pais::query();
+        $qry = EstadoCivil::query();
         
         // Filtros
-         if (!empty($filters['codpais'])) {
-            $qry->where('codpais', '=', $filters['codpais']);
+         if (!empty($filters['codestadocivil'])) {
+            $qry->where('codestadocivil', '=', $filters['codestadocivil']);
         }
 
-         if (!empty($filters['pais'])) {
-            $qry->palavras('pais', $filters['pais']);
-        }
-
-         if (!empty($filters['sigla'])) {
-            $qry->palavras('sigla', $filters['sigla']);
+         if (!empty($filters['estadocivil'])) {
+            $qry->palavras('estadocivil', $filters['estadocivil']);
         }
 
          if (!empty($filters['alteracao'])) {
@@ -116,10 +86,6 @@ class PaisRepository extends MGRepository {
 
          if (!empty($filters['codusuariocriacao'])) {
             $qry->where('codusuariocriacao', '=', $filters['codusuariocriacao']);
-        }
-
-         if (!empty($filters['codigooficial'])) {
-            $qry->where('codigooficial', '=', $filters['codigooficial']);
         }
 
          

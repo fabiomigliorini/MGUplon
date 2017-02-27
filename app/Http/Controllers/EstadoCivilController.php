@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
 
-use MGLara\Repositories\BancoRepository;
+use MGLara\Repositories\EstadoCivilRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
@@ -16,15 +16,15 @@ use MGLara\Library\JsonEnvelope\Datatable;
 use Carbon\Carbon;
 
 /**
- * @property  BancoRepository $repository 
+ * @property  EstadoCivilRepository $repository 
  */
-class BancoController extends Controller
+class EstadoCivilController extends Controller
 {
 
-    public function __construct(BancoRepository $repository) {
+    public function __construct(EstadoCivilRepository $repository) {
         $this->repository = $repository;
-        $this->bc = new Breadcrumb('Banco');
-        $this->bc->addItem('Banco', url('banco'));
+        $this->bc = new Breadcrumb('Estado Civil');
+        $this->bc->addItem('Estado Civil', url('estado-civil'));
     }
     
     /**
@@ -48,7 +48,7 @@ class BancoController extends Controller
         }
         
         // retorna View
-        return view('banco.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
+        return view('estado-civil.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
     }
 
     /**
@@ -66,12 +66,10 @@ class BancoController extends Controller
         $this->setFiltro($request['filtros']);
         
         // Ordenacao
-        $columns[0] = 'codbanco';
+        $columns[0] = 'codestadocivil';
         $columns[1] = 'inativo';
-        $columns[2] = 'codbanco';
-        $columns[3] = 'banco';
-        $columns[4] = 'sigla';
-        $columns[5] = 'numerobanco';
+        $columns[2] = 'codestadocivil';
+        $columns[3] = 'estadocivil';
 
         $sort = [];
         if (!empty($request['order'])) {
@@ -94,12 +92,10 @@ class BancoController extends Controller
         $data = [];
         foreach ($regs as $reg) {
             $data[] = [
-                url('banco', $reg->codbanco),
+                url('estado-civil', $reg->codestadocivil),
                 formataData($reg->inativo, 'C'),
-                formataCodigo($reg->codbanco),
-                $reg->banco,
-                $reg->sigla,
-                $reg->numerobanco,
+                formataCodigo($reg->codestadocivil),
+                $reg->estadocivil,
             ];
         }
         
@@ -129,7 +125,7 @@ class BancoController extends Controller
         $this->bc->addItem('Novo');
         
         // retorna view
-        return view('banco.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('estado-civil.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -143,10 +139,10 @@ class BancoController extends Controller
         parent::store($request);
         
         // Mensagem de registro criado
-        Session::flash('flash_create', 'Banco criado!');
+        Session::flash('flash_create', 'Estado Civil criado!');
         
         // redireciona para o view
-        return redirect("banco/{$this->repository->model->codbanco}");
+        return redirect("estado-civil/{$this->repository->model->codestadocivil}");
     }
 
     /**
@@ -164,11 +160,11 @@ class BancoController extends Controller
         $this->repository->authorize('view');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->banco);
-        $this->bc->header = $this->repository->model->banco;
+        $this->bc->addItem($this->repository->model->estadocivil);
+        $this->bc->header = $this->repository->model->estadocivil;
         
         // retorna show
-        return view('banco.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('estado-civil.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -186,12 +182,12 @@ class BancoController extends Controller
         $this->repository->authorize('update');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->banco, url('banco', $this->repository->model->codbanco));
-        $this->bc->header = $this->repository->model->banco;
+        $this->bc->addItem($this->repository->model->estadocivil, url('estado-civil', $this->repository->model->codestadocivil));
+        $this->bc->header = $this->repository->model->estadocivil;
         $this->bc->addItem('Alterar');
         
         // retorna formulario edit
-        return view('banco.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('estado-civil.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -207,10 +203,10 @@ class BancoController extends Controller
         parent::update($request, $id);
         
         // mensagem re registro criado
-        Session::flash('flash_update', 'Banco alterado!');
+        Session::flash('flash_update', 'Estado Civil alterado!');
         
         // redireciona para view
-        return redirect("banco/{$this->repository->model->codbanco}"); 
+        return redirect("estado-civil/{$this->repository->model->codestadocivil}"); 
     }
     
 }

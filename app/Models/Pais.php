@@ -12,6 +12,7 @@ namespace MGLara\Models;
  * @property  timestamp                      $criacao                            
  * @property  bigint                         $codusuariocriacao                  
  * @property  bigint                         $codigooficial                      
+ * @property  timestamp                      $inativo                            
  *
  * Chaves Estrangeiras
  * @property  Usuario                        $UsuarioAlteracao
@@ -29,10 +30,11 @@ class Pais extends MGModel
           'pais',
          'sigla',
              'codigooficial',
-    ];
+     ];
     protected $dates = [
         'alteracao',
         'criacao',
+        'inativo',
     ];
 
 

@@ -53,16 +53,35 @@ class GeradorCodigoRepository {
         return $this->caminhoDirView($url) . '/index.blade.php';
     }
     
+    public function caminhoViewShow ($url) {
+        return $this->caminhoDirView($url) . '/show.blade.php';
+    }
+    
+    public function caminhoViewCreate ($url) {
+        return $this->caminhoDirView($url) . '/create.blade.php';
+    }
+    
+    public function caminhoViewEdit ($url) {
+        return $this->caminhoDirView($url) . '/edit.blade.php';
+    }
+    
+    public function caminhoViewForm ($url) {
+        return $this->caminhoDirView($url) . '/form.blade.php';
+    }
+    
     public function caminhoDirView ($url) {
         return base_path() . '/resources/views/' . $url;
     }
     
     public function criaCaminhoDirView($url) {
         $pasta = $this->caminhoDirView($url);
-        if (!is_dir($pasta)) {
-            return mkdir($pasta, 0777);
+        if (is_dir($pasta)) {
+            return true;
         }
-        return true;
+        if (!mkdir($pasta)) {
+            return false;
+        }
+        return chmod($pasta, 0777);
     }
     
     public function buscaTabelas() {
@@ -228,13 +247,13 @@ class GeradorCodigoRepository {
     public function montaValidacoes($cols, $instancia_model) {
         $validacoes = [];
         foreach ($cols as $col) {
-            if ($col->column_name == $instancia_model->getKeyName()) {
+            if (in_array($col->column_name, [$instancia_model->getKeyName(), 'codusuariocriacao', 'codusuarioalteracao', 'alteracao', 'criacao', 'inativo'])) {
                 continue;
             }
             switch ($col->udt_name) {
                 case 'varchar':
-                    $validacoes[$col->column_name]['size'] = [
-                        'rule' => "size:$col->character_maximum_length",
+                    $validacoes[$col->column_name]['max'] = [
+                        'rule' => "max:$col->character_maximum_length",
                         'mensagem' => "O campo \"$col->column_name\" não pode conter mais que $col->character_maximum_length caracteres!",
                     ];
                     break;
@@ -276,11 +295,87 @@ class GeradorCodigoRepository {
                     'rule' => 'required',
                     'mensagem' => "O campo \"$col->column_name\" deve ser preenchido!",
                 ];
+            } else {
+                $validacoes[$col->column_name]['nullable'] = [
+                    'rule' => 'nullable',
+                ];                
             }
         }
         
         return $validacoes;
     }
+    
+    public function montaCamposForm($cols, $instancia_model) {
+        
+        $colunas = [];
+        $setcase = [];
+        
+        foreach ($cols as $col) {
+            if (in_array($col->column_name, [$instancia_model->getKeyName(), 'codusuariocriacao', 'codusuarioalteracao', 'alteracao', 'criacao', 'inativo'])) {
+                continue;
+            }
+            switch ($col->udt_name) {
+                case 'varchar':
+                    $setcase[$col->column_name] = $col->column_name;
+                    $colunas[$col->column_name] = [
+                        'details' => $col,
+                        'type' => 'text',
+                        'maxlength' => $col->character_maximum_length,
+                    ];
+                    break;
+                
+                case 'date';
+                    $colunas[$col->column_name] = [
+                        'details' => $col,
+                        'type' => 'date',
+                    ];
+                    break;
+                    
+                case 'timestamp';
+                    $colunas[$col->column_name] = [
+                        'details' => $col,
+                        'type' => 'datetimeLocal',
+                    ];
+                    break;
+                    
+                case 'bool';
+                    $colunas[$col->column_name] = [
+                        'details' => $col,
+                        'type' => 'checkbox',
+                    ];
+                    break;
+                
+                case 'numeric';
+                    $pow = bcpow(10, $col->numeric_scale);
+                    $step = bcdiv(1, $pow, $col->numeric_scale);
+                    $colunas[$col->column_name] = [
+                        'details' => $col,
+                        'type' => 'number',
+                        'step' => $step,
+                    ];
+                    break;
+                
+                case 'int8';
+                case 'int4';
+                case 'int2';
+                    $colunas[$col->column_name] = [
+                        'details' => $col,
+                        'type' => 'number',
+                        'step' => 1,
+                    ];
+                    break;
+                
+                default:
+                    dd($col);
+            }
+            $colunas[$col->column_name]['required'] = ($col->is_nullable == 'NO');
+        }
+        
+        return [
+            'colunas' => $colunas,
+            'setcase' => $setcase,
+        ];
+    }    
     
     public function geraRepository($tabela, $model, $titulo) {
         
@@ -312,6 +407,31 @@ class GeradorCodigoRepository {
         $instancia_model = new $instancia_model();
         $cols_listagem = $this->buscaCamposListagem($tabela, $instancia_model, $coluna_titulo);
         return view('gerador-codigo.arquivos.view-index', compact('tabela', 'model', 'titulo', 'url', 'instancia_model', 'coluna_titulo', 'cols_listagem'))->render();
+    }    
+    
+    public function geraViewShow($tabela, $model, $titulo, $url, $coluna_titulo) {
+        $instancia_model = "\\MGLara\\Models\\{$model}";
+        $instancia_model = new $instancia_model();
+        $cols_listagem = $this->buscaCamposListagem($tabela, $instancia_model, $coluna_titulo);
+        return view('gerador-codigo.arquivos.view-show', compact('tabela', 'model', 'titulo', 'url', 'instancia_model', 'coluna_titulo', 'cols_listagem'))->render();
+    }    
+    
+    public function geraViewCreate($tabela, $model, $titulo, $url, $coluna_titulo) {
+        return view('gerador-codigo.arquivos.view-create', compact('url'))->render();
+    }    
+    
+    public function geraViewEdit($tabela, $model, $titulo, $url, $coluna_titulo) {
+        $instancia_model = "\\MGLara\\Models\\{$model}";
+        $instancia_model = new $instancia_model();
+        return view('gerador-codigo.arquivos.view-edit', compact('instancia_model', 'model', 'url'))->render();
+    }    
+    
+    public function geraViewForm($tabela, $model, $titulo, $url, $coluna_titulo) {
+        $instancia_model = "\\MGLara\\Models\\{$model}";
+        $instancia_model = new $instancia_model();
+        $cols = $this->buscaCamposTabela($tabela);
+        $cols = $this->montaCamposForm($cols, $instancia_model);
+        return view('gerador-codigo.arquivos.view-form', compact('tabela', 'model', 'titulo', 'url', 'instancia_model', 'coluna_titulo', 'cols'))->render();
     }    
     
     public function salvaArquivo($arquivo, $conteudo) {
@@ -358,6 +478,34 @@ class GeradorCodigoRepository {
     public function salvaViewIndex($tabela, $model, $titulo, $url, $coluna_titulo) {
         $conteudo = $this->geraViewIndex($tabela, $model, $titulo, $url, $coluna_titulo);
         $arquivo = $this->caminhoViewIndex($url);
+        $this->criaCaminhoDirView($url);
+        return ($this->salvaArquivo($arquivo, $conteudo));
+    }
+    
+    public function salvaViewShow($tabela, $model, $titulo, $url, $coluna_titulo) {
+        $conteudo = $this->geraViewShow($tabela, $model, $titulo, $url, $coluna_titulo);
+        $arquivo = $this->caminhoViewShow($url);
+        $this->criaCaminhoDirView($url);
+        return ($this->salvaArquivo($arquivo, $conteudo));
+    }
+    
+    public function salvaViewCreate($tabela, $model, $titulo, $url, $coluna_titulo) {
+        $conteudo = $this->geraViewCreate($tabela, $model, $titulo, $url, $coluna_titulo);
+        $arquivo = $this->caminhoViewCreate($url);
+        $this->criaCaminhoDirView($url);
+        return ($this->salvaArquivo($arquivo, $conteudo));
+    }
+    
+    public function salvaViewEdit($tabela, $model, $titulo, $url, $coluna_titulo) {
+        $conteudo = $this->geraViewEdit($tabela, $model, $titulo, $url, $coluna_titulo);
+        $arquivo = $this->caminhoViewEdit($url);
+        $this->criaCaminhoDirView($url);
+        return ($this->salvaArquivo($arquivo, $conteudo));
+    }
+    
+    public function salvaViewForm($tabela, $model, $titulo, $url, $coluna_titulo) {
+        $conteudo = $this->geraViewForm($tabela, $model, $titulo, $url, $coluna_titulo);
+        $arquivo = $this->caminhoViewForm($url);
         $this->criaCaminhoDirView($url);
         return ($this->salvaArquivo($arquivo, $conteudo));
     }

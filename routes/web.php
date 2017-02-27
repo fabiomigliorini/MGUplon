@@ -90,6 +90,8 @@ Route::group(['middleware' => 'auth'], function() {
     Route::delete('permissao', 'PermissaoController@destroyPermissao');
     Route::resource('permissao', 'PermissaoController', ['only' => ['index', 'store']]);
     
+    /* estado civil */
+    Route::resource('estado-civil', 'EstadoCivilController');    
     /* Vale Compras */
     Route::resource('vale-compra', 'ValeCompraController');    
     
@@ -106,6 +108,14 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('gerador-codigo/{tabela}/controller', 'GeradorCodigoController@storeController');
     Route::get('gerador-codigo/{tabela}/view/index', 'GeradorCodigoController@showViewIndex');
     Route::post('gerador-codigo/{tabela}/view/index', 'GeradorCodigoController@storeViewIndex');
+    Route::get('gerador-codigo/{tabela}/view/show', 'GeradorCodigoController@showViewShow');
+    Route::post('gerador-codigo/{tabela}/view/show', 'GeradorCodigoController@storeViewShow');
+    Route::get('gerador-codigo/{tabela}/view/create', 'GeradorCodigoController@showViewCreate');
+    Route::post('gerador-codigo/{tabela}/view/create', 'GeradorCodigoController@storeViewCreate');
+    Route::get('gerador-codigo/{tabela}/view/edit', 'GeradorCodigoController@showViewEdit');
+    Route::post('gerador-codigo/{tabela}/view/edit', 'GeradorCodigoController@storeViewEdit');
+    Route::get('gerador-codigo/{tabela}/view/form', 'GeradorCodigoController@showViewForm');
+    Route::post('gerador-codigo/{tabela}/view/form', 'GeradorCodigoController@storeViewForm');
     Route::resource('gerador-codigo', 'GeradorCodigoController', ['only' => ['index', 'show']]);
     //Route::resource('gerador-codigo','GeradorCodigoController');
     

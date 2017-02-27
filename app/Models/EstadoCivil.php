@@ -10,6 +10,7 @@ namespace MGLara\Models;
  * @property  bigint                         $codusuarioalteracao                
  * @property  timestamp                      $criacao                            
  * @property  bigint                         $codusuariocriacao                  
+ * @property  timestamp                      $inativo                            
  *
  * Chaves Estrangeiras
  * @property  Usuario                        $UsuarioAlteracao
@@ -19,16 +20,17 @@ namespace MGLara\Models;
  * @property  Pessoa[]                       $PessoaS
  */
 
-class Estadocivil extends MGModel
+class EstadoCivil extends MGModel
 {
     protected $table = 'tblestadocivil';
     protected $primaryKey = 'codestadocivil';
     protected $fillable = [
-        'estadocivil',
-    ];
+          'estadocivil',
+         ];
     protected $dates = [
         'alteracao',
         'criacao',
+        'inativo',
     ];
 
 

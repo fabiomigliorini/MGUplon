@@ -31,11 +31,11 @@
                         <li><a href="{{ url('produto') }}">Cadastro</a><li>
                         <li><a href="{{ url('produto/quiosque') }}">Consulta</a><li>
                         <li><a href="{{ url('produto-historico-preco') }}">Histórico de Preços</a></li>
-		        <li><a href="{{ url('marca') }}">Marcas</a><li>
-		        <li><a href="{{ url('secao-produto') }}">Seções</a><li>
-		        <li><a href="{{ url('tipo-produto') }}">Tipos</a></li>
-		        <li><a href="{{ url('unidade-medida') }}">Unidades de medida</a></li>
-		        <li><a href="{{ url('ncm') }}">NCM</a></li>
+                        <li><a href="{{ url('marca') }}">Marcas</a><li>
+                        <li><a href="{{ url('secao-produto') }}">Seções</a><li>
+                        <li><a href="{{ url('tipo-produto') }}">Tipos</a></li>
+                        <li><a href="{{ url('unidade-medida') }}">Unidades de medida</a></li>
+                        <li><a href="{{ url('ncm') }}">NCM</a></li>
 
                     </ul>
                 </li>
@@ -60,7 +60,18 @@
 
                 <li class="has_sub">
                     <a href="javascript:void(0);" class="waves-effect">
-                        <i class="fa fa-credit-card fa-ban"></i>
+                        <i class="fa fa-user"></i>
+                        <span> Pessoas </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url('estado-civil') }}">Estado Civil</a></li>
+                    </ul>
+                </li>
+
+                <li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect">
+                        <i class="fa fa-credit-card"></i>
                         <span> Cheques </span>
                         <span class="menu-arrow"></span>
                     </a>

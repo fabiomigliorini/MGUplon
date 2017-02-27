@@ -22,7 +22,7 @@
 @foreach ($cols_listagem as $col)
                 <div class="col-md-1">
                     <div class="form-group">
-                        <label for="{{ $col->column_name }}" class="control-label">{{ $col->column_name }}</label>
+                        <label for="{{ $col->column_name }}" class="control-label">{{ ucfirst($col->column_name) }}</label>
                         @{!! Form::text('{{ $col->column_name }}', null, ['class'=> 'form-control', 'id'=>'{{ $col->column_name }}']) !!}
                     </div>
                 </div>
@@ -43,7 +43,7 @@
 
 <div class='card'>
     <div class='card-block table-responsive'>
-        @@include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', '{{ $titulo }}', <?php foreach ($cols_listagem as $col) echo "'$col->column_name', " ?>]])
+        @@include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', '{{ $titulo }}', <?php foreach ($cols_listagem as $col) echo "'" . ucfirst($col->column_name) . "', " ?>]])
         <div class='clearfix'></div>
     </div>
 </div>

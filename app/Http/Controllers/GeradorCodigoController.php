@@ -123,4 +123,69 @@ class GeradorCodigoController extends Controller
     public function storeViewIndex(Request $request, $tabela) {
         return ['OK' => $this->repository->salvaViewIndex($tabela, $request->model, $request->titulo, $request->url, $request->coluna_titulo)];
     }
+    
+    public function showViewShow(Request $request, $tabela) {
+        $conteudo = $this->repository->geraViewShow($tabela, $request->model, $request->titulo, $request->url, $request->coluna_titulo);
+        return view('gerador-codigo.view-show', [
+            'tabela'=>$request->tabela, 
+            'model'=>$request->model, 
+            'titulo'=>$request->titulo,
+            'conteudo'=>$conteudo,
+            'url'=>$request->url,
+            'coluna_titulo'=>$request->coluna_titulo,
+        ]);
+    }
+
+    public function storeViewShow(Request $request, $tabela) {
+        return ['OK' => $this->repository->salvaViewShow($tabela, $request->model, $request->titulo, $request->url, $request->coluna_titulo)];
+    }
+    
+    public function showViewCreate(Request $request, $tabela) {
+        $conteudo = $this->repository->geraViewCreate($tabela, $request->model, $request->titulo, $request->url, $request->coluna_titulo);
+        return view('gerador-codigo.view-create', [
+            'tabela'=>$request->tabela, 
+            'model'=>$request->model, 
+            'titulo'=>$request->titulo,
+            'conteudo'=>$conteudo,
+            'url'=>$request->url,
+            'coluna_titulo'=>$request->coluna_titulo,
+        ]);
+    }
+
+    public function storeViewCreate(Request $request, $tabela) {
+        return ['OK' => $this->repository->salvaViewCreate($tabela, $request->model, $request->titulo, $request->url, $request->coluna_titulo)];
+    }
+    
+    public function showViewEdit(Request $request, $tabela) {
+        $conteudo = $this->repository->geraViewEdit($tabela, $request->model, $request->titulo, $request->url, $request->coluna_titulo);
+        return view('gerador-codigo.view-edit', [
+            'tabela'=>$request->tabela, 
+            'model'=>$request->model, 
+            'titulo'=>$request->titulo,
+            'conteudo'=>$conteudo,
+            'url'=>$request->url,
+            'coluna_titulo'=>$request->coluna_titulo,
+        ]);
+    }
+
+    public function storeViewEdit(Request $request, $tabela) {
+        return ['OK' => $this->repository->salvaViewEdit($tabela, $request->model, $request->titulo, $request->url, $request->coluna_titulo)];
+    }
+    
+    public function showViewForm(Request $request, $tabela) {
+        $conteudo = $this->repository->geraViewForm($tabela, $request->model, $request->titulo, $request->url, $request->coluna_titulo);
+        return view('gerador-codigo.view-form', [
+            'tabela'=>$request->tabela, 
+            'model'=>$request->model, 
+            'titulo'=>$request->titulo,
+            'conteudo'=>$conteudo,
+            'url'=>$request->url,
+            'coluna_titulo'=>$request->coluna_titulo,
+        ]);
+    }
+
+    public function storeViewForm(Request $request, $tabela) {
+        return ['OK' => $this->repository->salvaViewForm($tabela, $request->model, $request->titulo, $request->url, $request->coluna_titulo)];
+    }
+    
 }

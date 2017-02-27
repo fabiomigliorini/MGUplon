@@ -9,26 +9,14 @@
             {!! Form::model($filtro, ['id' => 'form-search', 'autocomplete' => 'on'])!!}
                 <div class="col-md-2">
                     <div class="form-group">
-                        <label for="codbanco" class="control-label">#</label>
-                        {!! Form::number('codbanco', null, ['class'=> 'form-control', 'id'=>'codbanco', 'step'=>1, 'min'=>1]) !!}
+                        <label for="codestadocivil" class="control-label">#</label>
+                        {!! Form::number('codestadocivil', null, ['class'=> 'form-control', 'id'=>'codestadocivil', 'step'=>1, 'min'=>1]) !!}
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="banco" class="control-label">Banco</label>
-                        {!! Form::text('banco', null, ['class'=> 'form-control', 'id'=>'banco']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="sigla" class="control-label">Sigla</label>
-                        {!! Form::text('sigla', null, ['class'=> 'form-control', 'id'=>'sigla']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="numerobanco" class="control-label">Numerobanco</label>
-                        {!! Form::text('numerobanco', null, ['class'=> 'form-control', 'id'=>'numerobanco']) !!}
+                        <label for="estadocivil" class="control-label">Estado Civil</label>
+                        {!! Form::text('estadocivil', null, ['class'=> 'form-control', 'id'=>'estadocivil']) !!}
                     </div>
                 </div>
                 <div class="col-md-1">
@@ -47,14 +35,14 @@
 
 <div class='card'>
     <div class='card-block table-responsive'>
-        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Banco', 'Sigla', 'Numerobanco', ]])
+        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Estado Civil', ]])
         <div class='clearfix'></div>
     </div>
 </div>
 
 @section('buttons')
 
-    <a class="btn btn-secondary btn-sm" href="{{ url("banco/create") }}"><i class="fa fa-plus"></i></a> 
+    <a class="btn btn-secondary btn-sm" href="{{ url("estado-civil/create") }}"><i class="fa fa-plus"></i></a> 
     <a class="btn btn-secondary btn-sm" href="#collapsePesquisa" data-toggle="collapse" aria-expanded="false" aria-controls="collapsePesquisa"><i class='fa fa-search'></i></a>
     
 @endsection
@@ -62,7 +50,7 @@
 
     @include('layouts.includes.datatable.assets')
 
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('banco/datatable'), 'order' => 3, 'order_dir' => 'ASC', 'filtros' => ['codbanco', 'banco', 'inativo', 'sigla', 'numerobanco', ] ])
+    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('estado-civil/datatable'), 'order' => 3, 'order_dir' => 'ASC', 'filtros' => ['codestadocivil', 'estadocivil', 'inativo', ] ])
 
     <script type="text/javascript">
         $(document).ready(function () {
