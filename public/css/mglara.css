@@ -22,3 +22,12 @@ table.dataTable.table-sm thead .sorting_desc_disabled::before,
 table.dataTable.table-sm thead .sorting_desc_disabled::after {
     bottom: 0.5em;
 }
+.select2 { 
+    width: 100% !important; 
+}
+input[type="date"].form-control, 
+input[type="time"].form-control, 
+input[type="datetime-local"].form-control, 
+input[type="month"].form-control {
+    line-height: 1.4rem !important;
+}

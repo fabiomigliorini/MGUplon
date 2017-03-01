@@ -7,88 +7,50 @@
     <div class="card-block">
         <div class="card-text">
             {!! Form::model($filtro, ['id' => 'form-search', 'autocomplete' => 'on'])!!}
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="codvalecompra" class="control-label">#</label>
                         {!! Form::number('codvalecompra', null, ['class'=> 'form-control', 'id'=>'codvalecompra', 'step'=>1, 'min'=>1]) !!}
                     </div>
-                </div>
-                <div class="col-md-3">
                     <div class="form-group">
-                        <label for="codvalecompra" class="control-label">Vale Compras</label>
-                        {!! Form::text('codvalecompra', null, ['class'=> 'form-control', 'id'=>'codvalecompra']) !!}
+                        <label for="codvalecompramodelo" class="control-label">Modelo</label>
+                        {!! Form::select2ValeCompraModelo('codvalecompramodelo', null, ['class' => 'form-control']) !!}
                     </div>
-                </div>
-                <div class="col-md-1">
                     <div class="form-group">
-                        <label for="codvalecompramodelo" class="control-label">codvalecompramodelo</label>
-                        {!! Form::text('codvalecompramodelo', null, ['class'=> 'form-control', 'id'=>'codvalecompramodelo']) !!}
+                        <label for="codpessoafavorecido" class="control-label">Favorecido</label>
+                        <div>{!! Form::select2Pessoa('codpessoafavorecido', null, ['class' => 'form-control select2', 'placeholder' => 'Favorecido', 'id'=>'codpessoafavorecido']) !!}</div>
                     </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codpessoafavorecido" class="control-label">codpessoafavorecido</label>
-                        {!! Form::text('codpessoafavorecido', null, ['class'=> 'form-control', 'id'=>'codpessoafavorecido']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codpessoa" class="control-label">codpessoa</label>
-                        {!! Form::text('codpessoa', null, ['class'=> 'form-control', 'id'=>'codpessoa']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="observacoes" class="control-label">observacoes</label>
-                        {!! Form::text('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="aluno" class="control-label">aluno</label>
-                        {!! Form::text('aluno', null, ['class'=> 'form-control', 'id'=>'aluno']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="turma" class="control-label">turma</label>
-                        {!! Form::text('turma', null, ['class'=> 'form-control', 'id'=>'turma']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="totalprodutos" class="control-label">totalprodutos</label>
-                        {!! Form::text('totalprodutos', null, ['class'=> 'form-control', 'id'=>'totalprodutos']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="desconto" class="control-label">desconto</label>
-                        {!! Form::text('desconto', null, ['class'=> 'form-control', 'id'=>'desconto']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="total" class="control-label">total</label>
-                        {!! Form::text('total', null, ['class'=> 'form-control', 'id'=>'total']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codtitulo" class="control-label">codtitulo</label>
-                        {!! Form::text('codtitulo', null, ['class'=> 'form-control', 'id'=>'codtitulo']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codfilial" class="control-label">codfilial</label>
-                        {!! Form::text('codfilial', null, ['class'=> 'form-control', 'id'=>'codfilial']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
                     <div class="form-group">
                         <label for="inativo" class="control-label">Ativos</label>
                         {!! Form::select2Inativo('inativo', null, ['class'=> 'form-control', 'id'=>'inativo']) !!}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="codpessoa" class="control-label">Pessoa</label>
+                        {!! Form::select2Pessoa('codpessoa', null, ['class' => 'form-control', 'placeholder' => 'Pessoa']) !!}
+                    </div>
+                    <div class="form-group">
+                        <label for="aluno" class="control-label">Aluno</label>
+                        {!! Form::text('aluno', null, ['class'=> 'form-control', 'id'=>'aluno']) !!}
+                    </div>
+                    <div class="form-group">
+                        <label for="turma" class="control-label">Turma</label>
+                        {!! Form::text('turma', null, ['class'=> 'form-control', 'id'=>'turma']) !!}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="codusuariocriacao" class="control-label">Usuário</label>
+                        {!! Form::select2Usuario('codusuariocriacao', null, ['class'=> 'form-control', 'id' => 'codusuariocriacao']) !!}
+                    </div>
+                    <div class="form-group">
+                        <label for="criacao_de" class="control-label">De</label>
+                        {!! Form::datetimeLocal('criacao_de', null, ['class'=> 'form-control', 'id' => 'criacao_de']) !!}
+                    </div>
+                    <div class="form-group">
+                        <label for="criacao_ate" class="control-label">De</label>
+                        {!! Form::datetimeLocal('criacao_ate', null, ['class'=> 'form-control', 'id' => 'criacao_ate']) !!}
                     </div>
                 </div>
                 <div class="clearfix"></div>
@@ -116,7 +78,7 @@
 
     @include('layouts.includes.datatable.assets')
 
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('vale-compra/datatable'), 'order' => 9, 'order_dir' => 'DESC', 'filtros' => ['codvalecompra', 'codvalecompra', 'inativo', 'codvalecompramodelo', 'codpessoafavorecido', 'codpessoa', 'observacoes', 'aluno', 'turma', 'totalprodutos', 'desconto', 'total', 'codtitulo', 'codfilial', ] ])
+    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('vale-compra/datatable'), 'order' => 9, 'order_dir' => 'DESC', 'filtros' => ['codvalecompra', 'codvalecompra', 'inativo', 'codvalecompramodelo', 'codpessoafavorecido', 'codpessoa', 'aluno', 'turma', 'codusuariocriacao', 'criacao_de', 'criacao_ate' ] ])
 
     <script type="text/javascript">
         $(document).ready(function () {

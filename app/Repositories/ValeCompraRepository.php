@@ -137,7 +137,7 @@ class ValeCompraRepository extends MGRepository {
     }
     
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
-        
+        //dd($filters);
         // Query da Entidade
         $qry = ValeCompra::query();
         
@@ -146,66 +146,29 @@ class ValeCompraRepository extends MGRepository {
             $qry->where('codvalecompra', '=', $filters['codvalecompra']);
         }
 
-         if (!empty($filters['codvalecompramodelo'])) {
+        if (!empty($filters['codvalecompramodelo'])) {
             $qry->where('codvalecompramodelo', '=', $filters['codvalecompramodelo']);
         }
 
-         if (!empty($filters['codpessoafavorecido'])) {
+        if (!empty($filters['codpessoafavorecido'])) {
             $qry->where('codpessoafavorecido', '=', $filters['codpessoafavorecido']);
         }
 
-         if (!empty($filters['codpessoa'])) {
+        if (!empty($filters['codpessoa'])) {
             $qry->where('codpessoa', '=', $filters['codpessoa']);
         }
 
-         if (!empty($filters['observacoes'])) {
-            $qry->palavras('observacoes', $filters['observacoes']);
-        }
-
-         if (!empty($filters['aluno'])) {
+        if (!empty($filters['aluno'])) {
             $qry->palavras('aluno', $filters['aluno']);
         }
-
-         if (!empty($filters['turma'])) {
-            $qry->palavras('turma', $filters['turma']);
+        
+        if (!empty($filters['criacao_de'])) {
+            $qry->where('criacao', '>=', $filters['criacao_de']);
         }
 
-         if (!empty($filters['totalprodutos'])) {
-            $qry->where('totalprodutos', '=', $filters['totalprodutos']);
+        if (!empty($filters['criacao_ate'])) {
+            $qry->where('criacao', '<=', $filters['criacao_ate']);
         }
-
-         if (!empty($filters['desconto'])) {
-            $qry->where('desconto', '=', $filters['desconto']);
-        }
-
-         if (!empty($filters['total'])) {
-            $qry->where('total', '=', $filters['total']);
-        }
-
-         if (!empty($filters['codtitulo'])) {
-            $qry->where('codtitulo', '=', $filters['codtitulo']);
-        }
-
-          if (!empty($filters['criacao'])) {
-            $qry->where('criacao', '=', $filters['criacao']);
-        }
-
-         if (!empty($filters['codusuariocriacao'])) {
-            $qry->where('codusuariocriacao', '=', $filters['codusuariocriacao']);
-        }
-
-         if (!empty($filters['alteracao'])) {
-            $qry->where('alteracao', '=', $filters['alteracao']);
-        }
-
-         if (!empty($filters['codusuarioalteracao'])) {
-            $qry->where('codusuarioalteracao', '=', $filters['codusuarioalteracao']);
-        }
-
-         if (!empty($filters['codfilial'])) {
-            $qry->where('codfilial', '=', $filters['codfilial']);
-        }
-
         
         switch ($filters['inativo']) {
             case 2: //Inativos
