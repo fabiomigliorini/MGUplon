@@ -39,7 +39,7 @@ $(document).ready(function() {
           } 
         });       
     });
-    $("#marca").Setcase();  
+    $("#marca").Setcase();
 });
 </script>
 @endsection

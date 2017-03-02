@@ -5,24 +5,30 @@ namespace MGLara\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
 
 use MGLara\Repositories\ValeCompraRepository;
-
+use MGLara\Repositories\ValeCompraModeloRepository;
+use MGLara\Repositories\ValeCompraProdutoBarraRepository;
+use MGLara\Repositories\PessoaRepository;
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
-
-use Carbon\Carbon;
+use MGLara\Library\EscPrint\EscPrintValeCompra;
 
 /**
  * @property  ValeCompraRepository $repository 
+ * @property  ValeCompraModeloRepository $valeCompraModeloRepository 
+ * @property  ValeCompraProdutoBarraRepository $valeCompraModeloRepository 
+ * @property  PessoaRepository $pessoaRepository 
  */
 class ValeCompraController extends Controller
 {
 
-    public function __construct(ValeCompraRepository $repository) {
+    public function __construct(ValeCompraRepository $repository, ValeCompraModeloRepository $valeCompraModeloRepository, ValeCompraProdutoBarraRepository $valeCompraProdutoBarraRepository, PessoaRepository $pessoaRepository) {
         $this->repository = $repository;
+        $this->valeCompraModeloRepository = $valeCompraModeloRepository;
+        $this->valeCompraProdutoBarraRepository = $valeCompraProdutoBarraRepository;
+        $this->pessoaRepository = $pessoaRepository;
         $this->bc = new Breadcrumb('Vale Compras');
         $this->bc->addItem('Vale Compras', url('vale-compra'));
     }
@@ -127,19 +133,43 @@ class ValeCompraController extends Controller
      *
      * @return  \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         // cria um registro em branco
-        $this->repository->new();
-        
+        //$this->repository->new();
+
         // autoriza
         $this->repository->authorize('create');
-        
+
         // breadcrumb
         $this->bc->addItem('Novo');
         
+        
+        if (!empty($request->get('codvalecompramodelo'))) {
+            
+            $modelo = $this->valeCompraModeloRepository->findOrFail($request->get('codvalecompramodelo'));
+            //dd($modelo->ValeCompraModeloProdutoBarraS);
+            
+            $model = $this->repository->new($modelo->getAttributes());
+            $model->codpessoa = $this->pessoaRepository->model->consumidor; //\MGLara\Models\Pessoa::CONSUMIDOR;
+            $model->codvalecompramodelo = $request->get('codvalecompramodelo');
+            foreach ($modelo->ValeCompraModeloProdutoBarraS as $m_prod) {
+                $prods[] = $this->valeCompraProdutoBarraRepository->new($m_prod->getAttributes());
+            }
+            
+            return view('vale-compra.create', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'prods'=> $prods]);
+        }
+        
+        $modelos = $this->valeCompraModeloRepository->model->whereNull('tblvalecompramodelo.inativo')
+            ->join('tblpessoa', 'tblpessoa.codpessoa', '=', 'tblvalecompramodelo.codpessoafavorecido')
+            ->orderBy('tblpessoa.fantasia', 'ASC')
+            ->orderBy('modelo', 'ASC')
+            ->get();
+        return view('vale-compra.create-seleciona-modelo',['bc'=>$this->bc, 'modelos'=>$modelos]);        
+        
+        
         // retorna view
-        return view('vale-compra.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        ///return view('vale-compra.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -169,16 +199,17 @@ class ValeCompraController extends Controller
     {
         // busca registro
         $this->repository->findOrFail($id);
-        
+        $imprimir = ($request->get('imprimir') == 'true')?true:false;
         //autorizacao
         $this->repository->authorize('view');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->codvalecompra);
-        $this->bc->header = $this->repository->model->codvalecompra;
+        $this->bc->addItem($this->repository->model->turma);
+        $this->bc->addItem($this->repository->model->aluno);
+        $this->bc->header = $this->repository->model->aluno;
         
         // retorna show
-        return view('vale-compra.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('vale-compra.show', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'imprimir'=>$imprimir]);
     }
 
     /**
@@ -221,6 +252,32 @@ class ValeCompraController extends Controller
         
         // redireciona para view
         return redirect("vale-compra/{$this->repository->model->codvalecompra}"); 
+    }
+    
+    public function imprimir($id, Request $request) 
+    {
+        // Pega modelo
+        $this->repository->findOrFail($id);
+        
+        //autorizacao
+        $this->repository->authorize('view');
+        
+        // Se inativo retorna 403
+        if (!empty($this->repository->model->inativo)) {
+            return response()->view('errors.403', ['mensagem' => 'Não é permitido imprimir vale inativado!'], 403);
+        }
+        
+        // Monta Relatorio
+        $rel = new EscPrintValeCompra($this->repository->model);
+        $rel->prepara();
+        
+        // Imprime
+        if ($request->get('imprimir') == 'true') {
+            $rel->imprimir();
+        }
+        
+        // Retorna relatorio em formato HTML
+        return $rel->converteHtml();
     }
     
 }

@@ -56,15 +56,12 @@ class ValeCompraRepository extends MGRepository {
                 'size:30',
             ],
             'totalprodutos' => [
-                'digits',
                 'numeric',
             ],
             'desconto' => [
-                'digits',
                 'numeric',
             ],
             'total' => [
-                'digits',
                 'numeric',
             ],
             'codtitulo' => [

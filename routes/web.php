@@ -63,6 +63,9 @@ Route::group(['middleware' => 'auth'], function() {
     
     /* NCM */
     Route::resource('ncm', 'NcmController');
+    
+    /* Produto */
+    Route::get('produto/consulta/{barras}', 'ProdutoController@consulta');
 
     /* Usuários */
     Route::put('usuario/{id}/ativar', 'UsuarioController@ativar');
@@ -96,7 +99,8 @@ Route::group(['middleware' => 'auth'], function() {
     /* Feriados */
     Route::resource('feriado', 'FeriadoController');
     
-    /* Vale Compras */
+    /* Vale Compras */    
+    Route::get('vale-compra/{id}/imprimir', 'ValeCompraController@imprimir');
     Route::resource('vale-compra', 'ValeCompraController');    
     
     

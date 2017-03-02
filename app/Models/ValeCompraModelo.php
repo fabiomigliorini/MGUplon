@@ -6,9 +6,9 @@ namespace MGLara\Models;
  * Campos
  * @property  bigint                         $codvalecompramodelo                NOT NULL DEFAULT nextval('tblvalecompramodelo_codvalecompramodelo_seq'::regclass)
  * @property  bigint                         $codpessoafavorecido                NOT NULL
- * @property  varchar(50)                    $modelo                             
+ * @property  varchar(50)                    $modelo                             NOT NULL
  * @property  varchar(30)                    $turma                              
- * @property  varchar(200)                   $observacoes                        NOT NULL
+ * @property  varchar(200)                   $observacoes                        
  * @property  numeric(14,2)                  $totalprodutos                      
  * @property  numeric(14,2)                  $desconto                           
  * @property  numeric(14,2)                  $total                              
@@ -22,7 +22,7 @@ namespace MGLara\Models;
  * Chaves Estrangeiras
  * @property  Usuario                        $UsuarioCriacao
  * @property  Usuario                        $UsuarioAlteracao
- * @property  Pessoa                         $PessoaFavorecido                        
+ * @property  Pessoa                         $Pessoa
  *
  * Tabelas Filhas
  * @property  ValeCompra[]                   $ValeCompraS
@@ -34,15 +34,14 @@ class ValeCompraModelo extends MGModel
     protected $table = 'tblvalecompramodelo';
     protected $primaryKey = 'codvalecompramodelo';
     protected $fillable = [
-        'codpessoafavorecido',
-        'modelo',
-        'turma',
-        'observacoes',
-        'totalprodutos',
-        'desconto',
-        'total',
-        'inativo',
-        'ano',
+          'codpessoafavorecido',
+         'modelo',
+         'turma',
+         'observacoes',
+         'totalprodutos',
+         'desconto',
+         'total',
+              'ano',
     ];
     protected $dates = [
         'inativo',
@@ -54,17 +53,17 @@ class ValeCompraModelo extends MGModel
     // Chaves Estrangeiras
     public function UsuarioCriacao()
     {
-        return $this->belongsTo(Usuario::class, 'codusuariocriacao');
+        return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
     }
 
     public function UsuarioAlteracao()
     {
-        return $this->belongsTo(Usuario::class, 'codusuarioalteracao');
+        return $this->belongsTo(Usuario::class, 'codusuarioalteracao', 'codusuario');
     }
 
-    public function PessoaFavorecido()
+    public function Pessoa()
     {
-        return $this->belongsTo(Pessoa::class, 'codpessoafavorecido');
+        return $this->belongsTo(Pessoa::class, 'codpessoafavorecido', 'codpessoa');
     }
 
 
@@ -79,42 +78,5 @@ class ValeCompraModelo extends MGModel
         return $this->hasMany(ValeCompraModeloProdutoBarra::class, 'codvalecompramodelo', 'codvalecompramodelo');
     }
 
-    public static function search($parametros)
-    {
-        $query = ValeCompraModelo::query();
-        
-        if (!empty($parametros['codpessoafavorecido'])) {
-            $query->where('codpessoafavorecido', $parametros['codpessoafavorecido']);
-        }
-        
-        if (!empty($parametros['ano'])) {
-            $query->where('ano', $parametros['ano']);
-        }
-        
-        if (!empty($parametros['modelo'])) {
-            $palavras = explode(' ', $parametros['modelo']);
-            foreach ($palavras as $palavra) {
-                $query->where('modelo', 'ilike', "%{$palavra}%");
-            }
-        }
-        
-        //dd($query->toSql());
-        
-        switch ($parametros['ativo']) {
-            case 1:
-                $query->whereNull('inativo');
-                break;
-
-            case 2:
-                $query->whereNotNull('inativo');
-                break;
-
-            default:
-                break;
-        }
-        
-        return $query;
-    }
-    
 
 }
