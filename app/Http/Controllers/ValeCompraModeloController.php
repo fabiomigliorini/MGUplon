@@ -5,24 +5,25 @@ namespace MGLara\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
-
+use Illuminate\Support\Facades\DB;
 use MGLara\Repositories\ValeCompraModeloRepository;
+use MGLara\Repositories\ValeCompraModeloProdutoBarraRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
 
-use Carbon\Carbon;
 
 /**
  * @property  ValeCompraModeloRepository $repository 
+ * @property  ValeCompraModeloProdutoBarraRepository $valeCompraModeloProdutoBarraRepository 
  */
 class ValeCompraModeloController extends Controller
 {
 
-    public function __construct(ValeCompraModeloRepository $repository) {
+    public function __construct(ValeCompraModeloRepository $repository, ValeCompraModeloProdutoBarraRepository $valeCompraModeloProdutoBarraRepository) {
         $this->repository = $repository;
+        $this->valeCompraModeloProdutoBarraRepository = $valeCompraModeloProdutoBarraRepository;
         $this->bc = new Breadcrumb('Vale Compra Modelo');
         $this->bc->addItem('Vale Compra Modelo', url('vale-compra-modelo'));
     }
@@ -70,13 +71,11 @@ class ValeCompraModeloController extends Controller
         $columns[1] = 'inativo';
         $columns[2] = 'codvalecompramodelo';
         $columns[3] = 'modelo';
-        $columns[4] = 'codpessoafavorecido';
-        $columns[5] = 'turma';
-        $columns[6] = 'observacoes';
-        $columns[7] = 'totalprodutos';
-        $columns[8] = 'desconto';
-        $columns[9] = 'total';
-        $columns[10] = 'ano';
+        $columns[4] = 'total';
+        $columns[5] = 'codpessoafavorecido';
+        $columns[6] = 'ano';
+        $columns[7] = 'turma';
+        $columns[8] = 'observacoes';
 
         $sort = [];
         if (!empty($request['order'])) {
@@ -103,13 +102,11 @@ class ValeCompraModeloController extends Controller
                 formataData($reg->inativo, 'C'),
                 formataCodigo($reg->codvalecompramodelo),
                 $reg->modelo,
-                $reg->codpessoafavorecido,
+                $reg->total,
+                $reg->PessoaFavorecido->fantasia,
+                $reg->ano,
                 $reg->turma,
                 $reg->observacoes,
-                $reg->totalprodutos,
-                $reg->desconto,
-                $reg->total,
-                $reg->ano,
             ];
         }
         
@@ -150,7 +147,43 @@ class ValeCompraModeloController extends Controller
      */
     public function store(Request $request)
     {
-        parent::store($request);
+        DB::beginTransaction();
+        
+        // busca dados do formulario
+        $data = $request->all();
+        //dd($data);
+        // preenche dados 
+        $model = $this->repository->new($data);
+        $model->totalprodutos = array_sum($data['item_total']);
+        $model->total = $model->totalprodutos - $model->desconto;
+        
+        // valida dados
+        if (!$this->repository->validate($data)) {
+            $this->throwValidationException($request, $this->repository->validator);
+        }
+        
+        // autoriza
+        $this->repository->authorize('create');
+        //dd($model);
+        if ($model->create()) {
+            foreach ($data['item_codprodutobarra'] as $key => $codprodutobarra) {
+                if (empty($codprodutobarra)) {
+                    continue;
+                }
+                
+                $prod = $this->valeCompraModeloProdutoBarraRepository->new([
+                    'codvalecompramodelo' => $model->codvalecompramodelo,
+                    'codprodutobarra' => $codprodutobarra,
+                    'quantidade' => $data['item_quantidade'][$key],
+                    'preco' => $data['item_preco'][$key],
+                    'total' => $data['item_total'][$key],
+                ]);
+                
+                $prod->create();
+            }
+        } else {
+            abort(500);
+        }
         
         // Mensagem de registro criado
         Session::flash('flash_create', 'Vale Compra Modelo criado!');

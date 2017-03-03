@@ -1,59 +1,82 @@
 <div class='row'>
-    {!! Form::hidden('codvalecompramodelo', null, ['class'=> 'form-control', 'id'=>'codvalecompramodelo', 'required'=>'required']) !!}
-    {!! Form::hidden('codpessoafavorecido', null, ['class'=> 'form-control', 'id'=>'codpessoafavorecido', 'required'=>'required']) !!}
-    <div class='col-md-6'>
-        <fieldset class="form-group">
-            {!! Form::label('aluno', 'Aluno') !!}
-            {!! Form::text('aluno', null, ['class'=> 'form-control', 'id'=>'aluno', 'required'=>'required']) !!}
-        </fieldset>
-        <fieldset class="form-group">
-            {!! Form::label('codpessoa', 'Cliente') !!}
-            {!! Form::select2Pessoa('codpessoa', null, ['class'=> 'form-control', 'id'=>'codpessoa', 'placeholder'=>'Cliente', 'required'=>'required']) !!}
-        </fieldset>
-        <fieldset class="form-group">
-            {!! Form::label('turma', 'Turma') !!}
-            {!! Form::text('turma', null, ['class'=> 'form-control', 'id'=>'turma', 'required'=>'required']) !!}
-        </fieldset>
-        <fieldset class="form-group">
-            {!! Form::label('barras', 'Produto') !!}
-            <div class="row">
-                <div class="col-md-4">
-                {!! Form::number('quantidade', 1, ['class'=> 'form-control text-right', 'id'=>'quantidade', 'tabindex'=>-1, 'step'=>0.001, 'min'=>0.001]) !!}
-                </div>
-                <div class="col-md-8">
-                    <div class="input-group">
-                        {!! Form::text('barras', null, ['class'=> 'form-control text-center', 'id'=>'barras']) !!}
-                        <div class="input-group-btn">
-                          <button class='btn btn-primary' id='btnAdicionarProdutoBarra' tabindex="-1"><i class="fa fa-plus"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </fieldset>
+  <div class='col-md-6'>
+    <div class="form-group">
+        {!! Form::label('modelo', 'Modelo:', ['class'=>'col-sm-2 control-label']) !!}
+        <div class="col-sm-10">{!! Form::text('modelo', null, ['class'=> 'form-control', 'id'=>'modelo', 'required'=>'required']) !!}</div>
     </div>
-    <div class='col-md-6'>
-        <fieldset class="form-group">
-            {!! Form::label('codfilial', 'Filial') !!}
-            {!! Form::select2Filial('codfilial', Auth::user()->codfilial, ['class'=> 'form-control', 'id'=>'codfilial', 'required'=>'required']) !!}
-        </fieldset>
-        <fieldset class="form-group">
-            {!! Form::label('observacoes', 'Observacoes') !!}
-            {!! Form::textarea('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes', 'rows' => 3, 'tabindex'=>-1]) !!}
-        </fieldset>
-        <fieldset class="form-group">
-            {!! Form::label('codprodutobarra_pesquisa', 'Pesquisa') !!}
-            {!! Form::select2ProdutoBarra('codprodutobarra_pesquisa', null, ['class'=> 'form-control', 'id'=>'codprodutobarra_pesquisa']) !!}
-        </fieldset>        
+    <div class="form-group">
+        <?php
+            $ano = date('Y');
+            if (date('m') > 6) {
+                $ano++;
+            }
+        ?>
+        {!! Form::label('ano', 'Ano:', ['class'=>'col-sm-2 control-label']) !!}
+        <div class="col-sm-3">{!! Form::number('ano', $ano, ['class'=> 'form-control text-center', 'step'=>'1', 'id'=>'ano', 'required'=>'required']) !!}</div>
     </div>
+    <div class="form-group">
+        {!! Form::label('turma', 'Turma:', ['class'=>'col-sm-2 control-label']) !!}
+        <div class="col-sm-4">{!! Form::text('turma', null, ['class'=> 'form-control', 'id'=>'turma', 'required'=>'required']) !!}</div>
+    </div>
+    <div class="form-group">
+        {!! Form::label('codpessoafavorecido', 'Favorecido:', ['class'=>'col-sm-2 control-label']) !!}
+        <div class="col-sm-10">{!! Form::select2Pessoa('codpessoafavorecido', null, ['class'=> 'form-control', 'id'=>'codpessoafavorecido', 'required'=>'required']) !!}</div>
+    </div>
+  </div>
+  <div class='col-md-6'>
+    <div class="form-group">
+        {!! Form::label('observacoes', 'Observacoes:', ['class'=>'col-sm-2 control-label']) !!}
+        <div class="col-sm-10">{!! Form::textarea('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes', 'rows'=>8, 'tabindex'=>-1]) !!}</div>
+    </div>
+  </div>
 </div>
 
-<br>
+<div class='row'>
+  <div class='col-md-6'>
+    <div class="form-group">
+      {!! Form::label('barras', 'Produto:', ['class'=>'col-sm-2 control-label']) !!}
+      <div class='col-md-3'>
+        {!! Form::number('quantidade', 1, ['class'=> 'form-control text-right', 'id'=>'quantidade', 'tabindex'=>-1, 'step'=>0.001, 'min'=>0.001]) !!}
+      </div>
+      <div class="col-sm-5">
+        <div class="input-group">
+            {!! Form::text('barras', null, ['class'=> 'form-control text-center', 'id'=>'barras']) !!}
+            <div class="input-group-btn">
+              <button class='btn btn-primary' id='btnAdicionarProdutoBarra' tabindex="-1"><i class="fa fa-plus"></i></button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class='col-md-6'>
+    <div class="form-group">
+      {!! Form::label('codprodutobarra_pesquisa', 'Pesquisa:', ['class'=>'col-sm-2 control-label']) !!}
+      <div class="col-sm-10">
+        {!! Form::select2ProdutoBarra('codprodutobarra_pesquisa', null, ['class'=> 'form-control', 'id'=>'codprodutobarra_pesquisa']) !!}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="form-group">
+  <div class='col-md-2'>
+  </div>
+  <div class='col-md-3'>
+  </div>
+  <div class='col-md-5'>
+  </div>
+</div>
+
+ 
+
 <ul class="list-group list-group-condensed list-group-hover list-group-striped" id='divListagemProdutos'>
-  @foreach ($prods as $vcmpb)
+  
+  
+  @foreach ($model->ValeCompraModeloProdutoBarras as $vcmpb)
     <li class='list-group-item linha_produto'>
         <div class="row">
           {!! Form::hidden('item_codprodutobarra[]', $vcmpb->codprodutobarra, ['class'=> 'form-control item_codprodutobarra']) !!}
-          {!! Form::hidden('item_codvalecomprabarra[]', $vcmpb->codvalecomprabarra, ['class'=> 'form-control item_codprodutobarra']) !!}
+          {!! Form::hidden('item_codvalecompramodeloprodutobarra[]', $vcmpb->codvalecompramodeloprodutobarra, ['class'=> 'form-control item_codprodutobarra']) !!}
           <div class='col-md-6'>
             <div class='col-md-3'>
               <span class='item_barras'>
@@ -151,14 +174,7 @@
     <div class="row">
       <div class='col-md-offset-6 col-md-6'>
         {!! Form::label('desconto', 'Desconto:', ['class'=>'col-sm-6 control-label']) !!}
-        <div class="col-sm-5">
-          <div class='input-group'>
-            <?php $percentual_desconto = ($model->totalprodutos > 0)?round(($model->desconto / $model->totalprodutos)*100, 2):null ?>
-            {!! Form::number('percentual_desconto', $percentual_desconto, ['class'=> 'form-control text-right', 'id'=>'percentual_desconto', 'step'=> 0.01, 'min'=>0.00, 'max'=>99.99]) !!}
-            <div class='input-group-addon'>%</div>
-          </div>
-          {!! Form::number('desconto', null, ['class'=> 'form-control text-right', 'id'=>'desconto', 'step'=> 0.01, 'min'=>0.00]) !!}
-        </div>
+        <div class="col-sm-5">{!! Form::number('desconto', null, ['class'=> 'form-control text-right', 'id'=>'desconto', 'step'=> 0.01, 'min'=>0.00]) !!}</div>
       </div>
     </div>
   </li>
@@ -170,21 +186,15 @@
       </div>
     </div>
   </li>
-  <li class='list-group-item'>
-    <div class="row">
-      <div class='col-md-offset-6 col-md-6'>
-        {!! Form::label('codformapagamento', 'Forma de Pagamento:', ['class'=>'col-sm-6 control-label']) !!}
-        <div class="col-sm-5">{!! Form::select2FormaPagamento('codformapagamento', 1010, ['class'=> 'form-control ', 'id'=>'codformapagamento', 'required'=>true]) !!}</div>
-      </div>
-    </div>
-  </li>
   
 </ul>  
 
 <br>
-<fieldset class="form-group">
-   {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
-</fieldset>
+<div class="form-group">
+    <fieldset class="form-group">
+       {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
+    </fieldset>
+</div>
 
 @section('inscript')
 <script src="{{ URL::asset('public/assets/js/setcase.js') }}"></script>
@@ -206,10 +216,6 @@ function calculaTotais () {
     totalprodutos = Math.round(totalprodutos * 100)/100
     $('#totalprodutos').val(totalprodutos);
     $('#desconto').prop('max', totalprodutos);
-    if (totalprodutos>0) {
-        var perc_desc = Math.round(($('#desconto').val() / totalprodutos)*100*100)/100;
-        $('#percentual_desconto').val(perc_desc);
-    }
     $('#total').val(Math.round((totalprodutos - $('#desconto').val()) * 100)/100);
 }
 
@@ -268,60 +274,53 @@ function consultaBarras (barras) {
 
 function preencheQuantidade()
 {
-    //pega campo com codigo de barras
-    var barras = $("#barras").val().trim();
-
-    //o tamanho com o asterisco deve ser entre 2 e 5
-    if (barras.length > 6 || barras.length < 2)
-            return;
-
-    // se o último dígito é o asterisco
-    if (barras.slice(-1) != "*")
-            return;
-
-    //se o valor antes do asterisco é um número
-    barras = barras.substr(0, barras.length - 1).trim().replace(',', '.');
-    if (!$.isNumeric(barras))
-            return;
-
-    // se o número é maior ou igual à 1
-    barras=parseFloat(barras);
-    if (barras < 0.01)
-            return;
-
-    //preenche o campo de quantidade
-    $("#quantidade").val(barras);
-
-    //limpa o código de barras
-    $("#barras").val("");
-
-    $('#quantidade').animate({opacity: 0.25,}, 200 );			
-    $('#quantidade').animate({opacity: 1,}, 200 );			
+	//pega campo com codigo de barras
+	var barras = $("#barras").val().trim();
+	
+	//o tamanho com o asterisco deve ser entre 2 e 5
+	if (barras.length > 6 || barras.length < 2)
+		return;
+	
+	// se o último dígito é o asterisco
+	if (barras.slice(-1) != "*")
+		return;
+	
+	//se o valor antes do asterisco é um número
+	barras = barras.substr(0, barras.length - 1).trim().replace(',', '.');
+	if (!$.isNumeric(barras))
+		return;
+	
+	// se o número é maior ou igual à 1
+	barras=parseFloat(barras);
+	if (barras < 0.01)
+		return;
+	
+	//preenche o campo de quantidade
+	$("#quantidade").val(barras);
+	
+	//limpa o código de barras
+	$("#barras").val("");
+	
+	$('#quantidade').animate({opacity: 0.25,}, 200 );			
+	$('#quantidade').animate({opacity: 1,}, 200 );			
 }
 
 $(document).ready(function() {
 
     $(':input:enabled:visible:first').focus();
     
-    $('#aluno').Setcase();
+    $('#modelo').Setcase();
     $('#turma').Setcase();
 
     //$('#barras').focus();
 
-    $('#form-vale-compra').on("submit", function(e) {
+    $('#form-vale-compra-modelo').on("submit", function(e) {
         var currentForm = this;
         e.preventDefault();
-        swal({
-          title: "Tem certeza que deseja salvar?",
-          type: "warning",
-          showCancelButton: true,
-          closeOnConfirm: false,
-          closeOnCancel: true
-        },
-        function(isConfirm){
-          if (isConfirm) {
-            currentForm.submit();
-          } 
+        bootbox.confirm("Tem certeza que deseja salvar?", function(result) {
+            if (result) {
+                currentForm.submit();
+            }
         });
     });
     
@@ -347,20 +346,12 @@ $(document).ready(function() {
     
     $('.item_delete').click(function (e) {
         var linha = $(this).closest('.linha_produto');
-        swal({
-          title: "Tem Certeza que deseja excluir este item?",
-          type: "warning",
-          showCancelButton: true,
-          closeOnConfirm: true,
-          closeOnCancel: true
-        },
-        function(isConfirm){
-            if (isConfirm) {
+        bootbox.confirm("Tem Certeza que deseja excluir este item?", function(result){ 
+            if (result) {
                 linha.remove();
                 calculaTotais();
-            } 
-        });        
-        
+            }
+        });
         return false;
     });
     
@@ -375,15 +366,9 @@ $(document).ready(function() {
         $('#barras').focus();
     });
     
-    $('#percentual_desconto').change(function (e) {
-        var desc = Math.round($('#percentual_desconto').val() * $('#totalprodutos').val())/100;
-        $('#desconto').val(desc);
-        calculaTotais();
-    });
-    
     $("#barras").keyup(function(){ 
-        preencheQuantidade();
-    });    
+		preencheQuantidade();
+	});    
 });
 </script>
 @endsection

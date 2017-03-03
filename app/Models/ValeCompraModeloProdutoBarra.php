@@ -4,7 +4,7 @@ namespace MGLara\Models;
 
 /**
  * Campos
- * @property  bigint                         $codvalecompraprodutobarra          NOT NULL DEFAULT nextval('tblvalecompramodeloprodutobarra_codvalecompraprodutobarra_seq'::regclass)
+ * @property  bigint                         $codvalecompramodeloprodutobarra    NOT NULL DEFAULT nextval('tblvalecompramodeloprodutobarra_codvalecompraprodutobarra_seq'::regclass)
  * @property  bigint                         $codprodutobarra                    NOT NULL
  * @property  bigint                         $codvalecompramodelo                NOT NULL
  * @property  integer                        $quantidade                         NOT NULL
@@ -16,10 +16,10 @@ namespace MGLara\Models;
  * @property  bigint                         $codusuarioalteracao                
  *
  * Chaves Estrangeiras
- * @property  ValeCompraModelo               $ValeCompraModelo              
+ * @property  ProdutoBarra                   $ProdutoBarra
+ * @property  ValeCompraModelo               $ValeCompraModelo
  * @property  Usuario                        $UsuarioCriacao
  * @property  Usuario                        $UsuarioAlteracao
- * @property  ProdutoBarra                   $ProdutoBarra                  
  *
  * Tabelas Filhas
  */
@@ -29,13 +29,12 @@ class ValeCompraModeloProdutoBarra extends MGModel
     protected $table = 'tblvalecompramodeloprodutobarra';
     protected $primaryKey = 'codvalecompramodeloprodutobarra';
     protected $fillable = [
-        'codvalecompraprodutobarra',
-        'codprodutobarra',
-        'codvalecompramodelo',
-        'quantidade',
-        'preco',
-        'total',
-    ];
+          'codprodutobarra',
+         'codvalecompramodelo',
+         'quantidade',
+         'preco',
+         'total',
+        ];
     protected $dates = [
         'criacao',
         'alteracao',
@@ -43,6 +42,11 @@ class ValeCompraModeloProdutoBarra extends MGModel
 
 
     // Chaves Estrangeiras
+    public function ProdutoBarra()
+    {
+        return $this->belongsTo(ProdutoBarra::class, 'codprodutobarra', 'codprodutobarra');
+    }
+
     public function ValeCompraModelo()
     {
         return $this->belongsTo(ValeCompraModelo::class, 'codvalecompramodelo', 'codvalecompramodelo');
@@ -50,17 +54,12 @@ class ValeCompraModeloProdutoBarra extends MGModel
 
     public function UsuarioCriacao()
     {
-        return $this->belongsTo(Usuario::class, 'codusuario', 'codusuariocriacao');
+        return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
     }
 
     public function UsuarioAlteracao()
     {
-        return $this->belongsTo(Usuario::class, 'codusuario', 'codusuarioalteracao');
-    }
-
-    public function ProdutoBarra()
-    {
-        return $this->belongsTo(ProdutoBarra::class, 'codprodutobarra', 'codprodutobarra');
+        return $this->belongsTo(Usuario::class, 'codusuarioalteracao', 'codusuario');
     }
 
 

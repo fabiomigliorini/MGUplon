@@ -6,11 +6,14 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Session;
 use MGLara\Http\Controllers\Controller;
+use DB;
 
 use MGLara\Repositories\ValeCompraRepository;
 use MGLara\Repositories\ValeCompraModeloRepository;
 use MGLara\Repositories\ValeCompraProdutoBarraRepository;
 use MGLara\Repositories\PessoaRepository;
+use MGLara\Repositories\ValeCompraFormaPagamentoRepository;
+use MGLara\Repositories\TituloRepository;
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
 use MGLara\Library\EscPrint\EscPrintValeCompra;
@@ -20,15 +23,19 @@ use MGLara\Library\EscPrint\EscPrintValeCompra;
  * @property  ValeCompraModeloRepository $valeCompraModeloRepository 
  * @property  ValeCompraProdutoBarraRepository $valeCompraModeloRepository 
  * @property  PessoaRepository $pessoaRepository 
+ * @property  ValeCompraFormaPagamentoRepository $valeCompraFormaPagamentoRepository
+ * @property  TituloRepository $tituloRepository
  */
 class ValeCompraController extends Controller
 {
 
-    public function __construct(ValeCompraRepository $repository, ValeCompraModeloRepository $valeCompraModeloRepository, ValeCompraProdutoBarraRepository $valeCompraProdutoBarraRepository, PessoaRepository $pessoaRepository) {
+    public function __construct(ValeCompraRepository $repository, ValeCompraModeloRepository $valeCompraModeloRepository, ValeCompraProdutoBarraRepository $valeCompraProdutoBarraRepository, PessoaRepository $pessoaRepository, ValeCompraFormaPagamentoRepository $valeCompraFormaPagamentoRepository, TituloRepository $tituloRepository) {
         $this->repository = $repository;
         $this->valeCompraModeloRepository = $valeCompraModeloRepository;
         $this->valeCompraProdutoBarraRepository = $valeCompraProdutoBarraRepository;
         $this->pessoaRepository = $pessoaRepository;
+        $this->valeCompraFormaPagamentoRepository = $valeCompraFormaPagamentoRepository;
+        $this->tituloRepository = $tituloRepository;
         $this->bc = new Breadcrumb('Vale Compras');
         $this->bc->addItem('Vale Compras', url('vale-compra'));
     }
@@ -165,11 +172,9 @@ class ValeCompraController extends Controller
             ->orderBy('tblpessoa.fantasia', 'ASC')
             ->orderBy('modelo', 'ASC')
             ->get();
+        
         return view('vale-compra.create-seleciona-modelo',['bc'=>$this->bc, 'modelos'=>$modelos]);        
         
-        
-        // retorna view
-        ///return view('vale-compra.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -178,7 +183,7 @@ class ValeCompraController extends Controller
      * @param    \Illuminate\Http\Request  $request
      * @return  \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function storee(Request $request)
     {
         parent::store($request);
         
@@ -188,6 +193,124 @@ class ValeCompraController extends Controller
         // redireciona para o view
         return redirect("vale-compra/{$this->repository->model->codvalecompra}");
     }
+    
+    public function store(Request $request)
+    {
+        // Inicia Transação
+        DB::beginTransaction();
+        
+        // busca dados do formulario
+        $data = $request->all();
+        dd($data);
+        $model = $this->repository->new($data);
+        $model->totalprodutos = array_sum($data['item_total']);
+        $model->total = $model->totalprodutos - $model->desconto;
+        
+        // valida dados
+        if (!$this->repository->validate($data)) {
+            $this->throwValidationException($request, $this->repository->validator);
+        }
+        dd($model);
+        if ($model->create()) {
+            foreach ($dados['item_codprodutobarra'] as $key => $codprodutobarra) {
+                if (empty($codprodutobarra)) {
+                    continue;
+                }
+                
+                $prod = $this->valeCompraModeloRepository->new([
+                    'codvalecompra' => $model->codvalecompra,
+                    'codprodutobarra' => $codprodutobarra,
+                    'quantidade' => $dados['item_quantidade'][$key],
+                    'preco' => $dados['item_preco'][$key],
+                    'total' => $dados['item_total'][$key],
+                ]);
+                
+                $prod->create();
+            }
+            
+            $pag = $this->valeCompraFormaPagamentoRepository->new([
+                'codvalecompra' => $model->codvalecompra,
+                'codformapagamento' => $dados['codformapagamento'],
+                'valorpagamento' => $model->model->total,
+            ]);
+            
+            $pag->create();
+            
+            // Gera Contas a Receber
+            if (!$pag->model->FormaPagamento->avista) {
+                $acumulado = 0;
+                for ($i=1; $i<=$pag->model->FormaPagamento->parcelas; $i++) {
+                    if ($i == $pag->model->FormaPagamento->parcelas) {
+                        $valor = $pag->model->valorpagamento - $acumulado;
+                    } else {
+                        $valor = floor($pag->model->valorpagamento / $pag->model->FormaPagamento->parcelas);
+                        if ($valor == 0) {
+                            $valor = round($pag->model->valorpagamento / $pag->model->FormaPagamento->parcelas, 2);
+                        }
+                    }
+                    $vencimento = ($i==1)?$model->model->criacao->addDays($pag->model->FormaPagamento->diasentreparcelas):$vencimento->addDays($pag->model->FormaPagamento->diasentreparcelas);
+                    $acumulado += $valor;
+                    $numero = str_pad($model->model->codvalecompra, 8, '0', STR_PAD_LEFT);
+                    $numero = "V{$numero}-{$i}/{$pag->model->FormaPagamento->parcelas}";
+                    
+                    $titulo = $this->tituloRepository->new();
+                    $titulo->numero = $numero;
+                    $titulo->codpessoa = $model->codpessoa;
+                    $titulo->codfilial = $model->codfilial;
+                    $titulo->codvalecompraformapagamento = $pag->codvalecompraformapagamento; //Venda Vale
+                    $titulo->debito = $valor;
+                    $titulo->codtipotitulo = 240; //Débito Cliente
+                    $titulo->codcontacontabil = 82; //Venda Vale
+                    $titulo->transacao = $model->criacao;
+                    $titulo->sistema = $model->criacao;
+                    $titulo->emissao = $model->criacao;
+                    $titulo->vencimento = $vencimento;
+                    $titulo->vencimentooriginal = $vencimento;
+                    $titulo->create();
+                }
+            }
+            
+            // Gera Titulo de Credito
+            $numero = str_pad($model->model->codvalecompra, 8, '0', STR_PAD_LEFT);
+            $numero = "V{$numero}-CR";
+
+            $titulo = $this->tituloRepository->new();
+            $titulo->numero = $numero;
+            $titulo->codpessoa = $model->codpessoafavorecido;
+            $titulo->codfilial = $model->codfilial;
+            $titulo->credito = $model->total;
+            $titulo->codtipotitulo = 3; //Vale Compras
+            $titulo->codcontacontabil = 83; //Credito Vale
+            $titulo->transacao = $model->criacao;
+            $titulo->sistema = $model->criacao;
+            $titulo->emissao = $model->criacao;
+            $titulo->vencimento = $model->criacao->addYear(1);
+            $titulo->vencimentooriginal = $titulo->vencimento;
+            $titulo->create();
+            
+            $model->codtitulo = $titulo->codtitulo;
+            $model->create();
+            
+        }
+
+        // autoriza
+        $this->repository->authorize('create');
+        
+        // cria
+        if (!$this->repository->create()) {
+            abort(500);
+        }
+        
+        // Mensagem de registro criado
+        Session::flash('flash_create', 'Vale Compras criado!');
+        
+        // Commita Transação
+        DB::commit();
+        
+        // redireciona para o view
+        return redirect("vale-compra/{$this->repository->model->codvalecompra}?imprimir=true");
+    }    
+    
 
     /**
      * Display the specified resource.

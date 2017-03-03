@@ -104,6 +104,10 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('vale-compra', 'ValeCompraController');    
     
     
+    /* Modelos de Vale Compras */    
+    Route::resource('vale-compra-modelo', 'ValeCompraModeloController'); 
+    
+    
     
     /* Gerador de Codigo */
     Route::get('gerador-codigo/{tabela}/model', 'GeradorCodigoController@showModel');

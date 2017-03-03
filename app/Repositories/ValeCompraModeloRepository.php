@@ -126,38 +126,6 @@ class ValeCompraModeloRepository extends MGRepository {
             $qry->palavras('turma', $filters['turma']);
         }
 
-         if (!empty($filters['observacoes'])) {
-            $qry->palavras('observacoes', $filters['observacoes']);
-        }
-
-         if (!empty($filters['totalprodutos'])) {
-            $qry->where('totalprodutos', '=', $filters['totalprodutos']);
-        }
-
-         if (!empty($filters['desconto'])) {
-            $qry->where('desconto', '=', $filters['desconto']);
-        }
-
-         if (!empty($filters['total'])) {
-            $qry->where('total', '=', $filters['total']);
-        }
-
-          if (!empty($filters['criacao'])) {
-            $qry->where('criacao', '=', $filters['criacao']);
-        }
-
-         if (!empty($filters['codusuariocriacao'])) {
-            $qry->where('codusuariocriacao', '=', $filters['codusuariocriacao']);
-        }
-
-         if (!empty($filters['alteracao'])) {
-            $qry->where('alteracao', '=', $filters['alteracao']);
-        }
-
-         if (!empty($filters['codusuarioalteracao'])) {
-            $qry->where('codusuarioalteracao', '=', $filters['codusuarioalteracao']);
-        }
-
          if (!empty($filters['ano'])) {
             $qry->where('ano', '=', $filters['ano']);
         }

@@ -22,7 +22,7 @@ namespace MGLara\Models;
  * Chaves Estrangeiras
  * @property  Usuario                        $UsuarioCriacao
  * @property  Usuario                        $UsuarioAlteracao
- * @property  Pessoa                         $Pessoa
+ * @property  Pessoa                         $PessoaFavorecido                        
  *
  * Tabelas Filhas
  * @property  ValeCompra[]                   $ValeCompraS
@@ -61,9 +61,9 @@ class ValeCompraModelo extends MGModel
         return $this->belongsTo(Usuario::class, 'codusuarioalteracao', 'codusuario');
     }
 
-    public function Pessoa()
+    public function PessoaFavorecido()
     {
-        return $this->belongsTo(Pessoa::class, 'codpessoafavorecido', 'codpessoa');
+        return $this->belongsTo(Pessoa::class, 'codpessoafavorecido');
     }
 
 

@@ -28,10 +28,10 @@ class ValeCompraFormaPagamento extends MGModel
     protected $table = 'tblvalecompraformapagamento';
     protected $primaryKey = 'codvalecompraformapagamento';
     protected $fillable = [
-        'codvalecompra',
-        'codformapagamento',
-        'valorpagamento',
-    ];
+          'codvalecompra',
+         'codformapagamento',
+         'valorpagamento',
+        ];
     protected $dates = [
         'alteracao',
         'criacao',
@@ -41,29 +41,29 @@ class ValeCompraFormaPagamento extends MGModel
     // Chaves Estrangeiras
     public function ValeCompra()
     {
-        return $this->belongsTo(ValeCompra::class, 'codvalecompra');
+        return $this->belongsTo(ValeCompra::class, 'codvalecompra', 'codvalecompra');
     }
 
     public function FormaPagamento()
     {
-        return $this->belongsTo(FormaPagamento::class, 'codformapagamento');
+        return $this->belongsTo(FormaPagamento::class, 'codformapagamento', 'codformapagamento');
     }
 
     public function UsuarioAlteracao()
     {
-        return $this->belongsTo(Usuario::class, 'codusuarioalteracao');
+        return $this->belongsTo(Usuario::class, 'codusuarioalteracao', 'codusuario');
     }
 
     public function UsuarioCriacao()
     {
-        return $this->belongsTo(Usuario::class, 'codusuariocriacao');
+        return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
     }
 
 
     // Tabelas Filhas
     public function TituloS()
     {
-        return $this->hasMany(Titulo::class, 'codvalecompraformapagamento');
+        return $this->hasMany(Titulo::class, 'codvalecompraformapagamento', 'codvalecompraformapagamento');
     }
 
 
