@@ -1,62 +1,75 @@
 <div class='row'>
-  <div class='col-md-6'>
+<div class='col-md-6'>
     <div class="form-group">
-        {!! Form::label('modelo', 'Modelo:', ['class'=>'col-sm-2 control-label']) !!}
-        <div class="col-sm-10">{!! Form::text('modelo', null, ['class'=> 'form-control', 'id'=>'modelo', 'required'=>'required']) !!}</div>
+        {!! Form::label('modelo', 'Modelo') !!}
+        {!! Form::text('modelo', null, ['class'=> 'form-control', 'id'=>'modelo', 'required'=>'required']) !!}
     </div>
-    <div class="form-group">
-        <?php
-            $ano = date('Y');
-            if (date('m') > 6) {
-                $ano++;
-            }
-        ?>
-        {!! Form::label('ano', 'Ano:', ['class'=>'col-sm-2 control-label']) !!}
-        <div class="col-sm-3">{!! Form::number('ano', $ano, ['class'=> 'form-control text-center', 'step'=>'1', 'id'=>'ano', 'required'=>'required']) !!}</div>
-    </div>
-    <div class="form-group">
-        {!! Form::label('turma', 'Turma:', ['class'=>'col-sm-2 control-label']) !!}
-        <div class="col-sm-4">{!! Form::text('turma', null, ['class'=> 'form-control', 'id'=>'turma', 'required'=>'required']) !!}</div>
-    </div>
-    <div class="form-group">
-        {!! Form::label('codpessoafavorecido', 'Favorecido:', ['class'=>'col-sm-2 control-label']) !!}
-        <div class="col-sm-10">{!! Form::select2Pessoa('codpessoafavorecido', null, ['class'=> 'form-control', 'id'=>'codpessoafavorecido', 'required'=>'required']) !!}</div>
-    </div>
-  </div>
-  <div class='col-md-6'>
-    <div class="form-group">
-        {!! Form::label('observacoes', 'Observacoes:', ['class'=>'col-sm-2 control-label']) !!}
-        <div class="col-sm-10">{!! Form::textarea('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes', 'rows'=>8, 'tabindex'=>-1]) !!}</div>
-    </div>
-  </div>
-</div>
-
-<div class='row'>
-  <div class='col-md-6'>
-    <div class="form-group">
-      {!! Form::label('barras', 'Produto:', ['class'=>'col-sm-2 control-label']) !!}
-      <div class='col-md-3'>
-        {!! Form::number('quantidade', 1, ['class'=> 'form-control text-right', 'id'=>'quantidade', 'tabindex'=>-1, 'step'=>0.001, 'min'=>0.001]) !!}
-      </div>
-      <div class="col-sm-5">
-        <div class="input-group">
-            {!! Form::text('barras', null, ['class'=> 'form-control text-center', 'id'=>'barras']) !!}
-            <div class="input-group-btn">
-              <button class='btn btn-primary' id='btnAdicionarProdutoBarra' tabindex="-1"><i class="fa fa-plus"></i></button>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <?php
+                    $ano = date('Y');
+                    if (date('m') > 6) {
+                        $ano++;
+                    }
+                ?>
+                {!! Form::label('ano', 'Ano') !!}
+                {!! Form::number('ano', $ano, ['class'=> 'form-control text-center', 'step'=>'1', 'id'=>'ano', 'required'=>'required']) !!}
+            </div>
+        </div>  
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('turma', 'Turma') !!}
+                {!! Form::text('turma', null, ['class'=> 'form-control', 'id'=>'turma', 'required'=>'required']) !!}
             </div>
         </div>
-      </div>
-    </div>
-  </div>
-  <div class='col-md-6'>
+    </div>  
+      
     <div class="form-group">
-      {!! Form::label('codprodutobarra_pesquisa', 'Pesquisa:', ['class'=>'col-sm-2 control-label']) !!}
-      <div class="col-sm-10">
-        {!! Form::select2ProdutoBarra('codprodutobarra_pesquisa', null, ['class'=> 'form-control', 'id'=>'codprodutobarra_pesquisa']) !!}
-      </div>
+        {!! Form::label('codpessoafavorecido', 'Favorecido') !!}
+        {!! Form::select2Pessoa('codpessoafavorecido', null, ['class'=> 'form-control', 'id'=>'codpessoafavorecido', 'required'=>'required']) !!}
     </div>
-  </div>
+    
+    
 </div>
+    
+    <div class='col-md-6'>
+        <div class="form-group">
+            {!! Form::label('observacoes', 'Observacoes') !!}
+            {!! Form::textarea('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes', 'rows'=>8, 'tabindex'=>-1]) !!}
+        </div>
+    </div>
+    
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            {!! Form::label('barras', 'Produto') !!}
+            <div class="row">
+                <div class='col-md-3'>
+                    {!! Form::number('quantidade', 1, ['class'=> 'form-control text-right', 'id'=>'quantidade', 'tabindex'=>-1, 'step'=>0.001, 'min'=>0.001]) !!}
+                </div>
+                <div class="col-sm-5">
+                    <div class="input-group">
+                        {!! Form::text('barras', null, ['class'=> 'form-control text-center', 'id'=>'barras']) !!}
+                        <div class="input-group-btn">
+                            <button class='btn btn-primary' id='btnAdicionarProdutoBarra' tabindex="-1"><i class="fa fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+        </div>    
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            {!! Form::label('codprodutobarra_pesquisa', 'Pesquisa') !!}
+            {!! Form::select2ProdutoBarra('codprodutobarra_pesquisa', null, ['class'=> 'form-control', 'id'=>'codprodutobarra_pesquisa']) !!}
+        </div>    
+    </div>
+</div>
+
+
 
 <div class="form-group">
   <div class='col-md-2'>
@@ -313,16 +326,24 @@ $(document).ready(function() {
     $('#turma').Setcase();
 
     //$('#barras').focus();
-
-    $('#form-vale-compra-modelo').on("submit", function(e) {
+    
+    $('#form-principal').on("submit", function(e) {
         var currentForm = this;
         e.preventDefault();
-        bootbox.confirm("Tem certeza que deseja salvar?", function(result) {
-            if (result) {
-                currentForm.submit();
-            }
+        swal({
+          title: "Tem certeza que deseja salvar?",
+          type: "warning",
+          showCancelButton: true,
+          closeOnConfirm: false,
+          closeOnCancel: true
+        },
+        function(isConfirm){
+          if (isConfirm) {
+            currentForm.submit();
+          } 
         });
-    });
+    });    
+    
     
     $('#btnAdicionarProdutoBarra').click(function (e) {
         var barras = $('#barras').val();
@@ -346,12 +367,19 @@ $(document).ready(function() {
     
     $('.item_delete').click(function (e) {
         var linha = $(this).closest('.linha_produto');
-        bootbox.confirm("Tem Certeza que deseja excluir este item?", function(result){ 
-            if (result) {
+        swal({
+          title: "Tem Certeza que deseja excluir este item?",
+          type: "warning",
+          showCancelButton: true,
+          closeOnConfirm: true,
+          closeOnCancel: true
+        },
+        function(isConfirm){
+            if (isConfirm) {
                 linha.remove();
                 calculaTotais();
-            }
-        });
+            } 
+        });        
         return false;
     });
     

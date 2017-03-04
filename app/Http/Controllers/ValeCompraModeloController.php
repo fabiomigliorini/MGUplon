@@ -165,7 +165,7 @@ class ValeCompraModeloController extends Controller
         // autoriza
         $this->repository->authorize('create');
         //dd($model);
-        if ($model->create()) {
+        if ($model->save()) {
             foreach ($data['item_codprodutobarra'] as $key => $codprodutobarra) {
                 if (empty($codprodutobarra)) {
                     continue;
@@ -179,7 +179,7 @@ class ValeCompraModeloController extends Controller
                     'total' => $data['item_total'][$key],
                 ]);
                 
-                $prod->create();
+                $prod->save();
             }
         } else {
             abort(500);
@@ -187,6 +187,8 @@ class ValeCompraModeloController extends Controller
         
         // Mensagem de registro criado
         Session::flash('flash_create', 'Vale Compra Modelo criado!');
+        
+        DB::commit();
         
         // redireciona para o view
         return redirect("vale-compra-modelo/{$this->repository->model->codvalecompramodelo}");
@@ -256,4 +258,44 @@ class ValeCompraModeloController extends Controller
         return redirect("vale-compra-modelo/{$this->repository->model->codvalecompramodelo}"); 
     }
     
+    public function destroyy($id)
+    {
+        // Busca o registro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('delete');
+        
+        // se esta sendo usado
+        if ($mensagem = $this->repository->used()) {
+            return ['OK' => false, 'mensagem' => $mensagem];
+        }
+        
+        // apaga
+        return ['OK' => $this->repository->delete()];
+    }
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        // Busca o registro
+        $this->repository->findOrFail($id);
+
+        // autorizacao
+        $this->repository->authorize('delete');
+
+        foreach ($this->repository->model->ValeCompraModeloProdutoBarraS as $vcmpb) {
+            $vcmpb->delete();
+        }
+
+        // se esta sendo usado
+        if ($mensagem = $this->repository->used()) {
+            return ['OK' => false, 'mensagem' => $mensagem];
+        }
+
+        if ($this->repository->delete()) {
+            DB::commit();
+            // apaga
+            return ['OK' => $this->repository->delete()];
+        }
+    }    
 }

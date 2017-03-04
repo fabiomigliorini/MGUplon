@@ -34,14 +34,14 @@ class ValeCompraModelo extends MGModel
     protected $table = 'tblvalecompramodelo';
     protected $primaryKey = 'codvalecompramodelo';
     protected $fillable = [
-          'codpessoafavorecido',
-         'modelo',
-         'turma',
-         'observacoes',
-         'totalprodutos',
-         'desconto',
-         'total',
-              'ano',
+        'codpessoafavorecido',
+        'modelo',
+        'turma',
+        'observacoes',
+        'totalprodutos',
+        'desconto',
+        'total',
+        'ano',
     ];
     protected $dates = [
         'inativo',

@@ -25,8 +25,9 @@ class Cargo extends MGModel
     protected $table = 'tblcargo';
     protected $primaryKey = 'codcargo';
     protected $fillable = [
-          'cargo',
-         ];
+        'cargo',
+        'inativo',
+    ];
     protected $dates = [
         'inativo',
         'criacao',
@@ -37,12 +38,12 @@ class Cargo extends MGModel
     // Chaves Estrangeiras
     public function UsuarioAlteracao()
     {
-        return $this->belongsTo(Usuario::class, 'codusuarioalteracao', 'codusuario');
+        return $this->belongsTo(Usuario::class, 'codusuario', 'codusuarioalteracao');
     }
 
     public function UsuarioCriacao()
     {
-        return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
+        return $this->belongsTo(Usuario::class, 'codusuario', 'codusuariocriacao');
     }
 
 

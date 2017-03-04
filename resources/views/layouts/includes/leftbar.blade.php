@@ -104,6 +104,7 @@
                     <ul class="list-unstyled">
                         <li><a href="{{ url('feriado') }}">Feriado</a></li>
                         <li><a href="{{ url('imagem') }}">Imagens</a></li>
+                        <li><a href="{{ url('gerador-codigo') }}">Gerador de código</a></li>
                     </ul>
                 </li>
 		
