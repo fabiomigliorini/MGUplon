@@ -135,4 +135,11 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('gerador-codigo', 'GeradorCodigoController', ['only' => ['index', 'show']]);
     //Route::resource('gerador-codigo','GeradorCodigoController');
     
+    /* Cheques */
+    Route::resource('cheque-motivo-devolucao', 'ChequeMotivoDevolucaoController');
+    Route::resource('cheque', 'ChequeController');
+    Route::get('cheque/consulta/{cmc7}', 'ChequeController@consulta');
+    Route::get('cheque/consultaemitente/{cnpj}', 'ChequeController@consultaemitente');
+
+    
 });
