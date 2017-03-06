@@ -248,32 +248,67 @@ class ValeCompraModeloController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Busca registro para autorizar
+        $this->repository->findOrFail($id);
+
+        // Valida dados
+        $data = $request->all();
+        $this->repository->fill($data);
+        $this->repository->model->totalprodutos = array_sum($data['item_total']);
+        $this->repository->model->total = $this->repository->model->totalprodutos - $this->repository->model->desconto;     
         
-        parent::update($request, $id);
+        if (!$this->repository->validate($data, $id)) {
+            $this->throwValidationException($request, $this->repository->validator);
+        }
+        
+        // autorizacao
+        $this->repository->fill($data);
+        $this->repository->authorize('update');
+        
+        DB::beginTransaction();
+        
+        if ($this->repository->update()) {
+            $codvalecompramodeloprodutobarra = [];
+            foreach ($data['item_codprodutobarra'] as $key => $codprodutobarra) {
+                if (empty($codprodutobarra)) {
+                    continue;
+                }
+                $data_prod = [
+                    'codvalecompramodelo' => $this->repository->model->codvalecompramodelo,
+                    'codprodutobarra' => $codprodutobarra,
+                    'quantidade' => $data['item_quantidade'][$key],
+                    'preco' => $data['item_preco'][$key],
+                    'total' => $data['item_total'][$key],
+                ];
+    
+                if (!empty($data['item_codvalecompramodeloprodutobarra'][$key])) {
+                    $this->valeCompraModeloProdutoBarraRepository->findOrFail($data['item_codvalecompramodeloprodutobarra'][$key]);
+                    $this->valeCompraModeloProdutoBarraRepository->fill($data_prod);
+                } else {
+                    $this->valeCompraModeloProdutoBarraRepository->new($data_prod);
+                }
+                
+                $this->valeCompraModeloProdutoBarraRepository->model->save();
+                $codvalecompramodeloprodutobarra[] = $this->valeCompraModeloProdutoBarraRepository->model->codvalecompramodeloprodutobarra;
+            }
+            
+            $this->repository->model->ValeCompraModeloProdutoBarraS()->whereNotIn('codvalecompramodeloprodutobarra', $codvalecompramodeloprodutobarra)->delete();
+            
+        }
+        DB::commit();        
+        
+        // salva
+        if (!$this->repository->update()) {
+            abort(500);
+        }
         
         // mensagem re registro criado
         Session::flash('flash_update', 'Vale Compra Modelo alterado!');
         
         // redireciona para view
-        return redirect("vale-compra-modelo/{$this->repository->model->codvalecompramodelo}"); 
+        return redirect("vale-compra-modelo/{$this->repository->model->codvalecompramodelo}");         
     }
     
-    public function destroyy($id)
-    {
-        // Busca o registro
-        $this->repository->findOrFail($id);
-        
-        // autorizacao
-        $this->repository->authorize('delete');
-        
-        // se esta sendo usado
-        if ($mensagem = $this->repository->used()) {
-            return ['OK' => false, 'mensagem' => $mensagem];
-        }
-        
-        // apaga
-        return ['OK' => $this->repository->delete()];
-    }
     public function destroy($id)
     {
         DB::beginTransaction();
@@ -292,10 +327,9 @@ class ValeCompraModeloController extends Controller
             return ['OK' => false, 'mensagem' => $mensagem];
         }
 
-        if ($this->repository->delete()) {
-            DB::commit();
-            // apaga
-            return ['OK' => $this->repository->delete()];
-        }
+        DB::commit();
+        
+        // apaga
+        return ['OK' => $this->repository->delete()];
     }    
 }

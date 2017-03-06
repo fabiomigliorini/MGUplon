@@ -136,7 +136,7 @@
   @endforeach
   
     <!-- Linha de modelo que o Jquery vai utilizar -->
-    <li class='list-group-item linha_produto hidden'>
+    <li class='list-group-item linha_produto invisible'>
         <div class="row">
           {!! Form::hidden('item_codprodutobarra[]', null, ['class'=> 'form-control item_codprodutobarra']) !!}
           <div class='col-md-6'>
@@ -210,6 +210,11 @@
 </div>
 
 @section('inscript')
+<style>
+    .invisible {
+        display: none;
+    }
+</style>
 <script src="{{ URL::asset('public/assets/js/setcase.js') }}"></script>
 <script type="text/javascript">
     
@@ -239,9 +244,9 @@ function adicionaProduto(produto) {
     var div = $('.linha_produto').last().clone(true, true);
     
     if (produto.inativo != null) {
-        div.find(".item_inativo").first().removeClass("hidden");
+        div.find(".item_inativo").first().removeClass("invisible");
     } else {
-        div.find(".item_inativo").first().addClass("hidden");        
+        div.find(".item_inativo").first().addClass("invisible");        
     }
     div.find(".item_link_produto").first().attr("href", produto.url);
     div.find(".item_codprodutobarra").first().val(produto.codprodutobarra);
@@ -252,7 +257,7 @@ function adicionaProduto(produto) {
     div.find(".item_preco").first().val(produto.preco);
     div.find(".item_quantidade").first().val($('#quantidade').val());
     $('#quantidade').val(1);
-    div.removeClass('hidden');
+    div.removeClass('invisible');
     
     $("#codprodutobarra_pesquisa").select2("val", null);
     $('#barras').focus();
@@ -271,13 +276,23 @@ function consultaBarras (barras) {
         dataType: 'json',
         success: function(retorno) {
             if (retorno.resultado == false) {
-                bootbox.alert('<span class="text-danger">' + retorno.mensagem + '</span>');
+                swal({
+                  title: retorno.mensagem,
+                  type: "error",
+                  closeOnConfirm: true,
+                  closeOnCancel: true
+                });                
             } else {
                 adicionaProduto(retorno.produto);
             }
         },
         error: function (XHR, textStatus) {
-            bootbox.alert('<span class="text-danger">Erro ao adicionar o produto!</span>');
+            swal({
+              title: "Erro ao adicionar o produto!",
+              type: "error",
+              closeOnConfirm: true,
+              closeOnCancel: true
+            });             
             console.log(XHR);
             console.log(textStatus);
         }

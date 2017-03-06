@@ -97,10 +97,6 @@ class ValeCompraModeloRepository extends MGRepository {
             return 'Vale Compra Modelo sendo utilizada em "ValeCompra"!';
         }
         
-        if ($this->model->ValeCompraModeloProdutoBarraS->count() > 0) {
-            return 'Vale Compra Modelo sendo utilizada em "ValeCompraModeloProdutoBarra"!';
-        }
-        
         return false;
     }
     

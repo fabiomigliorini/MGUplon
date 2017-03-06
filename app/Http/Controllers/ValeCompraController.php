@@ -183,17 +183,6 @@ class ValeCompraController extends Controller
      * @param    \Illuminate\Http\Request  $request
      * @return  \Illuminate\Http\Response
      */
-    public function storee(Request $request)
-    {
-        parent::store($request);
-        
-        // Mensagem de registro criado
-        Session::flash('flash_create', 'Vale Compras criado!');
-        
-        // redireciona para o view
-        return redirect("vale-compra/{$this->repository->model->codvalecompra}");
-    }
-    
     public function store(Request $request)
     {
         // Inicia Transação
@@ -201,7 +190,7 @@ class ValeCompraController extends Controller
         
         // busca dados do formulario
         $data = $request->all();
-        dd($data);
+        
         $model = $this->repository->new($data);
         $model->totalprodutos = array_sum($data['item_total']);
         $model->total = $model->totalprodutos - $model->desconto;
@@ -210,8 +199,8 @@ class ValeCompraController extends Controller
         if (!$this->repository->validate($data)) {
             $this->throwValidationException($request, $this->repository->validator);
         }
-        dd($model);
-        if ($model->create()) {
+        
+        if ($model->save()) {
             foreach ($dados['item_codprodutobarra'] as $key => $codprodutobarra) {
                 if (empty($codprodutobarra)) {
                     continue;
@@ -225,7 +214,7 @@ class ValeCompraController extends Controller
                     'total' => $dados['item_total'][$key],
                 ]);
                 
-                $prod->create();
+                $prod->save();
             }
             
             $pag = $this->valeCompraFormaPagamentoRepository->new([
@@ -234,7 +223,7 @@ class ValeCompraController extends Controller
                 'valorpagamento' => $model->model->total,
             ]);
             
-            $pag->create();
+            $pag->save();
             
             // Gera Contas a Receber
             if (!$pag->model->FormaPagamento->avista) {
@@ -266,7 +255,7 @@ class ValeCompraController extends Controller
                     $titulo->emissao = $model->criacao;
                     $titulo->vencimento = $vencimento;
                     $titulo->vencimentooriginal = $vencimento;
-                    $titulo->create();
+                    $titulo->save();
                 }
             }
             
@@ -286,10 +275,10 @@ class ValeCompraController extends Controller
             $titulo->emissao = $model->criacao;
             $titulo->vencimento = $model->criacao->addYear(1);
             $titulo->vencimentooriginal = $titulo->vencimento;
-            $titulo->create();
+            $titulo->save();
             
             $model->codtitulo = $titulo->codtitulo;
-            $model->create();
+            $model->save();
             
         }
 
