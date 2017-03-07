@@ -5,134 +5,142 @@ namespace MGLara\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
-use MGLara\Models\Ncm;
+
+use MGLara\Repositories\NcmRepository;
+
+use MGLara\Library\Breadcrumb\Breadcrumb;
+use MGLara\Library\JsonEnvelope\Datatable;
 
 class NcmController extends Controller
 {
+    public function __construct(NcmRepository $repository) {
+        $this->repository = $repository;
+        $this->bc = new Breadcrumb('NCM');
+        $this->bc->addItem('NCM', url('ncm'));
+    }    
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return  \Illuminate\Http\Response
      */
-    public function index(Request $request)
-    {
-        $parametros = self::filtroEstatico($request, 'ncm.index');
-        $parametros['codncmpai'] = 1;
-        $model = Ncm::search($parametros)->orderBy('ncm', 'ASC')->paginate(20);
-        $ncms = Ncm::find($request->get('ncmpai'));
-        return view('ncm.index', compact('model', 'ncms'));        
-    }
+    public function index(Request $request) {
+        
+        // Permissao
+        $this->repository->authorize('listing');
+        
+        // Breadcrumb
+        $this->bc->addItem('Listagem');
+        
+        // Filtro da listagem
+        $regs = $this->repository->model->whereNull('codncmpai')->get();
+        $ncms = $this->repository->model->find($request->get('ncmpai'));
+        
+        // retorna View
+        return view('ncm.index', ['bc'=>$this->bc, 'model'=>$regs, 'ncms'=>$ncms]);
+    }    
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return  \Illuminate\Http\Response
      */
     public function create()
     {
-        $model = new Ncm();
-        return view('ncm.create', compact('model'));
+        // cria um registro em branco
+        $this->repository->new();
+        
+        // autoriza
+        $this->repository->authorize('create');
+        
+        // breadcrumb
+        $this->bc->addItem('Novo');
+        
+        // retorna view
+        return view('ncm.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param    \Illuminate\Http\Request  $request
+     * @return  \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $model = new Ncm($request->all());
+        parent::store($request);
         
-        if (!$model->validate()) {
-            $this->throwValidationException($request, $model->_validator);
-        }
-
-        $model->save();
-        Session::flash('flash_success', 'NCM Criada!');
-        return redirect("ncm/$model->codncm"); 
+        // Mensagem de registro criado
+        Session::flash('flash_create', 'Ncm criado!');
+        
+        // redireciona para o view
+        return redirect("ncm/{$this->repository->model->codncm}");
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param    int  $id
+     * @return  \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $model = Ncm::findOrFail($id);
-        $filhos = $model->NcmS()->paginate(10);
-        return view('ncm.show', compact('model', 'filhos'));
+        // busca registro
+        $this->repository->findOrFail($id);
+        
+        //autorizacao
+        $this->repository->authorize('view');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->ncm);
+        $this->bc->header = $this->repository->model->ncm;
+        
+        // retorna show
+        return view('ncm.show', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'filhos'=>$this->repository->model->NcmS()->get()]);
     }
-
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param    int  $id
+     * @return  \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $model = Ncm::findOrFail($id);
-        return view('ncm.edit',  compact('model'));
+        // busca regstro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->codncm, url('ncm', $this->repository->model->codncm));
+        $this->bc->header = $this->repository->model->codncm;
+        $this->bc->addItem('Alterar');
+        
+        // retorna formulario edit
+        return view('ncm.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param    \Illuminate\Http\Request  $request
+     * @param    int  $id
+     * @return  \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $model = Ncm::findOrFail($id);
-        $model->fill($request->all());
         
-        if (!$model->validate()) {
-            $this->throwValidationException($request, $model->_validator);
-        }
-
-        $model->save();
-
-        Session::flash('flash_success', "NCM '{$model->descricao}' Atualizada!");
-        return redirect("ncm/$model->codncm");         
+        parent::update($request, $id);
+        
+        // mensagem re registro criado
+        Session::flash('flash_update', 'Ncm alterado!');
+        
+        // redireciona para view
+        return redirect("ncm/{$this->repository->model->codncm}"); 
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        try{
-            Ncm::find($id)->delete();
-            $ret = ['resultado' => true, 'mensagem' => 'NCM excluída com sucesso!'];
-        }
-        catch(\Exception $e){
-            $ret = ['resultado' => false, 'mensagem' => 'Erro ao excluir NCM!', 'exception' => $e];
-        }
-        return json_encode($ret);
-    } 
-    
-    public function listagemJson(Request $request) {
-        if($request->get('q')) {
-            return Ncm::select2($request->get('q'));
-        } elseif($request->get('id')) {
-            $ncm = Ncm::find($request->get('id'));
-            return response()->json([
-                'id' => $ncm->codncm,
-                'ncm' => formataNcm($ncm->ncm),
-                'descricao' => $ncm->descricao
-            ]);
-        }
-    } 
     
     public function select2(Request $request)
     {

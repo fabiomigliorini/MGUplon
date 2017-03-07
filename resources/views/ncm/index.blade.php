@@ -1,51 +1,55 @@
 @extends('layouts.default')
 @section('content')
-<ol class="breadcrumb header">
-    {!! titulo(null, 'NCM', null) !!}
-    <li class='active'>
-        <small>
-            <a title="Nova NCM" href="{{ url("ncm/create") }}"><i class="glyphicon glyphicon-plus"></i></a>
-        </small>
-    </li>     
-</ol>
-<div class="clearfix"></div>
-<div>
-    <div class="col-md-5">
-        <div id="registros" class="row">
-            <div class="list-group list-group-striped list-group-hover" id="items">
-              @foreach($model as $row)
-                <a class="list-group-item{{ $row->codncm == Request::get('codncm') ? ' active' : '' }}" href="{{ url("ncm/?ncmpai=$row->codncm") }}">
-                    {{ $row->ncm }} › {{ $row->descricao }}
-                </a>
-              @endforeach
-              @if (count($model) === 0)
-                  <h3>Nenhum registro encontrado!</h3>
-              @endif    
+
+<div class='row'>
+    <div class='col-md-4'>
+                <div class="list-group list-group-striped list-group-hover" id="items">
+                  @foreach($model as $row)
+                    <a class="list-group-item{{ $row->codncm == Request::get('codncm') ? ' active' : '' }}" href="{{ url("ncm/?ncmpai=$row->codncm") }}">
+                        {{ $row->ncm }} › {{ $row->descricao }}
+                    </a>
+                  @endforeach
+                  @if (count($model) === 0)
+                      <h3>Nenhum registro encontrado!</h3>
+                  @endif    
+                </div>                
+
+                <div class='clearfix'></div>
+    </div>
+    @if(Request::get('ncmpai'))
+    <div class='col-md-8'>
+        <div class='card'>
+            <h4 class="card-header">
+                {{$ncms->ncm}} - {{ $ncms->descricao }}
+            </h4>
+            <div class='card-block'>
+            <?php function listaArvoreNcm ($ncms, $id = "") { ?>
+                <ul id='{{$id}}'>
+                <?php foreach ($ncms as $ncm) { ?>
+                    <li>
+                        <span>{{ formataNcm($ncm->ncm) }} </span>
+                        <a href="{{ url("ncm/$ncm->codncm") }}">{{ $ncm->descricao }}</a>
+                        <?php if (sizeof($ncm->NcmS) > 0): ?>
+                            <?php listaArvoreNcm($ncm->NcmS, null);?>
+                        <?php endif; ?>
+                    </li>
+                <?php }?>
+                </ul>
+            <?php } ?>
+            @if(Request::get('ncmpai'))
+                <?php listaArvoreNcm($ncms->NcmS, 'tree1'); ?>
+            @endif()
+            <div class='clearfix'></div>
             </div>
-            {!! $model->appends(Request::session()->get('ncm.index'))->render() !!}
         </div>
     </div>
-    <div class="col-md-7">
-        <?php function listaArvoreNcm ($ncms, $id = "") { ?>
-            <ul id='{{$id}}'>
-            <?php foreach ($ncms as $ncm) { ?>
-                <li>
-                    <span>{{ formataNcm($ncm->ncm) }} </span>
-                    <a href="{{ url("ncm/$ncm->codncm") }}">{{ $ncm->descricao }}</a>
-                    <?php if (sizeof($ncm->NcmS) > 0): ?>
-                        <?php listaArvoreNcm($ncm->NcmS, null);?>
-                    <?php endif; ?>
-                </li>
-            <?php }?>
-            </ul>
-        <?php } ?>
-        @if(Request::get('ncmpai'))
-        <h3 style="margin-top: 0">{{$ncms->ncm}} - {{ $ncms->descricao }}</h3>
-            <?php listaArvoreNcm($ncms->NcmS, 'tree1'); ?>
-        @endif()
-    </div>
+    @endif
 </div>
+@section('buttons')
 
+    <a class="btn btn-secondary btn-sm" href="{{ url("ncm/create") }}"><i class="fa fa-plus"></i></a> 
+    
+@endsection
 @section('inscript')
 <style type="text/css">
 .tree {
@@ -124,56 +128,12 @@
 }    
 </style>
 <script type="text/javascript">
-
-   
-function atualizaFiltro()
-{
-    scroll();
-    var frmValues = $("#ncm-search").serialize();
-    $.ajax({
-        type: 'GET',
-        url: baseUrl + '/ncm',
-        data: frmValues
-    })
-    .done(function (data) {
-        $('#items').html(jQuery(data).find('#items').html()); 
-    })
-    .fail(function () {
-        console.log('Erro no filtro');
-    });
-
-    $('#items').infinitescroll('update', {
-        state: {
-            currPage: 1,
-            isDestroyed: false,
-            isDone: false             
-        },
-        path: ['?page=', '&'+frmValues]
-    });
-}
-
-function scroll()
-{
-    var loading_options = {
-        finishedMsg: "<div class='end-msg'>Fim dos registros</div>",
-        msgText: "<div class='center'>Carregando mais itens...</div>",
-        img: baseUrl + '/public/img/ajax-loader.gif'
-    };
-
-    $('#items').infinitescroll({
-        loading : loading_options,
-        navSelector : "#registros .pagination",
-        nextSelector : "#registros .pagination li.active + li a",
-        itemSelector : "#items a.list-group-item",
-    });    
-}
 $(document).ready(function() {
-    scroll();
     $.fn.extend({
         treed: function (o) {
 
-          var openedClass = 'glyphicon-minus-sign';
-          var closedClass = 'glyphicon-plus-sign';
+          var openedClass = ' fa-minus-circle';
+          var closedClass = 'fa-plus-circle';
 
           if (typeof o != 'undefined'){
             if (typeof o.openedClass != 'undefined'){
@@ -189,7 +149,7 @@ $(document).ready(function() {
             tree.addClass("tree");
             tree.find('li').has("ul").each(function () {
                 var branch = $(this); //li with children ul
-                branch.prepend("<i class='indicator glyphicon " + closedClass + "'></i>");
+                branch.prepend("<i class='indicator fa " + closedClass + "'></i>");
                 branch.addClass('branch');
                 branch.on('click', function (e) {
                     if (this == e.target) {
@@ -228,15 +188,6 @@ $(document).ready(function() {
     });
 
     $('#tree1').treed();
-    
-    $("#ncm-search").on("change", function (event) {
-        $('#items').infinitescroll('destroy');
-        atualizaFiltro();
-    }).on('submit', function (event){
-        event.preventDefault();
-        $('#items').infinitescroll('destroy');
-        atualizaFiltro();
-    });        
 
 });
 </script>

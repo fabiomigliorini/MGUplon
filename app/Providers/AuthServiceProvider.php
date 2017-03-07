@@ -29,9 +29,10 @@ class AuthServiceProvider extends ServiceProvider
         \MGLara\Models\ValeCompra::class        => \MGLara\Policies\ValeCompraPolicy::class,
         \MGLara\Models\Feriado::class           => \MGLara\Policies\FeriadoPolicy::class,
         \MGLara\Models\ValeCompraModelo::class  => \MGLara\Policies\ValeCompraModeloPolicy::class,
-        \MGLara\Models\Cargo::class => \MGLara\Policies\CargoPolicy::class,
+        \MGLara\Models\Cargo::class             => \MGLara\Policies\CargoPolicy::class,
         \MGLara\Models\ChequeMotivoDevolucao::class => \MGLara\Policies\ChequeMotivoDevolucaoPolicy::class,
-        \MGLara\Models\Cheque::class => \MGLara\Policies\ChequePolicy::class
+        \MGLara\Models\Cheque::class            => \MGLara\Policies\ChequePolicy::class,
+        \MGLara\Models\Ncm::class               => \MGLara\Policies\NcmPolicy::class,
     ];
 
     /**

@@ -1,29 +1,26 @@
 @extends('layouts.default')
 @section('content')
-<ol class="breadcrumb header">
-{!! 
-    titulo(
-        $model->codncm,
-        [
-            url("ncm/$model->codncm") => $model->descricao,
-            'Alterar',
-        ],
-        $model->inativo
-    ) 
-!!}
-    <li class='active'>
-        <small>
-            <a title="Novo" href="{{ url('ncm/create') }}"><i class="glyphicon glyphicon-plus"></i></a>
-            &nbsp;
-            <a title="Detalhes" href="{{ url("ncm/$model->codncm") }}"><i class="glyphicon glyphicon-eye-open"></i></a>
-        </small>
-    </li>   
+<div class='row'>
+    <div class="col-md-6">
+        <div class="card">
+            <h4 class="card-header">Alterar</h4>
+            <div class="card-block">
+                {!! Form::model($model, ['method' => 'PATCH', 'id' => 'form-principal', 'action' => ['NcmController@update', $model->codncm] ]) !!}
+                    @include('errors.form_error')
+                    @include('ncm.form')
+                {!! Form::close() !!}
+            </div>
+        </div>
+    </div>
+</div>
+@section('inactive')
 
-</ol>
-<hr>
-<br>
-{!! Form::model($model, ['method' => 'PATCH', 'class' => 'form-horizontal', 'id' => 'form-ncm', 'action' => ['NcmController@update', $model->codncm] ]) !!}
-    @include('errors.form_error')
-    @include('ncm.form', ['submitTextButton' => 'Salvar'])
-{!! Form::close() !!}
+    @include('layouts.includes.inactive', [$model])
+    
+@endsection
+@section('creation')
+
+    @include('layouts.includes.creation', [$model])
+    
+@endsection
 @stop
