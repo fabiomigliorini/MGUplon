@@ -110,6 +110,9 @@ Route::group(['middleware' => 'auth'], function() {
     /* Cargos */    
     Route::resource('cargo', 'CargoController');
 
+    /* Histórico de preços */    
+    Route::resource('produto-historico-preco', 'ProdutoHistoricoPrecoController');
+
     
     
     
