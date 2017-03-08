@@ -219,7 +219,7 @@ class MarcaController extends Controller
             $params['page'] = $params['page']??1;
             
             // Monta Query
-            $qry = Marca::query();
+            $qry = $this->repository->model->query();
             
             // Condicoes de busca
             foreach (explode(' ', $params['term']) as $palavra) {
@@ -262,7 +262,7 @@ class MarcaController extends Controller
         } elseif($request->get('id')) {
             
             // Monta Retorno
-            $item = Marca::findOrFail($request->get('id'));
+            $item = $this->repository->findOrFail($request->get('id'));
             return [
                 'id' => $item->codmarca,
                 'marca' => $item->marca,
