@@ -144,5 +144,8 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('cheque/consulta/{cmc7}', 'ChequeController@consulta');
     Route::get('cheque/consultaemitente/{cnpj}', 'ChequeController@consultaemitente');
 
+    /* Dominio */
+    Route::get('dominio', 'DominioController@index');
+    Route::post('dominio/exporta-estoque', 'DominioController@exportaEstoque');
     
 });

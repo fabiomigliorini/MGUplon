@@ -13,6 +13,11 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
+        
+        // Policies Vinculadas ao Repository
+        \MGLara\Repositories\DominioRepository::class      => \MGLara\Policies\DominioPolicy::class,
+        
+        // Policies Vinculadas ao Model
         \MGLara\Models\GrupoUsuario::class      => \MGLara\Policies\GrupoUsuarioPolicy::class,
         \MGLara\Models\Marca::class             => \MGLara\Policies\MarcaPolicy::class,
         \MGLara\Models\Permissao::class         => \MGLara\Policies\PermissaoPolicy::class,
