@@ -147,7 +147,17 @@ class DominioRepository {
 
             //Código do Grupo - de acordo com Tipo do item (0=Mercadoria, 1=Matéria Prima, 2=Produto Intermediário, 3=Produto em Fabricação, 4=Produto Acabado, 5=Embalagem, 6=Subproduto, 7=Material de Uso e Consumo, 8=Ativo Imobilizado, 9=Serviços, 10=Outros Insumos, 99=Outras)
             //23 a 29
-            $linha .= $this->padNumber($reg->codtipoproduto, 7);
+            switch ($reg->codtipoproduto) {
+                case 8: //Imobilizado
+                    $grupo = 3;
+                    break;
+                case 7: //Material de uso e consumo
+                    $grupo = 2;
+                    break;
+                default: //para todo o resto
+                    $grupo = 1;
+            }
+            $linha .= $this->padNumber($grupo, 7);
             
             //Código NBM
             //30 a 39
