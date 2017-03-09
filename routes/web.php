@@ -66,6 +66,7 @@ Route::group(['middleware' => 'auth'], function() {
     
     /* Produto */
     Route::get('produto/consulta/{barras}', 'ProdutoController@consulta');
+    Route::get('produto/quiosque', 'ProdutoController@quiosque');
 
     /* Usuários */
     Route::put('usuario/{id}/ativar', 'UsuarioController@ativar');

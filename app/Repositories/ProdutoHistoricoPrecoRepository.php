@@ -79,42 +79,41 @@ class ProdutoHistoricoPrecoRepository extends MGRepository {
         $qry = ProdutoHistoricoPreco::query();
         
         // Filtros
-         if (!empty($filters['codprodutohistoricopreco'])) {
-            $qry->where('codprodutohistoricopreco', '=', $filters['codprodutohistoricopreco']);
+        if(!empty($filters['id'])) {
+            $qry->whereHas('Produto', function($q) use ($filters) {
+                $q->where('codproduto',  $filters['id']);
+            });
+        }
+        
+        if(!empty($filters['produto'])) {
+            $qry->whereHas('Produto', function($q) use ($filters) {
+                $q->palavras('produto',  $filters['produto']);
+            });
+        }
+        
+        if(!empty($filters['referencia'])) {
+            $qry->whereHas('Produto', function($q) use ($filters) {
+                $q->palavras('referencia', $filters['referencia']);
+            });
         }
 
-         if (!empty($filters['codproduto'])) {
-            $qry->where('codproduto', '=', $filters['codproduto']);
+        if (!empty($filters['alteracao_de'])) {
+            $qry->where('criacao', '>=', $filters['alteracao_de']);
         }
 
-         if (!empty($filters['codprodutoembalagem'])) {
-            $qry->where('codprodutoembalagem', '=', $filters['codprodutoembalagem']);
+        if (!empty($filters['alteracao_ate'])) {
+            $qry->where('criacao', '<=', $filters['alteracao_ate']);
         }
 
-         if (!empty($filters['precoantigo'])) {
-            $qry->where('precoantigo', '=', $filters['precoantigo']);
+        if (!empty($filters['codmarca'])) {
+            $qry->whereHas('Produto', function($q) use ($filters) {
+                $q->where('codmarca', $filters['codmarca']);
+            });        
         }
-
-         if (!empty($filters['preconovo'])) {
-            $qry->where('preconovo', '=', $filters['preconovo']);
+        
+        if (!empty($filters['codusuario'])) {
+            $qry->where('codusuariocriacao', $filters['codusuario']);
         }
-
-         if (!empty($filters['alteracao'])) {
-            $qry->where('alteracao', '=', $filters['alteracao']);
-        }
-
-         if (!empty($filters['codusuarioalteracao'])) {
-            $qry->where('codusuarioalteracao', '=', $filters['codusuarioalteracao']);
-        }
-
-         if (!empty($filters['criacao'])) {
-            $qry->where('criacao', '=', $filters['criacao']);
-        }
-
-         if (!empty($filters['codusuariocriacao'])) {
-            $qry->where('codusuariocriacao', '=', $filters['codusuariocriacao']);
-        }
-
         
         switch ($filters['inativo']) {
             case 2: //Inativos
