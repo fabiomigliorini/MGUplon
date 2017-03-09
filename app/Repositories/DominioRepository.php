@@ -115,6 +115,7 @@ class DominioRepository {
                 where iq_el.codfilial = $codfilial
                 group by iq_el.codfilial
                     , iq_pv.codproduto
+                having sum(iq_mes.saldoquantidade) > 0
                 ) sld
             inner join tblproduto p on (p.codproduto = sld.codproduto)
             inner join tblunidademedida um on (um.codunidademedida = p.codunidademedida)
