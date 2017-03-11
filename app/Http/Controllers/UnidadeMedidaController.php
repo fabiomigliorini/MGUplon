@@ -88,7 +88,7 @@ class UnidadeMedidaController extends Controller
         
         // Monta Totais
         $recordsTotal = $this->repository->count();
-        $recordsFiltered = $regs->count();
+        $recordsFiltered = $this->repository->count();
         
         // Formata registros para exibir no data table
         $data = [];

@@ -7,7 +7,7 @@
     <div class="card-block">
         <div class="card-text">
             {!! Form::model($filtro, ['id' => 'form-search', 'autocomplete' => 'on'])!!}
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <div class="form-group">
                         <label for="codtipoproduto" class="control-label">#</label>
                         {!! Form::number('codtipoproduto', null, ['class'=> 'form-control', 'id'=>'codtipoproduto', 'step'=>1, 'min'=>1]) !!}
@@ -19,7 +19,7 @@
                         {!! Form::text('tipoproduto', null, ['class'=> 'form-control', 'id'=>'tipoproduto']) !!}
                     </div>
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <div class="form-group">
                         <label for="inativo" class="control-label">Ativos</label>
                         {!! Form::select2Inativo('inativo', null, ['class'=> 'form-control', 'id'=>'inativo']) !!}

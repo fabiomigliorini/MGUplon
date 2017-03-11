@@ -9,20 +9,17 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ URL::asset('favicon.ico') }}">
     <title>MG Papelaria</title>
-    <link href="{{ URL::asset('public/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-    <!--<link href="{{ URL::asset('public/vendor/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css') }}" rel="stylesheet">-->
+    
     <link href="{{ URL::asset('public/assets/plugins/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css"/>
-    <!--<link href="{{ URL::asset('public/css/starter-template.css') }}" rel="stylesheet">-->
+    <link href="{{ URL::asset('public/assets/css/style.css') }}" rel="stylesheet">
     
     <script src="{{ URL::asset('public/assets/js/jquery.min.js') }}"></script>
+    <script src="{{ URL::asset('public/assets/plugins/tether/tether.min.js') }}" type="text/javascript"></script>
     <script src="{{ URL::asset('public/assets/js/bootstrap.min.js') }}"></script>
     <script src="{{ URL::asset('public/assets/plugins/select2/js/select2.full.min.js') }}" type="text/javascript"></script>
+    
     <script type="text/javascript">
-        var baseUrl = '/MGLara';
-        (function ($) {
-            $.fn.select2.defaults.set("theme", "classic");
-            $.datepicker.setDefaults($.datepicker.regional["pt-BR"]);    
-        });
+        var baseUrl = '/MGUplon';
     </script>
     <style>
         /* Distancia Menu superior */
@@ -33,10 +30,9 @@
   </head>
 
   <body>
-
-    <script src="/MGLara/public/vendor/vuejs/vue.js"></script>
-    <script src="/MGLara/public/vendor/vuejs/vue-resource.min.js"></script>
-
+    <script src="{{ URL::asset('public/assets/plugins/vuejs/vue.min.js') }}" type="text/javascript"></script>
+    <script src="{{ URL::asset('public/assets/plugins/vuejs/vue-resource.min.js') }}" type="text/javascript"></script>
+    
     <div class="container-fluid">
 
         <div id="app">
@@ -278,7 +274,7 @@
 
 
                 // Ao selecionar #codprodutobarra dispara busca
-                $("#codprodutobarra").on("select2-selecting", function(e) { 
+                $("#codprodutobarra").on("select2:select", function(e) { 
                     app.barrasDigitado = e.object.barras;
                     app.getProduto();
                 });
@@ -310,8 +306,8 @@
                         fullScreen();
 
                         if (this.barras != null) {
-                            this.$http.get('/MGLara/produto/consulta/' + this.barras).then((response) => {
-                                
+                            this.$http.get(baseUrl + '/produto/consulta/' + this.barras).then((response) => {
+                                alert('Epa nenem');
                                 this.mensagem = response.body.mensagem;
                                 this.resultado = response.body.resultado;
 
