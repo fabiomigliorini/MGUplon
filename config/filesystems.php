@@ -62,6 +62,14 @@ return [
             'region' => env('AWS_REGION'),
             'bucket' => env('AWS_BUCKET'),
         ],
+        
+        'dominio' => [
+            'driver'   => 'ftp',
+            'host'     => env('DOMINIO_HOST'),
+            'username' => env('DOMINIO_USERNAME'),
+            'password' => env('DOMINIO_PASSWORD'),
+            'root'     => env('DOMINIO_ROOT'),
+        ],
 
     ],
 
