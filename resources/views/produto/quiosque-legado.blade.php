@@ -9,30 +9,54 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ URL::asset('favicon.ico') }}">
     <title>MG Papelaria</title>
+    <link href="{{ URL::asset('public/assets/legado/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ URL::asset('public/assets/legado/select2/select2.css') }}" rel="stylesheet">
     
-    <link href="{{ URL::asset('public/assets/plugins/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css"/>
-    <link href="{{ URL::asset('public/assets/css/style.css') }}" rel="stylesheet">
-    
-    <script src="{{ URL::asset('public/assets/js/jquery2.1.1.min.js') }}"></script>
-    <script src="{{ URL::asset('public/assets/plugins/tether/tether.min.js') }}" type="text/javascript"></script>
-    <script src="{{ URL::asset('public/assets/js/bootstrap.min.js') }}"></script>
-    <script src="{{ URL::asset('public/assets/plugins/select2/js/select2.full.min.js') }}" type="text/javascript"></script>
-    
-    <script type="text/javascript">
-        var baseUrl = '/MGUplon';
+    <script src="{{ URL::asset('public/assets/legado/jquery/2.1.1/jquery.min.js') }}"></script>
+    <script src="{{ URL::asset('public/assets/legado/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ URL::asset('public/assets/legado/select2/select2-3.4.1min.js') }}"></script>
+    <script src="{{ URL::asset('public/assets/legado/select2/select2_locale_pt-BR.js') }}"></script>
+    <script>
+        var baseUrl = "/MGUplon";
     </script>
     <style>
         /* Distancia Menu superior */
         html, body {
             padding-top: 7px;
         };
-    </style>
+        
+        /* Select 2 */
+        .select2-container .select2-selection--single .select2-selection__rendered {
+          padding-top: 2px;
+        }
+        .select2-container .select2-selection--single {
+          height: 34px;
+        }
+        .select2-container .select2-choice {
+            height: 34px;
+            line-height: 34px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            top:3px;
+        }
+        .select2-container, .select2-search, .select2-search {
+            box-sizing: border-box;
+            box-shadow: none;
+            padding: 0;
+            border: 0;
+        }
+        .select2-drop {
+            padding: 0 3px;
+        }
+        
+    </style>    
   </head>
 
   <body>
-    <script src="{{ URL::asset('public/assets/plugins/vuejs/vue.js') }}" type="text/javascript"></script>
-    <script src="{{ URL::asset('public/assets/plugins/vuejs/vue-resource.min.js') }}" type="text/javascript"></script>
-    
+
+    <script src="{{ URL::asset('public/assets/legado/vuejs/vue.js') }}"></script>
+    <script src="{{ URL::asset('public/assets/legado/vuejs/vue-resource.min.js') }}"></script>
+
     <div class="container-fluid">
 
         <div id="app">
@@ -73,6 +97,7 @@
                             <input type="text" class="form-control text-center" id="barras" placeholder="Barras" v-model="barrasDigitado" v-on:change="getProduto" autofocus tabindex="1">
                         </div>
                         <div class='col-md-12'>
+                            {!! Form::text('codprodutobarra', null, ['placeholder' => 'Pesquisa de produtos', 'class' => 'form-control', 'id'=>'codprodutobarra', 'tabindex'=>'2', 'class'=>'col-md-12', 'somenteAtivos'=>'1']) !!}
                         </div>
                     </div>
                 </form>
@@ -255,7 +280,7 @@
             }  
 
             function focoBarras() {
-                if (!$("#codprodutobarra").select2("focus")) {
+                if (!$("#codprodutobarra").select2("isFocused")) {
                     $("#barras").focus();
                 }
             }
@@ -266,18 +291,96 @@
                 $("#barras").blur(function() {
                     focoBarras();
                 });
-                $("#codprodutobarra").on("blur", function(e) {
+                $("#codprodutobarra").on("select2-blur", function(e) {
                     focoBarras();
                 });
                 focoBarras();
 
 
                 // Ao selecionar #codprodutobarra dispara busca
-                $("#codprodutobarra").on("select2:select", function(e) { 
+                $("#codprodutobarra").on("select2-selecting", function(e) { 
                     app.barrasDigitado = e.object.barras;
                     app.getProduto();
                 });
+                
+                $(document).ready(function() {
+                    $('#codprodutobarra').select2({
+                        placeholder: 'Pesquisa de produtos',
+                        minimumInputLength: 3,
+                        allowClear: true,
+                        closeOnSelect: true,
+                        'formatResult':function(item) {
+                            var css_titulo = "";
+                            var css_detalhes = "";
+                            if (item.inativo) {
+                                css_titulo = "text-danger";
+                                css_detalhes = "text-danger";
+                            }
 
+                            var markup = "";
+                            markup    += "<div class='row "+ css_titulo +"'>";
+
+                            markup    += "<strong class='col-md-9'>";
+                            markup    += item.produto + "";
+                            markup    += "</strong>";
+
+                            markup    += "<div class='col-md-3'>";
+                            markup    += "<small class='pull-left'>" + item.unidademedida + "</small>";
+                            markup    += "<span class='pull-right'> " + item.preco + "</span>";
+                            markup    += "</div>";
+
+                            markup    += "</div>";
+
+                            markup    += "<small class='" + css_detalhes + "'>";
+                            markup    += "<strong>" + item.barras + "</strong>";
+                            markup    += " » " + item.codproduto;
+                            markup    += " » " + item.secaoproduto;
+                            markup    += " » " + item.familiaproduto;
+                            markup    += " » " + item.grupoproduto;
+                            markup    += " » " + item.subgrupoproduto;
+                            markup    += " » " + item.marca;
+                            if (item.referencia) {
+                                markup    += " » " + item.referencia;
+                            }
+                            markup    += "</small>";
+                            return markup;
+                        },
+                        'formatSelection':function(item) {
+                            return item.produto;
+                        },
+                        'ajax':{
+                            'url':baseUrl + '/produto-barra/listagem-json',
+                            'dataType':'json',
+                            'quietMillis':500,
+                            'data':function(term, ativo, current_page) {
+                                return {
+                                    q: term,
+                                    ativo: 1,
+                                    per_page: 10,
+                                    current_page: current_page
+                                };
+                            },
+                            'results':function(data,page) {
+                                //var more = (current_page * 20) < data.total;
+                                return {
+                                    results: data,
+                                    //more: data.mais
+                                };
+                            }
+                        },
+                        'initSelection':function (element, callback) {
+                            $.ajax({
+                                type: "GET",
+                                url: baseUrl+'/produto-barra/listagem-json',
+                                data: "id="+$('#codprodutobarra').val(),
+                                dataType: "json",
+                                success: function(result) {
+                                    callback(result);
+                                }
+                            });
+                        },'width':'resolve'
+                    });
+                });
                 app.getProduto();
             }); 
              
@@ -305,15 +408,8 @@
                         fullScreen();
 
                         if (this.barras != null) {
-                            
-                            this.$http.get("http://localhost/MGUplon/produto/consulta/" + this.barras).then((response)=> {
-                                console.log(JSON.stringify(response))
-                            }, (response)=> {
-                                console.log('erro:' + JSON.stringify(response))
-                            });
-                            
-                                /*
                             this.$http.get(baseUrl + '/produto/consulta/' + this.barras).then((response) => {
+                                
                                 this.mensagem = response.body.mensagem;
                                 this.resultado = response.body.resultado;
 
@@ -326,12 +422,11 @@
                                 }
 
                             }, (response) => {
-                                //alert(JSON.stringify(response));
-                                console.log(response);
+                                console.log('errror', response);
                                 this.mensagem = response.status + ' - ' + response.statusText + ' - ' + response.url;
                                 this.resultado = false;
                             });
-                                */
+
                         }
                         
                     }

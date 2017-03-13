@@ -769,7 +769,7 @@ class ProdutoController extends Controller
     
     public function quiosque (Request $request)
     {
-        return view('produto.quiosque');
+        return view('produto.quiosque-legado');
     }
     
 }

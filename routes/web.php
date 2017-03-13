@@ -14,6 +14,16 @@
 
 
 Auth::routes();
+
+
+/* Acessar da rede interna sem autenticacao, ou da rede externa com autenticacao */
+Route::group(['middleware' => 'redeconfiavel'], function() {
+    Route::get('produto/consulta/{barras}', 'ProdutoController@consulta');
+    Route::get('produto/quiosque', 'ProdutoController@quiosque');
+    Route::get('produto-barra/select2', 'ProdutoBarraController@select2');
+});    
+    
+    
 Route::group(['middleware' => 'auth'], function() {
     
     Route::get('/', 'InicialController@inicial');
@@ -30,7 +40,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('produto-variacao/select2', 'ProdutoVariacaoController@select2');
     Route::get('cidade/select2', 'CidadeController@select2');
     Route::get('familia-produto/select2', 'FamiliaProdutoController@select2');
-    Route::get('produto-barra/select2', 'ProdutoBarraController@select2');
+    
 
     /* Marca */
     Route::resource('marca/inativar', 'MarcaController@inativar');
@@ -64,9 +74,7 @@ Route::group(['middleware' => 'auth'], function() {
     /* NCM */
     Route::resource('ncm', 'NcmController');
     
-    /* Produto */
-    Route::get('produto/consulta/{barras}', 'ProdutoController@consulta');
-    Route::get('produto/quiosque', 'ProdutoController@quiosque');
+
 
     /* Usuários */
     Route::put('usuario/{id}/ativar', 'UsuarioController@ativar');
