@@ -196,5 +196,40 @@ class ProdutoBarraRepository extends MGRepository {
         return $qry->get();
         
     }
+
+    public static function buscaPorBarras($barras)
+    {
+        //Procura pelo Codigo de Barras
+        if ($ret = ProdutoBarra::where('barras', '=', $barras)->first()) {
+            return $ret;
+        }
+
+        //Procura pelo Codigo Interno
+        if (strlen($barras) == 6 && ($barras == numeroLimpo($barras))) {
+            if ($ret = ProdutoBarra::where('codproduto', '=', $barras)->whereNull('codprodutoembalagem')->first()) {
+                return $ret;
+            }
+        }
+
+        //Procura pelo Codigo Interno * Embalagem
+        if (strstr($barras, '-')) {
+            $arr = explode('-', $barras);
+            if (count($arr == 2)) {
+                $codigo = numeroLimpo($arr[0]);
+                $quantidade = numeroLimpo($arr[1]);
+
+                if ($barras == "$codigo-$quantidade") {
+                    if ($ret = ProdutoBarra::where('codproduto', $codigo)->whereHas('ProdutoEmbalagem', function($query) use ($quantidade){ 
+                            $query->where('quantidade', $quantidade);
+                        })->first()) {
+                    return $ret;
+                    }
+                }
+            }
+        }
+        
+        return false;
+
+    }
     
 }

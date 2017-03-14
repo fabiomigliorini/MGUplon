@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
 
+use MGLara\Repositories\PermissaoRepository;
+
 use MGLara\Models\Permissao;
 use MGLara\Models\GrupoUsuario;
 use MGLara\Models\GrupoUsuarioPermissao;
@@ -20,9 +22,10 @@ use Carbon\Carbon;
 class PermissaoController extends Controller
 {
 
-    public function __construct() {
+    public function __construct(PermissaoRepository $repository) {
         $this->bc = new Breadcrumb('Permissões');
         $this->bc->addItem('Permissões', url('permissao'));
+        $this->repository = $repository;
     }
     
     /**
@@ -31,6 +34,9 @@ class PermissaoController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request) {
+
+        // Permissao
+        $this->repository->authorize('listing');
         
         // Pega todos arquivos da pasta de Policies
         $arquivos = scandir(base_path() . '/app/Policies/');
@@ -105,6 +111,9 @@ class PermissaoController extends Controller
     
     public function store(Request $request)
     {
+        // Permissao
+        $this->repository->authorize('create');
+        
         // Monta a chave da permissao
         if ($request->classe == 'OBSOLETAS') {
             $chave = $request->metodo;
@@ -132,6 +141,10 @@ class PermissaoController extends Controller
     
     public function destroyPermissao(Request $request)
     {
+        
+        // Permissao
+        $this->repository->authorize('delete');
+        
         // monta a chave da permissao
         if ($request->classe == 'OBSOLETAS') {
             $chave = $request->metodo;

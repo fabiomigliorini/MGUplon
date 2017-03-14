@@ -1,9 +1,6 @@
 <?php
 $page_length = $page_length??100;
-$order = $order??'2';
-$order_dir = $order_dir??'ASC';
 $link_column = $link_column??2;
-
 ?>
 <script type="text/javascript">
 $(document).ready(function () {
@@ -16,7 +13,12 @@ $(document).ready(function () {
         },
         processing: true,
         serverSide: true,
-        order: [[ {{ $order }}, "{{ $order_dir }}" ]],
+        order: 
+        [
+        @foreach ($order as $o)
+            [ {{ $o['column'] }}, '{{ $o['dir'] }}'],
+        @endforeach
+        ],
         ajax: {
             url: '{{ $url }}',
             data: function ( d ) {

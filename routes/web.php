@@ -157,4 +157,16 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('dominio', 'DominioController@index');
     Route::post('dominio/exporta-estoque', 'DominioController@exportaEstoque');
     
+    /* Estoque */
+    Route::get('estoque-saldo/relatorio-analise-filtro', 'EstoqueSaldoController@relatorioAnaliseFiltro');
+    Route::get('estoque-saldo/relatorio-analise', 'EstoqueSaldoController@relatorioAnalise');
+    Route::get('estoque-saldo/relatorio-comparativo-vendas-filtro', 'EstoqueSaldoController@relatorioComparativoVendasFiltro');
+    Route::get('estoque-saldo/relatorio-comparativo-vendas', 'EstoqueSaldoController@relatorioComparativoVendas');
+    Route::get('estoque-saldo/relatorio-fisico-fiscal-filtro', 'EstoqueSaldoController@relatorioFisicoFiscalFiltro');
+    Route::get('estoque-saldo/relatorio-fisico-fiscal', 'EstoqueSaldoController@relatorioFisicoFiscal');
+
+    /* Conferencia de saldo de estoque */
+    Route::get('estoque-saldo-conferencia/saldos', 'EstoqueSaldoConferenciaController@saldos');
+    Route::resource('estoque-saldo-conferencia', 'EstoqueSaldoConferenciaController', ['only' => ['index', 'datatable', 'show', 'activate', 'inactivate', 'create', 'store']]);
+    
 });

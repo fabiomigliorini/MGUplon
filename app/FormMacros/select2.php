@@ -86,7 +86,6 @@ Form::macro('select2Marca', function($name, $value = null, $options = [])
             },
             
             initSelection:function (element, callback) {
-                console.log('entrou');
                 $.ajax({
                     type: "GET",
                     url: baseUrl+"/marca/select2",
@@ -188,6 +187,10 @@ Form::macro('select2ProdutoVariacao', function($name, $value = null, $options = 
         
     $(document).ready(function() {
         
+        $('#{$options['codproduto']}').change( function (e) {
+            $('#{$id}').val(null).trigger('change.select2');
+        });
+        
         $('#{$id}').select2({
         
             placeholder: '{$placeholder}',
@@ -206,13 +209,11 @@ Form::macro('select2ProdutoVariacao', function($name, $value = null, $options = 
                     return {
                         params: params, 
                         codproduto: $('#{$options['codproduto']}').val()
-                        
                     };
                 },
             },
             
             initSelection:function (element, callback) {
-                console.log('entrou');
                 $.ajax({
                     type: "GET",
                     url: baseUrl+"/produto-variacao/select2",
@@ -315,7 +316,6 @@ Form::macro('select2FamiliaProduto', function($name, $value = null, $options = [
             },
             
             initSelection:function (element, callback) {
-                console.log('entrou');
                 $.ajax({
                     type: "GET",
                     url: baseUrl+"/familia-produto/select2",
@@ -424,7 +424,6 @@ Form::macro('select2GrupoProduto', function($name, $value = null, $options = [])
             },
             
             initSelection:function (element, callback) {
-                console.log('entrou');
                 $.ajax({
                     type: "GET",
                     url: baseUrl+"/grupo-produto/select2",
@@ -534,7 +533,6 @@ Form::macro('select2SubGrupoProduto', function($name, $value = null, $options = 
             },
             
             initSelection:function (element, callback) {
-                console.log('entrou');
                 $.ajax({
                     type: "GET",
                     url: baseUrl+"/sub-grupo-produto/select2",
@@ -634,7 +632,6 @@ Form::macro('select2Ncm', function($name, $value = null, $options = [])
             },
             
             initSelection:function (element, callback) {
-                console.log('entrou');
                 $.ajax({
                     type: "GET",
                     url: baseUrl+"/ncm/select2",
@@ -800,7 +797,6 @@ Form::macro('select2Cest', function($name, $value = null, $options = [])
             },
             
             initSelection:function (element, callback) {
-                console.log('entrou');
                 $.ajax({
                     type: "GET",
                     url: baseUrl+"/cest/select2",
@@ -901,7 +897,6 @@ Form::macro('select2Pessoa', function($name, $value = null, $options = [])
             },
             
             initSelection:function (element, callback) {
-                console.log('entrou');
                 $.ajax({
                     type: "GET",
                     url: baseUrl+"/pessoa/select2",
@@ -995,7 +990,6 @@ Form::macro('select2Cidade', function($name, $value = null, $options = [])
             },
             
             initSelection:function (element, callback) {
-                console.log('entrou');
                 $.ajax({
                     type: "GET",
                     url: baseUrl+"/cidade/select2",
@@ -1078,7 +1072,6 @@ Form::macro('select2Produto', function($name, $value = null, $options = [])
             },
             
             initSelection:function (element, callback) {
-                console.log('entrou');
                 $.ajax({
                     type: "GET",
                     url: baseUrl+"/produto/select2",
@@ -1172,7 +1165,6 @@ Form::macro('select2ProdutoBarra', function($name, $value = null, $options = [])
             },
             
             initSelection:function (element, callback) {
-                console.log('entrou');
                 $.ajax({
                     type: "GET",
                     url: baseUrl+"/produto-barra/select2",
@@ -1297,4 +1289,12 @@ Form::macro('select2FormaPagamento', function($name, $selected = null, $options 
      */
     $valores = $qry->pluck('formapagamento', 'codformapagamento')->prepend('', '');
     return Form::select2($name, $valores, $selected, $options);
+});
+
+/* Fisico Fiscal */
+Form::macro('select2FisicoFiscal', function($name, $selected = null, $options = [])
+{
+    $opcoes = [0 => 'Físico', 1 => 'Fiscal'];
+    $options['placeholder'] = 'Físico / Fiscal';
+    return Form::select2($name, $opcoes, $selected, $options);
 });
