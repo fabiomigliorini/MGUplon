@@ -55,7 +55,7 @@
 
 <div class='card'>
     <div class='card-block table-responsive'>
-        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Produto', 'Variação', 'Local', 'Quantidade', 'Custo', 'Data', 'Usuario', 'Observacoes', ]])
+        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Produto', 'Variação', 'Local', 'Quantidade', 'Custo', 'Data', 'Usuario', ]])
         <div class='clearfix'></div>
     </div>
 </div>

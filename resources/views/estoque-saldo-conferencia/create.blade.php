@@ -25,7 +25,7 @@
                     {!! Form::select2ProdutoVariacao('codprodutovariacao', null, ['class'=> 'form-control', 'id'=>'codprodutovariacao', 'codproduto'=>'codproduto', 'autofocus']) !!}
                 </fieldset>
                 <fieldset class="form-group">
-                    {!! Form::label('fiscal', 'Fiscal') !!}
+                    {!! Form::label('fiscal', 'Físico') !!}
                     {!! Form::select2FisicoFiscal('fiscal', null, ['class'=> 'form-control', 'id'=>'fiscal', 'autofocus']) !!}
                 </fieldset>
                 <fieldset class="form-group">

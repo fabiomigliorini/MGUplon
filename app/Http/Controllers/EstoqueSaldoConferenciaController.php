@@ -80,7 +80,6 @@ class EstoqueSaldoConferenciaController extends Controller
         $columns[7] = 'tblestoquesaldoconferencia.customedioinformado';
         $columns[8] = 'tblestoquesaldoconferencia.data';
         $columns[9] = 'tblusuario.usuario';
-        $columns[10] = 'tblestoquesaldoconferencia.observacoes';
 
         $sort = [];
         if (!empty($request['order'])) {
@@ -113,7 +112,6 @@ class EstoqueSaldoConferenciaController extends Controller
                 formataNumero($reg->customedioinformado, 6),
                 formataData($reg->data, 'L'),
                 $reg->usuario,
-                $reg->observacoes,
             ];
         }
         

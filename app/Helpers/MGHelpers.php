@@ -426,12 +426,12 @@ if(!function_exists('formataEstoqueMinimoMaximo')) {
         $html = '';
         if (!empty($minimo)) {
             $class = ($saldo !== 'Vazio' && $saldo < $minimo)?'text-danger':'';
-            $html .= " <span class='$class'>" . formataNumero($minimo, 0) . " <span class='glyphicon glyphicon-arrow-down'></span></span> ";
+            $html .= " <span class='$class'>" . formataNumero($minimo, 0) . " <span class='fa fa-arrow-down'></span></span> ";
         }
 
         if (!empty($maximo)) {
             $class = ($saldo !== 'Vazio' && $saldo > $maximo)?'text-danger':'';
-            $html .= " <span class='$class'>" . formataNumero($maximo, 0) . " <span class='glyphicon glyphicon-arrow-up'></span></span> ";
+            $html .= " <span class='$class'>" . formataNumero($maximo, 0) . " <span class='fa fa-arrow-up'></span></span> ";
         }
 
         if (empty($html)) {
