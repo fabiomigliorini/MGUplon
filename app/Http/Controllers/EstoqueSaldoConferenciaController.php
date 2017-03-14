@@ -9,7 +9,10 @@ use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
 
 use MGLara\Repositories\EstoqueSaldoConferenciaRepository;
+use MGLara\Repositories\EstoqueSaldoRepository;
 use MGLara\Repositories\ProdutoBarraRepository;
+
+use MGLara\Models\ProdutoVariacao;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
@@ -189,12 +192,18 @@ class EstoqueSaldoConferenciaController extends Controller
             if (!$pb = ProdutoBarraRepository::buscaPorBarras($request->barras)) {
                 abort(404);
             }
-            $codprodutovariacao = $pb->codprodutovariacao;
+            $pv = $pb->ProdutoVariacao;
         } else {
-            $codprodutovariacao = $request->codprodutovariacao;
+            $pv = ProdutoVariacao::findOrFail($request->codprodutovariacao);
         }
         
-        dd($request->all());
+        $fiscal = ($request->fiscal == 1);
+        
+        $pivot = EstoqueSaldoRepository::pivotProduto($pv->codproduto, $fiscal);
+        $saldo = EstoqueSaldoRepository::buscaPorChave($pv->codprodutovariacao, $request->codestoquelocal, $fiscal);
+        // retorna show
+        return view('estoque-saldo-conferencia.saldos', ['pivot'=>$pivot, 'saldo'=>$saldo]);
+        
     }
     
 }

@@ -84,4 +84,13 @@ class EstoqueSaldo extends MGModel
     {
         return $this->hasMany(EstoqueSaldoConferencia::class, 'codestoquesaldo', 'codestoquesaldo');
     }
+    
+    public function scopeFiscal($query) {
+        $query->where("{$this->table}.fiscal", true);
+    }
+    
+    public function scopeFisico($query) {
+        $query->where("{$this->table}.fiscal", false);
+    }
+    
 }

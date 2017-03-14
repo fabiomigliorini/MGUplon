@@ -9,6 +9,8 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 
 use MGLara\Models\EstoqueSaldo;
+use MGLara\Models\EstoqueLocal;
+use MGLara\Models\ProdutoVariacao;
 
 /**
  * Description of EstoqueSaldoRepository
@@ -1365,4 +1367,71 @@ class EstoqueSaldoRepository extends MGRepository {
         return $ret;
     }
     
+    public static function pivotProduto($codproduto, $fiscal) {
+        
+        $qry = EstoqueSaldo::query();
+        
+        if ($fiscal != 'todos') {
+            if ($fiscal) {
+                $qry = $qry->fiscal();
+            } else {
+                $qry = $qry->fisico();
+            }
+        }
+        
+        $qry->join('tblestoquelocalprodutovariacao', 'tblestoquelocalprodutovariacao.codestoquelocalprodutovariacao', '=', 'tblestoquesaldo.codestoquelocalprodutovariacao');
+        $qry->join('tblprodutovariacao', 'tblprodutovariacao.codprodutovariacao', '=', 'tblestoquelocalprodutovariacao.codprodutovariacao');
+        $qry->where('tblprodutovariacao.codproduto', '=', $codproduto);
+        
+        $saldos = $qry->get();
+
+        $locais = EstoqueLocal::ativo()->orderBy('codestoquelocal', 'ASC')->get();
+        $variacoes = ProdutoVariacao::where('codproduto', '=', $codproduto)->ativo()->orderByRaw('variacao ASC NULLS FIRST')->get();
+        
+        
+        $pivot = [
+            'locais' => [],
+            'variacoes' => [],
+            'data' => [],
+            'saldoquantidade' => $saldos->sum('saldoquantidade'),
+            'saldovalor' => $saldos->sum('saldovalor'),
+        ];
+        
+        foreach ($locais as $local) {
+            $pivot['locais'][$local->codestoquelocal] = [
+                'codestoquelocal' => $local->codestoquelocal,
+                'estoquelocal' => $local->estoquelocal,
+                'saldoquantidade' => $saldos->where('codestoquelocal', $local->codestoquelocal)->sum('saldoquantidade'),
+                'saldovalor' => $saldos->where('codestoquelocal', $local->codestoquelocal)->sum('saldovalor'),
+            ];
+        }
+        
+        foreach ($variacoes as $variacao) {
+            $pivot['variacoes'][$variacao->codprodutovariacao] = [
+                'codprodutovariacao' => $variacao->codprodutovariacao,
+                'variacao' => $variacao->variacao,
+                'saldoquantidade' => $saldos->where('codprodutovariacao', $variacao->codprodutovariacao)->sum('saldoquantidade'),
+                'saldovalor' => $saldos->where('codprodutovariacao', $variacao->codprodutovariacao)->sum('saldovalor'),
+            ];
+        }
+        
+        foreach ($saldos as $saldo) {
+            $pivot['data'][$saldo->codestoquelocal][$saldo->codprodutovariacao] = $saldo;
+        }
+        
+        return $pivot;
+        
+    }
+    
+    public static function buscaPorChave($codprodutovariacao, $codestoquelocal, $fiscal) {
+        
+        $qry = EstoqueSaldo::query();
+        
+        $qry->where('tblestoquesaldo.fiscal', '=', $fiscal);
+        $qry->join('tblestoquelocalprodutovariacao', 'tblestoquelocalprodutovariacao.codestoquelocalprodutovariacao', '=', 'tblestoquesaldo.codestoquelocalprodutovariacao');
+        $qry->where('tblestoquelocalprodutovariacao.codprodutovariacao', '=', $codprodutovariacao);
+        $qry->where('tblestoquelocalprodutovariacao.codestoquelocal', '=', $codestoquelocal);
+
+        return $qry->first();
+    }
 }

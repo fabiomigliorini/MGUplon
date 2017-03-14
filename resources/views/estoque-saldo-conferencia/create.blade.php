@@ -36,60 +36,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card">
-            <h4 class="card-header">
-                Saldos
-            </h4>
-            <div class="card-block" id='div-saldos'>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card">
-            <h4 class="card-header">
-                Saldo
-            </h4>
-            <div class="card-block">
-
-                {!! Form::model($model, ['method' => 'POST', 'class' => 'form-horizontal', 'id' => 'form-principal', 'route' => 'estoque-saldo-conferencia.store']) !!}
-                @include('errors.form_error')
-
-                <fieldset class="form-group">
-                    {!! Form::label('codestoquesaldo', 'Codestoquesaldo') !!}
-                    {!! Form::number('codestoquesaldo', null, ['class'=> 'form-control', 'id'=>'codestoquesaldo', 'step'=>'1', 'min'=>'1', 'required'=>'required', 'autofocus']) !!}
-                </fieldset>
-                <fieldset class="form-group">
-                    {!! Form::label('quantidadesistema', 'Quantidadesistema') !!}
-                    {!! Form::number('quantidadesistema', null, ['class'=> 'form-control', 'id'=>'quantidadesistema', 'step'=>'0.001', 'min'=>'0.001']) !!}
-                </fieldset>
-                <fieldset class="form-group">
-                    {!! Form::label('quantidadeinformada', 'Quantidadeinformada') !!}
-                    {!! Form::number('quantidadeinformada', null, ['class'=> 'form-control', 'id'=>'quantidadeinformada', 'step'=>'0.001', 'min'=>'0.001', 'required'=>'required']) !!}
-                </fieldset>
-                <fieldset class="form-group">
-                    {!! Form::label('customediosistema', 'Customediosistema') !!}
-                    {!! Form::number('customediosistema', null, ['class'=> 'form-control', 'id'=>'customediosistema', 'step'=>'0.000001', 'min'=>'0.000001']) !!}
-                </fieldset>
-                <fieldset class="form-group">
-                    {!! Form::label('customedioinformado', 'Customedioinformado') !!}
-                    {!! Form::number('customedioinformado', null, ['class'=> 'form-control', 'id'=>'customedioinformado', 'step'=>'0.000001', 'min'=>'0.000001', 'required'=>'required']) !!}
-                </fieldset>
-                <fieldset class="form-group">
-                    {!! Form::label('data', 'Data') !!}
-                    {!! Form::datetimeLocal('data', null, ['class'=> 'form-control', 'id'=>'data', 'required'=>'required']) !!}
-                </fieldset>
-                <fieldset class="form-group">
-                    {!! Form::label('observacoes', 'Observacoes') !!}
-                    {!! Form::text('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes', 'maxlength'=>'200']) !!}
-                </fieldset>
-                <fieldset class="form-group">
-                   {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
-                </fieldset>
-                
-                {!! Form::close() !!}   
-            </div>
-        </div>
+    <div class='col-md-8' id='div-saldos'>
+      
     </div>
 </div>
 @stop
@@ -133,15 +81,33 @@ function carregaSaldos() {
         success: function(data) {
             $('#div-saldos').html(data);
         },
+        // Caso Erro
+        error: function (XHR) {
+
+            if(XHR.status === 403) {
+               var title = 'Permissão Negada!';
+            } else if(XHR.status === 404) {
+               var title = 'Não Localizado!';
+            } else {
+               var title = 'Falha na execução!';
+            }
+
+            swal({
+                title: title,
+                text: XHR.status + ' ' + XHR.statusText,
+                type: 'error',
+            });
+            
+        }
     });    
 }
-
 
 function limpaFiltro() {
     $('#codproduto').val(null).trigger('change.select2');
     $('#codprodutovariacao').val(null).trigger('change.select2');
     $('#barras').val(null);
 }
+
 $(document).ready(function() {
     
     $('#form-filtro').on("submit", function(e) {
@@ -167,7 +133,6 @@ $(document).ready(function() {
           }
         });
     });
-    $("#observacoes").Setcase();
     $("#observacoes").maxlength({alwaysShow: true});
 });
 </script>
