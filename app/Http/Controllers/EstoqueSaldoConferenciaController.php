@@ -49,6 +49,9 @@ class EstoqueSaldoConferenciaController extends Controller
             $filtro['filtros'] = [
                 'inativo' => 1,
             ];
+            $filtro['order'] = [
+                ['column' => 3, 'dir' => 'ASC']
+            ];
         }
         
         // retorna View

@@ -42,10 +42,14 @@ class {{ $model }}Controller extends Controller
         
         // Filtro da listagem
         if (!$filtro = $this->getFiltro()) {
-            $filtro = [
+            $filtro['filtros'] = [
                 'inativo' => 1,
             ];
+            $filtro['order'] = [
+                ['column' => 3, 'dir' => 'ASC']
+            ];              
         }
+        
         
         // retorna View
         return view('{{ $url }}.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
@@ -63,7 +67,10 @@ class {{ $model }}Controller extends Controller
         $this->repository->authorize('listing');
 
         // Grava Filtro para montar o formulario da proxima vez que o index for carregado
-        $this->setFiltro($request['filtros']);
+        $this->setFiltro([
+            'filtros' => $request['filtros'],
+            'order' => $request['order'],
+        ]);
         
         // Ordenacao
         $columns[0] = '{{ $instancia_model->getKeyName() }}';
@@ -89,12 +96,12 @@ class {{ $model }}Controller extends Controller
         $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
         
         // Monta Totais
-        $recordsTotal = $this->repository->count();
-        $recordsFiltered = $regs->count();
+        $recordsTotal = $regs['recordsTotal'];
+        $recordsFiltered = $regs['recordsFiltered'];
         
         // Formata registros para exibir no data table
         $data = [];
-        foreach ($regs as $reg) {
+        foreach ($regs['data'] as $reg) {
             $data[] = [
                 url('{{ $url }}', $reg->{{ $instancia_model->getKeyName() }}),
                 formataData($reg->inativo, 'C'),

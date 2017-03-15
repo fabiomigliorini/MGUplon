@@ -115,6 +115,8 @@ class ProdutoHistoricoPrecoRepository extends MGRepository {
             $qry->where('codusuariocriacao', $filters['codusuario']);
         }
         
+        $count = $qry->count();
+        
         switch ($filters['inativo']) {
             case 2: //Inativos
                 $qry = $qry->inativo();
@@ -143,8 +145,11 @@ class ProdutoHistoricoPrecoRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
-        
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => ProdutoHistoricoPreco::count()
+            , 'data' => $qry->get()
+        ];        
     }
     
 }

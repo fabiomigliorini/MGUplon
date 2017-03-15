@@ -85,6 +85,8 @@ class {{ $model }}Repository extends MGRepository {
 
 @endforeach
         
+        $count = $qry->count();
+    
         switch ($filters['inativo']) {
             case 2: //Inativos
                 $qry = $qry->inativo();
@@ -113,7 +115,11 @@ class {{ $model }}Repository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => {{ $model }}::count()
+            , 'data' => $qry->get()
+        ];
         
     }
     

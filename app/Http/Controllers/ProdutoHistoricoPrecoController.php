@@ -36,11 +36,14 @@ class ProdutoHistoricoPrecoController extends Controller
                 
         // Filtro da listagem
         if (!$filtro = $this->getFiltro()) {
-            $filtro = [
+            $filtro['filtros'] = [
                 'inativo' => 1,
             ];
+            $filtro['order'] = [
+                ['column' => 3, 'dir' => 'ASC']
+            ];            
         }
-        
+
         // retorna View
         return view('produto-historico-preco.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
     }
@@ -57,8 +60,11 @@ class ProdutoHistoricoPrecoController extends Controller
         $this->repository->authorize('listing');
 
         // Grava Filtro para montar o formulario da proxima vez que o index for carregado
-        $this->setFiltro($request['filtros']);
-        
+        $this->setFiltro([
+            'filtros' => $request['filtros'],
+            'order' => $request['order'],
+        ]);
+
         // Ordenacao
         $columns[0] = 'codprodutohistoricopreco';
         $columns[1] = 'inativo';
@@ -88,16 +94,16 @@ class ProdutoHistoricoPrecoController extends Controller
         $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
         
         // Monta Totais
-        $recordsTotal = $this->repository->count();
-        $recordsFiltered = $regs->count();
-        
+        $recordsTotal = $regs['recordsTotal'];
+        $recordsFiltered = $regs['recordsFiltered'];
+                
         // Formata registros para exibir no data table
         $data = [];
-        foreach ($regs as $reg) {
+        foreach ($regs['data'] as $reg) {
             if(isset($row->codprodutoembalagem)){
                 $embalagem = $reg->ProdutoEmbalagem->UnidadeMedida->sigla  .'/'. formataNumero($row->ProdutoEmbalagem->quantidade, 0);
             }else{
-                $embalagem = $reg->Produto->UnidadeMedida->sigla;
+                $embalagem = '';//$reg->Produto->UnidadeMedida->sigla;
             }
             $data[] = [
                 url('produto-historico-preco', $reg->codprodutohistoricopreco),

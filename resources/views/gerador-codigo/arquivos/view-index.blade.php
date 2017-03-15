@@ -6,7 +6,7 @@
     <h4 class="card-header">Pesquisa</h4>
     <div class="card-block">
         <div class="card-text">
-            @{!! Form::model($filtro, ['id' => 'form-search', 'autocomplete' => 'on'])!!}
+            @{!! Form::model($filtro['filtros'], ['id' => 'form-search', 'autocomplete' => 'on'])!!}
                 <div class="col-md-2">
                     <div class="form-group">
                         <label for="{{ $instancia_model->getKeyName() }}" class="control-label">#</label>
@@ -58,7 +58,7 @@
 
     @@include('layouts.includes.datatable.assets')
 
-    @@include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('{{ $url }}/datatable'), 'order' => 3, 'order_dir' => 'ASC', 'filtros' => ['{{ $instancia_model->getKeyName() }}', '{{ $coluna_titulo }}', 'inativo', <?php foreach ($cols_listagem as $col) echo "'$col->column_name', " ?>] ])
+    @@include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('{{ $url }}/datatable'), 'order' => $filtro['order'], 'filtros' => ['{{ $instancia_model->getKeyName() }}', '{{ $coluna_titulo }}', 'inativo', <?php foreach ($cols_listagem as $col) echo "'$col->column_name', " ?>] ])
 
     <script type="text/javascript">
         $(document).ready(function () {
