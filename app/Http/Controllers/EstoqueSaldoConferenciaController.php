@@ -45,7 +45,7 @@ class EstoqueSaldoConferenciaController extends Controller
         $this->bc->addItem('Listagem');
         
         // Filtro da listagem
-        //if (!$filtro = $this->getFiltro()) {
+        if (!$filtro = $this->getFiltro()) {
             $filtro = [
                 'filtros' => [
                     'inativo' => 1,
@@ -55,7 +55,7 @@ class EstoqueSaldoConferenciaController extends Controller
                     'dir' => 'DESC'
                 ]],
             ];
-        //}
+        }
         
         // retorna View
         return view('estoque-saldo-conferencia.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);

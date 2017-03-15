@@ -35,9 +35,9 @@
                     <tr> 
                       <th>Quantidade</th> 
                       <td>
-                        <span class='text-success'>
+                        <b>
                         {{ formataNumero($model->quantidadeinformada, 3) }}
-                        </span>
+                        </b>
                         <s class='text-muted'>
                         {{ formataNumero($model->quantidadesistema, 3) }}
                         </s>
@@ -46,9 +46,9 @@
                     <tr> 
                       <th>Custo</th> 
                       <td>
-                        <span class='text-success'>
+                        <b>
                         {{ formataNumero($model->customedioinformado, 6) }}
-                        </span>
+                        </b>
                         <s class='text-muted'>
                         {{ formataNumero($model->customediosistema, 6) }}
                         </s>
@@ -77,16 +77,20 @@
                   <tbody>  
                     <tr> 
                       <th>#</th> 
-                      <td colspan='3'>{{ formataCodigo($mov->codestoquemovimento) }}</td> 
+                      <td>{{ formataCodigo($mov->codestoquemovimento) }}</td> 
                     </tr>
                     <tr> 
                       <th>Mês</th> 
-                      <td colspan='3'>
+                      <td>
                         <a href='{{ url('estoque-mes', $mov->codestoquemes) }}'>
                         {{ $mov->EstoqueMes->mes->format('m/Y') }}
                         </a>
                       </td>
                     </tr>
+                  </tbody>
+                </table>
+                <table class="table table-bordered table-striped table-hover table-sm col-md-6">
+                  <tbody>  
                     <tr>
                       <th colspan='2'>
                         Entrada
