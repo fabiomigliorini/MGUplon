@@ -179,4 +179,6 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('estoque-saldo-conferencia/saldos', 'EstoqueSaldoConferenciaController@saldos');
     Route::resource('estoque-saldo-conferencia', 'EstoqueSaldoConferenciaController', ['only' => ['index', 'datatable', 'show', 'activate', 'inactivate', 'create', 'store']]);
     
+    /* Tipo Movimento Título */
+    Route::resource('tipo-movimento-titulo', 'TipoMovimentoTituloController');
 });
