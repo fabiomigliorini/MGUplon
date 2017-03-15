@@ -1,5 +1,6 @@
     <!-- App CSS -->
     <link href="{{ URL::asset('public/assets/css/style.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ URL::asset('public/assets/css/bootstrap-alpha6.css') }}" rel="stylesheet" type="text/css" />
     <!-- HTML5 Shiv and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>

@@ -70,12 +70,13 @@
 
     @include('layouts.includes.datatable.assets')
 
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('estoque-saldo-conferencia/datatable'), 'order' => $filtro['order'],'filtros' => ['codestoquesaldoconferencia', 'codproduto', 'codestoquelocal', 'inativo', 'codusuariocriacao', 'data_de', 'data_ate'] ])
+    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('estoque-saldo-conferencia/datatable'), 'order' => $filtro['order'],'filtros' => ['codestoquesaldoconferencia', 'codproduto', 'codestoquelocal', 'inativo', 'codusuariocriacao', 'data_de', 'data_ate'], 'estilos'=>[ ['className' =>'text-right', 'targets'=>[6]], ] ])
 
-    <script type="text/javascript">
-        $(document).ready(function () {
-        });
-    </script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // ...
+    });
+</script>
 
 @endsection
 @stop

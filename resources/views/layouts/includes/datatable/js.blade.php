@@ -37,6 +37,11 @@ $(document).ready(function () {
             { extend: 'colvis', text: '<i class="fa fa-columns" aria-hidden="true"></i>', exportOptions: { columns: ':visible' } },
         ],
         columnDefs: [
+            @if($estilos)
+                @foreach($estilos as $estilo)
+                    {!! json_encode($estilo) !!},
+                @endforeach
+            @endif
             {
                 targets: [0, 1],
                 visible: false,
@@ -64,9 +69,6 @@ $(document).ready(function () {
             datable_{{ $id }}.ajax.reload();
         });
     @endforeach
-
-
-
 
 });
 

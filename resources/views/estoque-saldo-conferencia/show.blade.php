@@ -9,11 +9,11 @@
                 <table class="table table-bordered table-striped table-hover table-sm col-md-6">
                   <tbody>  
                     <tr> 
-                      <th>#</th> 
+                      <th class="text-right">#</th> 
                       <td>{{ formataCodigo($model->codestoquesaldoconferencia) }}</td> 
                     </tr>
                     <tr> 
-                      <th>Produto</th> 
+                      <th class="text-right">Produto</th> 
                       <td>
                         <a href='{{ url('produto', $model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao->codproduto) }}'>
                         {{ $model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao->Produto->produto }}
@@ -21,11 +21,11 @@
                       </td> 
                     </tr>
                     <tr> 
-                      <th>Variação</th> 
+                      <th class="text-right">Variação</th> 
                       <td>{{ $model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao->variacao or '{ Sem Variação }' }}</td> 
                     </tr>
                     <tr> 
-                      <th>Local</th> 
+                      <th class="text-right">Local</th> 
                       <td>
                         <a href='{{ url('estoque-local', $model->EstoqueSaldo->EstoqueLocalProdutoVariacao->codestoquelocal) }}'>
                         {{ $model->EstoqueSaldo->EstoqueLocalProdutoVariacao->EstoqueLocal->estoquelocal }}
@@ -33,7 +33,7 @@
                       </td> 
                     </tr>
                     <tr> 
-                      <th>Quantidade</th> 
+                      <th class="text-right">Quantidade</th> 
                       <td>
                         <b>
                         {{ formataNumero($model->quantidadeinformada, 3) }}
@@ -44,7 +44,7 @@
                       </td> 
                     </tr>
                     <tr> 
-                      <th>Custo</th> 
+                      <th class="text-right">Custo</th> 
                       <td>
                         <b>
                         {{ formataNumero($model->customedioinformado, 6) }}
@@ -55,11 +55,11 @@
                       </td> 
                     </tr>
                     <tr> 
-                      <th>Data</th> 
+                      <th class="text-right">Data</th> 
                       <td>{{ formataData($model->data, 'L') }}</td> 
                     </tr>
                     <tr> 
-                      <th>Observacoes</th> 
+                      <th class="text-right">Observacoes</th> 
                       <td>{!! nl2br($model->observacoes) !!}</td> 
                     </tr>
                   </tbody> 
