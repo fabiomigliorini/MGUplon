@@ -7,7 +7,7 @@
     {!! Form::text('sigla', null, ['class'=> 'form-control', 'id'=>'sigla', 'maxlength'=>'3']) !!}
 </fieldset>
 <fieldset class="form-group">
-    {!! Form::label('numerobanco', 'Numerobanco') !!}
+    {!! Form::label('numerobanco', 'Número banco') !!}
     {!! Form::number('numerobanco', null, ['class'=> 'form-control', 'id'=>'numerobanco', 'step'=>'1', 'min'=>'1']) !!}
 </fieldset>
 <fieldset class="form-group">

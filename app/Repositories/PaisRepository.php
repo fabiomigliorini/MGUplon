@@ -136,7 +136,7 @@ class PaisRepository extends MGRepository {
                 $qry = $qry->ativo();
                 break;
         }
-        
+        $count = $qry->count();
         // Paginacao
         if (!empty($start)) {
             $qry->offset($start);
@@ -151,8 +151,11 @@ class PaisRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
-        
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => Pais::count()
+            , 'data' => $qry->get()
+        ];        
     }
     
 }

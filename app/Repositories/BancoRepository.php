@@ -124,7 +124,7 @@ class BancoRepository extends MGRepository {
                 $qry = $qry->ativo();
                 break;
         }
-        
+        $count = $qry->count();
         // Paginacao
         if (!empty($start)) {
             $qry->offset($start);
@@ -139,8 +139,11 @@ class BancoRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
-        
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => Banco::count()
+            , 'data' => $qry->get()
+        ];        
     }
     
 }
