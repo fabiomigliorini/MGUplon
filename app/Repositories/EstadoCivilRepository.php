@@ -103,6 +103,8 @@ class EstadoCivilRepository extends MGRepository {
                 break;
         }
         
+        $count = $qry->count();
+
         // Paginacao
         if (!empty($start)) {
             $qry->offset($start);
@@ -117,7 +119,11 @@ class EstadoCivilRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => EstadoCivil::count()
+            , 'data' => $qry->get()
+        ];
         
     }
     
