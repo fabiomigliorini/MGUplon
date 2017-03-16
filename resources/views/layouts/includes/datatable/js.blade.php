@@ -37,7 +37,7 @@ $(document).ready(function () {
             { extend: 'colvis', text: '<i class="fa fa-columns" aria-hidden="true"></i>', exportOptions: { columns: ':visible' } },
         ],
         columnDefs: [
-            @if($estilos)
+            @if(isset($estilos))
                 @foreach($estilos as $estilo)
                     {!! json_encode($estilo) !!},
                 @endforeach

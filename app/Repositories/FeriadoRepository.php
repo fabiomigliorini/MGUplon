@@ -109,6 +109,8 @@ class FeriadoRepository extends MGRepository {
                 break;
         }
         
+        $count = $qry->count();
+        
         // Paginacao
         if (!empty($start)) {
             $qry->offset($start);
@@ -123,8 +125,11 @@ class FeriadoRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
-        
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => Feriado::count()
+            , 'data' => $qry->get()
+        ];        
     }
     
 }
