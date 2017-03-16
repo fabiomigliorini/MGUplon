@@ -6,7 +6,7 @@
     <h4 class="card-header">Pesquisa</h4>
     <div class="card-block">
         <div class="card-text">
-            {!! Form::model($filtro, ['id' => 'form-search', 'autocomplete' => 'on'])!!}
+            {!! Form::model($filtro['filtros'], ['id' => 'form-search', 'autocomplete' => 'on'])!!}
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="codvalecompra" class="control-label">#</label>
@@ -78,7 +78,7 @@
 
     @include('layouts.includes.datatable.assets')
 
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('vale-compra/datatable'), 'order' => 9, 'order_dir' => 'DESC', 'filtros' => ['codvalecompra', 'codvalecompra', 'inativo', 'codvalecompramodelo', 'codpessoafavorecido', 'codpessoa', 'aluno', 'turma', 'codusuariocriacao', 'criacao_de', 'criacao_ate' ] ])
+    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('vale-compra/datatable'), 'order' => $filtro['order'], 'filtros' => ['codvalecompra', 'codvalecompra', 'inativo', 'codvalecompramodelo', 'codpessoafavorecido', 'codpessoa', 'aluno', 'turma', 'codusuariocriacao', 'criacao_de', 'criacao_ate' ] ])
 
     <script type="text/javascript">
         $(document).ready(function () {

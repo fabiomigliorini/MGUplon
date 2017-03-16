@@ -125,7 +125,8 @@ class ValeCompraModeloRepository extends MGRepository {
          if (!empty($filters['ano'])) {
             $qry->where('ano', '=', $filters['ano']);
         }
-
+        
+        $count = $qry->count();
         
         switch ($filters['inativo']) {
             case 2: //Inativos
@@ -155,7 +156,11 @@ class ValeCompraModeloRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => ValeCompraModelo::count()
+            , 'data' => $qry->get()
+        ];
         
     }
     

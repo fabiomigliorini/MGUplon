@@ -167,6 +167,8 @@ class ValeCompraRepository extends MGRepository {
             $qry->where('criacao', '<=', $filters['criacao_ate']);
         }
         
+        $count = $qry->count();
+        
         switch ($filters['inativo']) {
             case 2: //Inativos
                 $qry = $qry->inativo();
@@ -195,7 +197,11 @@ class ValeCompraRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => ValeCompra::count()
+            , 'data' => $qry->get()
+        ];
         
     }
     

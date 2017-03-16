@@ -56,7 +56,13 @@ class ValeCompraController extends Controller
         // Filtro da listagem
         if (!$filtro = $this->getFiltro()) {
             $filtro = [
-                'inativo' => 1,
+                'filtros' => [
+                    'inativo' => 1,
+                ],
+                'order' => [[
+                    'column' => 3, 
+                    'dir' => 'ASC'
+                ]],
             ];
         }
         
@@ -76,7 +82,10 @@ class ValeCompraController extends Controller
         $this->repository->authorize('listing');
 
         // Grava Filtro para montar o formulario da proxima vez que o index for carregado
-        $this->setFiltro($request['filtros']);
+        $this->setFiltro([
+            'filtros' => $request['filtros'],
+            'order' => $request['order'],
+        ]);
         
         // Ordenacao
         $columns[0] = 'codvalecompra';
@@ -105,12 +114,12 @@ class ValeCompraController extends Controller
         $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
         
         // Monta Totais
-        $recordsTotal = $this->repository->count();
-        $recordsFiltered = $regs->count();
+        $recordsTotal = $regs['recordsTotal'];
+        $recordsFiltered = $regs['recordsFiltered'];
         
         // Formata registros para exibir no data table
         $data = [];
-        foreach ($regs as $reg) {
+        foreach ($regs['data'] as $reg) {
             $data[] = [
                 url('vale-compra', $reg->codvalecompra),
                 formataData($reg->inativo, 'C'),
