@@ -86,6 +86,8 @@ class MarcaRepository extends MGRepository {
                 break;
         }
         
+        $count = $qry->count();
+
         // Paginacao
         if (!empty($start)) {
             $qry->offset($start);
@@ -100,8 +102,11 @@ class MarcaRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
-        
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => Marca::count()
+            , 'data' => $qry->get()
+        ];        
     }
     
 }

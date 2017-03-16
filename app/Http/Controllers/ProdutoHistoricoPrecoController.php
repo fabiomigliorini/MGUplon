@@ -36,12 +36,15 @@ class ProdutoHistoricoPrecoController extends Controller
                 
         // Filtro da listagem
         if (!$filtro = $this->getFiltro()) {
-            $filtro['filtros'] = [
-                'inativo' => 1,
+            $filtro = [
+                'filtros' => [
+                    'inativo' => 1,
+                ],
+                'order' => [[
+                    'column' => 11, 
+                    'dir' => 'DESC'
+                ]],
             ];
-            $filtro['order'] = [
-                ['column' => 3, 'dir' => 'ASC']
-            ];            
         }
 
         // retorna View
