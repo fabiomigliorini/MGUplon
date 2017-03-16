@@ -6,7 +6,7 @@
     <h4 class="card-header">Pesquisa</h4>
     <div class="card-block">
         <div class="card-text">
-            {!! Form::model($filtro, ['id' => 'form-search', 'autocomplete' => 'on'])!!}
+            {!! Form::model($filtro['filtros'], ['id' => 'form-search', 'autocomplete' => 'on'])!!}
                 <div class="col-md-2">
                     <div class="form-group">
                         <label for="codsecaoproduto" class="control-label">#</label>
@@ -35,7 +35,7 @@
 
 <div class='card'>
     <div class='card-block table-responsive'>
-        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Unidade Medida']])
+        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Seções']])
         <div class='clearfix'></div>
     </div>
 </div>
@@ -50,7 +50,7 @@
 
     @include('layouts.includes.datatable.assets')
 
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('secao-produto/datatable'), 'order' => 3, 'order_dir' => 'ASC', 'filtros' => ['codsecaoproduto' => 'codsecaoproduto', 'secaoproduto', 'inativo'] ])
+    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('secao-produto/datatable'), 'order' => $filtro['order'], 'filtros' => ['codsecaoproduto' => 'codsecaoproduto', 'secaoproduto', 'inativo'] ])
 
     <script type="text/javascript">
         $(document).ready(function () {

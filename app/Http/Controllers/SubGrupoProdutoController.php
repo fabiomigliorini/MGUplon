@@ -34,7 +34,10 @@ class SubGrupoProdutoController extends Controller
         $this->repository->authorize('listing');
 
         // Grava Filtro para montar o formulario da proxima vez que o index for carregado
-        $this->setFiltro($request['filtros']);
+        $this->setFiltro([
+            'filtros' => $request['filtros'],
+            'order' => $request['order'],
+        ]);
         
         // Ordenacao
         $columns[0] = 'codsubgrupoproduto';
@@ -55,12 +58,12 @@ class SubGrupoProdutoController extends Controller
         $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
 
         // Monta Totais
-        $recordsTotal = $this->repository->count();
-        $recordsFiltered = $regs->count();
+        $recordsTotal = $regs['recordsTotal'];
+        $recordsFiltered = $regs['recordsFiltered'];
         
         // Formata registros para exibir no data table
         $data = [];
-        foreach ($regs as $reg) {
+        foreach ($regs['data'] as $reg) {
             $data[] = [
                 url('sub-grupo-produto', $reg->codsubgrupoproduto),
                 formataData($reg->inativo, 'C'),

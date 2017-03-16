@@ -33,7 +33,10 @@ class FamiliaProdutoController extends Controller
         $this->repository->authorize('listing');
 
         // Grava Filtro para montar o formulario da proxima vez que o index for carregado
-        $this->setFiltro($request['filtros']);
+        $this->setFiltro([
+            'filtros' => $request['filtros'],
+            'order' => $request['order'],
+        ]);
         
         // Ordenacao
         $columns[0] = 'codfamiliaproduto';
@@ -54,12 +57,12 @@ class FamiliaProdutoController extends Controller
         $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
         
         // Monta Totais
-        $recordsTotal = $this->repository->count();
-        $recordsFiltered = $regs->count();
+        $recordsTotal = $regs['recordsTotal'];
+        $recordsFiltered = $regs['recordsFiltered'];
         
         // Formata registros para exibir no data table
         $data = [];
-        foreach ($regs as $reg) {
+        foreach ($regs['data'] as $reg) {
             $data[] = [
                 url('familia-produto', $reg->codfamiliaproduto),
                 formataData($reg->inativo, 'C'),
@@ -136,7 +139,7 @@ class FamiliaProdutoController extends Controller
                 'inativo' => 1,
             ];
         }
-
+        
         // retorna show
         return view('familia-produto.show', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'filtro'=>$filtro]);
     }

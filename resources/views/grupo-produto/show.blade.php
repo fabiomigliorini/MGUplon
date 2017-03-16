@@ -28,7 +28,7 @@
             <h4 class="card-header">Pesquisar Sub Grupos</h4>
             <div class="card-block">
                 <div class="card-text">
-                    {!! Form::model($filtro, ['id' => 'form-search', 'autocomplete' => 'on']) !!}
+                    {!! Form::model($filtro['filtros'], ['id' => 'form-search', 'autocomplete' => 'on']) !!}
                     {!! Form::hidden('codgrupoproduto', $model->codgrupoproduto, ['id'=>'codgrupoproduto']) !!}
                         <div class="col-md-2">
                             <div class="form-group">
@@ -98,6 +98,6 @@
 @section('inscript')
     @include('layouts.includes.datatable.assets')
 
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('sub-grupo-produto/datatable'), 'order' => 3, 'order_dir' => 'ASC', 'filtros' => ['codgrupoproduto', 'codsubgrupoproduto' => 'codsubgrupoproduto', 'subgrupoproduto', 'inativo'] ])
+    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('sub-grupo-produto/datatable'), 'order' => $filtro['order'], 'filtros' => ['codgrupoproduto', 'codsubgrupoproduto' => 'codsubgrupoproduto', 'subgrupoproduto', 'inativo'] ])
 @endsection
 @stop

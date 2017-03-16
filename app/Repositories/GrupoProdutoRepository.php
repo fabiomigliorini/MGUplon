@@ -91,6 +91,8 @@ class GrupoProdutoRepository extends MGRepository {
                 break;
         }
         
+        $count = $qry->count();
+        
         // Paginacao
         if (!empty($start)) {
             $qry->offset($start);
@@ -105,7 +107,10 @@ class GrupoProdutoRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
-        
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => GrupoProduto::count()
+            , 'data' => $qry->get()
+        ];        
     }
 }

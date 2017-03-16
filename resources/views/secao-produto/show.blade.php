@@ -28,7 +28,7 @@
             <h4 class="card-header">Pesquisar Famílias</h4>
             <div class="card-block">
                 <div class="card-text">
-                    {!! Form::model($filtro, ['id' => 'form-search', 'autocomplete' => 'on'])!!}
+                    {!! Form::model($filtro['filtros'], ['id' => 'form-search', 'autocomplete' => 'on'])!!}
                     {!! Form::hidden('codsecaoproduto', $model->codsecaoproduto, ['id'=>'codsecaoproduto']) !!}
                         <div class="col-md-2">
                             <div class="form-group">
@@ -98,6 +98,6 @@
 @section('inscript')
     @include('layouts.includes.datatable.assets')
 
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('familia-produto/datatable'), 'order' => 3, 'order_dir' => 'ASC', 'filtros' => ['codsecaoproduto', 'codfamiliaproduto' => 'codfamiliaproduto', 'familiaproduto', 'inativo'] ])
+    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('familia-produto/datatable'), 'order' => $filtro['order'], 'filtros' => ['codsecaoproduto', 'codfamiliaproduto' => 'codfamiliaproduto', 'familiaproduto', 'inativo'] ])
 @endsection
 @stop

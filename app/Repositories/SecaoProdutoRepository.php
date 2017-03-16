@@ -82,6 +82,8 @@ class SecaoProdutoRepository extends MGRepository {
                 break;
         }
         
+        $count = $qry->count();
+
         // Paginacao
         if (!empty($start)) {
             $qry->offset($start);
@@ -96,7 +98,10 @@ class SecaoProdutoRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
-        
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => SecaoProduto::count()
+            , 'data' => $qry->get()
+        ];        
     }
 }

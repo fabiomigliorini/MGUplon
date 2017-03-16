@@ -93,6 +93,8 @@ class FamiliaProdutoRepository extends MGRepository {
                 break;
         }
         
+        $count = $qry->count();
+
         // Paginacao
         if (!empty($start)) {
             $qry->offset($start);
@@ -107,7 +109,10 @@ class FamiliaProdutoRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
-        
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => FamiliaProduto::count()
+            , 'data' => $qry->get()
+        ];        
     }
 }

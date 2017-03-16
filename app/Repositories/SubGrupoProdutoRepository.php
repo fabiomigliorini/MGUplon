@@ -92,6 +92,8 @@ class SubGrupoProdutoRepository extends MGRepository {
                 break;
         }
         
+        $count = $qry->count();
+        
         // Paginacao
         if (!empty($start)) {
             $qry->offset($start);
@@ -106,7 +108,10 @@ class SubGrupoProdutoRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
-        
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => SubGrupoProduto::count()
+            , 'data' => $qry->get()
+        ];        
     }
 }
