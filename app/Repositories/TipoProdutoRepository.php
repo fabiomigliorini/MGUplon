@@ -88,6 +88,8 @@ class TipoProdutoRepository extends MGRepository {
                 break;
         }
         
+        $count = $qry->count();
+        
         // Paginacao
         if (!empty($start)) {
             $qry->offset($start);
@@ -102,7 +104,11 @@ class TipoProdutoRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => TipoProduto::count()
+            , 'data' => $qry->get()
+        ];
         
     }
 }

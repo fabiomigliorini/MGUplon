@@ -98,6 +98,8 @@ class UnidadeMedidaRepository extends MGRepository {
                 break;
         }
         
+        $count = $qry->count();        
+        
         // Paginacao
         if (!empty($start)) {
             $qry->offset($start);
@@ -112,8 +114,11 @@ class UnidadeMedidaRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
-        
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => UnidadeMedida::count()
+            , 'data' => $qry->get()
+        ];        
     }
     
 }
