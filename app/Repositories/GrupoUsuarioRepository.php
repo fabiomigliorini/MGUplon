@@ -85,6 +85,8 @@ class GrupoUsuarioRepository extends MGRepository {
                 break;
         }
         
+        $count = $qry->count();
+        
         // Paginacao
         if (!empty($start)) {
             $qry->offset($start);
@@ -99,7 +101,10 @@ class GrupoUsuarioRepository extends MGRepository {
         }
         
         // Registros
-        return $qry->get();
-        
+        return [
+            'recordsFiltered' => $count
+            , 'recordsTotal' => GrupoUsuario::count()
+            , 'data' => $qry->get()
+        ];        
     }
 }
