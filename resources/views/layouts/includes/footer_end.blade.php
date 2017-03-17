@@ -20,7 +20,6 @@
         });
     });
 </script>
-@yield('inscript')
 @include('errors.flash')
 </body>
 </html>

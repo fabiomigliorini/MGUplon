@@ -16,8 +16,8 @@ namespace MGLara\Models;
  * @property  bigint                         $codusuariocriacao                  
  *
  * Chaves Estrangeiras
- * @property  Filial                         $Filial                        
- * @property  Meta                           $Meta                          
+ * @property  Meta                           $Meta
+ * @property  Filial                         $Filial
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Usuario                        $UsuarioCriacao
  *
@@ -30,12 +30,12 @@ class MetaFilial extends MGModel
     protected $table = 'tblmetafilial';
     protected $primaryKey = 'codmetafilial';
     protected $fillable = [
-        'codmeta',
-        'codfilial',
-        'valormetafilial',
-        'valormetavendedor',
-        'observacoes',
-    ];
+          'codmeta',
+         'codfilial',
+         'valormetafilial',
+         'valormetavendedor',
+         'observacoes',
+        ];
     protected $dates = [
         'criacao',
         'alteracao',
@@ -43,24 +43,24 @@ class MetaFilial extends MGModel
 
 
     // Chaves Estrangeiras
-    public function Filial()
-    {
-        return $this->belongsTo(Filial::class, 'codfilial', 'codfilial');
-    }
-
     public function Meta()
     {
         return $this->belongsTo(Meta::class, 'codmeta', 'codmeta');
     }
 
+    public function Filial()
+    {
+        return $this->belongsTo(Filial::class, 'codfilial', 'codfilial');
+    }
+
     public function UsuarioAlteracao()
     {
-        return $this->belongsTo(Usuario::class, 'codusuario', 'codusuarioalteracao');
+        return $this->belongsTo(Usuario::class, 'codusuarioalteracao', 'codusuario');
     }
 
     public function UsuarioCriacao()
     {
-        return $this->belongsTo(Usuario::class, 'codusuario', 'codusuariocriacao');
+        return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
     }
 
 

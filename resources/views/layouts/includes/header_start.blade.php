@@ -44,3 +44,4 @@
     <link href="{{ URL::asset('public/css/mglara.css') }}" rel="stylesheet" />
     <script src="{{ URL::asset('public/js/mglara.js') }}"></script>
 
+    @yield('inscript')

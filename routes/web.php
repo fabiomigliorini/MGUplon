@@ -181,4 +181,7 @@ Route::group(['middleware' => 'auth'], function() {
     
     /* Tipo Movimento Título */
     Route::resource('tipo-movimento-titulo', 'TipoMovimentoTituloController');
+
+    /* Meta */
+    Route::resource('meta', 'MetaController');    
 });
