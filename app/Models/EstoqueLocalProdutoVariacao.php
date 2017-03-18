@@ -4,9 +4,8 @@ namespace MGLara\Models;
 
 /**
  * Campos
- * @property  bigint                         $codestoquelocalprodutovariacao     NOT NULL DEFAULT nextval('tblestoquelocalprodutovariacao_codestoquelocalprodutovariacao_seq'::regclass)
+ * @property  bigint                         $codestoquelocalprodutovariacao     NOT NULL DEFAULT nextval('tblestoquelocalproduto_codestoquelocalproduto_seq'::regclass)
  * @property  bigint                         $codestoquelocal                    NOT NULL
- * @property  bigint                         $codprodutovariacao                 NOT NULL
  * @property  bigint                         $corredor                           
  * @property  bigint                         $prateleira                         
  * @property  bigint                         $coluna                             
@@ -15,15 +14,27 @@ namespace MGLara\Models;
  * @property  bigint                         $codusuarioalteracao                
  * @property  timestamp                      $criacao                            
  * @property  bigint                         $codusuariocriacao                  
+ * @property  bigint                         $estoqueminimo                      
+ * @property  bigint                         $estoquemaximo                      
+ * @property  bigint                         $codprodutovariacao                 NOT NULL
+ * @property  numeric(14,3)                  $vendabimestrequantidade            
+ * @property  numeric(14,2)                  $vendabimestrevalor                 
+ * @property  numeric(14,3)                  $vendasemestrequantidade            
+ * @property  numeric(14,2)                  $vendasemestrevalor                 
+ * @property  numeric(14,3)                  $vendaanoquantidade                 
+ * @property  numeric(14,2)                  $vendaanovalor                      
+ * @property  timestamp                      $vendaultimocalculo                 
+ * @property  date                           $vencimento                         
+ * @property  float8                         $vendadiaquantidadeprevisao         
  *
  * Chaves Estrangeiras
- * @property  EstoqueLocal                   $EstoqueLocal                  
- * @property  ProdutoVariacao                $ProdutoVariacao
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Usuario                        $UsuarioCriacao
+ * @property  EstoqueLocal                   $EstoqueLocal
+ * @property  ProdutoVariacao                $ProdutoVariacao
  *
  * Tabelas Filhas
- * @property  Estoquesaldo[]                 $EstoquesaldoS
+ * @property  EstoqueSaldo[]                 $EstoqueSaldoS
  */
 
 class EstoqueLocalProdutoVariacao extends MGModel
@@ -31,30 +42,33 @@ class EstoqueLocalProdutoVariacao extends MGModel
     protected $table = 'tblestoquelocalprodutovariacao';
     protected $primaryKey = 'codestoquelocalprodutovariacao';
     protected $fillable = [
-        'codestoquelocal',
-        'codprodutovariacao',
-        'corredor',
-        'prateleira',
-        'coluna',
-        'bloco',
+          'codestoquelocal',
+         'corredor',
+         'prateleira',
+         'coluna',
+         'bloco',
+             'estoqueminimo',
+         'estoquemaximo',
+         'codprodutovariacao',
+         'vendabimestrequantidade',
+         'vendabimestrevalor',
+         'vendasemestrequantidade',
+         'vendasemestrevalor',
+         'vendaanoquantidade',
+         'vendaanovalor',
+         'vendaultimocalculo',
+         'vencimento',
+         'vendadiaquantidadeprevisao',
     ];
     protected $dates = [
         'alteracao',
         'criacao',
+        'vendaultimocalculo',
+        'vencimento',
     ];
 
 
     // Chaves Estrangeiras
-    public function EstoqueLocal()
-    {
-        return $this->belongsTo(EstoqueLocal::class, 'codestoquelocal', 'codestoquelocal');
-    }
-
-    public function ProdutoVariacao()
-    {
-        return $this->belongsTo(ProdutoVariacao::class, 'codprodutovariacao', 'codprodutovariacao');
-    }
-
     public function UsuarioAlteracao()
     {
         return $this->belongsTo(Usuario::class, 'codusuarioalteracao', 'codusuario');
@@ -65,24 +79,21 @@ class EstoqueLocalProdutoVariacao extends MGModel
         return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
     }
 
+    public function EstoqueLocal()
+    {
+        return $this->belongsTo(EstoqueLocal::class, 'codestoquelocal', 'codestoquelocal');
+    }
+
+    public function ProdutoVariacao()
+    {
+        return $this->belongsTo(ProdutoVariacao::class, 'codprodutovariacao', 'codprodutovariacao');
+    }
+
 
     // Tabelas Filhas
     public function EstoqueSaldoS()
     {
         return $this->hasMany(EstoqueSaldo::class, 'codestoquelocalprodutovariacao', 'codestoquelocalprodutovariacao');
-    }
-    
-    public static function buscaOuCria($codprodutovariacao, $codestoquelocal)
-    {
-        $elpv = self::where('codprodutovariacao', $codprodutovariacao)->where('codestoquelocal', $codestoquelocal)->first();
-        if ($elpv == false)
-        {
-            $elpv = new EstoqueLocalProdutoVariacao;
-            $elpv->codprodutovariacao = $codprodutovariacao;
-            $elpv->codestoquelocal = $codestoquelocal;
-            $elpv->save();
-        }
-        return $elpv;
     }
 
 

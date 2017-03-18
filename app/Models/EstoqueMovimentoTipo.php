@@ -5,7 +5,6 @@ namespace MGLara\Models;
 /**
  * Campos
  * @property  bigint                         $codestoquemovimentotipo            NOT NULL DEFAULT nextval('tblestoquemovimentotipo_codestoquemovimentotipo_seq'::regclass)
- * @property  bigint                         $codestoquemovimentotipoorigem      codigo do tipo de movimentacao para fazer transacao reversa
  * @property  varchar(100)                   $descricao                          NOT NULL
  * @property  varchar(3)                     $sigla                              NOT NULL
  * @property  timestamp                      $alteracao                          
@@ -13,15 +12,19 @@ namespace MGLara\Models;
  * @property  timestamp                      $criacao                            
  * @property  bigint                         $codusuariocriacao                  
  * @property  smallint                       $preco                              NOT NULL
+ * @property  bigint                         $codestoquemovimentotipoorigem      
+ * @property  boolean                        $manual                             NOT NULL DEFAULT false
+ * @property  boolean                        $atualizaultimaentrada              NOT NULL DEFAULT false
  *
  * Chaves Estrangeiras
+ * @property  EstoqueMovimentoTipo           $EstoqueMovimentoTipoOrigem
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Usuario                        $UsuarioCriacao
  *
  * Tabelas Filhas
- * @property  NaturezaOperacao[]             $NaturezaOperacaoS
- * @property  EstoqueMovimento[]             $EstoqueMovimentoS
  * @property  EstoqueMovimentoTipo[]         $EstoqueMovimentoTipoS
+ * @property  NaturezaOperacao[]             $NaturezaOperacaoS
+ * @property  EstoqueMovimento[]             $EstoqueMovimentoDestinoS
  */
 
 class EstoqueMovimentoTipo extends MGModel
@@ -29,9 +32,12 @@ class EstoqueMovimentoTipo extends MGModel
     protected $table = 'tblestoquemovimentotipo';
     protected $primaryKey = 'codestoquemovimentotipo';
     protected $fillable = [
-        'descricao',
-        'sigla',
-        'preco',
+          'descricao',
+         'sigla',
+             'preco',
+         'codestoquemovimentotipoorigem',
+         'manual',
+         'atualizaultimaentrada',
     ];
     protected $dates = [
         'alteracao',
@@ -45,6 +51,11 @@ class EstoqueMovimentoTipo extends MGModel
     const AJUSTE = 1002;
 
     // Chaves Estrangeiras
+    public function EstoqueMovimentoTipoOrigem()
+    {
+        return $this->belongsTo(EstoqueMovimentoTipo::class, 'codestoquemovimentotipoorigem', 'codestoquemovimentotipo');
+    }
+
     public function UsuarioAlteracao()
     {
         return $this->belongsTo(Usuario::class, 'codusuarioalteracao', 'codusuario');
@@ -54,23 +65,23 @@ class EstoqueMovimentoTipo extends MGModel
     {
         return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
     }
-  
+
 
     // Tabelas Filhas
+    public function EstoqueMovimentoTipoS()
+    {
+        return $this->hasMany(EstoqueMovimentoTipo::class, 'codestoquemovimentotipo', 'codestoquemovimentotipoorigem');
+    }
+
     public function NaturezaOperacaoS()
     {
         return $this->hasMany(NaturezaOperacao::class, 'codestoquemovimentotipo', 'codestoquemovimentotipo');
     }
 
-    public function EstoqueMovimentoS()
+    public function EstoqueMovimentoDestinoS()
     {
         return $this->hasMany(EstoqueMovimento::class, 'codestoquemovimentotipo', 'codestoquemovimentotipo');
     }
 
-    public function EstoqueMovimentoTipoS()
-    {
-        return $this->hasMany(EstoqueMovimentoTipo::class, 'codestoquemovimentotipoorigem', 'codestoquemovimentotipo');
-    }
-    
-    
+
 }

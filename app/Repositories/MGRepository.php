@@ -3,6 +3,7 @@
 namespace MGLara\Repositories;
 
 use Illuminate\Support\Facades\Gate;
+use MGLara\Models\MGModel;
 use Carbon\Carbon;    
 /**
  * Description of Repository
@@ -173,6 +174,14 @@ abstract class MGRepository {
      */
     public function findOrFail($id) {
         return $this->model = $this->model_class::findOrFail($id);
+    }
+    
+    public function save() {
+        if ($this->model->exists) {
+            return $this->update();
+        } else {
+            return $this->create();
+        }
     }
     
     

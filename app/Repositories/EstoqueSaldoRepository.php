@@ -12,6 +12,8 @@ use MGLara\Models\EstoqueSaldo;
 use MGLara\Models\EstoqueLocal;
 use MGLara\Models\ProdutoVariacao;
 
+use MGLara\Repositories\EstoqueLocalProdutoVariacaoRepository;
+
 /**
  * Description of EstoqueSaldoRepository
  * 
@@ -190,11 +192,11 @@ class EstoqueSaldoRepository extends MGRepository {
     }
     
 
-    public function buscaOuCria($codprodutovariacao, $codestoquelocal, $fiscal)
+    public static function buscaOuCria($codprodutovariacao, $codestoquelocal, $fiscal)
     {
-        $elpv = EstoqueLocalProdutoVariacao::buscaOuCria($codprodutovariacao, $codestoquelocal);
+        $elpv = EstoqueLocalProdutoVariacaoRepository::buscaOuCria($codprodutovariacao, $codestoquelocal);
 
-        $es = self::where('codestoquelocalprodutovariacao', $elpv->codestoquelocalprodutovariacao)->where('fiscal', $fiscal)->first();
+        $es = EstoqueSaldo::where('codestoquelocalprodutovariacao', $elpv->codestoquelocalprodutovariacao)->where('fiscal', $fiscal)->first();
         if ($es == false)
         {
             $es = new EstoqueSaldo;
@@ -1433,5 +1435,14 @@ class EstoqueSaldoRepository extends MGRepository {
         $qry->where('tblestoquelocalprodutovariacao.codestoquelocal', '=', $codestoquelocal);
 
         return $qry->first();
+    }
+    
+    public static function atualizaUltimaConferencia (EstoqueSaldo $model) {
+
+        return DB::update("update tblestoquesaldo 
+                    set ultimaconferencia = (select max(conf.criacao) from tblestoquesaldoconferencia conf where conf.inativo is null and conf.codestoquesaldo = tblestoquesaldo.codestoquesaldo)
+                    where tblestoquesaldo.codestoquesaldo = $model->codestoquesaldo
+                    ");
+        
     }
 }

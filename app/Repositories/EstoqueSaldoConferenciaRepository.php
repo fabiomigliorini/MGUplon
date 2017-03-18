@@ -2,10 +2,12 @@
 
 namespace MGLara\Repositories;
     
-use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
+
+use Carbon\Carbon;
 
 use MGLara\Models\EstoqueSaldoConferencia;
 
@@ -38,22 +40,18 @@ class EstoqueSaldoConferenciaRepository extends MGRepository {
                 'required',
             ],
             'quantidadesistema' => [
-                'digits',
                 'numeric',
                 'nullable',
             ],
             'quantidadeinformada' => [
-                'digits',
                 'numeric',
                 'required',
             ],
             'customediosistema' => [
-                'digits',
                 'numeric',
                 'nullable',
             ],
             'customedioinformado' => [
-                'digits',
                 'numeric',
                 'required',
             ],
@@ -68,14 +66,10 @@ class EstoqueSaldoConferenciaRepository extends MGRepository {
         ], [
             'codestoquesaldo.numeric' => 'O campo "codestoquesaldo" deve ser um número!',
             'codestoquesaldo.required' => 'O campo "codestoquesaldo" deve ser preenchido!',
-            'quantidadesistema.digits' => 'O campo "quantidadesistema" deve conter no máximo 3 dígitos!',
             'quantidadesistema.numeric' => 'O campo "quantidadesistema" deve ser um número!',
-            'quantidadeinformada.digits' => 'O campo "quantidadeinformada" deve conter no máximo 3 dígitos!',
             'quantidadeinformada.numeric' => 'O campo "quantidadeinformada" deve ser um número!',
             'quantidadeinformada.required' => 'O campo "quantidadeinformada" deve ser preenchido!',
-            'customediosistema.digits' => 'O campo "customediosistema" deve conter no máximo 6 dígitos!',
             'customediosistema.numeric' => 'O campo "customediosistema" deve ser um número!',
-            'customedioinformado.digits' => 'O campo "customedioinformado" deve conter no máximo 6 dígitos!',
             'customedioinformado.numeric' => 'O campo "customedioinformado" deve ser um número!',
             'customedioinformado.required' => 'O campo "customedioinformado" deve ser preenchido!',
             'data.date' => 'O campo "data" deve ser uma data!',
@@ -208,5 +202,45 @@ class EstoqueSaldoConferenciaRepository extends MGRepository {
         ];
         
     }
+    
+    public function create($data = null) {
+
+        DB::beginTransaction();
+        
+        if (!empty($data)) {
+            $this->new($data);
+        }
+        
+        if ($this->model->exists) {
+            return false;
+        }
+        
+        $this->model->quantidadesistema = $this->model->EstoqueSaldo->saldoquantidade;
+        $this->model->customediosistema = $this->model->EstoqueSaldo->customedio;
+        
+        if (!$this->model->save()) {
+            return false;
+        }
+        
+        EstoqueMovimentoRepository::movimentaEstoqueSaldoConferencia($this->model);
+        
+        DB::commit();
+        
+        return true;
+        
+    }
+    
+    public function activate($id = null) {
+        $ret = parent::activate($id);
+        EstoqueMovimentoRepository::movimentaEstoqueSaldoConferencia($this->model);
+        return $ret;
+    }
+    
+    public function inactivate($id = null) {
+        $ret = parent::inactivate($id);
+        EstoqueMovimentoRepository::movimentaEstoqueSaldoConferencia($this->model);
+        return $ret;
+    }
+    
     
 }

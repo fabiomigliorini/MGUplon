@@ -1,7 +1,6 @@
 <?php
 
 namespace MGLara\Models;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Campos
@@ -13,7 +12,6 @@ use Illuminate\Support\Facades\DB;
  * @property  numeric(14,2)                  $saidavalor                         
  * @property  bigint                         $codnegocioprodutobarra             
  * @property  bigint                         $codnotafiscalprodutobarra          
- * @property  bigint                         $codestoquesaldoconferencia
  * @property  bigint                         $codestoquemes                      NOT NULL
  * @property  boolean                        $manual                             NOT NULL DEFAULT false
  * @property  timestamp                      $data                               NOT NULL
@@ -22,16 +20,18 @@ use Illuminate\Support\Facades\DB;
  * @property  timestamp                      $criacao                            
  * @property  bigint                         $codusuariocriacao                  
  * @property  bigint                         $codestoquemovimentoorigem          
+ * @property  varchar(200)                   $observacoes                        
+ * @property  bigint                         $codestoquesaldoconferencia         
  *
  * Chaves Estrangeiras
- * @property  EstoqueMovimento               $EstoqueMovimentoOrigem             
- * @property  EstoqueMovimentoTipo           $EstoqueMovimentoTipo          
- * @property  NegocioProdutoBarra            $NegocioProdutoBarra           
- * @property  NotaFiscalProdutoBarra         $NotaFiscalProdutoBarra        
- * @property  EstoqueSaldoConferencia        $EstoqueSaldoConferencia
+ * @property  EstoqueMes                     $EstoqueMes
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Usuario                        $UsuarioCriacao
- * @property  EstoqueMes                     $EstoqueMes                    
+ * @property  EstoqueMovimento               $EstoqueMovimento
+ * @property  EstoqueSaldoConferencia        $EstoqueSaldoConferencia
+ * @property  EstoqueMovimentoTipo           $EstoqueMovimentoTipo
+ * @property  NegocioProdutoBarra            $NegocioProdutoBarra
+ * @property  NotaFiscalProdutoBarra         $NotaFiscalProdutoBarra
  *
  * Tabelas Filhas
  * @property  EstoqueMovimento[]             $EstoqueMovimentoS
@@ -42,28 +42,51 @@ class EstoqueMovimento extends MGModel
     protected $table = 'tblestoquemovimento';
     protected $primaryKey = 'codestoquemovimento';
     protected $fillable = [
-        'codestoquemovimentotipo',
-        'entradaquantidade',
-        'entradavalor',
-        'saidaquantidade',
-        'saidavalor',
-        'codnegocioprodutobarra',
-        'codnotafiscalprodutobarra',
-        'codestoquemes',
-        'manual',
-        'data',
-        'codestoquemovimentoorigem',
-    ];    
+          'codestoquemovimentotipo',
+         'entradaquantidade',
+         'entradavalor',
+         'saidaquantidade',
+         'saidavalor',
+         'codnegocioprodutobarra',
+         'codnotafiscalprodutobarra',
+         'codestoquemes',
+         'manual',
+         'data',
+             'codestoquemovimentoorigem',
+         'observacoes',
+         'codestoquesaldoconferencia',
+    ];
     protected $dates = [
         'data',
         'alteracao',
         'criacao',
     ];
-        
+
+
     // Chaves Estrangeiras
-    public function EstoqueMovimentoOrigem()
+    public function EstoqueMes()
+    {
+        return $this->belongsTo(EstoqueMes::class, 'codestoquemes', 'codestoquemes');
+    }
+
+    public function UsuarioAlteracao()
+    {
+        return $this->belongsTo(Usuario::class, 'codusuarioalteracao', 'codusuario');
+    }
+
+    public function UsuarioCriacao()
+    {
+        return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
+    }
+
+    public function EstoqueMovimento()
     {
         return $this->belongsTo(EstoqueMovimento::class, 'codestoquemovimentoorigem', 'codestoquemovimento');
+    }
+
+    public function EstoqueSaldoConferencia()
+    {
+        return $this->belongsTo(EstoqueSaldoConferencia::class, 'codestoquesaldoconferencia', 'codestoquesaldoconferencia');
     }
 
     public function EstoqueMovimentoTipo()
@@ -81,102 +104,12 @@ class EstoqueMovimento extends MGModel
         return $this->belongsTo(NotaFiscalProdutoBarra::class, 'codnotafiscalprodutobarra', 'codnotafiscalprodutobarra');
     }
 
-    public function UsuarioAlteracao()
-    {
-        return $this->belongsTo(Usuario::class, 'codusuarioalteracao', 'codusuario');
-    }
-
-    public function UsuarioCriacao()
-    {
-        return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
-    }
-
-    public function EstoqueMes()
-    {
-        return $this->belongsTo(EstoqueMes::class, 'codestoquemes', 'codestoquemes');
-    }
 
     // Tabelas Filhas
     public function EstoqueMovimentoS()
     {
-        return $this->hasMany(EstoqueMovimento::class, 'codestoquemovimentoorigem', 'codestoquemovimento');
+        return $this->hasMany(EstoqueMovimento::class, 'codestoquemovimento', 'codestoquemovimentoorigem');
     }
-    
-    public function validate() {
-        $i = 0; $validate = 'numeric';
-        if(!empty($this->entradaquantidade)) {
-            $i++;
-        }
-        if (!empty($this->entradavalor)) {
-            $i++;
-        }
-        if (!empty($this->saidaquantidade)) {
-            $i++;
-        }
-        if (!empty($this->saidavalor)) {
-            $i++;
-        }
-        if ($i == 0) {
-            $validate = 'required|numeric';
-        }
-        $this->_regrasValidacao = [
-            'entradaquantidade' => $validate,
-            'entradavalor' => $validate,
-            'saidaquantidade' => $validate,
-            'saidavalor' => $validate,
-        ];
 
-        $this->_mensagensErro = [
-            'entradaquantidade.required' => 'Pelo menos 1 dos valores de entrada e/ou saída dever ser preechido',
-            'entradavalor.required' => 'Pelo menos 1 dos valores de entrada e/ou saída dever ser preechido',
-            'saidaquantidade.required' => 'Pelo menos 1 dos valores de entrada e/ou saída dever ser preechido',
-            'saidavalor.required' => 'Pelo menos 1 dos valores de entrada e/ou saída dever ser preechido',
-        ];
-        
-        return parent::validate();
-    }
-    
-    
-    public function save(array $options = Array())
-    {
-        
-        /*
-        $this->EstoqueMes->entradaquantidade += $this->entradaquantidade - $this->original['entradaquantidade'];
-        $this->EstoqueMes->entradavalor += $this->entradavalor - $this->original['entradavalor'];
-        
-        $this->EstoqueMes->saidaquantidade += $this->saidaquantidade - $this->original['saidaquantidade'];
-        $this->EstoqueMes->saidavalor += $this->saidavalor - $this->original['saidavalor'];
-        
-        $this->EstoqueMes->saldoquantidade = $this->EstoqueMes->entradaquantidade - $this->EstoqueMes->saidaquantidade;
-        $this->EstoqueMes->saldovalor = $this->EstoqueMes->entradavalor - $this->EstoqueMes->saidavalor;
-        
-        if ($this->EstoqueMes->saldoquantidade <> 0)
-            $this->EstoqueMes->customedio = $this->EstoqueMes->saldovalor / $this->EstoqueMes->saldoquantidade;
-        */
-        
-        $ret = parent::save($options);
-
-        /*
-        if ($ret)
-            $ret = $this->EstoqueMes->save();
-        */
-        
-        return $ret;
-    }
-   
-
-    public function scopeNegativos($query, $negativos)
-    {
-        if (trim($negativos) === '')
-            return;
-        
-        if($negativos == 0)
-            return;
-
-        if($negativos == 1)
-            return $query->where(DB::raw('COALESCE(entradaquantidade,0) - COALESCE(saidaquantidade,0)'), '<', 0);
-            //return $query->whereRaw('(entradaquantidade - saidaquantidade) < 0');
-
-    }
 
 }

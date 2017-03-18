@@ -11,6 +11,7 @@ use MGLara\Http\Controllers\Controller;
 use MGLara\Repositories\EstoqueSaldoConferenciaRepository;
 use MGLara\Repositories\EstoqueSaldoRepository;
 use MGLara\Repositories\ProdutoBarraRepository;
+use MGLara\Repositories\EstoqueLocalProdutoVariacaoRepository;
 
 use MGLara\Models\ProdutoVariacao;
 
@@ -161,13 +162,45 @@ class EstoqueSaldoConferenciaController extends Controller
      */
     public function store(Request $request)
     {
-        parent::store($request);
+        // busca dados do formulario
+        $data = $request->all();
         
-        // Mensagem de registro criado
-        Session::flash('flash_create', 'Conferência de Saldo de Estoque criado!');
+        $data['fiscal'] = ($data['fiscal']==1);
+        $data['data'] = Carbon::createFromFormat('Y-m-d\TH:i', $data['data']);
         
-        // redireciona para o view
-        return redirect("estoque-saldo-conferencia/{$this->repository->model->codestoquesaldoconferencia}");
+        if (empty($data['codestoquesaldo'])) {
+            $saldo = EstoqueSaldoRepository::buscaOuCria($data['codprodutovariacao'], $data['codestoquelocal'], $data['fiscal']);
+            $data['codestoquesaldo'] = $saldo->codestoquesaldo;
+        }
+        
+        // valida dados
+        if (!$this->repository->validate($data)) {
+            $this->throwValidationException($request, $this->repository->validator);
+        }
+
+        // preenche dados 
+        $this->repository->new($data);
+        
+        // autoriza
+        $this->repository->authorize('create');
+        
+        // cria
+        if (!$this->repository->create()) {
+            abort(500);
+        }
+        
+        $elpv_repo = new EstoqueLocalProdutoVariacaoRepository;
+        $elpv_repo->model = $this->repository->model->EstoqueSaldo->EstoqueLocalProdutoVariacao;
+        $elpv_repo->fill([
+            'corredor' => $data['corredor'],
+            'prateleira' => $data['prateleira'],
+            'coluna' => $data['coluna'],
+            'bloco' => $data['bloco'],
+        ]);
+        $elpv_repo->update();
+        
+        return ['OK' => true];
+        
     }
 
     /**
@@ -206,9 +239,43 @@ class EstoqueSaldoConferenciaController extends Controller
         $fiscal = ($request->fiscal == 1);
         
         $pivot = EstoqueSaldoRepository::pivotProduto($pv->codproduto, $fiscal);
-        $saldo = EstoqueSaldoRepository::buscaPorChave($pv->codprodutovariacao, $request->codestoquelocal, $fiscal);
+        
+        $data = [
+            'data' => Carbon::now(),
+            'codprodutovariacao' => $pv->codprodutovariacao,
+            'codestoquelocal' => $request->codestoquelocal,
+            'codestoquesaldo' => null,
+            'fiscal' => ($fiscal)?1:0,
+            'quantidadeinformada' => null,
+            'customedioinformado' => null,
+            'observacoes' => null,
+            'corredor' => null,
+            'prateleira' => null,
+            'coluna' => null,
+            'bloco' => null,
+        ];
+        
+        if ($saldo = EstoqueSaldoRepository::buscaPorChave($pv->codprodutovariacao, $request->codestoquelocal, $fiscal)) {
+            $data['quantidadeinformada'] = $saldo->saldoquantidade;
+            $data['customedioinformado'] = $saldo->customedio;
+            $data['codestoquesaldo'] = $saldo->codestoquesaldo;
+            
+            $loc = $saldo->EstoqueLocalProdutoVariacao;
+            $data['corredor'] = $loc->corredor;
+            $data['prateleira'] = $loc->prateleira;
+            $data['coluna'] = $loc->coluna;
+            $data['bloco'] = $loc->bloco;
+        }
+        
         // retorna show
-        return view('estoque-saldo-conferencia.saldos', ['pivot'=>$pivot, 'saldo'=>$saldo]);
+        return view('estoque-saldo-conferencia.saldos', [
+            'pivot'=>$pivot, 
+            'saldo'=>$saldo, 
+            'codprodutovariacao' => $pv->codprodutovariacao, 
+            'codestoquelocal' => $request->codestoquelocal, 
+            'fiscal' => $fiscal, 
+            'data' => $data,
+        ]);
         
     }
     

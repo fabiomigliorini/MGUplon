@@ -278,6 +278,7 @@ class GeradorCodigoRepository {
                         'rule' => 'digits',
                         'mensagem' => "O campo \"$col->column_name\" deve conter no máximo $col->numeric_scale dígitos!",
                     ];
+                case 'float8';
                 case 'int8';
                 case 'int4';
                 case 'int2';
@@ -345,6 +346,7 @@ class GeradorCodigoRepository {
                     ];
                     break;
                 
+                case 'float8';
                 case 'numeric';
                     $pow = bcpow(10, $col->numeric_scale);
                     $step = bcdiv(1, $pow, $col->numeric_scale);
