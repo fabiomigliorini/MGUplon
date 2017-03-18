@@ -239,11 +239,11 @@
     <a class="btn btn-secondary btn-sm" href="{{ url("meta/create") }}"><i class="fa fa-plus"></i></a>
     <a class="btn btn-secondary btn-sm" href="{{ url("meta/$model->codmeta/edit") }}"><i class="fa fa-pencil"></i></a>
     @if(empty($model->inativo))
-        <a class="btn btn-secondary btn-sm" href="{{ url("meta/$model->codmeta/inactivate") }}" data-activate data-question="Tem certeza que deseja inativar '{{ $model->estadocivil }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-ban"></i></a>
+        <a class="btn btn-secondary btn-sm" href="{{ url("meta/$model->codmeta/inactivate") }}" data-activate data-question="Tem certeza que deseja inativar '{{ formataData($model->periodofinal, 'EC') }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-ban"></i></a>
     @else
-        <a class="btn btn-secondary btn-sm" href="{{ url("meta/$model->codmeta/activate") }}" data-activate data-question="Tem certeza que deseja ativar '{{ $model->estadocivil }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-circle-o"></i></a>
+        <a class="btn btn-secondary btn-sm" href="{{ url("meta/$model->codmeta/activate") }}" data-activate data-question="Tem certeza que deseja ativar '{{ formataData($model->periodofinal, 'EC') }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-circle-o"></i></a>
     @endif
-    <a class="btn btn-secondary btn-sm" href="{{ url("meta/$model->codmeta") }}" data-delete data-question="Tem certeza que deseja excluir '{{ $model->estadocivil }}'?" data-after="location.replace('{{ url('estado-civil') }}');"><i class="fa fa-trash"></i></a>                
+    <a class="btn btn-secondary btn-sm" href="{{ url("meta/$model->codmeta") }}" data-delete data-question="Tem certeza que deseja excluir '{{ formataData($model->periodofinal, 'EC') }}'?" data-after="location.replace('{{ url('meta') }}');"><i class="fa fa-trash"></i></a>                
     
 @endsection
 @section('inactive')
