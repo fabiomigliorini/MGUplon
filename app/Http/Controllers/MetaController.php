@@ -72,19 +72,6 @@ class MetaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function shows(Request $request, $id)
-    {
-        $parametros = $request->all();
-        $model = Meta::findOrFail($id);
-        $dados = $model->totalVendas();
-        
-        if ($request->get('debug') == true) {
-            return $dados;
-        }
-
-        return view('meta.show', compact('model', 'dados'));
-    }
-    
     public function show(Request $request, $id)
     {
         // busca registro
@@ -118,18 +105,27 @@ class MetaController extends Controller
         ]);
     }    
     
-    
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return  \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function create()
     {
-        $model = new Meta();
-        return view('meta.create', compact('model'));
+        // cria um registro em branco
+        $this->repository->new();
+        
+        // autoriza
+        $this->repository->authorize('create');
+        
+        // breadcrumb
+        $this->bc->addItem('Novo');
+        
+        // retorna view
+        return view('meta.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
-
+    
+    
     /**
      * Store a newly created resource in storage.
      *
@@ -138,20 +134,21 @@ class MetaController extends Controller
      */
     public function store(Request $request)
     {
-        $request_meta = $request->all()['meta'];
-        $request_meta['periodoinicial'] = new Carbon($request_meta['periodoinicial']);
-        $request_meta['periodofinal'] = new Carbon($request_meta['periodofinal']);
-        $model = new Meta($request_meta);
-
+        $data = $request->all()['meta'];
+        $data['periodoinicial'] = new Carbon($data['periodoinicial']);
+        $data['periodofinal'] = new Carbon($data['periodofinal']);
+        $this->repository->new($data);
+        $this->repository->authorize('create');
+        
         DB::beginTransaction();
         
-        if (!$model->validate()) {
-            $this->throwValidationException($request, $model->_validator);        
+        if (!$this->repository->validate($data)) {
+            $this->throwValidationException($request, $this->repository->validator);
         }
         
         try {
-            if (!$model->save()){
-                throw new Exception ('Erro ao Criar Meta!');            
+            if (!$this->repository->create()) {
+                 abort(500);   
             }
             
             $metasfilial = $request->all()['metafilial'];
@@ -159,9 +156,9 @@ class MetaController extends Controller
             {
                 if(!empty($meta['controla'])) {
 
-                    $mf = new MetaFilial();
+                    $mf = $this->metaFilialRepository->new();
                     $mf->codfilial = $metafilial;
-                    $mf->codmeta = $model->codmeta;
+                    $mf->codmeta = $this->repository->model->codmeta;
                     $mf->valormetafilial    = $meta['valormetafilial'];
                     $mf->valormetavendedor  = $meta['valormetavendedor'];
                     $mf->observacoes        = $meta['observacoes'];
@@ -173,7 +170,8 @@ class MetaController extends Controller
                     $pessoas = $meta['pessoas'];
                     foreach ($pessoas as $pessoa)
                     {
-                        $mfp = new MetaFilialPessoa();
+                        //$mfp = new MetaFilialPessoa();
+                        $mfp = $this->metaFilialPessoaRepository->new();
                         $mfp->codmetafilial = $mf->codmetafilial;
                         $mfp->codpessoa     = $pessoa['codpessoa'];
                         $mfp->codcargo      = $pessoa['codcargo'];
@@ -188,12 +186,12 @@ class MetaController extends Controller
             }
             
             DB::commit();
-            Session::flash('flash_success', "Meta  criada com sucesso!");
-            return redirect("meta/$model->codmeta");            
+            Session::flash('flash_create', 'Meta criada!');
+            return redirect("meta/{$this->repository->model->codmeta}");            
             
         } catch (Exception $ex) {
             DB::rollBack();
-            $this->throwValidationException($request, $model->_validator);              
+            $this->throwValidationException($request, $this->repository->validator);
         }
     }
 
@@ -205,7 +203,12 @@ class MetaController extends Controller
      */
     public function edit($id)
     {
+        // busca regstro
         $model = $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
         $model['meta'] =  $model->getAttributes();
         $metasfiliais = [];
         foreach($model->MetaFilialS()->get() as $metafilial)
@@ -225,7 +228,12 @@ class MetaController extends Controller
         }
         $model['metafilial'] = $metasfiliais;
         
-        return view('meta.edit',  compact('model'));
+        // breadcrumb
+        $this->bc->addItem(formataData($this->repository->model->periodofinal, 'EC'), url('meta', $this->repository->model->codmeta));
+        $this->bc->header = 'Meta - ' . formataData($this->repository->model->periodofinal, 'EC');
+        $this->bc->addItem('Alterar');        
+        
+        return view('meta.edit',  ['model'=> $model, 'bc'=>  $this->bc]);
     }
 
     /**
@@ -237,20 +245,22 @@ class MetaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $model = $this->repository->findOrFail($id);
-        $dados_meta = $request->all()['meta'];
-        $dados_meta['periodoinicial'] = new Carbon($dados_meta['periodoinicial']);
-        $dados_meta['periodofinal'] = new Carbon($dados_meta['periodofinal']);
-        $model->fill($dados_meta);
+        $this->repository->findOrFail($id);
+        $data = $request->all()['meta'];
+        $data['periodoinicial'] = new Carbon($data['periodoinicial']);
+        $data['periodofinal'] = new Carbon($data['periodofinal']);
+        
+        $this->repository->fill($data);
+        $this->repository->authorize('update');
         
         DB::beginTransaction();
 
-        if (!$model->validate()) {
-            $this->throwValidationException($request, $model->_validator);
+        if (!$this->repository->validate($data, $id)) {
+            $this->throwValidationException($request, $this->repository->validator);
         }
-
+        
         try {
-            if (!$model->save()){
+            if (!$this->repository->update()){
                 throw new Exception ('Erro ao Alterar Meta!');            
             }
             
@@ -260,17 +270,18 @@ class MetaController extends Controller
                 if(isset($meta['controla'])) {
                     
                     if(empty($meta['codmetafilial'])) {
-                        $mf = new MetaFilial();
+                        //$mf = new MetaFilial();
+                        $mf = $this->metaFilialRepository->new();
                         $mf->codfilial = $metafilial;
                         $mf->codmeta = $model->codmeta;
                     } else {
-                        $mf = MetaFilial::findOrFail($meta['codmetafilial']);
+                        $mf = $this->metaFilialRepository->findOrFail($meta['codmetafilial']);
                     }
                     $mf->valormetafilial    = $meta['valormetafilial'];
                     $mf->valormetavendedor  = $meta['valormetavendedor'];
                     $mf->observacoes        = $meta['observacoes'];
                     
-                    if (!$mf->save()) {
+                    if (!$mf->update()) {
                         throw new Exception ('Erro ao Alterar Meta Filial!');
                     }
 
@@ -285,17 +296,17 @@ class MetaController extends Controller
                             ];
 
                             if(!empty($pessoa_dado['codmetafilialpessoa'])) {
-                                $pessoa = MetaFilialPessoa::findOrFail($pessoa_dado['codmetafilialpessoa']);
+                                $pessoa = $this->metaFilialPessoaRepository->findOrFail($pessoa_dado['codmetafilialpessoa']);
                                 $pessoa->fill($pessoa_dados);
                             } else {
-                                $pessoa = new MetaFilialPessoa();
+                                $pessoa = $this->metaFilialPessoaRepository->new();
                                 $pessoa->fill($pessoa_dados);
                             }
-
-                            if (!$pessoa->validate()) {
-                                $this->throwValidationException($request, $pessoa->_validator);
+                            /*
+                            if (!$this->metaFilialPessoaRepository->validate($pessoa, $id)) {
+                                $this->throwValidationException($request, $pessoa->validator);
                             }
-                            
+                            */
                             $pessoa->save();
                             
                             $codmetafilialpessoa[] = $pessoa->codmetafilialpessoa;
@@ -308,37 +319,34 @@ class MetaController extends Controller
             }
             
             DB::commit();
-            Session::flash('flash_success', "Meta alterada!");
-            return redirect("meta/$model->codmeta");           
+            Session::flash('flash_update', 'Registro alterado!');
+            return redirect("meta/{$this->repository->model->codmeta}"); 
         } catch (Exception $ex) {
             DB::rollBack();
-            $this->throwValidationException($request, $model->_validator);              
+            $this->throwValidationException($request, $this->repository->validator);
         }        
     }
     
     
     public function destroy($id)
     {
-        try{
-            $meta = Meta::findOrFail($id);
-            foreach ($meta->MetaFilialS()->get() as $mf)
+        $meta = $this->repository->findOrFail($id);
+        $this->repository->authorize('delete');
+        foreach ($meta->MetaFilialS()->get() as $mf)
+        {
+            foreach ($mf->MetaFilialPessoaS()->get() as $mfp)
             {
-                foreach ($mf->MetaFilialPessoaS()->get() as $mfp)
-                {
-                    if (!$mfp->delete()){
-                        throw new Exception ('Erro excluir Meta Filial Pessoa!');            
-                    }                    
-                }
-                if (!$mf->delete()){
-                    throw new Exception ('Erro excluir Meta Filial!');            
+                if (!$mfp->delete()){
+                    return ['OK' => false, 'mensagem' => 'Erro excluir Meta Filial Pessoa!!'];
                 }                    
             }
-            $meta->delete();
-            $ret = ['resultado' => true, 'mensagem' => 'Meta excluída com sucesso!'];
+            if (!$mf->delete()){
+                return ['OK' => false, 'mensagem' => 'Erro excluir Meta Filial!'];
+            }                    
         }
-        catch(\Exception $e){
-            $ret = ['resultado' => false, 'mensagem' => 'Erro ao excluir meta!', 'exception' => "$e"];
-        }
-        return json_encode($ret);
-    }    
+        
+        // apaga
+        return ['OK' => $this->repository->delete()];
+    }
+
 }

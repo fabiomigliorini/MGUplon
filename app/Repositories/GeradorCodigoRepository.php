@@ -274,10 +274,6 @@ class GeradorCodigoRepository {
                     break;
                 
                 case 'numeric';
-                    $validacoes[$col->column_name]['digits'] = [
-                        'rule' => 'digits',
-                        'mensagem' => "O campo \"$col->column_name\" deve conter no máximo $col->numeric_scale dígitos!",
-                    ];
                 case 'int8';
                 case 'int4';
                 case 'int2';
