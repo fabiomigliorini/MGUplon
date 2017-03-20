@@ -44,7 +44,7 @@ class AuthServiceProvider extends ServiceProvider
         \MGLara\Models\EstoqueSaldo::class          => \MGLara\Policies\EstoqueSaldoPolicy::class,
         \MGLara\Models\TipoMovimentoTitulo::class   => \MGLara\Policies\TipoMovimentoTituloPolicy::class,
         \MGLara\Models\Meta::class                  => \MGLara\Policies\MetaPolicy::class,
-
+        \MGLara\Models\Produto::class => \MGLara\Policies\ProdutoPolicy::class,
         
     ];
 
