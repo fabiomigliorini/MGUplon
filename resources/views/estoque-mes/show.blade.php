@@ -1,247 +1,243 @@
 @extends('layouts.default')
 @section('content')
-<?php
 
-function decideIconeUltimaConferencia($data)
-{
-    if ($data == null)
-        return 'glyphicon-remove-sign text-muted';
-    
-    $dias = $data->diffInDays();
-    
-    if ($dias > 30)
-        return 'glyphicon-question-sign text-danger';
-  
-    if ($dias > 15)
-        return 'glyphicon-question-sign text-warning';
-    
-    return 'glyphicon-ok-sign text-success';
-}
-
-?>
-<ol class="breadcrumb header">
-    {!!
-        titulo(
-                $model->codestoquesaldo, 
-                [
-                    'Saldos de Estoque',
-                    ($model->EstoqueSaldo->fiscal)?"Fiscal":"Fisico",
-                    url("estoque-local/{$model->EstoqueSaldo->EstoqueLocalProdutoVariacao->codestoquelocal}")=>$model->EstoqueSaldo->EstoqueLocalProdutoVariacao->EstoqueLocal->estoquelocal,
-                    url("produto/{$model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao->codproduto}")=>$model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao->Produto->produto,
-                    (empty($model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao->variacao))?"<i class='text-muted'>{ Sem Variação }</i>":$model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao->variacao,
-                ],
-                $model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao->Produto->inativo,
-                8
-        )
-    !!}
-    <li class='active'>
-        <small>
-            <a title="Novo Movimento Manual" href="{{ url("estoque-movimento/create/$model->codestoquemes") }}"><i class="glyphicon glyphicon-plus"></i></a>
-            <!--
-            <a title="Recalcular Movimento de Estoque" href="#" id="btnRecalculaMovimentoEstoque"><i class="glyphicon glyphicon-refresh"></i></a>
-            <a title="Recalcular Custo Medio" href="#" id="btnRecalculaCustoMedio"><i class="glyphicon glyphicon-usd"></i></a>
-            -->
-        </small>
-    </li>
-    <button class="btn pull-right" type="button" data-toggle="collapse" data-target="#div-conferencia-collapse" aria-expanded="false" aria-controls="div-conferencia-collapse">
-        <span class='glyphicon {{ decideIconeUltimaConferencia($model->EstoqueSaldo->ultimaconferencia) }}'></span>
-    </button>
-</ol>
-<hr>
-
-<small>
-    <div class="collapse" id="div-conferencia-collapse">
-        <div class="panel panel-default">
-            <div class='panel-heading'>
-                <b>
-                    Últimas Conferências de Estoque
-                </b>
-                <a href='{{ url("estoque-saldo-conferencia/create?codestoquesaldo={$model->codestoquesaldo}") }}'>
-                    Nova <span class='glyphicon glyphicon-plus'></span>
-                </a>
+<div class='row'>
+    <div class='col-md-12'>
+        <div class='card'>
+          <h4 class="card-header">
+            <a href="{{ url('produto', $model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao->codproduto) }}">
+              {{ $model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao->Produto->produto }}
+              
+            </a>
+          </h4>
+          <div class='card-block'>
+            <div class="row">
+              <div class="col-md-1">
+                <ul class="nav nav-pills flex-column">
+                  <li class="nav-item">
+                    <a class="nav-link active" href="#">Active</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                  </li>
+                </ul>                
+                <ul class="nav nav-pills flex-column">
+                  <li class="nav-item">
+                    <a class="nav-link active" href="#">Físico</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Fiscal</a>
+                  </li>
+                </ul>                
+              </div>
+              <div class="col-md-1">
+                <ul class="nav nav-pills flex-column">
+                  <li class="nav-item">
+                    <a class="nav-link active" href="#">Active</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                  </li>
+                </ul>                
+              </div>
+              <div class="col-md-10">
+                <ul class="nav nav-pills">
+                  @foreach ($anteriores as $ant)
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ url('estoque-mes', $ant->codestoquemes) }}">{{ $ant->mes->format('M/Y') }}</a>
+                    </li>
+                  @endforeach
+                  <li class="nav-item">
+                      <a class="nav-link active" href="{{ url('estoque-mes', $model->codestoquemes) }}">{{ $model->mes->format('M/Y') }}</a>
+                  </li>
+                  @foreach ($proximos as $prox)
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ url('estoque-mes', $prox->codestoquemes) }}">{{ $prox->mes->format('M/Y') }}</a>
+                    </li>
+                  @endforeach
+                </ul>   
+                <br>
+                <div class='col-md-6'>
+                  <table class='table table-sm'>
+                    <thead>
+                    <tr>
+                      <th>
+                        &nbsp;
+                      </th>
+                      <th class='text-right'>
+                        {{ $model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao->Produto->UnidadeMedida->sigla }}
+                      </th>
+                      <th class='text-right '>
+                        R$
+                      </th>
+                    </tr>
+                    </thead>
+                    <tr>
+                      <td>
+                        Saldo Inicial
+                      </td>
+                      <td class='text-right {{ ($model->inicialquantidade>=0)?'text-info':'text-danger' }}'>
+                        {{ formataNumero($model->inicialquantidade, 3) }}
+                      </td>
+                      <td class='text-right {{ ($model->inicialvalor>=0)?'text-info':'text-danger' }}'>
+                        {{ formataNumero($model->inicialvalor, 2) }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        Entradas
+                      </td>
+                      <td class='text-right text-info'>
+                        {{ formataNumero($model->entradaquantidade, 3) }} 
+                      </td>
+                      <td class='text-right text-info'>
+                        {{ formataNumero($model->entradavalor, 2) }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        Saídas
+                      </td>
+                      <td class='text-right text-danger'>
+                        {{ formataNumero($model->saidaquantidade * -1, 3) }}
+                      </td>
+                      <td class='text-right text-danger'>
+                        {{ formataNumero($model->inicialvalor * -1, 2) }}
+                      </td>
+                    </tr>
+                    <tfoot>
+                    <tr>
+                      <th>
+                        Saldo Final
+                      </th>
+                      <th class='text-right {{ ($model->saldoquantidade>=0)?'text-info':'text-danger' }}'>
+                        {{ formataNumero($model->saldoquantidade, 3) }}
+                      </th>
+                      <th class='text-right {{ ($model->saldovalor>=0)?'text-info':'text-danger' }}'>
+                        {{ formataNumero($model->saldovalor, 3) }}
+                      </th>
+                    </tr>
+                    <tr>
+                      <th>
+                        Custo Médio
+                      </th>
+                      <th class='text-right text-info' colspan="2">
+                        {{ formataNumero($model->customedio, 6) }}
+                      </th>
+                    </tr>
+                    </tfoot>
+                  </table>
+                </div>
+                  <?php /*
+                  @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Usuario', 'Pessoa', 'Filial']])
+                  */
+                  ?>
+              </div>
             </div>
-            <div class='list-group list-group-condensed list-group-hover list-group-striped' id='div-conferencia'>
-                @foreach($model->EstoqueSaldo->EstoqueSaldoConferenciaS()->orderBy('criacao', 'DESC')->get() as $esc)
-                    <div class='list-group-item'>
-                        <div class='row'>
-                            <div class='col-sm-1 text-muted'>
-                                {{ formataCodigo($esc->codestoquesaldoconferencia) }}
-                            </div>
-                            <div class='col-sm-1 text-right text-muted'>
-                                <s>
-                                    {{ formataNumero($esc->quantidadesistema, 3) }}
-                                </s>
-                            </div>
-                            <div class='col-sm-1 text-right'>
-                                <b>
-                                    {{ formataNumero($esc->quantidadeinformada, 3) }}
-                                </b>
-                            </div>
-                            <div class='col-sm-1 text-right text-muted'>
-                                <s>
-                                    {{ formataNumero($esc->customediosistema, 6) }}
-                                </s>
-                            </div>
-                            <div class='col-sm-1 text-right'>
-                                <b>
-                                    {{ formataNumero($esc->customedioinformado, 6) }}
-                                </b>
-                            </div>
-                            <div class='col-sm-2 text-center text-muted'>
-                                {{ $esc->data->format('d/m/Y H:i:s') }}
-                            </div>
-                            <div class='col-sm-2 text-center text-muted'>
-                                {{ $esc->criacao->format('d/m/Y H:i:s') }}
-                            </div>
-                            <div class='col-sm-1 text-center text-muted'>
-                                {{ $esc->UsuarioCriacao->usuario }}
-                            </div>
-                            <div class='col-sm-2 text-right'>
-                                <a href="{{ url("estoque-saldo-conferencia/{$esc->codestoquesaldoconferencia}") }}" data-excluir data-pergunta="Tem certeza que deseja excluir?" data-after-delete="recarregaDivS(['div-movimento', 'div-conferencia']);">
-                                    <i class="glyphicon glyphicon-trash"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
+          
+            
+                <table class="table table-bordered table-striped table-hover table-sm col-md-6">
+                  <tbody>  
+                    <tr> 
+                      <th>#</th> 
+                      <td>{{ $model->codestoquemes }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Estoque Mes</th> 
+                      <td>{{ $model->mes }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Codestoquesaldo</th> 
+                      <td>{{ $model->codestoquesaldo }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Inicialquantidade</th> 
+                      <td>{{ $model->inicialquantidade }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Inicialvalor</th> 
+                      <td>{{ $model->inicialvalor }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Entradaquantidade</th> 
+                      <td>{{ $model->entradaquantidade }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Entradavalor</th> 
+                      <td>{{ $model->entradavalor }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Saidaquantidade</th> 
+                      <td>{{ $model->saidaquantidade }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Saidavalor</th> 
+                      <td>{{ $model->saidavalor }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Saldoquantidade</th> 
+                      <td>{{ $model->saldoquantidade }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Saldovalor</th> 
+                      <td>{{ $model->saldovalor }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Customedio</th> 
+                      <td>{{ $model->customedio }}</td> 
+                    </tr>
+                  </tbody> 
+                </table>
+                <div class='clearfix'></div>
             </div>
         </div>
     </div>
-</small>
-
-<?php
-
-    $proximos = $model->buscaProximos(8);
-    $anteriores = $model->buscaAnteriores(16 - sizeof($proximos));
-    if (sizeof($anteriores) < 8)
-        $proximos = $model->buscaProximos(16 - sizeof($anteriores));
-
-?>
-
-<ul class="nav nav-pills">
-    @foreach($anteriores as $em)
-        <li role="presentation"><a href="<?php echo url("estoque-mes/$em->codestoquemes");?>">{{ formataData($em->mes, 'EC') }}</a></li>
-    @endforeach
-    <li role="presentation" class="active"><a href="#">{{ formataData($model->mes, 'EC') }}</a></li>
-    @foreach($proximos as $em)
-        <li role="presentation"><a href="<?php echo url("estoque-mes/$em->codestoquemes");?>">{{ formataData($em->mes, 'EC') }}</a></li>
-    @endforeach
-</ul>
-
-<br>
-<div id='div-movimento'>
-<table class="table table-striped table-bordered table-condensed small">
-    <thead>
-        <tr>
-            <th rowspan="2" class='col-sm-3'>Movimento</th>
-            <th colspan="2">Entrada</th>
-            <th colspan="2">Saída</th>
-            <th colspan="2">Saldo</th>
-            <th rowspan="2" class='col-sm-1'>Custo Médio</th>
-            <th rowspan="2" class='col-sm-2'>Documento</th>
-        </tr>
-        <tr>
-            <th class='col-sm-1'>Quantidade</th>
-            <th class='col-sm-1'>Valor</th>
-            <th class='col-sm-1'>Quantidade</th>
-            <th class='col-sm-1'>Valor</th>
-            <th class='col-sm-1'>Quantidade</th>
-            <th class='col-sm-1'>Valor</th>            
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-            $saldoquantidade = $model->inicialquantidade;
-            $saldovalor = $model->inicialvalor;
-            $customedio = ($saldoquantidade != 0)?$saldovalor/$saldoquantidade:0;
-        ?>
-        <tr>
-            <th colspan="5">Saldo Inicial</th>
-            <td class="text-right <?php echo ($saldoquantidade < 0)?"text-danger":""; ?>">{{ formataNumero($saldoquantidade, 3) }}</td>
-            <td class="text-right <?php echo ($saldovalor < 0)?"text-danger":""; ?>">{{ formataNumero($saldovalor) }}</td>
-            <td class="text-right">{{ formataNumero($customedio, 6) }}</td>
-            <td></td>
-        </tr>
-        @foreach($model->EstoqueMovimentoS()->orderBy('data', 'asc')->orderBy('entradaquantidade', 'asc')->negativos(app('request')->input('negativos'))->get() as $row)
-        <tr>
-            <?php
-                $saldoquantidade += $row->entradaquantidade - $row->saidaquantidade;
-                $saldovalor += $row->entradavalor - $row->saidavalor;
-                $customedio = (($row->entradaquantidade + $row->saidaquantidade) != 0)?($row->entradavalor + $row->saidavalor)/(($row->entradaquantidade + $row->saidaquantidade)):0;
-            ?>
-            <td>
-                <span class='pull-right'>
-                    {{ $row->data->format('d/m/y H:i') }}
-                </span>
-                {{ $row->EstoqueMovimentoTipo->descricao }}
-                @if (isset($row->codestoquemovimentoorigem))
-                    De 
-                    <a href="{{ url("estoque-mes/" . $row->EstoqueMovimentoOrigem->codestoquemes) }}">
-                       {{ $row->EstoqueMovimentoOrigem->EstoqueMes->EstoqueSaldo->EstoqueLocalProdutoVariacao->EstoqueLocal->estoquelocal }}
-                    </a>
-                @endif
-
-                @foreach ($row->EstoqueMovimentoS as $em)
-                    P/
-                    <a href="{{ url("estoque-mes/" . $em->codestoquemes) }}">
-                        {{ $em->EstoqueMes->EstoqueSaldo->EstoqueLocalProdutoVariacao->EstoqueLocal->estoquelocal }}
-                    </a>
-                @endforeach
-            </td>
-            <td class="text-right">{{ formataNumero($row->entradaquantidade, 3) }}</td>
-            <td class="text-right">{{ formataNumero($row->entradavalor) }}</td>
-            <td class="text-right">{{ formataNumero($row->saidaquantidade, 3) }}</td>
-            <td class="text-right">{{ formataNumero($row->saidavalor) }}</td>
-            <td class="text-right <?php echo ($saldoquantidade < 0)?"text-danger":""; ?>">{{ formataNumero($saldoquantidade, 3) }}</td>
-            <td class="text-right <?php echo ($saldovalor < 0)?"text-danger":""; ?>"">{{ formataNumero($saldovalor) }}</td>
-            <td class="text-right">{{ formataNumero($customedio, 6) }}</td>
-            <td>
-                @if (isset($row->codnotafiscalprodutobarra))
-                    <a href='{{ url("nota-fiscal/{$row->NotaFiscalProdutoBarra->NotaFiscal->codnotafiscal}" )}}'>{{ formataCodigo($row->NotaFiscalProdutoBarra->NotaFiscal->codnotafiscal) }}</a>
-                    -
-                    <a href='{{ url("pessoa/{$row->NotaFiscalProdutoBarra->NotaFiscal->codpessoa}" )}}'>{{ $row->NotaFiscalProdutoBarra->NotaFiscal->Pessoa->fantasia }}</a>
-                @endif
-                
-                @if (isset($row->codnegocioprodutobarra))
-                    <a href='{{ url("negocio/{$row->NegocioProdutoBarra->Negocio->codnegocio}" )}}'>{{ formataCodigo($row->NegocioProdutoBarra->Negocio->codnegocio) }}</a>
-                    -
-                    <a href='{{ url("pessoa/{$row->NegocioProdutoBarra->Negocio->codpessoa}" )}}'>{{ $row->NegocioProdutoBarra->Negocio->Pessoa->fantasia }}</a>
-                @endif
-                
-                @if($row->manual)
-                    <div class='pull-right'>
-                        <a href="{{ url("estoque-movimento/$row->codestoquemovimento/edit") }}">
-                            <i class="glyphicon glyphicon-pencil"></i>
-                        </a>
-                        <a href="{{ url("estoque-movimento/$row->codestoquemovimento") }}" data-excluir data-pergunta="Tem certeza que deseja excluir?" data-after-delete="recarregaDiv('div-movimento');">
-                            <i class="glyphicon glyphicon-trash"></i>
-                        </a>
-                    </div>
-                @endif
-                
-                {{ $row->observacoes }}
-            </td>
-        </tr>
-        @endforeach
-        @if (count($model) === 0)
-        <tr>
-            <th colspan="10">Nenhum registro encontrado!</th>
-        </tr>
-        @endif
-    <tfoot>
-        <tr>
-            <th>Totais</th>
-            <th class="text-right">{{ formataNumero($model->entradaquantidade, 3) }}</th>
-            <th class="text-right">{{ formataNumero($model->entradavalor) }}</th>
-            <th class="text-right">{{ formataNumero($model->saidaquantidade, 3) }}</th>
-            <th class="text-right">{{ formataNumero($model->saidavalor) }}</th>
-            <th class="text-right <?php echo ($model->saldoquantidade < 0)?"text-danger":""; ?>">{{ formataNumero($model->saldoquantidade, 3) }}</th>
-            <th class="text-right <?php echo ($model->saldovalor < 0)?"text-danger":""; ?>"">{{ formataNumero($model->saldovalor) }}</th>
-            <th class="text-right">{{ formataNumero($model->customedio, 6) }}</th>
-            <th></th>
-        </tr>
-    </tfoot>
-    </tbody>
-</table>
 </div>
+
+@section('buttons')
+
+    <a class="btn btn-secondary btn-sm" href="{{ url("estoque-mes/$model->codestoquemes/edit") }}"><i class="fa fa-pencil"></i></a>
+    @if(empty($model->inativo))
+        <a class="btn btn-secondary btn-sm" href="{{ url("estoque-mes/$model->codestoquemes/inactivate") }}" data-activate data-question="Tem certeza que deseja inativar '{{ $model->mes }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-ban"></i></a>
+    @else
+        <a class="btn btn-secondary btn-sm" href="{{ url("estoque-mes/$model->codestoquemes/activate") }}" data-activate data-question="Tem certeza que deseja ativar '{{ $model->mes }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-circle-o"></i></a>
+    @endif
+    <a class="btn btn-secondary btn-sm" href="{{ url("estoque-mes/$model->codestoquemes") }}" data-delete data-question="Tem certeza que deseja excluir '{{ $model->mes }}'?" data-after="location.replace('{{ url('estoque-mes') }}');"><i class="fa fa-trash"></i></a>                
+    
+@endsection
+@section('inactive')
+
+    @include('layouts.includes.inactive', [$model])
+    
+@endsection
+@section('creation')
+
+    @include('layouts.includes.creation', [$model])
+    
+@endsection
+@section('inscript')
+
+@include('layouts.includes.datatable.assets')
+
+@include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('usuario/datatable'), 'order' => $filtro['order'], 'filtros' => ['codusuario', 'usuario', 'codfilial', 'codpessoa', 'inativo'] ])
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        
+    });
+
+</script>
+@endsection
 @stop
