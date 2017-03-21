@@ -13,28 +13,55 @@ use Illuminate\Support\Facades\Validator;
 use URL;
 
 use MGLara\Http\Controllers\Controller;
-use MGLara\Models\Produto;
-use MGLara\Models\ProdutoBarra;
-use MGLara\Models\ProdutoVariacao;
-use MGLara\Models\ProdutoEmbalagem;
-use MGLara\Models\NegocioProdutoBarra;
-use MGLara\Models\NotaFiscalProdutoBarra;
-use MGLara\Models\TipoProduto;
-use MGLara\Models\ProdutoHistoricoPreco;
+use MGLara\Repositories\ProdutoRepository;
+use MGLara\Repositories\ProdutoBarraRepository;
+use MGLara\Repositories\ProdutoVariacaoRepository;
+use MGLara\Repositories\ProdutoEmbalagemRepository;
+use MGLara\Repositories\NegocioProdutoBarraRepository;
+use MGLara\Repositories\NotaFiscalProdutoBarraRepository;
+use MGLara\Repositories\TipoProdutoRepository;
+use MGLara\Repositories\ProdutoHistoricoPrecoRepository;
 use MGLara\Library\IntegracaoOpenCart\IntegracaoOpenCart;
+
+use MGLara\Library\Breadcrumb\Breadcrumb;
+use MGLara\Library\JsonEnvelope\Datatable;
+
+/**
+ * @property  ProdutoRepository                     $repository
+ * @property  ProdutoBarraRepository                $produtoBarraRepository 
+ * @property  ProdutoVariacaoRepository             $produtoVariacaoRepository 
+ * @property  ProdutoEmbalagemRepository            $produtoEmbalagemRepository 
+ * @property  NegocioProdutoBarraRepository         $negocioProdutoBarraRepository 
+ * @property  NotaFiscalProdutoBarraRepository      $notaFiscalProdutoBarraRepository 
+ * @property  TipoProdutoRepository                 $tipoProdutoRepository 
+ * @property  ProdutoHistoricoPrecoRepository       $produtoHistoricoPrecoRepository 
+ */
+
 
 class ProdutoController extends Controller
 {
-    public function __construct()
-    {
-        // Permissoes
-        $this->middleware('permissao:produto.consulta', ['only' => ['index', 'show']]);
-        $this->middleware('permissao:produto.inclusao', ['only' => ['create', 'store']]);
-        $this->middleware('permissao:produto.alteracao', ['only' => ['edit', 'update', 'transferirVariacao', 'transferirVariacaoSalvar']]);
-        $this->middleware('permissao:produto.exclusao', ['only' => ['delete', 'destroy']]);
-        $this->middleware('permissao:produto.inativacao', ['only' => ['inativo']]);
+    public function __construct(
+            ProdutoRepository $repository,
+            ProdutoBarraRepository $produtoBarraRepository,
+            ProdutoVariacaoRepository $produtoVariacaoRepository,
+            ProdutoEmbalagemRepository $produtoEmbalagemRepository,
+            NegocioProdutoBarraRepository $negocioProdutoBarraRepository,
+            NotaFiscalProdutoBarraRepository $notaFiscalProdutoBarraRepository,
+            TipoProdutoRepository $tipoProdutoRepository,
+            ProdutoHistoricoPrecoRepository $produtoHistoricoPrecoRepository            
+        ) {
+        $this->repository                            = $repository;
+        $this->produtoBarraRepository                = $produtoBarraRepository ;
+        $this->produtoVariacaoRepository             = $produtoVariacaoRepository;
+        $this->produtoEmbalagemRepository            = $produtoEmbalagemRepository; 
+        $this->negocioProdutoBarraRepository         = $negocioProdutoBarraRepository; 
+        $this->notaFiscalProdutoBarraRepository      = $notaFiscalProdutoBarraRepository; 
+        $this->tipoProdutoRepository                 = $tipoProdutoRepository; 
+        $this->produtoHistoricoPrecoRepository       = $produtoHistoricoPrecoRepository;
+                
+        $this->bc = new Breadcrumb('Produto');
+        $this->bc->addItem('Produto', url('produto'));
     }
-
     /**
      * Display a listing of the resource.
      *
@@ -42,19 +69,99 @@ class ProdutoController extends Controller
      */
     public function index(Request $request) {
         
-        // Busca filtro da sessao
-        $parametros = self::filtroEstatico(
-            $request, 
-            'produto.index', 
-            ['ativo' => '1'], 
-            ['criacao_de', 'criacao_ate', 'alteracao_de', 'alteracao_ate']
-        );
+        // Permissao
+        $this->repository->authorize('listing');
         
-        $model = Produto::search($parametros)->orderBy('produto', 'ASC')->paginate(20);
+        // Breadcrumb
+        $this->bc->addItem('Listagem');
         
-        return view('produto.index', compact('model'));
-    }
+        // Filtro da listagem
+        if (!$filtro = $this->getFiltro()) {
+            $filtro = [
+                'filtros' => [
+                    'inativo' => 1,
+                ],
+                'order' => [[
+                    'column' => 3,
+                    'dir' => 'ASC',
+                ]],
+            ];
+        }
+        
+        
+        // retorna View
+        return view('produto.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
+    }    
+    
+    /**
+     * Monta json para alimentar a Datatable do index
+     * 
+     * @param  Request $request
+     * @return  json
+     */
+    public function datatable(Request $request) {
+        
+        // Autorizacao
+        $this->repository->authorize('listing');
 
+        // Grava Filtro para montar o formulario da proxima vez que o index for carregado
+        $this->setFiltro([
+            'filtros' => $request['filtros'],
+            'order' => $request['order'],
+        ]);
+        
+        // Ordenacao
+        $columns[0] = 'codproduto';
+        $columns[1] = 'inativo';
+        $columns[2] = 'codproduto';
+        $columns[3] = 'referencia';
+        $columns[4] = 'produto';
+        $columns[5] = 'codsubgrupoproduto';
+        $columns[6] = 'codmarca';
+        $columns[7] = 'codunidademedida';
+        $columns[8] = 'preco';
+
+        $sort = [];
+        if (!empty($request['order'])) {
+            foreach ($request['order'] as $order) {
+                $sort[] = [
+                    'column' => $columns[$order['column']],
+                    'dir' => $order['dir'],
+                ];
+            }
+        }
+
+        // Pega listagem dos registros
+        $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
+        
+        // Monta Totais
+        $recordsTotal = $regs['recordsTotal'];
+        $recordsFiltered = $regs['recordsFiltered'];
+        
+        // Formata registros para exibir no data table
+        $data = [];
+        foreach ($regs['data'] as $reg) {
+            $data[] = [
+                url('produto', $reg->codproduto),
+                formataData($reg->inativo, 'C'),
+                formataCodigo($reg->codproduto),
+                $reg->referencia,
+                $reg->produto,
+                $reg->SubGrupoProduto->subgrupoproduto,
+                $reg->Marca->marca,
+                $reg->UnidadeMedida->sigla,
+                $reg->preco,
+            ];
+        }
+        
+        // Envelopa os dados no formato do data table
+        $ret = new Datatable($request['draw'], $recordsTotal, $recordsFiltered, $data);
+        
+        // Retorna o JSON
+        return collect($ret);
+    }    
+    
+    
     /**
      * Show the form for creating a new resource.
      *
@@ -121,8 +228,30 @@ class ProdutoController extends Controller
         }
      
     }
-
+    
+    /**
+     * Display the specified resource.
+     *
+     * @param    int  $id
+     * @return  \Illuminate\Http\Response
+     */
     public function show(Request $request, $id)
+    {
+        // busca registro
+        $this->repository->findOrFail($id);
+        
+        //autorizacao
+        $this->repository->authorize('view');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->produto);
+        $this->bc->header = $this->repository->model->produto;
+        
+        // retorna show
+        return view('produto.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+    }
+    
+    public function shows(Request $request, $id)
     {
         $model = Produto::findOrFail($id);
         switch ($request->get('_div'))
@@ -159,13 +288,29 @@ class ProdutoController extends Controller
         return $ret;
     }
 
-
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param    int  $id
+     * @return  \Illuminate\Http\Response
+     */
     public function edit($id)
     {
-        $model = Produto::findOrFail($id);
-        return view('produto.edit',  compact('model'));
+        // busca regstro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->codproduto, url('produto', $this->repository->model->produto));
+        $this->bc->header = $this->repository->model->produto;
+        $this->bc->addItem('Alterar');
+        
+        // retorna formulario edit
+        return view('produto.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
-
+    
     /**
      * Update the specified resource in storage.
      *

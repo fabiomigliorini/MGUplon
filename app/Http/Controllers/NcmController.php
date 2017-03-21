@@ -158,7 +158,7 @@ class NcmController extends Controller
             $params['page'] = $params['page']??1;
             
             // Monta Query
-            $qry = Ncm::query();
+            $qry = $this->repository->model->query();
             
             // Condicoes de busca
             $numero = numeroLimpo(trim($params['term']));
@@ -205,7 +205,7 @@ class NcmController extends Controller
         } elseif($request->get('id')) {
             
             // Monta Retorno
-            $item = Ncm::findOrFail($request->get('id'));
+            $item = $this->repository->findOrFail($request->get('id'));
             return [
                 'id' => $item->codncm,
                 'ncm' => formataNcm($item->ncm),

@@ -204,7 +204,7 @@ class SubGrupoProdutoController extends Controller
         
         if(!empty($request->get('id'))) {    
             // Monta Retorno
-            $item = SubSubGrupoProduto::findOrFail($request->get('id'));
+            $item = $this->repository->findOrFail($request->get('id'));
             return [
                 'id' => $item->codsubgrupoproduto,
                 'subgrupoproduto' => $item->subgrupoproduto,
