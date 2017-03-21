@@ -122,6 +122,10 @@ Route::group(['middleware' => 'auth'], function() {
     /* Histórico de preços */    
     Route::resource('produto-historico-preco', 'ProdutoHistoricoPrecoController');
 
+    /* EstoqueMes */
+    Route::get('estoque-mes/kardex/{fiscal}/{codprodutovariacao}/{codestoquelocal}/{ano}/{mes}', 'EstoqueMesController@kardex');
+    Route::get('estoque-mes/{id}', 'EstoqueMesController@show');
+    
 
     /* EstoqueSaldo */
     Route::get('estoque-saldo/relatorio-analise-filtro', 'EstoqueSaldoController@relatorioAnaliseFiltro');

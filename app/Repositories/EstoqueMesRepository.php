@@ -252,8 +252,11 @@ class EstoqueMesRepository extends MGRepository {
     }
     
     
-    public static function buscaProximos(EstoqueMes $model, $qtd = 7)
+    public function buscaProximos($qtd = 7, EstoqueMes $model = null)
     {
+        if (empty($model)) {
+            $model = $this->model;
+        }
         $ems = EstoqueMes::where('codestoquesaldo', $model->codestoquesaldo)
                ->where('mes', '>', $model->mes)
                ->orderBy('mes', 'asc')
@@ -262,8 +265,11 @@ class EstoqueMesRepository extends MGRepository {
         return $ems;
     }
     
-    public static function buscaAnteriores(EstoqueMes $model, $qtd = 7)
+    public function buscaAnteriores($qtd = 7, EstoqueMes $model = null)
     {
+        if (empty($model)) {
+            $model = $this->model;
+        }
         $ems = EstoqueMes::where('codestoquesaldo', $model->codestoquesaldo)
                ->where('mes', '<', $model->mes)
                ->orderBy('mes', 'desc')
@@ -272,7 +278,7 @@ class EstoqueMesRepository extends MGRepository {
         return $ems->reverse();
     }
     
-    public static function buscaOuCria(EstoqueSaldo $saldo, $data) 
+    public function buscaOuCria(EstoqueSaldo $saldo, $data) 
     {
         
         $mes = Carbon::today();
@@ -296,7 +302,7 @@ class EstoqueMesRepository extends MGRepository {
         
     }
     
-    public static function calculaCustoMedio(EstoqueMes $mes, $ciclo = 0) {
+    public function calculaCustoMedio(EstoqueMes $mes, $ciclo = 0) {
 
         Log::info('EstoqueMes::CalculaCustoMedio', ['codestoquemes' => $mes->codestoquemes, 'ciclo' => $ciclo]);
         
@@ -338,7 +344,7 @@ class EstoqueMesRepository extends MGRepository {
         //busca saldo inicial
         $inicialquantidade = 0;
         $inicialvalor = 0;
-        $anterior = self::buscaAnteriores($mes, 1);
+        $anterior = self::buscaAnteriores(1, $mes);
         if (isset($anterior[0]))
         {
             $inicialquantidade = $anterior[0]->saldoquantidade;
@@ -425,7 +431,7 @@ class EstoqueMesRepository extends MGRepository {
             }
         }
         
-        $proximo = self::buscaProximos($mes, 1);
+        $proximo = self::buscaProximos(1, $mes);
         if (isset($proximo[0])) {
             $mesesRecalcular[] = $proximo[0]->codestoquemes;
         } else {
