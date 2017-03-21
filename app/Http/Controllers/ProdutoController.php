@@ -248,7 +248,46 @@ class ProdutoController extends Controller
         $this->bc->header = $this->repository->model->produto;
         
         // retorna show
-        return view('produto.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        $nfpbs   = null;
+        $npbs    = null;
+        $estoque = null;
+        switch ($request->get('_div'))
+        {
+            case 'div-imagens':
+                $view = 'produto.show-imagens';
+                break;
+            case 'div-variacoes':
+                $view = 'produto.show-variacoes';
+                break;
+            case 'div-embalagens':
+                $view = 'produto.show-embalagens';
+                break;
+            case 'div-negocios':
+                //$parametrosNpb = self::filtroEstatico($request, 'produto.show.npb', [], ['negocio_lancamento_de', 'negocio_lancamento_ate']);
+                //$npbs = NegocioProdutoBarra::search($parametrosNpb, 10);
+
+                $parametrosNpb = $this->setFiltro($request, 'produto.show.npb');
+                $npbs = $this->negocioProdutoBarraRepository->listing($parametrosNpb, [['column'=>'criacao', 'dir'=>'DESC']]);
+                $view = 'produto.show-negocios';
+                break;
+            case 'div-notasfiscais':
+                $parametrosNfpb = self::filtroEstatico($request, 'produto.show.nfpb', [], ['notasfiscais_lancamento_de', 'notasfiscais_lancamento_ate']);
+                $nfpbs = NotaFiscalProdutoBarra::search($parametrosNfpb, 10);
+                $view = 'produto.show-notasfiscais';
+                break;
+            case 'div-estoque':
+                $estoque = $model->getArraySaldoEstoque();
+                $view = 'produto.show-estoque';
+                break;
+            default:
+                $view = 'produto.show';
+        }
+        
+        $ret = view($view, ['bc' => $this->bc, 'model' => $this->repository->model, 'nfpbs' => $nfpbs, 'npbs' => $npbs, 'estoque' => $estoque]);
+        
+        return $ret;        
+        
+        //return view('produto.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
     
     public function shows(Request $request, $id)

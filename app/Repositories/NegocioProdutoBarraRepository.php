@@ -100,7 +100,7 @@ class NegocioProdutoBarraRepository extends MGRepository {
     }
     
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
-        
+        $length = 10;
         // Query da Entidade
         $qry = NegocioProdutoBarra::query();
         
