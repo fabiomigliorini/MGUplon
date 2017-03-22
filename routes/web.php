@@ -194,5 +194,7 @@ Route::group(['middleware' => 'auth'], function() {
 
     /* Produto */
     Route::resource('produto', 'ProdutoController');
-
+    
+    /* Negócio produto barra */
+    Route::resource('negocio-produto-barra', 'NegocioProdutoBarraController');
 });
