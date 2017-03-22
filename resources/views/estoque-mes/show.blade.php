@@ -1,237 +1,200 @@
 @extends('layouts.default')
 @section('content')
-
+<?php
+    
+    use Carbon\Carbon;
+    Carbon::setLocale('pt_BR');
+    $str_fiscal = ($fiscal)?'fiscal':'fisico';
+    $saldodias = 9999999999999;
+    if (!empty($elpv->vendadiaquantidadeprevisao)) {
+        $saldodias = $es->saldoquantidade / $elpv->vendadiaquantidadeprevisao;
+    }
+    
+?>
 <div class='row'>
-    <div class='col-md-12'>
+    <div class='col-md-2'>
         <div class='card'>
-          <h4 class="card-header">
-            <a href="{{ url('produto', $model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao->codproduto) }}">
-              {{ $model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao->Produto->produto }}
-              
-            </a>
-          </h4>
           <div class='card-block'>
-            <div class="row">
-              <div class="col-md-1">
-                <ul class="nav nav-pills flex-column">
-                  <li class="nav-item">
-                    <a class="nav-link active" href="#">Active</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link disabled" href="#">Disabled</a>
-                  </li>
-                </ul>                
-                <ul class="nav nav-pills flex-column">
-                  <li class="nav-item">
-                    <a class="nav-link active" href="#">Físico</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Fiscal</a>
-                  </li>
-                </ul>                
+            <ul class="nav nav-pills">
+            @foreach (['fisico' => 'Fisico', 'fiscal' => 'Fiscal'] as $fis => $label)
+              <div class='row'>
+                <li class="nav-item col-md-12">
+                  <a class="nav-link {{ ($str_fiscal == $fis)?'active':'' }}" href='{{ url("kardex/{$el->codestoquelocal}/{$pv->codprodutovariacao}/$fis/$ano/$mes") }}'>
+                    {{ $label }}
+                  </a>
+                </li>            
               </div>
-              <div class="col-md-1">
-                <ul class="nav nav-pills flex-column">
-                  <li class="nav-item">
-                    <a class="nav-link active" href="#">Active</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link disabled" href="#">Disabled</a>
-                  </li>
-                </ul>                
+            @endforeach
+            </ul>
+          </div>
+        </div>
+      
+        <div class='card'>
+          <div class='card-block'>
+            <ul class="nav nav-pills">
+            @foreach ($els as $loc)
+              <div class='row'>
+                <li class="nav-item col-md-12">
+                  <a class="nav-link {{ ($loc->codestoquelocal == $el->codestoquelocal)?'active':'' }}" href='{{ url("kardex/{$loc->codestoquelocal}/{$pv->codprodutovariacao}/$str_fiscal/$ano/$mes") }}'>
+                    {{ $loc->estoquelocal }}
+                  </a>
+                </li>            
               </div>
-              <div class="col-md-10">
-                <ul class="nav nav-pills">
-                  @foreach ($anteriores as $ant)
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ url('estoque-mes', $ant->codestoquemes) }}">{{ $ant->mes->format('M/Y') }}</a>
-                    </li>
-                  @endforeach
-                  <li class="nav-item">
-                      <a class="nav-link active" href="{{ url('estoque-mes', $model->codestoquemes) }}">{{ $model->mes->format('M/Y') }}</a>
-                  </li>
-                  @foreach ($proximos as $prox)
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ url('estoque-mes', $prox->codestoquemes) }}">{{ $prox->mes->format('M/Y') }}</a>
-                    </li>
-                  @endforeach
-                </ul>   
-                <br>
-                <div class='col-md-6'>
-                  <table class='table table-sm'>
-                    <thead>
-                    <tr>
-                      <th>
-                        &nbsp;
-                      </th>
-                      <th class='text-right'>
-                        {{ $model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao->Produto->UnidadeMedida->sigla }}
-                      </th>
-                      <th class='text-right '>
-                        R$
-                      </th>
-                    </tr>
-                    </thead>
-                    <tr>
-                      <td>
-                        Saldo Inicial
-                      </td>
-                      <td class='text-right {{ ($model->inicialquantidade>=0)?'text-info':'text-danger' }}'>
-                        {{ formataNumero($model->inicialquantidade, 3) }}
-                      </td>
-                      <td class='text-right {{ ($model->inicialvalor>=0)?'text-info':'text-danger' }}'>
-                        {{ formataNumero($model->inicialvalor, 2) }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Entradas
-                      </td>
-                      <td class='text-right text-info'>
-                        {{ formataNumero($model->entradaquantidade, 3) }} 
-                      </td>
-                      <td class='text-right text-info'>
-                        {{ formataNumero($model->entradavalor, 2) }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        Saídas
-                      </td>
-                      <td class='text-right text-danger'>
-                        {{ formataNumero($model->saidaquantidade * -1, 3) }}
-                      </td>
-                      <td class='text-right text-danger'>
-                        {{ formataNumero($model->inicialvalor * -1, 2) }}
-                      </td>
-                    </tr>
-                    <tfoot>
-                    <tr>
-                      <th>
-                        Saldo Final
-                      </th>
-                      <th class='text-right {{ ($model->saldoquantidade>=0)?'text-info':'text-danger' }}'>
-                        {{ formataNumero($model->saldoquantidade, 3) }}
-                      </th>
-                      <th class='text-right {{ ($model->saldovalor>=0)?'text-info':'text-danger' }}'>
-                        {{ formataNumero($model->saldovalor, 3) }}
-                      </th>
-                    </tr>
-                    <tr>
-                      <th>
-                        Custo Médio
-                      </th>
-                      <th class='text-right text-info' colspan="2">
-                        {{ formataNumero($model->customedio, 6) }}
-                      </th>
-                    </tr>
-                    </tfoot>
-                  </table>
-                </div>
-                  <?php /*
-                  @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Usuario', 'Pessoa', 'Filial']])
-                  */
-                  ?>
+            @endforeach
+            </ul>
+          </div>
+        </div>
+        <div class='card'>
+          <div class='card-block'>
+            <ul class="nav nav-pills">
+            @foreach ($pvs as $var)
+              <div class='row'>
+                <li class="nav-item col-md-12">
+                  <a class="nav-link {{ ($var->codprodutovariacao == $pv->codprodutovariacao)?'active':'' }}" href='{{ url("kardex/{$el->codestoquelocal}/{$var->codprodutovariacao}/$str_fiscal/$ano/$mes") }}'>
+                    {{ $var->variacao or '{Sem Variação}' }}
+                  </a>
+                </li>            
               </div>
-            </div>
-          
+            @endforeach
+            </ul>
+          </div>
+        </div>
+    </div>
+    
+    <div class='col-md-10'>
+        <div class='card'>
+          <div class='card-block'>
+            @if (!empty($elpv))
+              @if (!empty($elpv->corredor))
+                <p>
+                Armazenado no corredor <b>{{ formataLocalEstoque($elpv->corredor, $elpv->prateleira, $elpv->coluna, $elpv->bloco) }}</b><br>
+                </p>
+              @endif
+              @if (!empty($elpv->vendaanoquantidade))
+                <p>
+                  Vendeu <b>{{ formataNumero($elpv->vendadiaquantidadeprevisao, 8) }} </b>  {{ $pv->Produto->UnidadeMedida->sigla }}  por dia, 
+                  totalizando <b>{{ formataNumero($elpv->vendabimestrequantidade, 0) }}</b> (R$ {{ formataNumero($elpv->vendabimestrevalor, 2) }})  no último bimestre, 
+                  <b>{{ formataNumero($elpv->vendasemestrequantidade, 0) }}</b> (R$ {{ formataNumero($elpv->vendasemestrevalor, 2) }}) no semestre e 
+                  <b>{{ formataNumero($elpv->vendaanoquantidade, 0) }}</b> (R$ {{ formataNumero($elpv->vendaanovalor, 2) }}) no ano, 
+                  pelos cálculos feitos em {{ formataData($elpv->vendaultimocalculo, 'C') }}.
+                </p>
+              @endif
             
-                <table class="table table-bordered table-striped table-hover table-sm col-md-6">
-                  <tbody>  
-                    <tr> 
-                      <th>#</th> 
-                      <td>{{ $model->codestoquemes }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Estoque Mes</th> 
-                      <td>{{ $model->mes }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Codestoquesaldo</th> 
-                      <td>{{ $model->codestoquesaldo }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Inicialquantidade</th> 
-                      <td>{{ $model->inicialquantidade }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Inicialvalor</th> 
-                      <td>{{ $model->inicialvalor }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Entradaquantidade</th> 
-                      <td>{{ $model->entradaquantidade }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Entradavalor</th> 
-                      <td>{{ $model->entradavalor }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Saidaquantidade</th> 
-                      <td>{{ $model->saidaquantidade }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Saidavalor</th> 
-                      <td>{{ $model->saidavalor }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Saldoquantidade</th> 
-                      <td>{{ $model->saldoquantidade }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Saldovalor</th> 
-                      <td>{{ $model->saldovalor }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Customedio</th> 
-                      <td>{{ $model->customedio }}</td> 
-                    </tr>
-                  </tbody> 
-                </table>
-                <div class='clearfix'></div>
-            </div>
+              @if (!empty($elpv->vencimento))
+                
+                
+                @if ($elpv->vencimento->isPast())
+                  <p class='text-danger'>Validade vencida <b>{{ $elpv->vencimento->diffForHumans()}}</b>!</p>
+                @else
+                  @if ($elpv->vencimento->diffInDays() > $saldodias)
+                    <p class='text-success'>
+                  @elseif ($elpv->vencimento->diffInDays() < 30)
+                    <p class='text-danger'>
+                  @else
+                    <p class='text-warning'>
+                  @endif
+                  Validade vencerá <b>{{ $elpv->vencimento->diffForHumans()}}</b>!
+                  </p>
+                @endif
+              @endif
+              
+            @endif
+            @if (!empty($es))
+              <p>
+                Saldo Atual de <b>{{ formataNumero($es->saldoquantidade, 3) }}</b> {{ $pv->Produto->UnidadeMedida->sigla }} 
+                custando R$ <b>{{ formataNumero($es->customedio, 6) }}</b> cada
+                @if (!empty($es->saldovalor))
+                  , totalizando R$ <b>{{ formataNumero($es->saldovalor, 2) }} </b>
+                @endif
+                @if (!empty($elpv->vendadiaquantidadeprevisao))
+                  , suficiente para <b>{{ formataNumero($saldodias, 1) }} </b> dias
+                @endif
+                .
+              </p>
+              <p>
+                @if (!empty($es->dataentrada))
+                  Última entrada registrada em <b>{{ formataData($es->dataentrada, 'E') }}</b>
+                @else
+                  Não existe registro de entrada
+                @endif
+                ,
+                @if (!empty($es->ultimaconferencia))
+                  a última conferência foi realizada em <b>{{ formataData($es->ultimaconferencia, 'E') }}</b>
+                @else
+                  o saldo <b>nunca</b> foi <b>conferido</b>.
+                @endif
+              </p>
+            @endif
+            @if (!empty($elpv->estoqueminimo) && !empty($elpv->estoquemaximo))
+              <p>
+              Estoque
+              @if (!empty($elpv->estoqueminimo))
+                mínimo de <b>{{ formataNumero($elpv->estoqueminimo, 0) }}</b> {{ $pv->Produto->UnidadeMedida->sigla }}
+                @if (!empty($elpv->estoqueminimo))
+                 e
+                @endif
+              @endif
+              @if (!empty($elpv->estoqueminimo))
+                máximo de <b>{{ formataNumero($elpv->estoquemaximo, 0) }}</b> {{ $pv->Produto->UnidadeMedida->sigla }}
+              @endif
+              .
+              </p>
+            @endif
+            
+          </div>
+        </div>
+        <div class='card'>
+          <div class='card-block'>
+            <ul class="nav nav-pills">
+              @forelse ($ems as $eml)
+                <li class="nav-item">
+                  <a class="nav-link {{ (!empty($em) && ($eml->codestoquemes == $em->codestoquemes))?'active':'' }}" href='{{ url("kardex/{$el->codestoquelocal}/{$pv->codprodutovariacao}/$str_fiscal/{$eml->mes->year}/{$eml->mes->month}") }}'>
+                    {{ $eml->mes->format('M/Y') }}
+                  </a>
+                </li>
+              @empty
+                <li class="nav-item">
+                  Não há movimentação em mês algum!
+                </li>
+              @endforelse
+            </ul>
+          </div>
+        </div>
+      
+        <div class='card'>
+          <div class='card-block'>
+            @include('estoque-mes.kardex', $movs)
+          </div>
         </div>
     </div>
 </div>
 
+
+
+
 @section('buttons')
 
-    <a class="btn btn-secondary btn-sm" href="{{ url("estoque-mes/$model->codestoquemes/edit") }}"><i class="fa fa-pencil"></i></a>
-    @if(empty($model->inativo))
-        <a class="btn btn-secondary btn-sm" href="{{ url("estoque-mes/$model->codestoquemes/inactivate") }}" data-activate data-question="Tem certeza que deseja inativar '{{ $model->mes }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-ban"></i></a>
-    @else
-        <a class="btn btn-secondary btn-sm" href="{{ url("estoque-mes/$model->codestoquemes/activate") }}" data-activate data-question="Tem certeza que deseja ativar '{{ $model->mes }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-circle-o"></i></a>
-    @endif
-    <a class="btn btn-secondary btn-sm" href="{{ url("estoque-mes/$model->codestoquemes") }}" data-delete data-question="Tem certeza que deseja excluir '{{ $model->mes }}'?" data-after="location.replace('{{ url('estoque-mes') }}');"><i class="fa fa-trash"></i></a>                
     
 @endsection
 @section('inactive')
 
-    @include('layouts.includes.inactive', [$model])
+    @include('layouts.includes.inactive', [$em])
     
 @endsection
 @section('creation')
 
-    @include('layouts.includes.creation', [$model])
+    @include('layouts.includes.creation', [$em])
     
 @endsection
 @section('inscript')
 
 @include('layouts.includes.datatable.assets')
 
+<?php 
+/*
 @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('usuario/datatable'), 'order' => $filtro['order'], 'filtros' => ['codusuario', 'usuario', 'codfilial', 'codpessoa', 'inativo'] ])
+*/
+?>
 
 <script type="text/javascript">
     $(document).ready(function () {

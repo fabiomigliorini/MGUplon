@@ -11,8 +11,7 @@ use Illuminate\Support\Facades\DB;
 use MGLara\Models\EstoqueSaldo;
 use MGLara\Models\EstoqueLocal;
 use MGLara\Models\ProdutoVariacao;
-
-use MGLara\Repositories\EstoqueLocalProdutoVariacaoRepository;
+use MGLara\Models\EstoqueLocalProdutoVariacao;
 
 /**
  * Description of EstoqueSaldoRepository
@@ -192,19 +191,26 @@ class EstoqueSaldoRepository extends MGRepository {
     }
     
 
-    public static function buscaOuCria($codprodutovariacao, $codestoquelocal, $fiscal)
+    public function busca(EstoqueLocalProdutoVariacao $elpv, bool $fiscal) 
     {
-        $elpv = EstoqueLocalProdutoVariacaoRepository::buscaOuCria($codprodutovariacao, $codestoquelocal);
-
-        $es = EstoqueSaldo::where('codestoquelocalprodutovariacao', $elpv->codestoquelocalprodutovariacao)->where('fiscal', $fiscal)->first();
-        if ($es == false)
-        {
-            $es = new EstoqueSaldo;
-            $es->codestoquelocalprodutovariacao = $elpv->codestoquelocalprodutovariacao;
-            $es->fiscal = $fiscal;
-            $es->save();
+        return $this->model = $elpv->EstoqueSaldoS()->where('fiscal', $fiscal)->first();
+    }
+    
+    public function buscaOuCria(EstoqueLocalProdutoVariacao $elpv, bool $fiscal)
+    {
+        if ($this->busca($elpv, $fiscal)) {
+            return $this->model;
         }
-        return $es;
+        
+        if (!$this->create([
+            'codestoquelocalprodutovariacao' => $elpv->codestoquelocalprodutovariacao,
+            'fiscal' => $fiscal,
+        ])) {
+            return false;
+        }
+        
+        return $this->model;
+        
     }
 
     public function totais($agrupamento, $valor = 'custo', $filtro = [])
@@ -1424,19 +1430,7 @@ class EstoqueSaldoRepository extends MGRepository {
         return $pivot;
         
     }
-    
-    public static function buscaPorChave($codprodutovariacao, $codestoquelocal, $fiscal) {
-        
-        $qry = EstoqueSaldo::query();
-        
-        $qry->where('tblestoquesaldo.fiscal', '=', $fiscal);
-        $qry->join('tblestoquelocalprodutovariacao', 'tblestoquelocalprodutovariacao.codestoquelocalprodutovariacao', '=', 'tblestoquesaldo.codestoquelocalprodutovariacao');
-        $qry->where('tblestoquelocalprodutovariacao.codprodutovariacao', '=', $codprodutovariacao);
-        $qry->where('tblestoquelocalprodutovariacao.codestoquelocal', '=', $codestoquelocal);
 
-        return $qry->first();
-    }
-    
     public static function atualizaUltimaConferencia (EstoqueSaldo $model) {
 
         return DB::update("update tblestoquesaldo 

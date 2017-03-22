@@ -284,17 +284,25 @@ class EstoqueLocalProdutoVariacaoRepository extends MGRepository {
         
     }
     
-    public static function buscaOuCria($codprodutovariacao, $codestoquelocal)
+    public function buscaOuCria(int $codestoquelocal, int $codprodutovariacao)
     {
-        $elpv = EstoqueLocalProdutoVariacao::where('codprodutovariacao', $codprodutovariacao)->where('codestoquelocal', $codestoquelocal)->first();
-        if ($elpv == false)
-        {
-            $elpv = new EstoqueLocalProdutoVariacao;
-            $elpv->codprodutovariacao = $codprodutovariacao;
-            $elpv->codestoquelocal = $codestoquelocal;
-            $elpv->save();
+        if ($this->busca($codestoquelocal, $codprodutovariacao)) {
+            return $this->model;
         }
-        return $elpv;
+        
+        if (!$this->create([
+            'codestoquelocal' => $codestoquelocal,
+            'codprodutovariacao' => $codprodutovariacao,
+        ])) {
+            return false;
+        }
+        
+        return $this->model;
+    }
+    
+    public function busca(int $codestoquelocal, int $codprodutovariacao) 
+    {
+        return $this->model = EstoqueLocalProdutoVariacao::where('codprodutovariacao', $codprodutovariacao)->where('codestoquelocal', $codestoquelocal)->first();
     }
     
 }

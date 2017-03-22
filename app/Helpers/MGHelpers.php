@@ -3,6 +3,9 @@
 if(!function_exists('formataData')) {
     function formataData($data, $formato = 'C') {
 
+        $locale = setlocale(LC_TIME, '0');
+        setlocale(LC_TIME, 'pt_BR.utf8');
+        
         if (empty($data)) {
             return null;
         }
@@ -25,18 +28,12 @@ if(!function_exists('formataData')) {
 
             case 'E':
             case 'EXTENSO':
-                $locale = setlocale(LC_TIME, '0');
-                setlocale(LC_TIME, 'pt_BR.utf8');
-                return $data->formatLocalized('%A, %d de %B %Y às %k horas, %M minutos e %S segundos');
-                setlocale(LC_ALL, $locale);
+                return $data->formatLocalized('%A, %d de %B %Y às %k horas, %M minutos');
                 break;
 
             case 'EC':
             case 'EXTENSOCURTO':
-                $locale = setlocale(LC_TIME, '0');
-                setlocale(LC_TIME, 'pt_BR.utf8');
                 return $data->formatLocalized('%b/%Y');
-                setlocale(LC_ALL, $locale);
                 break;
 
             case 'L':
@@ -48,6 +45,8 @@ if(!function_exists('formataData')) {
                 return $data->format($formato);
                 break;
         }
+        
+        setlocale(LC_ALL, $locale);
     }
 }
 
