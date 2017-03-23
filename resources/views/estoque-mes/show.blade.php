@@ -1,26 +1,66 @@
 @extends('layouts.default')
 @section('content')
 <?php
+
+    function badge($quantidade) {
+        if ($quantidade == 0) {
+            $class = 'badge-default';
+        } elseif ($quantidade < 0) {
+            $class = 'badge-danger';
+        } else {
+            $class = 'badge-primary';
+        }
+        
+        ?><span class="badge badge-pill pull-right {{ $class }}">{{ formataNumero($quantidade, 0) }}</span><?php
+    }
+    
+    
+    $class_saldoquantidade = 'badge-default';
+    if (!empty($elpv) && !empty($es)) {
+        if (!empty($elpv->estoqueminimo) && ($es->saldoquantidade <= $elpv->estoqueminimo)) {
+            $class_saldoquantidade = 'badge-danger';
+        } elseif (!empty($elpv->estoquemaximo) && ($es->saldoquantidade >= $elpv->estoquemaximo)) {
+            $class_saldoquantidade = 'badge-warning';
+        } elseif (!empty($elpv->estoqueminimo) && !empty($elpv->estoquemaximo) && ($es->saldoquantidade < $elpv->estoquemaximo) && ($es->saldoquantidade > $elpv->estoqueminimo)) {
+            $class_saldoquantidade = 'badge-success';
+        }
+        
+    }
     
     use Carbon\Carbon;
     Carbon::setLocale('pt_BR');
     $str_fiscal = ($fiscal)?'fiscal':'fisico';
-    $saldodias = 9999999999999;
+    $saldodias = null;
     if (!empty($elpv->vendadiaquantidadeprevisao)) {
         $saldodias = $es->saldoquantidade / $elpv->vendadiaquantidadeprevisao;
     }
     
+
+    $class_vencimento = 'text-muted';
+    if ((!empty($elpv)) && (!empty($elpv->vencimento))) {
+        $dias = $elpv->vencimento->diffInDays();
+        if ($dias > $saldodias) {
+          $class_vencimento = 'text-success';
+        } elseif ($dias < 30) {
+          $class_vencimento = 'text-danger';
+        } else {
+          $class_vencimento = 'text-warning';
+        }
+    }
+    
 ?>
+        
 <div class='row'>
-    <div class='col-md-2'>
+  <div class='col-md-2'>
         <div class='card'>
           <div class='card-block'>
             <ul class="nav nav-pills">
-            @foreach (['fisico' => 'Fisico', 'fiscal' => 'Fiscal'] as $fis => $label)
+            @foreach ($slds as $item)
               <div class='row'>
                 <li class="nav-item col-md-12">
-                  <a class="nav-link {{ ($str_fiscal == $fis)?'active':'' }}" href='{{ url("kardex/{$el->codestoquelocal}/{$pv->codprodutovariacao}/$fis/$ano/$mes") }}'>
-                    {{ $label }}
+                  <a class="nav-link {{ ($str_fiscal == $item['chave'])?'active':'' }}" href='{{ url("kardex/{$el->codestoquelocal}/{$pv->codprodutovariacao}/{$item['chave']}/$ano/$mes") }}'>
+                    {{ $item['descricao'] }}
+                    {{ badge($item['saldoquantidade']) }}
                   </a>
                 </li>            
               </div>
@@ -32,141 +72,232 @@
         <div class='card'>
           <div class='card-block'>
             <ul class="nav nav-pills">
-            @foreach ($els as $loc)
               <div class='row'>
                 <li class="nav-item col-md-12">
-                  <a class="nav-link {{ ($loc->codestoquelocal == $el->codestoquelocal)?'active':'' }}" href='{{ url("kardex/{$loc->codestoquelocal}/{$pv->codprodutovariacao}/$str_fiscal/$ano/$mes") }}'>
-                    {{ $loc->estoquelocal }}
+                  <a class="nav-link active" href='{{ url("kardex/{$el->codestoquelocal}/{$pv->codprodutovariacao}/$str_fiscal/$ano/$mes") }}'>
+                    {{ $el->estoquelocal }}
+                    @if (isset($els[$el->codestoquelocal]))
+                      {{ badge($els[$el->codestoquelocal]['saldoquantidade']) }}
+                    @endif
                   </a>
                 </li>            
               </div>
-            @endforeach
+              <hr>
+              @foreach ($els as $item)
+                @if ($item['codestoquelocal'] != $el->codestoquelocal)
+                <div class='row'>
+                  <li class="nav-item col-md-12">
+                    <a class="nav-link" href='{{ url("kardex/{$item['codestoquelocal']}/{$pv->codprodutovariacao}/$str_fiscal/$ano/$mes") }}'>
+                      {{ $item['estoquelocal'] }}
+                      {{ badge($item['saldoquantidade']) }}
+                    </a>
+                  </li>            
+                </div>
+                @endif
+              @endforeach
             </ul>
           </div>
         </div>
         <div class='card'>
           <div class='card-block'>
             <ul class="nav nav-pills">
-            @foreach ($pvs as $var)
               <div class='row'>
                 <li class="nav-item col-md-12">
-                  <a class="nav-link {{ ($var->codprodutovariacao == $pv->codprodutovariacao)?'active':'' }}" href='{{ url("kardex/{$el->codestoquelocal}/{$var->codprodutovariacao}/$str_fiscal/$ano/$mes") }}'>
-                    {{ $var->variacao or '{Sem Variação}' }}
+                  <a class="nav-link active" href='{{ url("kardex/{$el->codestoquelocal}/{$pv->codprodutovariacao}/$str_fiscal/$ano/$mes") }}'>
+                    {{ $pv->variacao or '{Sem Variação}' }}
+                    @if (isset($pvs[$pv->codprodutovariacao]))
+                      {{ badge($pvs[$pv->codprodutovariacao]['saldoquantidade']) }}
+                    @endif
                   </a>
                 </li>            
               </div>
-            @endforeach
+              @if (count($pvs) > 1)
+                <hr>
+                @foreach ($pvs as $item)
+                  @if ($item['codprodutovariacao'] != $pv->codprodutovariacao)
+                  <div class='row'>
+                    <li class="nav-item col-md-12">
+                      <a class="nav-link" href='{{ url("kardex/{$el->codestoquelocal}/{$item['codprodutovariacao']}/$str_fiscal/$ano/$mes") }}'>
+                        {{ $item['variacao'] }}
+                        {{ badge($item['saldoquantidade']) }}
+                      </a>
+                    </li>            
+                  </div>
+                  @endif
+                @endforeach
+              @endif
             </ul>
           </div>
         </div>
-    </div>
+      </div>        
     
     <div class='col-md-10'>
-        <div class='card'>
-          <div class='card-block'>
-            @if (!empty($elpv))
-              @if (!empty($elpv->corredor))
-                <p>
-                Armazenado no corredor <b>{{ formataLocalEstoque($elpv->corredor, $elpv->prateleira, $elpv->coluna, $elpv->bloco) }}</b><br>
-                </p>
-              @endif
-              @if (!empty($elpv->vendaanoquantidade))
-                <p>
-                  Vendeu <b>{{ formataNumero($elpv->vendadiaquantidadeprevisao, 8) }} </b>  {{ $pv->Produto->UnidadeMedida->sigla }}  por dia, 
-                  totalizando <b>{{ formataNumero($elpv->vendabimestrequantidade, 0) }}</b> (R$ {{ formataNumero($elpv->vendabimestrevalor, 2) }})  no último bimestre, 
-                  <b>{{ formataNumero($elpv->vendasemestrequantidade, 0) }}</b> (R$ {{ formataNumero($elpv->vendasemestrevalor, 2) }}) no semestre e 
-                  <b>{{ formataNumero($elpv->vendaanoquantidade, 0) }}</b> (R$ {{ formataNumero($elpv->vendaanovalor, 2) }}) no ano, 
-                  pelos cálculos feitos em {{ formataData($elpv->vendaultimocalculo, 'C') }}.
-                </p>
-              @endif
+      
+
+    @if (!empty($elpv))
+      <div class='row'>
+        @if (!empty($es))
+        
+            <!-- Saldo em Dias -->
+            <div class='col-md-3'>
+                <div class="card">
+                  <div class='card-block'>
+                    <h5 class="text-muted m-b-20">
+                      Saldo
+                      <small class='pull-right'>
+                        @if (!empty($elpv->corredor))
+                          <i class="fa fa-cubes" aria-hidden="true"></i>
+                          {{ formataLocalEstoque($elpv->corredor, $elpv->prateleira, $elpv->coluna, $elpv->bloco) }}
+                        @endif
+                      </small>
+                    </h5>
+                    <i class="fa fa-cube fa-3x pull-right text-muted"></i>
+                    <h2 class="m-b-20">
+                      @if (!empty($saldodias))
+                        {{ formataNumero($saldodias, 1) }} <small class='text-muted'>Dias</small>
+                      @else
+                        &infin;
+                      @endif
+                    </h2>
+                    <div class='row'>
+                      <div class='col-md-5'>
+                        <span class="badge {{ $class_saldoquantidade }}"> {{ formataNumero($es->saldoquantidade, 0) }} </span> <span class="text-muted">{{ $pv->Produto->UnidadeMedida->sigla }}</span><br>
+                        <span class="badge {{ $class_saldoquantidade }}"> {{ formataNumero($es->saldovalor, 2) }} </span> <span class="text-muted">R$</span><br>
+                      </div>
+                      <div class='col-md-7 text-right'>
+                        @if (!empty($elpv->estoqueminimo))
+                          <span class='text-danger'>
+                            <i class='fa fa-arrow-down'></i>{{ formataNumero($elpv->estoqueminimo, 0) }}
+                          </span>
+                        @endif
+                        @if (!empty($elpv->estoquemaximo))
+                          <span class='text-warning'>
+                            <i class='fa fa-arrow-up'></i>{{ formataNumero($elpv->estoquemaximo, 0) }}
+                          </span>
+                        @endif
+                        <br>
+                        <span class="text-muted"> R$ {{ formataNumero($es->customedio, 6) }} / {{ $pv->Produto->UnidadeMedida->sigla }}<br>
+                      </div>
+                      
+                    </div>
+                  </div>        
+                </div>        
+            </div>
             
-              @if (!empty($elpv->vencimento))
-                
-                
-                @if ($elpv->vencimento->isPast())
-                  <p class='text-danger'>Validade vencida <b>{{ $elpv->vencimento->diffForHumans()}}</b>!</p>
+        @endif
+        
+        <!-- Venda em Quantidade -->
+        <div class='col-md-3'>
+            <div class="card">
+              <div class='card-block'>
+                <h5 class="text-muted m-b-20">Giro Anual</h5>
+                <i class="fa fa-refresh fa-3x pull-right text-muted"></i>                
+                @if (!empty($elpv->vendaanoquantidade))
+                  <h2 class="m-b-20">{{ formataNumero($elpv->vendaanoquantidade, 0) }} <small class='text-muted'>{{ $pv->Produto->UnidadeMedida->sigla }}</small></h2>
                 @else
-                  @if ($elpv->vencimento->diffInDays() > $saldodias)
-                    <p class='text-success'>
-                  @elseif ($elpv->vencimento->diffInDays() < 30)
-                    <p class='text-danger'>
-                  @else
-                    <p class='text-warning'>
-                  @endif
-                  Validade vencerá <b>{{ $elpv->vencimento->diffForHumans()}}</b>!
+                  <p class='text-danger'>
+                    Não existem registros de venda.
                   </p>
                 @endif
-              @endif
-              
-            @endif
-            @if (!empty($es))
-              <p>
-                Saldo Atual de <b>{{ formataNumero($es->saldoquantidade, 3) }}</b> {{ $pv->Produto->UnidadeMedida->sigla }} 
-                custando R$ <b>{{ formataNumero($es->customedio, 6) }}</b> cada
-                @if (!empty($es->saldovalor))
-                  , totalizando R$ <b>{{ formataNumero($es->saldovalor, 2) }} </b>
+                @if ($elpv->vendabimestrequantidade > 0)
+                  <span class="badge badge-success"> {{ formataNumero($elpv->vendabimestrequantidade, 0) }} </span> <span class="text-muted">Bimestre</span><br>
                 @endif
-                @if (!empty($elpv->vendadiaquantidadeprevisao))
-                  , suficiente para <b>{{ formataNumero($saldodias, 1) }} </b> dias
+                @if ($elpv->vendasemestrequantidade > 0)
+                  <span class="badge badge-success"> {{ formataNumero($elpv->vendasemestrequantidade, 0) }} </span> <span class="text-muted">Semestre</span><br>
                 @endif
-                .
-              </p>
-              <p>
-                @if (!empty($es->dataentrada))
-                  Última entrada registrada em <b>{{ formataData($es->dataentrada, 'E') }}</b>
+              </div>        
+            </div>        
+        </div>      
+        
+        <!-- Venda em Valor -->
+        <div class='col-md-3'>
+            <div class="card">
+              <div class='card-block'>
+                <h5 class="text-muted m-b-20">Faturamento Anual</h5>
+                <i class="fa fa-usd fa-3x pull-right text-muted"></i>                
+                @if (!empty($elpv->vendaanoquantidade))
+                  <h2 class="m-b-20"><small class='text-muted'>R$</small> {{ formataNumero($elpv->vendaanovalor, 2) }}</h2>
                 @else
-                  Não existe registro de entrada
+                  <p class='text-danger'>
+                    Não existem registros de venda.
+                  </p>
                 @endif
-                ,
-                @if (!empty($es->ultimaconferencia))
-                  a última conferência foi realizada em <b>{{ formataData($es->ultimaconferencia, 'E') }}</b>
-                @else
-                  o saldo <b>nunca</b> foi <b>conferido</b>.
+                
+                @if ($elpv->vendabimestrevalor > 0)
+                  <span class="badge badge-success"> {{ formataNumero($elpv->vendabimestrevalor, 2) }} </span> <span class="text-muted">Bimestre</span><br>
                 @endif
-              </p>
-            @endif
-            @if (!empty($elpv->estoqueminimo) && !empty($elpv->estoquemaximo))
-              <p>
-              Estoque
-              @if (!empty($elpv->estoqueminimo))
-                mínimo de <b>{{ formataNumero($elpv->estoqueminimo, 0) }}</b> {{ $pv->Produto->UnidadeMedida->sigla }}
-                @if (!empty($elpv->estoqueminimo))
-                 e
+                @if ($elpv->vendasemestrevalor > 0)
+                  <span class="badge badge-success"> {{ formataNumero($elpv->vendasemestrevalor, 2) }} </span> <span class="text-muted">Semestre</span><br>
                 @endif
-              @endif
-              @if (!empty($elpv->estoqueminimo))
-                máximo de <b>{{ formataNumero($elpv->estoquemaximo, 0) }}</b> {{ $pv->Produto->UnidadeMedida->sigla }}
-              @endif
-              .
-              </p>
-            @endif
+              </div>        
+            </div>        
+        </div>
+        
+        <!-- Movimentação -->
+        @if (!empty($es))
+          <div class='col-md-3'>
+              <div class="card">
+                <div class='card-block'>
+                  <h5 class="text-muted">Movimentação</h5>
+                  <i class="fa fa-calendar fa-3x pull-right text-muted"></i>
+
+                  <small class='text-muted'>Entrou</small>
+                  <h6 class="">
+                    @if (!empty($es->dataentrada))
+                      {{ $es->dataentrada->diffForHumans() }}
+                    @else
+                      Sem registro!
+                    @endif
+                  </h6>
+                  
+                  <small class='text-muted'>Conferido</small>
+                  <h6 class="">
+                    @if (!empty($es->ultimaconferencia))
+                      {{ $es->ultimaconferencia->diffForHumans() }}
+                    @else
+                      Nunca
+                    @endif
+                  </h6>
+
+                  @if (!empty($es->vencimento))
+                    <small class='text-muted'>Vencimento</small>
+                    <h6 class="{{ $class_vencimento }}">
+                      {{ $es->vencimento->diffForHumans() }}
+                    </h6>
+                  @endif
+
+                </div>        
+              </div>        
+          </div>
+        @endif
+        
+    </div>      
+
+    @endif      
             
-          </div>
-        </div>
-        <div class='card'>
-          <div class='card-block'>
-            <ul class="nav nav-pills">
-              @forelse ($ems as $eml)
-                <li class="nav-item">
-                  <a class="nav-link {{ (!empty($em) && ($eml->codestoquemes == $em->codestoquemes))?'active':'' }}" href='{{ url("kardex/{$el->codestoquelocal}/{$pv->codprodutovariacao}/$str_fiscal/{$eml->mes->year}/{$eml->mes->month}") }}'>
-                    {{ $eml->mes->format('M/Y') }}
-                  </a>
-                </li>
-              @empty
-                <li class="nav-item">
-                  Não há movimentação em mês algum!
-                </li>
-              @endforelse
-            </ul>
-          </div>
-        </div>
-      
-        <div class='card'>
-          <div class='card-block'>
-            @include('estoque-mes.kardex', $movs)
-          </div>
-        </div>
+    <div class='card'>
+      <div class="card-block">
+        <ul class="nav nav-pills">
+          @forelse ($ems as $eml)
+            <li class="nav-item">
+              <a class="nav-link {{ (!empty($em) && ($eml->codestoquemes == $em->codestoquemes))?'active':'' }}" href='{{ url("kardex/{$el->codestoquelocal}/{$pv->codprodutovariacao}/$str_fiscal/{$eml->mes->year}/{$eml->mes->month}") }}'>
+                {{ $eml->mes->format('m/Y') }}
+              </a>
+            </li>
+          @empty
+            <li class="nav-item">
+              <p>Não há movimentação em mês algum!</p>
+            </li>
+          @endforelse
+        </ul>
+      </div>          
+      <div class='card-block'>
+        @if (!empty($movs))
+          @include('estoque-mes.kardex', $movs)
+        @endif
+      </div>
     </div>
+  </div>
 </div>
 
 

@@ -178,9 +178,6 @@ class EstoqueMesController extends Controller
             'dir' => 'ASC',
         ]];
         
-        $repo_el = new EstoqueLocalRepository();
-        $els = $repo_el->all();
-        
         $pvs = $pv->Produto->ProdutoVariacaoS()->orderByRaw('variacao asc nulls first')->get();
         
         // breadcrumb
@@ -197,6 +194,11 @@ class EstoqueMesController extends Controller
             $movs = $this->repository->movimentoKardex($em);
         }
         
+        $repo_es = new EstoqueSaldoRepository();
+        $slds = $repo_es->saldosPorFisicoFiscal($pv->codproduto);
+        $els = $repo_es->saldosPorLocal($pv->codproduto, $fiscal);
+        $pvs = $repo_es->saldosPorVariacao($pv->codproduto, $fiscal, $el->codestoquelocal);
+
         // retorna show
         return view('estoque-mes.show', [
             'bc'=>$this->bc, 
@@ -210,6 +212,7 @@ class EstoqueMesController extends Controller
             'movs'=>$movs,
             
             // Registros da navegacao
+            'slds'=>$slds, 
             'els'=>$els, 
             'pvs'=>$pvs, 
             'ems'=>$ems, 

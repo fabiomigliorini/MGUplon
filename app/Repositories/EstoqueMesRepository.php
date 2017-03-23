@@ -613,7 +613,7 @@ class EstoqueMesRepository extends MGRepository {
         foreach ($regs as $reg) {
             $saldoquantidade += $reg->entradaquantidade - $reg->saidaquantidade;
             $saldovalor += $reg->entradavalor - $reg->saidavalor;
-            $customedio = ($saldoquantidade != 0)?$saldovalor/$saldoquantidade:null;
+            $customedio = (($reg->entradaquantidade - $reg->saidaquantidade) != 0)?($reg->entradavalor - $reg->saidavalor)/($reg->entradaquantidade - $reg->saidaquantidade):null;
             
             $urldocumento = null;
             $documento = null;
