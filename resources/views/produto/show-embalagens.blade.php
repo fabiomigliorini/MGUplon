@@ -1,4 +1,4 @@
-<ul class='list-group col-md-5 text-right' id="div-embalagens">
+<ul class='list-group text-right' id="div-embalagens">
     <li class="list-group-item">
         <small class="pull-left text-muted">
             R$
@@ -13,7 +13,6 @@
             </a>
         </span>
     </li>
-
 
     @foreach($model->ProdutoEmbalagemS()->orderBy('quantidade')->get() as $pe)
         <li class="list-group-item">

@@ -7,18 +7,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
-use MGLara\Models\EstoqueLocal;
+use MGLara\Models\Cest;
 
 /**
- * Description of EstoqueLocalRepository
+ * Description of CestRepository
  * 
  * @property  Validator $validator
- * @property  EstoqueLocal $model
+ * @property  Cest $model
  */
-class EstoqueLocalRepository extends MGRepository {
+class CestRepository extends MGRepository {
     
     public function boot() {
-        $this->model = new EstoqueLocal();
+        $this->model = new Cest();
     }
     
     //put your code here
@@ -29,29 +29,34 @@ class EstoqueLocalRepository extends MGRepository {
         }
         
         if (empty($id)) {
-            $id = $this->model->codestoquelocal;
+            $id = $this->model->codcest;
         }
         
         $this->validator = Validator::make($data, [
-            'estoquelocal' => [
-                'max:50',
+            'cest' => [
+                'max:7',
                 'required',
             ],
-            'codfilial' => [
+            'ncm' => [
+                'max:8',
+                'required',
+            ],
+            'descricao' => [
+                'max:600',
+                'required',
+            ],
+            'codncm' => [
                 'numeric',
-                'required',
-            ],
-            'sigla' => [
-                'max:3',
-                'required',
+                'nullable',
             ],
         ], [
-            'estoquelocal.max' => 'O campo "estoquelocal" não pode conter mais que 50 caracteres!',
-            'estoquelocal.required' => 'O campo "estoquelocal" deve ser preenchido!',
-            'codfilial.numeric' => 'O campo "codfilial" deve ser um número!',
-            'codfilial.required' => 'O campo "codfilial" deve ser preenchido!',
-            'sigla.max' => 'O campo "sigla" não pode conter mais que 3 caracteres!',
-            'sigla.required' => 'O campo "sigla" deve ser preenchido!',
+            'cest.max' => 'O campo "cest" não pode conter mais que 7 caracteres!',
+            'cest.required' => 'O campo "cest" deve ser preenchido!',
+            'ncm.max' => 'O campo "ncm" não pode conter mais que 8 caracteres!',
+            'ncm.required' => 'O campo "ncm" deve ser preenchido!',
+            'descricao.max' => 'O campo "descricao" não pode conter mais que 600 caracteres!',
+            'descricao.required' => 'O campo "descricao" deve ser preenchido!',
+            'codncm.numeric' => 'O campo "codncm" deve ser um número!',
         ]);
 
         return $this->validator->passes();
@@ -63,25 +68,8 @@ class EstoqueLocalRepository extends MGRepository {
             $this->findOrFail($id);
         }
         
-        if ($this->model->EstoqueLocalProdutoVariacaoS->count() > 0) {
-            return 'Local de Estoque sendo utilizada em "EstoqueLocalProdutoVariacao"!';
-        }
-        
-        if ($this->model->NegocioS->count() > 0) {
-            return 'Local de Estoque sendo utilizada em "Negocio"!';
-        }
-        
-        if ($this->model->NotaFiscalS->count() > 0) {
-            return 'Local de Estoque sendo utilizada em "NotaFiscal"!';
-            return 'Estoque Local sendo utilizada em "EstoqueLocalProdutoVariacao"!';
-        }
-        
-        if ($this->model->NegocioS->count() > 0) {
-            return 'Estoque Local sendo utilizada em "Negocio"!';
-        }
-        
-        if ($this->model->NotaFiscalS->count() > 0) {
-            return 'Estoque Local sendo utilizada em "NotaFiscal"!';
+        if ($this->model->ProdutoS->count() > 0) {
+            return 'Cest sendo utilizada em "Produto"!';
         }
         
         return false;
@@ -90,22 +78,26 @@ class EstoqueLocalRepository extends MGRepository {
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
         
         // Query da Entidade
-        $qry = EstoqueLocal::query();
+        $qry = Cest::query();
         
         // Filtros
-         if (!empty($filters['codestoquelocal'])) {
-            $qry->where('codestoquelocal', '=', $filters['codestoquelocal']);
+         if (!empty($filters['codcest'])) {
+            $qry->where('codcest', '=', $filters['codcest']);
         }
 
-         if (!empty($filters['estoquelocal'])) {
-            $qry->palavras('estoquelocal', $filters['estoquelocal']);
+         if (!empty($filters['cest'])) {
+            $qry->palavras('cest', $filters['cest']);
         }
 
-         if (!empty($filters['codfilial'])) {
-            $qry->where('codfilial', '=', $filters['codfilial']);
+         if (!empty($filters['ncm'])) {
+            $qry->palavras('ncm', $filters['ncm']);
         }
 
-          if (!empty($filters['alteracao'])) {
+         if (!empty($filters['descricao'])) {
+            $qry->palavras('descricao', $filters['descricao']);
+        }
+
+         if (!empty($filters['alteracao'])) {
             $qry->where('alteracao', '=', $filters['alteracao']);
         }
 
@@ -121,8 +113,8 @@ class EstoqueLocalRepository extends MGRepository {
             $qry->where('codusuariocriacao', '=', $filters['codusuariocriacao']);
         }
 
-         if (!empty($filters['sigla'])) {
-            $qry->palavras('sigla', $filters['sigla']);
+         if (!empty($filters['codncm'])) {
+            $qry->where('codncm', '=', $filters['codncm']);
         }
 
         
@@ -158,7 +150,7 @@ class EstoqueLocalRepository extends MGRepository {
         // Registros
         return [
             'recordsFiltered' => $count
-            , 'recordsTotal' => EstoqueLocal::count()
+            , 'recordsTotal' => Cest::count()
             , 'data' => $qry->get()
         ];
         

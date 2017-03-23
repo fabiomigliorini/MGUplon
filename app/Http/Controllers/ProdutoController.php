@@ -19,7 +19,7 @@ use MGLara\Repositories\ProdutoVariacaoRepository;
 use MGLara\Repositories\ProdutoEmbalagemRepository;
 use MGLara\Repositories\NegocioProdutoBarraRepository;
 use MGLara\Repositories\NotaFiscalProdutoBarraRepository;
-use MGLara\Repositories\TipoProdutoRepository;
+use MGLara\Models\TipoProduto;
 use MGLara\Repositories\ProdutoHistoricoPrecoRepository;
 use MGLara\Library\IntegracaoOpenCart\IntegracaoOpenCart;
 
@@ -33,7 +33,6 @@ use MGLara\Library\JsonEnvelope\Datatable;
  * @property  ProdutoEmbalagemRepository            $produtoEmbalagemRepository 
  * @property  NegocioProdutoBarraRepository         $negocioProdutoBarraRepository 
  * @property  NotaFiscalProdutoBarraRepository      $notaFiscalProdutoBarraRepository 
- * @property  TipoProdutoRepository                 $tipoProdutoRepository 
  * @property  ProdutoHistoricoPrecoRepository       $produtoHistoricoPrecoRepository 
  */
 
@@ -47,7 +46,6 @@ class ProdutoController extends Controller
             ProdutoEmbalagemRepository $produtoEmbalagemRepository,
             NegocioProdutoBarraRepository $negocioProdutoBarraRepository,
             NotaFiscalProdutoBarraRepository $notaFiscalProdutoBarraRepository,
-            TipoProdutoRepository $tipoProdutoRepository,
             ProdutoHistoricoPrecoRepository $produtoHistoricoPrecoRepository            
         ) {
         $this->repository                            = $repository;
@@ -56,7 +54,6 @@ class ProdutoController extends Controller
         $this->produtoEmbalagemRepository            = $produtoEmbalagemRepository; 
         $this->negocioProdutoBarraRepository         = $negocioProdutoBarraRepository; 
         $this->notaFiscalProdutoBarraRepository      = $notaFiscalProdutoBarraRepository; 
-        $this->tipoProdutoRepository                 = $tipoProdutoRepository; 
         $this->produtoHistoricoPrecoRepository       = $produtoHistoricoPrecoRepository;
                 
         $this->bc = new Breadcrumb('Produto');
@@ -169,30 +166,89 @@ class ProdutoController extends Controller
      */
     public function create(Request $request)
     {
-        $model = new Produto;
+        // cria um registro em branco
+        $this->repository->new();
         
-        if ($request->get('duplicar'))
-        {
-            $duplicar = Produto::findOrFail($request->get('duplicar'));
-            $model->fill($duplicar->getAttributes());
-        }
-        else
-        {
-            $model->codtipoproduto = TipoProduto::MERCADORIA;
-        }
+        // autoriza
+        $this->repository->authorize('create');
         
-        return view('produto.create', compact('model'));
+        // breadcrumb
+        $this->bc->addItem('Novo');
+        
+        if ($request->get('duplicar')){
+            $data = $this->repository->findOrFail($request->get('duplicar'));
+            $this->repository->fill($data->getAttributes());
+        } else {
+            $this->repository->model->codtipoproduto = TipoProduto::MERCADORIA;
+        }        
+        
+        // retorna view
+        return view('produto.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
+    
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param    \Illuminate\Http\Request  $request
+     * @return  \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        // busca dados do formulario
+        $data = $request->all();
+        
+        // valida dados
+        if (!$this->repository->validate($data)) {
+            $this->throwValidationException($request, $this->repository->validator);
+        }
 
+        // preenche dados 
+        $this->repository->new($data);
+        
+        // autoriza
+        $this->repository->authorize('create');        
+        
+        DB::beginTransaction();        
+        try {        
+            if (!$this->repository->create()) {
+                throw new Exception('Erro ao Cria Produto!');
+            }        
+
+            $pv = $this->produtoVariacaoRepository->new();
+            $pv->codproduto = $this->repository->model->codproduto;
+
+            if (!$pv->create()){
+                throw new Exception('Erro ao Criar Variação!');
+            }
+
+            $pb = $this->produtoBarraRepository->new();
+            $pb->codproduto = $this->repository->model->codproduto;
+            $pb->codprodutovariacao = $pv->codprodutovariacao;
+
+            if (!$pb->create()){
+                throw new Exception ('Erro ao Criar Barras!');
+            }
+
+            DB::commit();            
+
+            Session::flash('flash_create', 'Produto criado!');
+        } catch (Exception $ex) {
+            DB::rollBack();
+            Session::flash('flash_error', "Erro ao salvar registro! {$ex}");
+        }
+        
+        // redireciona para o view
+        return redirect("produto/{$this->repository->model->codproduto}");
+    }    
+    
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function storee(Request $request)
     {
-        
         $model = new Produto($request->all());
         
         DB::beginTransaction();
@@ -276,7 +332,7 @@ class ProdutoController extends Controller
                 $view = 'produto.show-notasfiscais';
                 break;
             case 'div-estoque':
-                $estoque = $model->getArraySaldoEstoque();
+                $estoque = $this->repository->getArraySaldoEstoque();
                 $view = 'produto.show-estoque';
                 break;
             default:

@@ -216,7 +216,7 @@ class SubGrupoProdutoController extends Controller
             $params['page'] = $params['page']??1;
             
             // Monta Query
-            $qry = $this->repository->model->where('codgrupoproduto', '=', $request->codgrupoproduto);
+            $qry = $this->repository->model->where('codgrupoproduto',  $request->codgrupoproduto);
             
             if(!empty($params['term'])) {
                 foreach (explode(' ', $params['term']) as $palavra) {

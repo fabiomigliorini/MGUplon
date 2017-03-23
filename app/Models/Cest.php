@@ -15,9 +15,9 @@ namespace MGLara\Models;
  * @property  bigint                         $codncm                             
  *
  * Chaves Estrangeiras
- * @property  Ncm                            $Ncm                           
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Usuario                        $UsuarioCriacao
+ * @property  Ncm                            $Ncm
  *
  * Tabelas Filhas
  * @property  Produto[]                      $ProdutoS
@@ -28,10 +28,10 @@ class Cest extends MGModel
     protected $table = 'tblcest';
     protected $primaryKey = 'codcest';
     protected $fillable = [
-        'cest',
-        'ncm',
-        'descricao',
-        'codncm',
+          'cest',
+         'ncm',
+         'descricao',
+             'codncm',
     ];
     protected $dates = [
         'alteracao',
@@ -40,11 +40,6 @@ class Cest extends MGModel
 
 
     // Chaves Estrangeiras
-    public function Ncm()
-    {
-        return $this->belongsTo(Ncm::class, 'codncm', 'codncm');
-    }
-
     public function UsuarioAlteracao()
     {
         return $this->belongsTo(Usuario::class, 'codusuarioalteracao', 'codusuario');
@@ -53,6 +48,11 @@ class Cest extends MGModel
     public function UsuarioCriacao()
     {
         return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
+    }
+
+    public function Ncm()
+    {
+        return $this->belongsTo(Ncm::class, 'codncm', 'codncm');
     }
 
 
@@ -64,4 +64,3 @@ class Cest extends MGModel
 
 
 }
-    

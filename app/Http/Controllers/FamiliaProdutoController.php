@@ -196,7 +196,7 @@ class FamiliaProdutoController extends Controller
         
         if(!empty($request->get('id'))) {    
             // Monta Retorno
-            $item = $this->repository->model->findOrFail($request->get('id'));
+            $item = $this->repository->findOrFail($request->get('id'));
             return [
                 'id' => $item->codfamiliaproduto,
                 'familiaproduto' => $item->familiaproduto,
@@ -208,7 +208,7 @@ class FamiliaProdutoController extends Controller
             $params['page'] = $params['page']??1;
             
             // Monta Query
-            $qry = $this->repository->model->where('codfamiliaproduto', '=', $request->codfamiliaproduto);
+            $qry = $this->repository->model->where('codsecaoproduto',$request->codsecaoproduto);
             
             if(!empty($params['term'])) {
                 foreach (explode(' ', $params['term']) as $palavra) {
