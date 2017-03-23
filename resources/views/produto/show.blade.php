@@ -4,85 +4,10 @@
 <div class='row'>
     <div class='col-md-6'>
         <div class='card'>
-            <h4 class="card-header">Detalhes</h4>
+            <h4 class="card-header">Imagens</h4>
             <div class='card-block'>
-                <table class="table table-bordered table-striped table-hover table-sm col-md-6">
-                  <tbody>  
-                    <tr> 
-                      <th>#</th> 
-                      <td>{{ $model->codproduto }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Produto</th> 
-                      <td>{{ $model->codproduto }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Produto</th> 
-                      <td>{{ $model->produto }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Referencia</th> 
-                      <td>{{ $model->referencia }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Codunidademedida</th> 
-                      <td>{{ $model->codunidademedida }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Codsubgrupoproduto</th> 
-                      <td>{{ $model->codsubgrupoproduto }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Codmarca</th> 
-                      <td>{{ $model->codmarca }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Preco</th> 
-                      <td>{{ $model->preco }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Importado</th> 
-                      <td>{{ $model->importado }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Codtributacao</th> 
-                      <td>{{ $model->codtributacao }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Codtipoproduto</th> 
-                      <td>{{ $model->codtipoproduto }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Site</th> 
-                      <td>{{ $model->site }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Descricaosite</th> 
-                      <td>{{ $model->descricaosite }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Codncm</th> 
-                      <td>{{ $model->codncm }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Codcest</th> 
-                      <td>{{ $model->codcest }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Observacoes</th> 
-                      <td>{{ $model->observacoes }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Codopencart</th> 
-                      <td>{{ $model->codopencart }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Codopencartvariacao</th> 
-                      <td>{{ $model->codopencartvariacao }}</td> 
-                    </tr>
-                  </tbody> 
-                </table>
-                <div class='clearfix'></div>
+                @include('produto.show-imagens')
+                <!--<div class='clearfix'></div>-->
             </div>
         </div>
     </div>
@@ -119,7 +44,7 @@
                 <div class="tab-content">
                     <div class="tab-pane active" id="tab-variacoes" role="tabpanel">
                         <div class='row'>
-                            <div class='col-md-7'>
+                            <div class='col-md-7 col-sm-12'>
                                 <ol class="breadcrumb" style="margin: 0 0 15px 0">
                                     {!! 
                                         titulo(
@@ -155,9 +80,10 @@
                                 </ol>
                                 <br>
                             </div>
-                            @include('produto.show-embalagens')
+                            <div class="col-md-5 col-sm-12">
+                                @include('produto.show-embalagens')
+                            </div>
                         </div>
-
 
                         <a href="<?php echo url("produto-variacao/create?codproduto={$model->codproduto}");?>">Nova Variação <span class="fa fa-plus"></span></a>
                         &nbsp;|&nbsp;
@@ -166,20 +92,40 @@
                         <a href="<?php echo url("produto-barra/create?codproduto={$model->codproduto}");?>">Novo Código de Barras <span class="fa fa-plus"></span></a>
 
                         <br>
-                        <br>
-
                         @include('produto.show-variacoes')
                         
                     </div>
-                    <div class="tab-pane" id="tab-estoque" role="tabpanel">Estoque</div>
-                    <div class="tab-pane" id="tab-site" role="tabpanel">Site</div>
-                    <div class="tab-pane" id="tab-fiscal" role="tabpanel">NCM</div>
-                    <div class="tab-pane" id="tab-negocio" role="tabpanel">
+                    <div class="tab-pane" id="tab-estoque" role="tabpanel">
+                        <div id="div-estoque">
+                            <b>Aguarde...</b>
+                        </div>                        
+                    </div>
+                    <div class="tab-pane" id="tab-site" role="tabpanel">
+                        <p>
+                            <botton class="btn btn-secondary" id="integracao-open-cart"><i class="fa fa-shopping-cart"></i> 
+                                Sincronizar &nbsp;&nbsp;
+                                <img width="20px" id="sincronizar" src="{{ URL::asset('public/img/carregando.gif') }}">
+                            </botton>
 
+                        </p>
+                        <br>
+                        <strong>Divulgado no Site: {{ ($model->site)?'Sim':'Não' }}</strong>
+                        <hr>
+                        {!! nl2br($model->descricaosite) !!}
                         
                     </div>
+                    <div class="tab-pane" id="tab-fiscal" role="tabpanel">
+                        @include('produto.show-ncm')
+                    </div>
+                    <div class="tab-pane" id="tab-negocio" role="tabpanel">
+                        <div id="div-negocios">
+                            <b>Aguarde...</b>
+                        </div>
+                    </div>
                     <div class="tab-pane" id="nfes" role="tabpanel">NFE's</div>
-                    <div class="tab-pane" id="observacoes" role="tabpanel">Observações</div>
+                    <div class="tab-pane" id="observacoes" role="tabpanel">
+                        {!! $model->observacoes !!}
+                    </div>
                 </div>
             </div>    
         </div>
@@ -215,17 +161,24 @@
     .nav-tabs {
         margin-bottom: 1rem !important;
     }
+
+    /* Mover para bootstrap-alpha6*/
+
+
+
+    /*...*/
+        
 </style>
+<link href="{{ URL::asset('public/assets/css/bootstrap-alpha6-carousel.css') }}" rel="stylesheet" type="text/css"/>
+
 @include('layouts.includes.datatable.assets')
-<!--@include('layouts.includes.datatable.js', ['id' => 'negocios', 'url' => url('negocio-produto-barra/datatable'), 'order' => [], 'filtros' => ['codunidademedida' => 'codunidademedida', 'unidademedida', 'sigla', 'inativo'] ])-->
+@include('layouts.includes.datatable.js', ['id' => 'negocios', 'url' => url('negocio-produto-barra/datatable'), 'order' => [], 'filtros' => ['codunidademedida' => 'codunidademedida', 'unidademedida', 'sigla', 'inativo'] ])
 
 
 
 <script type="text/javascript">
-/*
 function mostraListagemNegocios()
 {
-
     //Serializa FORM
     var frmValues = $("#produto-negocio-search").serialize();
     
@@ -238,8 +191,8 @@ function mostraListagemNegocios()
     .done(function (data) {
         
         //Substitui #div-negocios
-        $('#div-negocios').html($(data).html()); 
-        
+        $('#div-negocios').html($(data).html());
+    /*    
         //Ativa InfiniteScroll
         $('#div-negocios-listagem').infinitescroll({
             loading : {
@@ -251,6 +204,7 @@ function mostraListagemNegocios()
             nextSelector : "#div-negocios .pagination li.active + li a",
             itemSelector : "#div-negocios-listagem div.list-group-item"
         });
+    */
         
     })
     .fail(function (e) {
@@ -259,7 +213,7 @@ function mostraListagemNegocios()
     });
 }
 
-function mostraListagemNotasFiscais()
+/*function mostraListagemNotasFiscais()
 {
     console.log('mostraListagemNotasFiscais');
     
@@ -292,10 +246,9 @@ function mostraListagemNotasFiscais()
         console.log('Erro no filtro');
         console.log(e);
     });
-}
+}*/
 
 $(document).ready(function() {
-
     ////////// LISTAGEM DE NEGOCIOS /////////
     //
     // Listagem de Negocios -- Troca ABA
@@ -306,14 +259,16 @@ $(document).ready(function() {
         listagemNegocioAberta = true;
     });
     
+/*
     // Listagem de Negocios -- Alteração Formulário
     $("#produto-negocio-search").on("change", function (event) {
         mostraListagemNegocios();
         event.preventDefault(); 
     });
     /////////////////////////////////////////
+*/
     
-
+/*
     ////////// LISTAGEM DE NOTAS FISCAIS /////////
     //
     // Listagem de Notas Fiscais -- Troca ABA
@@ -330,16 +285,11 @@ $(document).ready(function() {
         event.preventDefault(); 
     });
     /////////////////////////////////////////
-
+*/
     var listagemEstoqueAberta = false;
     $('a[href="#tab-estoque"]').on('shown.bs.tab', function (e) {
         recarregaDiv('div-estoque');
         listagemEstoqueAberta = true;
-    });
-    
-    
-    $('#codproduto').change(function (){
-        window.location.href = '{{ url("produto/") }}' + $('#codproduto').val();
     });
     
     $('#sincronizar').hide();
@@ -381,6 +331,14 @@ $(document).ready(function() {
                 });                 
             }
         }); 
+    }); 
+    
+/*    
+    
+    $('#codproduto').change(function (){
+        window.location.href = '{{ url("produto/") }}' + $('#codproduto').val();
+    });
+    
     });
     
     $('#btnVaiPara').click(function (e) {
@@ -395,10 +353,10 @@ $(document).ready(function() {
             }
         });
     });
-    
+*/    
     
 });
-*/
+
 </script>
 
 @endsection

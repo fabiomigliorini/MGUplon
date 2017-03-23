@@ -6,9 +6,9 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
-
+use Illuminate\Support\Facades\DB;
 use MGLara\Models\Produto;
-
+use MGLara\Models\EstoqueLocal;
 /**
  * Description of ProdutoRepository
  * 

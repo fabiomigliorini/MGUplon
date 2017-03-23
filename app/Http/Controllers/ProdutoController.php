@@ -276,7 +276,7 @@ class ProdutoController extends Controller
                 $view = 'produto.show-notasfiscais';
                 break;
             case 'div-estoque':
-                $estoque = $model->getArraySaldoEstoque();
+                $estoque = $this->repository->getArraySaldoEstoque();
                 $view = 'produto.show-estoque';
                 break;
             default:

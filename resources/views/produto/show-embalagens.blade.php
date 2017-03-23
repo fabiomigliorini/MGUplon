@@ -1,4 +1,4 @@
-<ul class='list-group col-md-5 text-right' id="div-embalagens">
+<ul class='list-group text-right' id="div-embalagens">
     <li class="list-group-item">
         <small class="pull-left text-muted">
             R$
