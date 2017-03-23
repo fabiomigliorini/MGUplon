@@ -11,6 +11,7 @@ use Carbon\Carbon;
  * @property string $model_class
  * @property Validator $validator
  * @property MGModel $model
+ * @property array $sort
  */
 abstract class MGRepository {
     
@@ -184,5 +185,41 @@ abstract class MGRepository {
         }
     }
     
+    /**
+     * 
+     * @param array $active 1 - Ativos / 2 - Inativos / 9 - Todos
+     * @param array $sort
+     */
+    public function all(int $active = 1, array $sort = null)
+    {
+        
+        $qry = $this->model_class::query();
+        
+        switch ($active) {
+            case 2: //Inativos
+                $qry = $qry->inativo();
+                break;
+
+            case 9: //Todos
+                break;
+
+            case 1: //Ativos
+            default:
+                $qry = $qry->ativo();
+                break;
+        }
+        
+        if (empty($sort) && !empty($this->sort)) {
+            $sort = $this->sort;
+        }
+        
+        if (!empty($sort)) {
+            foreach ($sort as $field => $dir) {
+                $qry->orderBy($field, $dir);
+            }
+        }
+        
+        return $qry->get();
+    }
     
 }

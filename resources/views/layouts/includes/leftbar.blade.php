@@ -54,6 +54,7 @@
 	                <li><a href="{{ url('estoque-saldo/relatorio-comparativo-vendas-filtro') }}">Venda Filial x Depósito</a></li>
 	                <li><a href="{{ url('estoque-saldo/relatorio-fisico-fiscal-filtro') }}">Fisico x Fiscal</a></li>
 	                <li><a href="{{ url('estoque-saldo-conferencia') }}">Conferência</a></li>
+	                <li><a href="{{ url('estoque-local') }}">Locais</a></li>
 
                     </ul>
                 </li>

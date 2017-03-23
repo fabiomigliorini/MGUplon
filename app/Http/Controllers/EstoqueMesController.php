@@ -9,6 +9,16 @@ use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
 
 use MGLara\Repositories\EstoqueMesRepository;
+use MGLara\Repositories\EstoqueLocalRepository;
+use MGLara\Repositories\ProdutoVariacaoRepository;
+use MGLara\Repositories\EstoqueLocalProdutoVariacaoRepository;
+use MGLara\Repositories\EstoqueSaldoRepository;
+
+use MGLara\Models\EstoqueLocal;
+use MGLara\Models\ProdutoVariacao;
+use MGLara\Models\EstoqueLocalProdutoVariacao;
+use MGLara\Models\EstoqueSaldo;
+use MGLara\Models\EstoqueMes;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
@@ -116,40 +126,105 @@ class EstoqueMesController extends Controller
      */
     public function show(Request $request, $id)
     {
-        // busca registro
-        $this->repository->findOrFail($id);
+        $model = $this->repository->findOrFail($id);
         
+        return $this->showKardex(
+            $model->EstoqueSaldo->EstoqueLocalProdutoVariacao->EstoqueLocal, 
+            $model->EstoqueSaldo->EstoqueLocalProdutoVariacao->ProdutoVariacao, 
+            $model->EstoqueSaldo->EstoqueLocalProdutoVariacao, 
+            $model->EstoqueSaldo, 
+            $model,
+            $model->EstoqueSaldo->fiscal,
+            $model->mes->year,
+            $model->mes->month
+        );
+        
+    }
+    
+    public function kardex(Request $request, int $codestoquelocal, int $codprodutovariacao, string $fiscal, int $ano, int $mes)
+    {
+        
+        $fiscal = ($fiscal == 'fiscal');
+        
+        $repo_el = new EstoqueLocalRepository();
+        $el = $repo_el->findOrFail($codestoquelocal);
+        
+        $repo_pv = new ProdutoVariacaoRepository();
+        $pv = $repo_pv->findOrFail($codprodutovariacao);
+        
+        $repo_elpv = new EstoqueLocalProdutoVariacaoRepository();
+        $es = null;
+        $em = null;
+        if ($elpv = $repo_elpv->busca($codestoquelocal, $codprodutovariacao)) {
+            $repo_es = new EstoqueSaldoRepository();
+            
+            if ($es = $repo_es->busca($elpv, $fiscal)) {
+                $repo_mes = new EstoqueMesRepository();
+                $em = $repo_mes->busca($es, Carbon::create($ano, $mes, 1));
+            }
+        }
+        
+        return $this->showKardex($el, $pv, $elpv, $es, $em, $fiscal, $ano, $mes);
+        
+    }
+    
+    private function showKardex (EstoqueLocal $el, ProdutoVariacao $pv, $elpv, $es, $em, bool $fiscal, int $ano, int $mes)
+    {
         //autorizacao
         $this->repository->authorize('view');
-        
-        $anteriores = $this->repository->buscaAnteriores(7);
-        $proximos = $this->repository->buscaProximos(14 - sizeof($anteriores));
         
         $filtro['order'] = [[
             'column' => 1,
             'dir' => 'ASC',
         ]];
         
+        $repo_el = new EstoqueLocalRepository();
+        $els = $repo_el->all();
+        
+        $pvs = $pv->Produto->ProdutoVariacaoS()->orderByRaw('variacao asc nulls first')->get();
+        
         // breadcrumb
-        $this->bc->addItem($this->repository->model->mes->format('M/Y'));
-        $this->bc->header = $this->repository->model->mes->format('M/Y');
+        $this->bc->header = 'Kardex: ' . $pv->Produto->produto;
+        $this->bc->addItem($this->bc->header);
+
+        $ems = [];
+        if (!empty($es)) {
+            $ems = $es->EstoqueMesS()->orderBy('mes', 'asc')->get();
+        }
+        
+        $movs = [];
+        if (!empty($em)) {
+            $movs = $this->repository->movimentoKardex($em);
+        }
         
         // retorna show
         return view('estoque-mes.show', [
             'bc'=>$this->bc, 
-            'anteriores'=>$anteriores, 
-            'proximos'=>$proximos, 
-            'filtro'=>$filtro, 
-            'model'=>$this->repository->model
-        ]);
-    }
+            
+            // Registro corrente
+            'pv'=>$pv, 
+            'el'=>$el, 
+            'elpv'=>$elpv, 
+            'es'=>$es, 
+            'em'=>$em,
+            'movs'=>$movs,
+            
+            // Registros da navegacao
+            'els'=>$els, 
+            'pvs'=>$pvs, 
+            'ems'=>$ems, 
 
-    public function kardex(Request $request, $fiscal, $codprodutovariacao, $codestoquelocal, $ano, $mes)
-    {
-        $fiscal = ($fiscal == 'fiscal');
-        
-        dd($fiscal);
-        
+            // da url
+            'fiscal'=>$fiscal, 
+            'ano'=>$ano, 
+            'mes'=>$mes, 
+            
+            
+            //'anteriores'=>$anteriores, 
+            //'proximos'=>$proximos, 
+            //'filtro'=>$filtro, 
+            //'model'=>$this->repository->model
+        ]);
     }
     
 }

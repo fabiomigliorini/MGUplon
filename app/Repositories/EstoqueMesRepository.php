@@ -278,28 +278,85 @@ class EstoqueMesRepository extends MGRepository {
         return $ems->reverse();
     }
     
-    public function buscaOuCria(EstoqueSaldo $saldo, $data) 
+    /**
+     * Calcula mês para o movimento
+     * @param EstoqueSaldo $sld
+     * @param Carbon $data
+     * @return Carbon
+     */
+    public function calculaMes(EstoqueSaldo $sld, Carbon $data) 
     {
-        
-        $mes = Carbon::today();
-        $mes->day = 1;
-        $mes->month = $data->month;
-        $mes->year = $data->year;
+        // Padrao primeiro dia do mes
+        $mes = Carbon::create($data->year, $data->month, 1);
         
         // Se for fiscal cria somente um mês por ano, dezembro, até 2016
-        if ($saldo->fiscal && $mes->year <= 2016) {
+        if ($sld->fiscal && $mes->year <= 2016) {
             $mes->month = 12;
         }
         
-        $em = EstoqueMes::where('codestoquesaldo', $saldo->codestoquesaldo)->where('mes', $mes)->first();
-        if ($em == false) {
-            $em = new EstoqueMes;
-            $em->codestoquesaldo = $saldo->codestoquesaldo;
-            $em->mes = $mes;
-            $em->save();
-        }
-        return $em;
+        return $mes;
         
+    }
+    
+    /**
+     * Busca Mes do Saldo
+     * @param EstoqueSaldo $sld
+     * @param Carbon $data
+     * @return EstoqueMes
+     */
+    public function busca (EstoqueSaldo $sld, Carbon $data) 
+    {
+        $mes = $this->calculaMes($sld, $data);
+        return $this->model = $sld->EstoqueMesS()->where('mes', $mes)->first();
+    }
+    
+    /**
+     * Busca ou cria Mes para o Saldo
+     * @param EstoqueSaldo $sld
+     * @param Carbon $data
+     * @return EstoqueMes
+     */
+    public function buscaOuCria (EstoqueSaldo $sld, Carbon $data) 
+    {
+        if ($this->busca($sld, $data)) {
+            return $this->model;
+        }
+        
+        $mes = $this->calculaMes($sld, $data);
+        
+        if (!$this->create([
+            'codestoquesaldo' => $sld->codestoquesaldo,
+            'mes' => $mes,
+        ])) {
+            return false;
+        }
+        
+        return $this->model;
+        
+    }
+    
+    /**
+     * Busca ou cria um Mes e suas dependências pela chave do estoque
+     * @param int $codestoquelocal
+     * @param int $codprodutovariacao
+     * @param bool $fiscal
+     * @param Carbon $data
+     * @return EstoqueMes
+     */
+    public function buscaOuCriaPelaChave(int $codestoquelocal, int $codprodutovariacao, bool $fiscal, Carbon $data)
+    {
+        $repo_elpv = new EstoqueLocalProdutoVariacaoRepository();
+        if (!$elpv = $repo_elpv->buscaOuCria($codestoquelocal, $codprodutovariacao)) {
+            return false;
+        }
+        
+        $repo_sld = new EstoqueSaldoRepository();
+        if (!$repo_sld->buscaOuCria($elpv, $fiscal)) {
+            return false;
+        }
+        
+        return $this->buscaOuCria($sld, $data);
+            
     }
     
     public function calculaCustoMedio(EstoqueMes $mes, $ciclo = 0) {
@@ -474,6 +531,133 @@ class EstoqueMesRepository extends MGRepository {
             $repo->dispatch((new EstoqueCalculaCustoMedio($mes, $ciclo +1))->onQueue('urgent'));
         }
         
+    }
+    
+    /**
+     * Monta array da movimentacao do Kardex
+     * @param EstoqueMes $model
+     * @return array
+     */
+    public function movimentoKardex ($model = null) 
+    {
+        if (empty($model)) {
+            $model = $this->model;
+        }
+        $qry = $model->EstoqueMovimentoS()->select([
+            'tblestoquemovimento.codestoquemovimento',
+            'tblestoquemovimento.data',
+            'tblestoquemovimento.entradaquantidade',
+            'tblestoquemovimento.entradavalor',
+            'tblestoquemovimento.saidaquantidade',
+            'tblestoquemovimento.saidavalor',
+            'tblestoquemovimento.observacoes',
+            
+            'tblestoquemovimentotipo.descricao',
+            
+            'tblnotafiscalprodutobarra.codnotafiscal',
+            'tblnotafiscal.codpessoa as codpessoanotafiscal',
+            'tblnotafiscal.emitida as emitidanotafiscal',
+            'tblnotafiscal.serie as serienotafiscal',
+            'tblnotafiscal.numero as numeronotafiscal',
+            'tblnotafiscal.modelo as modelonotafiscal',
+            'tblpessoanotafiscal.fantasia as pessoanotafiscal',
+            
+            'tblnegocioprodutobarra.codnegocio',
+            'tblnegocio.codpessoa as codpessoanegocio',
+            'tblpessoanegocio.fantasia as pessoanegocio',
+            
+            'tblestoquemovimentoorigem.codestoquemes as codestoquemesorigem',
+            
+        ]);
+        $qry->orderBy('tblestoquemovimento.data', 'asc');
+        $qry->orderBy('tblestoquemovimento.criacao', 'asc');
+        
+        $qry->join('tblestoquemovimentotipo', 'tblestoquemovimentotipo.codestoquemovimentotipo', '=', 'tblestoquemovimento.codestoquemovimentotipo');
+        
+        $qry->leftjoin('tblnotafiscalprodutobarra', 'tblnotafiscalprodutobarra.codnotafiscalprodutobarra', '=', 'tblestoquemovimento.codnotafiscalprodutobarra');
+        $qry->leftjoin('tblnotafiscal', 'tblnotafiscal.codnotafiscal', '=', 'tblnotafiscalprodutobarra.codnotafiscal');
+        $qry->leftjoin('tblpessoa as tblpessoanotafiscal', 'tblpessoanotafiscal.codpessoa', '=', 'tblnotafiscal.codpessoa');
+        
+        $qry->leftjoin('tblnegocioprodutobarra', 'tblnegocioprodutobarra.codnegocioprodutobarra', '=', 'tblestoquemovimento.codnegocioprodutobarra');
+        $qry->leftjoin('tblnegocio', 'tblnegocio.codnegocio', '=', 'tblnegocioprodutobarra.codnegocio');
+        $qry->leftjoin('tblpessoa as tblpessoanegocio', 'tblpessoanegocio.codpessoa', '=', 'tblnegocio.codpessoa');
+
+        $qry->leftjoin('tblestoquemovimento as tblestoquemovimentoorigem', 'tblestoquemovimentoorigem.codestoquemovimento', '=', 'tblestoquemovimento.codestoquemovimentoorigem');
+
+        $regs = $qry->get();
+        
+        $saldoquantidade = $model->inicialquantidade;
+        $saldovalor = $model->inicialvalor;
+        $customedio = ($saldoquantidade != 0)?$saldovalor/$saldoquantidade:null;
+        $ret = [
+            'inicial' => [
+                'entradaquantidade' => ($model->inicialquantidade >= 0)?$model->inicialquantidade:null,
+                'entradavalor' => ($model->inicialvalor >= 0)?$model->inicialvalor:null,
+                'saidaquantidade' => ($model->inicialquantidade < 0)?$model->inicialquantidade:null,
+                'saidavalor' => ($model->inicialvalor < 0)?$model->inicialvalor:null,
+                'saldoquantidade' => $saldoquantidade,
+                'saldovalor' => $saldovalor,
+                'customedio' => $customedio,
+            ],
+            'total' => [
+                'entradaquantidade' => $regs->sum('entradaquantidade'),
+                'entradavalor' => $regs->sum('entradavalor'),
+                'saidaquantidade' => $regs->sum('saidaquantidade'),
+                'saidavalor' => $regs->sum('saidavalor'),
+                'saldoquantidade' => $model->saldoquantidade,
+                'saldovalor' => $model->saldovalor,
+                'customedio' => $model->customedio,
+            ],
+            'movimento' => []
+        ];
+        foreach ($regs as $reg) {
+            $saldoquantidade += $reg->entradaquantidade - $reg->saidaquantidade;
+            $saldovalor += $reg->entradavalor - $reg->saidavalor;
+            $customedio = ($saldoquantidade != 0)?$saldovalor/$saldoquantidade:null;
+            
+            $urldocumento = null;
+            $documento = null;
+            $urlpessoa = null;
+            $pessoa = null;
+            if (!empty($reg->codnotafiscal)) {
+                $urldocumento = url('nota-fiscal', $reg->codnotafiscal);
+                $documento = formataNumeroNota($reg->emitidanotafiscal, $reg->serienotafiscal, $reg->numeronotafiscal, $reg->modelonotafiscal);
+                $urlpessoa = url('pessoa', $reg->codpessoanotafiscal);
+                $pessoa = $reg->pessoanotafiscal;
+            } elseif (!empty($reg->codnegocio)) {
+                $urldocumento = url('negocio', $reg->codnegocio);
+                $documento = formataCodigo($reg->codnegocio);
+                $urlpessoa = url('pessoa', $reg->codpessoanegocio);
+                $pessoa = $reg->pessoanegocio;
+            }
+            
+            $urlestoquemesrelacionado = null;
+            if (!empty($reg->codestoquemesorigem)) {
+                $urlestoquemesrelacionado = url('estoque-mes', $reg->codestoquemesorigem);
+            } elseif ($filho = $reg->EstoqueMovimentoS()->first()) {
+                $urlestoquemesrelacionado = url('estoque-mes', $filho->codestoquemes);
+            }
+                
+            $ret['movimento'][] = [
+                'codestoquemovimento' => $reg->codestoquemovimento,
+                'data' => $reg->data,
+                'descricao' => $reg->descricao,
+                'entradaquantidade' => $reg->entradaquantidade,
+                'entradavalor' => $reg->entradavalor,
+                'saidaquantidade' => $reg->saidaquantidade,
+                'saidavalor' => $reg->saidavalor,
+                'saldoquantidade' => $saldoquantidade,
+                'saldovalor' => $saldovalor,
+                'customedio' => $customedio,
+                'pessoa' => $pessoa,
+                'documento' => $documento,
+                'urlpessoa' => $urlpessoa,
+                'urlestoquemesrelacionado' => $urlestoquemesrelacionado,
+                'urldocumento' => $urldocumento,
+                'observacoes' => $reg->observacoes,
+            ];
+        }
+        return $ret;
     }
     
 }

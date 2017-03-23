@@ -108,7 +108,7 @@ class EstoqueMovimento extends MGModel
     // Tabelas Filhas
     public function EstoqueMovimentoS()
     {
-        return $this->hasMany(EstoqueMovimento::class, 'codestoquemovimento', 'codestoquemovimentoorigem');
+        return $this->hasMany(EstoqueMovimento::class, 'codestoquemovimentoorigem', 'codestoquemovimento');
     }
 
 

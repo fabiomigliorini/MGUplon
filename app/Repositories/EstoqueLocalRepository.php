@@ -64,6 +64,15 @@ class EstoqueLocalRepository extends MGRepository {
         }
         
         if ($this->model->EstoqueLocalProdutoVariacaoS->count() > 0) {
+            return 'Local de Estoque sendo utilizada em "EstoqueLocalProdutoVariacao"!';
+        }
+        
+        if ($this->model->NegocioS->count() > 0) {
+            return 'Local de Estoque sendo utilizada em "Negocio"!';
+        }
+        
+        if ($this->model->NotaFiscalS->count() > 0) {
+            return 'Local de Estoque sendo utilizada em "NotaFiscal"!';
             return 'Estoque Local sendo utilizada em "EstoqueLocalProdutoVariacao"!';
         }
         
