@@ -197,4 +197,7 @@ Route::group(['middleware' => 'auth'], function() {
     
     /* Negócio produto barra */
     Route::resource('negocio-produto-barra', 'NegocioProdutoBarraController');
+    
+    /* CEST */
+    Route::resource('cest', 'CestController');
 });

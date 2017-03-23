@@ -200,7 +200,7 @@ class GrupoProdutoController extends Controller
         
         if(!empty($request->get('id'))) {    
             // Monta Retorno
-            $item = $this->repository->model->findOrFail($request->get('id'));
+            $item = $this->repository->findOrFail($request->get('id'));
             return [
                 'id' => $item->codgrupoproduto,
                 'grupoproduto' => $item->grupoproduto,
@@ -212,7 +212,7 @@ class GrupoProdutoController extends Controller
             $params['page'] = $params['page']??1;
             
             // Monta Query
-            $qry = $this->repository->model->where('codgrupoproduto', '=', $request->codgrupoproduto);
+            $qry = $this->repository->model->where('codfamiliaproduto', $request->codfamiliaproduto);
             
             if(!empty($params['term'])) {
                 foreach (explode(' ', $params['term']) as $palavra) {

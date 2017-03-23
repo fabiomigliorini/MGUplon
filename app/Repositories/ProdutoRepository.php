@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use MGLara\Models\Produto;
+//use MGLara\Repositories\MarcaRepository;
 use MGLara\Models\EstoqueLocal;
 /**
  * Description of ProdutoRepository
@@ -57,7 +58,7 @@ class ProdutoRepository extends MGRepository {
         {
             $marca = new MarcaRepository();
             $marca = $marca->findOrFail($parameters[0]);
-            if (!empty($value) && !empty($parameters[0]) && $parameters[1] == '')
+            if (!empty($value) && !empty($parameters[0]) == '')
             {
                 if (strpos(strtoupper($value), strtoupper($marca->marca)) === false) {
                     return false;
@@ -76,7 +77,7 @@ class ProdutoRepository extends MGRepository {
                 'min:10',
                 'required',
                 Rule::unique('tblproduto')->ignore($id, 'codproduto'),
-                'nomeMarca'
+                'nomeMarca:'.$data['codmarca'],
             ],
             'referencia' => [
                 'max:50',

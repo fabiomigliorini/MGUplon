@@ -71,15 +71,19 @@
             {!! Form::label('observacoes', 'Observações') !!}
             {!! Form::textarea('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes', 'rows'=>'3']) !!}
         </fieldset>
-        
-        <fieldset class="form-group">
-            {!! Form::label('importado', 'Importado') !!}
-            {!! Form::checkbox('importado', true, null, ['id'=>'importado', 'data-off-text' => 'Nacional', 'data-on-text' => 'Importado']) !!}
-        </fieldset>
 
         <fieldset class="form-group">
+            <div class="checkbox checkbox-primary">
+            {!! Form::checkbox('importado', true, null, ['class'=> 'form-control', 'id'=>'importado']) !!}
+            {!! Form::label('importado', 'Importado') !!}
+            </div>
+        </fieldset>
+        
+        <fieldset class="form-group">
+            <div class="checkbox checkbox-primary">
+            {!! Form::checkbox('site', true, null, ['class'=> 'form-control', 'id'=>'site']) !!}
             {!! Form::label('site', 'Disponível no Site') !!}
-            {!! Form::checkbox('site', true, null, ['id'=>'site', 'data-off-text' => 'Não', 'data-on-text' => 'Sim']) !!}
+            </div>
         </fieldset>
 
         <fieldset class="form-group">

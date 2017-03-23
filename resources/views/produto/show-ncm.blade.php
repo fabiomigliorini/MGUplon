@@ -1,9 +1,9 @@
-<div class="panel panel-default" id="div-fiscal">
+<div id="div-fiscal">
     <table class="table table-striped "> 
         <tbody> 
             <tr> 
-                <th class="col-md-2" scope="row">NCM</th> 
-                <td class="col-md-10">
+                <th>NCM</th> 
+                <td>
                     @if($model->Ncm)
                         <a href="ncm/{{ $model->Ncm->codncm }}">
                             {{formataNcm($model->Ncm->ncm)}}

@@ -7,7 +7,6 @@
             <h4 class="card-header">Imagens</h4>
             <div class='card-block'>
                 @include('produto.show-imagens')
-                <!--<div class='clearfix'></div>-->
             </div>
         </div>
     </div>
@@ -135,12 +134,14 @@
 @section('buttons')
 
     <a class="btn btn-secondary btn-sm" href="{{ url("produto/$model->codproduto/edit") }}"><i class="fa fa-pencil"></i></a>
+    <a class="btn btn-secondary btn-sm" href="{{ url("produto/create/?duplicar={$model->codproduto}") }}"><i class="fa fa-copy"></i></a>    
     @if(empty($model->inativo))
         <a class="btn btn-secondary btn-sm" href="{{ url("produto/$model->codproduto/inactivate") }}" data-activate data-question="Tem certeza que deseja inativar '{{ $model->codproduto }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-ban"></i></a>
     @else
         <a class="btn btn-secondary btn-sm" href="{{ url("produto/$model->codproduto/activate") }}" data-activate data-question="Tem certeza que deseja ativar '{{ $model->codproduto }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-circle-o"></i></a>
     @endif
-    <a class="btn btn-secondary btn-sm" href="{{ url("produto/$model->codproduto") }}" data-delete data-question="Tem certeza que deseja excluir '{{ $model->codproduto }}'?" data-after="location.replace('{{ url('produto') }}');"><i class="fa fa-trash"></i></a>                
+    <a class="btn btn-secondary btn-sm" href="{{ url("produto/$model->codproduto") }}" data-delete data-question="Tem certeza que deseja excluir '{{ $model->codproduto }}'?" data-after="location.replace('{{ url('produto') }}');"><i class="fa fa-trash"></i></a>
+    <a class="btn btn-secondary btn-sm" href="" id="btnVaiPara"><span class="fa fa-external-link"></span></a>
     
 @endsection
 @section('inactive')
@@ -161,12 +162,6 @@
     .nav-tabs {
         margin-bottom: 1rem !important;
     }
-
-    /* Mover para bootstrap-alpha6*/
-
-
-
-    /*...*/
         
 </style>
 <link href="{{ URL::asset('public/assets/css/bootstrap-alpha6-carousel.css') }}" rel="stylesheet" type="text/css"/>
@@ -333,15 +328,16 @@ $(document).ready(function() {
         }); 
     }); 
     
-/*    
-    
+    /*    
     $('#codproduto').change(function (){
         window.location.href = '{{ url("produto/") }}' + $('#codproduto').val();
     });
     
     });
+    */    
     
-    $('#btnVaiPara').click(function (e) {
+    /*
+    $('#btnVaiPara').on('click', function (e) {
         e.preventDefault();
         bootbox.prompt({
             title: "Digite o código do produto",
@@ -353,8 +349,7 @@ $(document).ready(function() {
             }
         });
     });
-*/    
-    
+    */
 });
 
 </script>

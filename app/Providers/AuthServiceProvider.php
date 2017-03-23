@@ -48,6 +48,7 @@ class AuthServiceProvider extends ServiceProvider
         \MGLara\Models\EstoqueMes::class            => \MGLara\Policies\EstoqueMesPolicy::class,
         \MGLara\Models\NegocioProdutoBarra::class   => \MGLara\Policies\NegocioProdutoBarraPolicy::class,
         \MGLara\Models\EstoqueLocal::class          => \MGLara\Policies\EstoqueLocalPolicy::class,
+        \MGLara\Models\Cest::class                  => \MGLara\Policies\CestPolicy::class,
 
         
         
