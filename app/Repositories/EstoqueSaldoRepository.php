@@ -1439,4 +1439,120 @@ class EstoqueSaldoRepository extends MGRepository {
                     ");
         
     }
+    
+    public function saldosPorFisicoFiscal (int $codproduto) 
+    {
+        $sql = "
+            select sld.fiscal, sum(sld.saldoquantidade) as saldoquantidade, sum(sld.saldovalor) as saldovalor
+            from tblprodutovariacao pv
+            inner join tblestoquelocalprodutovariacao elpv on (elpv.codprodutovariacao = pv.codprodutovariacao)
+            inner join tblestoquesaldo sld on (sld.codestoquelocalprodutovariacao = elpv.codestoquelocalprodutovariacao)
+            where pv.codproduto = $codproduto
+            group by sld.fiscal";
+        $regs = DB::select($sql);
+        
+        $ret = [
+            false => [
+                'fiscal' => false,
+                'chave' => 'fisico',
+                'descricao' => 'Fisico',
+                'saldoquantidade' => null,
+                'saldovalor' => null,
+                'customedio' => null,
+            ],
+            true => [
+                'fiscal' => true,
+                'chave' => 'fiscal',
+                'descricao' => 'Fiscal',
+                'saldoquantidade' => null,
+                'saldovalor' => null,
+                'customedio' => null,
+            ]
+        ];
+        
+        foreach ($regs as $reg) {
+            $ret[$reg->fiscal]['saldoquantidade'] = $reg->saldoquantidade;
+            $ret[$reg->fiscal]['saldovalor'] = $reg->saldovalor;
+            if ($reg->saldoquantidade != 0) {
+                $ret[$reg->fiscal]['customedio'] = $reg->saldovalor / $reg->saldoquantidade;
+            }
+        }
+        
+        return $ret;
+        
+    }
+    
+    public function saldosPorLocal (int $codproduto, bool $fiscal) 
+    {
+        $fiscal = ($fiscal)?'true':'false';
+        $sql = "
+            select el.codestoquelocal, el.estoquelocal, iq.saldoquantidade, iq.saldovalor
+            from tblestoquelocal el
+            left join (
+                select elpv.codestoquelocal, sum(sld.saldoquantidade) as saldoquantidade, sum(sld.saldovalor) as saldovalor
+                from tblprodutovariacao pv
+                inner join tblestoquelocalprodutovariacao elpv on (elpv.codprodutovariacao = pv.codprodutovariacao)
+                inner join tblestoquesaldo sld on (sld.codestoquelocalprodutovariacao = elpv.codestoquelocalprodutovariacao and sld.fiscal = $fiscal)
+                where pv.codproduto = $codproduto
+                group by elpv.codestoquelocal
+                ) iq on (iq.codestoquelocal = el.codestoquelocal)
+            where el.inativo is null
+            order by el.codestoquelocal
+            ";
+        $regs = DB::select($sql);
+        
+        $ret = [];
+        foreach ($regs as $reg) {
+            $customedio = null;
+            if ($reg->saldoquantidade != 0) {
+                $customedio = $reg->saldovalor / $reg->saldoquantidade;
+            }
+            $ret[$reg->codestoquelocal] = [
+                'codestoquelocal' => $reg->codestoquelocal,
+                'estoquelocal' => $reg->estoquelocal,
+                'saldoquantidade' => $reg->saldoquantidade,
+                'saldovalor' => $reg->saldovalor,
+                'customedio' => $customedio,
+            ];
+                
+        }
+        
+        return $ret;
+        
+    }
+    
+    public function saldosPorVariacao (int $codproduto, bool $fiscal, int $codestoquelocal) 
+    {
+        $fiscal = ($fiscal)?'true':'false';
+        $sql = "
+            select pv.codprodutovariacao, pv.variacao, sum(sld.saldoquantidade) as saldoquantidade, sum(sld.saldovalor) as saldovalor
+            from tblprodutovariacao pv
+            left join tblestoquelocalprodutovariacao elpv on (elpv.codprodutovariacao = pv.codprodutovariacao and elpv.codestoquelocal = $codestoquelocal)
+            left join tblestoquesaldo sld on (sld.codestoquelocalprodutovariacao = elpv.codestoquelocalprodutovariacao and sld.fiscal = $fiscal)
+            where pv.codproduto = $codproduto
+            group by pv.codprodutovariacao, pv.variacao
+            order by pv.variacao nulls first
+            ";
+        $regs = DB::select($sql);
+        
+        $ret = [];
+        foreach ($regs as $reg) {
+            $customedio = null;
+            if ($reg->saldoquantidade != 0) {
+                $customedio = $reg->saldovalor / $reg->saldoquantidade;
+            }
+            $ret[$reg->codprodutovariacao] = [
+                'codprodutovariacao' => $reg->codprodutovariacao,
+                'variacao' => (empty($reg->variacao))?'{Sem Variação}':$reg->variacao,
+                'saldoquantidade' => $reg->saldoquantidade,
+                'saldovalor' => $reg->saldovalor,
+                'customedio' => $customedio,
+            ];
+                
+        }
+        
+        return $ret;
+        
+    }
+    
 }
