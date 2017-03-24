@@ -213,19 +213,21 @@ class ProdutoController extends Controller
             if (!$this->repository->create()) {
                 throw new Exception('Erro ao Cria Produto!');
             }        
-
-            $pv = $this->produtoVariacaoRepository->new();
-            $pv->codproduto = $this->repository->model->codproduto;
-
-            if (!$pv->create()){
+            
+            $pv = $this->produtoVariacaoRepository->new([
+                'codproduto' => $this->repository->model->codproduto
+            ]);
+            
+            if (!$pv->save()){
                 throw new Exception('Erro ao Criar Variação!');
             }
 
-            $pb = $this->produtoBarraRepository->new();
-            $pb->codproduto = $this->repository->model->codproduto;
-            $pb->codprodutovariacao = $pv->codprodutovariacao;
+            $pb = $this->produtoBarraRepository->new([
+                'codproduto' => $this->repository->model->codproduto,
+                'codprodutovariacao' => $pv->codprodutovariacao
+            ]);
 
-            if (!$pb->create()){
+            if (!$pb->save()){
                 throw new Exception ('Erro ao Criar Barras!');
             }
 
@@ -720,18 +722,16 @@ class ProdutoController extends Controller
     }
     
 
-    public function listagemJsonDescricao(Request $request) 
+    public function typeahead(Request $request) 
     {
-        $parametros['produto'] = $request->get('q');
-        $parametros['codsubgrupoproduto'] = $request->get('codsubgrupoproduto');
-
-        $sql = Produto::search($parametros)
+        $sql = $this->repository->model->query()
+            ->palavras('produto', $request->get('q'))
             ->select('produto', 'codproduto')
             ->where('codproduto', '<>',  ($request->get('codproduto')?$request->get('codproduto'):0))
             ->orderBy('produto', 'DESC')
             ->limit(15)
             ->get();
-
+        
         $resultado = [];
         foreach ($sql as $key => $value) {
             $resultado[] = [
@@ -743,25 +743,6 @@ class ProdutoController extends Controller
         return  response()->json($resultado);
     }
 
-    public function inativar(Request $request)
-    {
-        try{
-            $model = Produto::find($request->get('id'));
-            if ($request->get('acao') == 'ativar') {
-                $model->inativo = null;
-            } else {
-                $model->inativo = Carbon::now();
-            }
-            
-            $model->save();
-            $acao = ($request->get('acao') == 'ativar') ? 'ativado' : 'inativado';
-            $ret = ['resultado' => true, 'mensagem' => "Produto $model->produto $acao com sucesso!"];
-        }
-        catch(\Exception $e){
-            $ret = ['resultado' => false, 'mensagem' => "Erro ao $acao produto!", 'exception' => $e];
-        }
-        return json_encode($ret);
-    } 
     
     public function estoqueSaldo(Request $request) 
     {

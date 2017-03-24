@@ -193,6 +193,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('meta', 'MetaController');
 
     /* Produto */
+    Route::get('produto/typeahead', 'ProdutoController@typeahead');
     Route::resource('produto', 'ProdutoController');
     
     /* Negócio produto barra */
