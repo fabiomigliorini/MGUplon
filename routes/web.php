@@ -73,8 +73,6 @@ Route::group(['middleware' => 'auth'], function() {
     
     /* NCM */
     Route::resource('ncm', 'NcmController');
-    
-
 
     /* Usuários */
     Route::put('usuario/{id}/ativar', 'UsuarioController@ativar');
@@ -201,4 +199,19 @@ Route::group(['middleware' => 'auth'], function() {
     
     /* CEST */
     Route::resource('cest', 'CestController');
+
+    /* Imagem */
+    Route::resource('imagem/{id}/delete', 'ImagemController@delete');
+    Route::delete('imagem/produto/{id}/delete', 'ImagemController@produtoDelete');
+    Route::post('imagem/produtostore/{id}', 'ImagemController@produtoStore');
+    //Route::resource('imagem/produto-imagens','ImagemController@produtoImagens');
+    Route::resource('imagem/produto', 'ImagemController@produto');
+    
+    Route::resource('imagem/lixeira', 'ImagemController@lixeira');
+    Route::get('imagem/esvaziar-lixeira', 'ImagemController@esvaziarLixeira');
+    Route::post('imagem/inativar', 'ImagemController@inativar');
+    
+    Route::resource('imagem/edit', 'ImagemController@edit');
+    Route::resource('imagem', 'ImagemController');
+    
 });
