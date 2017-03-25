@@ -141,7 +141,6 @@
         <a class="btn btn-secondary btn-sm" href="{{ url("produto/$model->codproduto/activate") }}" data-activate data-question="Tem certeza que deseja ativar '{{ $model->codproduto }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-circle-o"></i></a>
     @endif
     <a class="btn btn-secondary btn-sm" href="{{ url("produto/$model->codproduto") }}" data-delete data-question="Tem certeza que deseja excluir '{{ $model->codproduto }}'?" data-after="location.replace('{{ url('produto') }}');"><i class="fa fa-trash"></i></a>
-    <a class="btn btn-secondary btn-sm" href="" id="btnVaiPara"><span class="fa fa-external-link"></span></a>
     
 @endsection
 @section('inactive')
@@ -336,20 +335,6 @@ $(document).ready(function() {
     });
     */    
     
-    /*
-    $('#btnVaiPara').on('click', function (e) {
-        e.preventDefault();
-        bootbox.prompt({
-            title: "Digite o código do produto",
-            inputType: 'number',
-            callback: function (result) {
-                if(result) {
-                    location.replace(baseUrl + '/produto/' + result)
-                }
-            }
-        });
-    });
-    */
 });
 
 </script>

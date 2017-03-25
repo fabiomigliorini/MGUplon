@@ -18,7 +18,7 @@
                     </tr>
                     <tr> 
                       <th>Disponível no site</th> 
-                      <td>{{ $model->site }}</td> 
+                      <td>{{ ($model->site == 1  ?'Sim':'Não') }}</td> 
                     </tr>
                     <tr> 
                       <th>Descrição</th> 
@@ -36,14 +36,14 @@
             <div class='card-block'>
                 @if($model->codimagem)
                 <div class="text-right">
-                    <a href="{{ url("/imagem/$model->codmarca/delete/?model=Marca&imagem={$model->Imagem->codimagem}") }}" class="btn btn-default btn-sm"><i class="glyphicon glyphicon-trash"></i> Excluir</a>
-                    <a href="{{ url("/imagem/edit?id=$model->codmarca&model=Marca") }}" class="btn btn-default btn-sm"><i class="glyphicon glyphicon-pencil"></i> Alterar</a>
+                    <a href="{{ url("/imagem/$model->codmarca/delete/?model=Marca&imagem={$model->Imagem->codimagem}") }}" class="btn btn-secondary btn-sm"><i class="fa fa-trash"></i> Excluir</a>
+                    <a href="{{ url("/imagem/edit?id=$model->codmarca&model=Marca") }}" class="btn btn-secondary btn-sm"><i class="fa fa-pencil"></i> Alterar</a>
                 </div>        
                 <a href="{{ url("imagem/{$model->Imagem->codimagem}") }}">
-                    <img class="img-responsive pull-right" src='<?php echo URL::asset('public/imagens/'.$model->Imagem->observacoes);?>'>
+                    <img class="img-responsive pull-right" src='<?php echo URL::asset('public/imagens/'.$model->Imagem->arquivo);?>'>
                 </a>
                 @else
-                <a title="Carregar imagem" href="{{ url("/imagem/edit?id=$model->codmarca&model=Marca") }}" class="btn btn-secondary">
+                <a title="Cadastrar imagem" href="{{ url("/imagem/create?model=marca&id=$model->codmarca") }}" class="btn btn-secondary">
                     <i class="fa fa-picture-o"></i>
                     Cadastrar imagem
                 </a>

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use MGLara\Models\Produto;
-//use MGLara\Repositories\MarcaRepository;
+use MGLara\Models\Tributacao;
 use MGLara\Models\EstoqueLocal;
 /**
  * Description of ProdutoRepository
@@ -37,29 +37,11 @@ class ProdutoRepository extends MGRepository {
         if (empty($id)) {
             $id = $this->model->codproduto;
         }
-/*        
-        Validator::extend('nomeMarca', function ($attribute, $value, $parameters)
-        {
-            dd($value);
-            $query = DB::table('tblmetafilialpessoa')
-                    ->where('codmetafilial', $parameters[0])
-                    ->where('codcargo', env('CODCARGO_SUBGERENTE'));
-            
-            $count = $query->count();
-            if ($count > 1){
-                return false;
-            }
-            return true;        
-        });  
-*/        
-        //$this->app['validator']->extend('validaMarca', function ($attribute, $value, $parameters)
 
-        Validator::extend('nomeMarca', function ($attribute, $value, $parameters)        
-        {
+        Validator::extend('nomeMarca', function ($attribute, $value, $parameters) {
             $marca = new MarcaRepository();
             $marca = $marca->findOrFail($parameters[0]);
-            if (!empty($value) && !empty($parameters[0]) == '')
-            {
+            if (!empty($value) && !empty($parameters[0])) {
                 if (strpos(strtoupper($value), strtoupper($marca->marca)) === false) {
                     return false;
                 } else {
@@ -70,6 +52,39 @@ class ProdutoRepository extends MGRepository {
             }
         });         
                 
+        Validator::extend('tributacao', function ($attribute, $value, $parameters) {
+            $ncm = new NcmRepository();
+            $ncm = $ncm->findOrFail($parameters[0]);
+            $regs = $ncm->regulamentoIcmsStMtsDisponiveis();
+            if (sizeof($regs) > 0) {
+                if ($value != Tributacao::SUBSTITUICAO) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        
+        Validator::extend('tributacaoSubstituicao', function ($attribute, $value, $parameters) {
+            $ncm = new NcmRepository();
+            $ncm = $ncm->findOrFail($parameters[0]);
+            $regs = $ncm->regulamentoIcmsStMtsDisponiveis();
+            if(empty($regs)) {
+                if ($value == Tributacao::SUBSTITUICAO) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        
+        Validator::extend('ncm', function ($attribute, $value, $parameters) {
+            $ncm = new NcmRepository();
+            $ncm = $ncm->findOrFail($value);
+            if (strlen($ncm->ncm) == 8) {
+                return true;
+            } else {
+                return false;
+            }
+        });          
         
         $this->validator = Validator::make($data, [
             'produto' => [
@@ -101,11 +116,12 @@ class ProdutoRepository extends MGRepository {
             ],
             'importado' => [
                 'boolean',
-                'required',
             ],
             'codtributacao' => [
                 'numeric',
                 'required',
+                'tributacao:'.$data['codncm'],
+                'tributacaoSubstituicao:'.$data['codncm'],
             ],
             'codtipoproduto' => [
                 'numeric',
@@ -113,7 +129,6 @@ class ProdutoRepository extends MGRepository {
             ],
             'site' => [
                 'boolean',
-                'required',
             ],
             'descricaosite' => [
                 'max:1024',
@@ -122,6 +137,7 @@ class ProdutoRepository extends MGRepository {
             'codncm' => [
                 'numeric',
                 'nullable',
+                'ncm'
             ],
             'codcest' => [
                 'numeric',
@@ -157,6 +173,9 @@ class ProdutoRepository extends MGRepository {
             'importado.required' => 'O campo "importado" deve ser preenchido!',
             'codtributacao.numeric' => 'O campo "codtributacao" deve ser um número!',
             'codtributacao.required' => 'O campo "codtributacao" deve ser preenchido!',
+            'codtributacao.tributacao' => 'Existe Regulamento de ICMS ST para este NCM!',
+            'codtributacao.tributacao_substituicao' => 'Não existe regulamento de ICMS ST para este NCM!',            
+            
             'codtipoproduto.numeric' => 'O campo "codtipoproduto" deve ser um número!',
             'codtipoproduto.required' => 'O campo "codtipoproduto" deve ser preenchido!',
             'site.boolean' => 'O campo "site" deve ser um verdadeiro/falso (booleano)!',

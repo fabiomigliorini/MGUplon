@@ -57,14 +57,20 @@
         </fieldset>
 
         <fieldset class="form-group">
-            {!! Form::label('referencia', 'Referência') !!}
-            {!! Form::text('referencia', null, ['class'=> 'form-control'], ['id'=>'referencia']) !!}
-        </fieldset>
-
-        <fieldset class="form-group">
-            {!! Form::label('codunidademedida', 'Preço') !!}
-            {!! Form::number('preco', null, ['required' => true, 'step' => 0.01, 'class'=> 'form-control text-right', 'id'=>'preco']) !!}
-            {!! Form::select2UnidadeMedida('codunidademedida', null, ['required' => true,  'class'=> 'form-control', 'campo' => 'unidademedida', 'id' => 'codunidademedida', 'style'=>'width:100%']) !!}
+            <div class="row">
+                <div class="form-group col-md-4">
+                    {!! Form::label('referencia', 'Referência') !!}
+                    {!! Form::text('referencia', null, ['class'=> 'form-control'], ['id'=>'referencia']) !!}
+                </div>
+                <div class="form-group col-md-4">
+                    {!! Form::label('codunidademedida', 'Preço') !!}
+                    {!! Form::number('preco', null, ['required' => true, 'step' => 0.01, 'class'=> 'form-control text-right', 'id'=>'preco']) !!}
+                </div>
+                <div class="form-group col-md-4">
+                    {!! Form::label('codunidademedida', 'Unidade') !!}
+                    {!! Form::select2UnidadeMedida('codunidademedida', null, ['required' => true,  'class'=> 'form-control', 'campo' => 'unidademedida', 'id' => 'codunidademedida']) !!}
+                </div>
+            </div>
         </fieldset>
 
         <fieldset class="form-group">
@@ -204,22 +210,27 @@
 </style>
 <script type="text/javascript">
 $(document).ready(function() {
-    $('#form-produto').on("submit", function(e) {
-        var currentForm = this;
+    $('#form-principal').on("submit", function(e) {
         e.preventDefault();
-        bootbox.confirm("Tem certeza que deseja salvar?", function(result) {
-            if (result) {
-                currentForm.submit();
-            }
-        });
+        var currentForm = this;
+        swal({
+          title: "Tem certeza que deseja salvar?",
+          type: "warning",
+          showCancelButton: true,
+          closeOnConfirm: false,
+          closeOnCancel: true
+        },
+        function(isConfirm){
+          if (isConfirm) {
+            currentForm.submit();
+          } 
+        });       
     });
     
     @if (!empty($model->codsubgrupoproduto))
         $('#codsecaoproduto').val({{ $model->SubGrupoProduto->GrupoProduto->FamiliaProduto->codsecaoproduto }});
-        $("#codgrupoproduto").val(10);
-        $("#codfamiliaproduto").val(20);        
-        //$('#codfamiliaproduto').val({{ $model->SubGrupoProduto->GrupoProduto->codfamiliaproduto }});
-        //$('#codgrupoproduto').val({{ $model->SubGrupoProduto->codgrupoproduto }});
+        $('#codfamiliaproduto').val({{ $model->SubGrupoProduto->GrupoProduto->codfamiliaproduto }});
+        $('#codgrupoproduto').val({{ $model->SubGrupoProduto->codgrupoproduto }});
     @endif
 
     var codproduto = <?php echo (isset($model->codproduto) ? $model->codproduto:'""')?>;
@@ -227,7 +238,7 @@ $(document).ready(function() {
     function descricaoProdutoTypeahead(codsubgrupoproduto, codproduto) {
         var produtoTypeahead = new Bloodhound({
             remote: {
-                url: baseUrl + "/produto/descricao?q=%QUERY%&codsubgrupoproduto="+ codsubgrupoproduto +"&codproduto="+codproduto,
+                url: baseUrl + "/produto/typeahead?q=%QUERY%&codsubgrupoproduto="+ codsubgrupoproduto +"&codproduto="+codproduto,
                 wildcard: '%QUERY%',
             },
             datumTokenizer: function(produtoTypeahead) {
