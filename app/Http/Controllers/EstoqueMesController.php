@@ -33,91 +33,10 @@ class EstoqueMesController extends Controller
 
     public function __construct(EstoqueMesRepository $repository) {
         $this->repository = $repository;
-        $this->bc = new Breadcrumb('Kardex Estoque');
-        $this->bc->addItem('Kardex Estoque', url('estoque-mes'));
+        $this->bc = new Breadcrumb('Produto');
+        $this->bc->addItem('Produto', url('produto'));
     }
     
-    /**
-     * Monta json para alimentar a Datatable do index
-     * 
-     * @param  Request $request
-     * @return  json
-     */
-    public function datatableMovimento(Request $request) {
-        
-        // Autorizacao
-        $this->repository->authorize('listing');
-
-        // Grava Filtro para montar o formulario da proxima vez que o index for carregado
-        $this->setFiltro([
-            'filtros' => $request['filtros'],
-            'order' => $request['order'],
-        ]);
-        
-        // Ordenacao
-        $columns[0] = 'codestoquemes';
-        $columns[1] = 'inativo';
-        $columns[2] = 'codestoquemes';
-        $columns[3] = 'codestoquemes';
-        $columns[4] = 'codestoquesaldo';
-        $columns[5] = 'mes';
-        $columns[6] = 'inicialquantidade';
-        $columns[7] = 'inicialvalor';
-        $columns[8] = 'entradaquantidade';
-        $columns[9] = 'entradavalor';
-        $columns[10] = 'saidaquantidade';
-        $columns[11] = 'saidavalor';
-        $columns[12] = 'saldoquantidade';
-        $columns[13] = 'saldovalor';
-        $columns[14] = 'customedio';
-
-        $sort = [];
-        if (!empty($request['order'])) {
-            foreach ($request['order'] as $order) {
-                $sort[] = [
-                    'column' => $columns[$order['column']],
-                    'dir' => $order['dir'],
-                ];
-            }
-        }
-
-        // Pega listagem dos registros
-        $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
-        
-        // Monta Totais
-        $recordsTotal = $regs['recordsTotal'];
-        $recordsFiltered = $regs['recordsFiltered'];
-        
-        // Formata registros para exibir no data table
-        $data = [];
-        foreach ($regs['data'] as $reg) {
-            $data[] = [
-                url('estoque-mes', $reg->codestoquemes),
-                formataData($reg->inativo, 'C'),
-                formataCodigo($reg->codestoquemes),
-                $reg->codestoquemes,
-                $reg->codestoquesaldo,
-                $reg->mes,
-                $reg->inicialquantidade,
-                $reg->inicialvalor,
-                $reg->entradaquantidade,
-                $reg->entradavalor,
-                $reg->saidaquantidade,
-                $reg->saidavalor,
-                $reg->saldoquantidade,
-                $reg->saldovalor,
-                $reg->customedio,
-            ];
-        }
-        
-        // Envelopa os dados no formato do data table
-        $ret = new Datatable($request['draw'], $recordsTotal, $recordsFiltered, $data);
-        
-        // Retorna o JSON
-        return collect($ret);
-        
-    }
-
     /**
      * Display the specified resource.
      *
@@ -181,8 +100,9 @@ class EstoqueMesController extends Controller
         $pvs = $pv->Produto->ProdutoVariacaoS()->orderByRaw('variacao asc nulls first')->get();
         
         // breadcrumb
-        $this->bc->header = 'Kardex: ' . $pv->Produto->produto;
-        $this->bc->addItem($this->bc->header);
+        $this->bc->addItem($pv->Produto->produto, url('produto', $pv->codproduto));
+        $this->bc->addItem('Kardex');
+        $this->bc->header = 'Kardex ' . $pv->Produto->produto;
 
         $ems = [];
         if (!empty($es)) {

@@ -38,13 +38,17 @@
 
     $class_vencimento = 'text-muted';
     if ((!empty($elpv)) && (!empty($elpv->vencimento))) {
-        $dias = $elpv->vencimento->diffInDays();
-        if ($dias > $saldodias) {
-          $class_vencimento = 'text-success';
-        } elseif ($dias < 30) {
-          $class_vencimento = 'text-danger';
+        if ($elpv->vencimento->isPast()) {
+            $class_vencimento = 'text-danger';
         } else {
-          $class_vencimento = 'text-warning';
+            $dias = $elpv->vencimento->diffInDays();
+            if ($dias > $saldodias) {
+              $class_vencimento = 'text-success';
+            } elseif ($dias < 30) {
+              $class_vencimento = 'text-danger';
+            } else {
+              $class_vencimento = 'text-warning';
+            }
         }
     }
     
@@ -259,10 +263,10 @@
                     @endif
                   </h6>
 
-                  @if (!empty($es->vencimento))
+                  @if (!empty($elpv->vencimento))
                     <small class='text-muted'>Vencimento</small>
                     <h6 class="{{ $class_vencimento }}">
-                      {{ $es->vencimento->diffForHumans() }}
+                      {{ $elpv->vencimento->diffForHumans() }}
                     </h6>
                   @endif
 
@@ -281,7 +285,14 @@
           @forelse ($ems as $eml)
             <li class="nav-item">
               <a class="nav-link {{ (!empty($em) && ($eml->codestoquemes == $em->codestoquemes))?'active':'' }}" href='{{ url("kardex/{$el->codestoquelocal}/{$pv->codprodutovariacao}/$str_fiscal/{$eml->mes->year}/{$eml->mes->month}") }}'>
-                {{ $eml->mes->format('m/Y') }}
+                <div class="row">
+                  <div class="col-md-12">
+                    {{ $eml->mes->format('m/Y') }}
+                    {{ badge($eml->saldoquantidade) }}
+                    <br>
+                    <small class="text-muted text-center">{{ formataNumero($eml->customedio, 6) }}</small>
+                  </div>
+                </div>
               </a>
             </li>
           @empty
