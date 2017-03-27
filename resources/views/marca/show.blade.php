@@ -36,11 +36,11 @@
             <div class='card-block'>
                 @if($model->codimagem)
                 <div class="text-right">
-                    <a href="{{ url("/imagem/$model->codmarca/delete/?model=Marca&imagem={$model->Imagem->codimagem}") }}" class="btn btn-secondary btn-sm"><i class="fa fa-trash"></i> Excluir</a>
-                    <a href="{{ url("/imagem/edit?id=$model->codmarca&model=Marca") }}" class="btn btn-secondary btn-sm"><i class="fa fa-pencil"></i> Alterar</a>
+                    <a href="{{ url("/imagem/delete/?model=marca&id=$model->codmarca") }}" class="btn btn-secondary btn-sm"><i class="fa fa-trash"></i> Excluir</a>
+                    <a href="{{ url("/imagem/create?model=marca&id=$model->codmarca") }}" class="btn btn-secondary btn-sm"><i class="fa fa-pencil"></i> Alterar</a>
                 </div>        
                 <a href="{{ url("imagem/{$model->Imagem->codimagem}") }}">
-                    <img class="img-responsive pull-right" src='<?php echo URL::asset('public/imagens/'.$model->Imagem->arquivo);?>'>
+                    <img class="img-fluid pull-right" src='<?php echo URL::asset('public/imagens/'.$model->Imagem->arquivo);?>'>
                 </a>
                 @else
                 <a title="Cadastrar imagem" href="{{ url("/imagem/create?model=marca&id=$model->codmarca") }}" class="btn btn-secondary">

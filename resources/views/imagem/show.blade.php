@@ -48,11 +48,7 @@
     @include('layouts.includes.inactive', [$model])
     
 @endsection
-@section('creation')
 
-    @include('layouts.includes.creation', [$model])
-    
-@endsection
 @section('inscript')
 
 @endsection

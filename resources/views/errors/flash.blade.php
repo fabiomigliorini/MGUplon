@@ -11,6 +11,10 @@
         @if (Session::has('flash_create'))
             toastr.success('{{ Session::get('flash_create') }}');
         @endif
+
+        @if (Session::has('flash_delete'))
+            toastr.success('{{ Session::get('flash_delete') }}');
+        @endif
         
     });
 </script>

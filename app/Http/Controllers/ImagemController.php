@@ -11,6 +11,10 @@ use MGLara\Http\Controllers\Controller;
 use MGLara\Repositories\ImagemRepository;
 use MGLara\Repositories\MarcaRepository;
 use MGLara\Repositories\ProdutoRepository;
+ use MGLara\Repositories\SecaoProdutoRepository;
+ use MGLara\Repositories\FamiliaProdutoRepository;
+ use MGLara\Repositories\GrupoProdutoRepository;
+ use MGLara\Repositories\SubGrupoProdutoRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
@@ -22,16 +26,40 @@ use Illuminate\Support\Facades\Storage;
 use MGLara\Library\SlimImageCropper\Slim;
 
 /**
- * @property  ImagemRepository      $repository 
- * @property  MarcaRepository       $marcaRepository 
- * @property  ProdutoRepository     $produtoRepository 
+ * @property  ImagemRepository              $repository 
+ * @property  ProdutoRepository             $produtoRepository 
+ * @property  MarcaRepository               $marcaRepository 
+ * @property  SecaoProdutoRepository        $secaoProdutoRepository 
+ * @property  FamiliaProdutoRepository      $familiaProdutoRepository 
+ * @property  GrupoProdutoRepository        $grupoProdutoRepository 
+ * @property  SubGrupoProdutoRepository     $subGrupoProdutoRepository 
  */
+
+/*
+1 - Criar campo 'arquivo' 
+2 - UPDATE tblimagem SET arquivo = observacoes
+ */
+
 class ImagemController extends Controller
 {
 
-    public function __construct(ImagemRepository $repository, MarcaRepository $marcaRepository ) {
-        $this->repository = $repository;
-        $this->marcaRepository = $marcaRepository;
+    public function __construct(
+        ImagemRepository                $repository,
+        ProdutoRepository               $produtoRepository,
+        MarcaRepository                 $marcaRepository,
+        SecaoProdutoRepository          $secaoProdutoRepository,
+        FamiliaProdutoRepository        $familiaProdutoRepository,
+        GrupoProdutoRepository          $grupoProdutoRepository,
+        SubGrupoProdutoRepository       $subGrupoProdutoRepository
+    ) {
+        $this->repository                   = $repository;
+        $this->produtoRepository            = $produtoRepository;
+        $this->marcaRepository              = $marcaRepository;
+        $this->secaoProdutoRepository       = $secaoProdutoRepository;
+        $this->familiaProdutoRepository     = $familiaProdutoRepository;
+        $this->grupoProdutoRepository       = $grupoProdutoRepository;
+        $this->subGrupoProdutoRepository    = $subGrupoProdutoRepository;
+        
         $this->bc = new Breadcrumb('Imagem');
         $this->bc->addItem('Imagem', url('imagem'));
     }
@@ -164,8 +192,6 @@ class ImagemController extends Controller
         if (!$this->repository->validate($data)) {
             $this->throwValidationException($request, $this->repository->validator);
         }
-
-        //$this->repository->new($data);
         
         $this->repository->authorize('create');
         
@@ -174,11 +200,23 @@ class ImagemController extends Controller
                 $repo = $this->marcaRepository->findOrFail($data['id']);
                 break;
 
-            case 'secao': $repo = $this->secaoProdutoRepository;
+            case 'secao-produto': $repo = $this->secaoProdutoRepository->findOrFail($data['id']);
                 break;
 
-            case 'familia': 
-                $repo = $this->familiaProdutoRepository;
+            case 'familia-produto': 
+                $repo = $this->familiaProdutoRepository->findOrFail($data['id']);
+                break;
+
+            case 'grupo-produto': 
+                $repo = $this->grupoProdutoRepository->findOrFail($data['id']);
+                break;
+
+            case 'sub-grupo-produto': 
+                $repo = $this->subGrupoProdutoRepository->findOrFail($data['id']);
+                break;
+
+            case 'produto': 
+                $repo = $this->produtoRepository->findOrFail($data['id']);
                 break;
         }
         
@@ -188,38 +226,70 @@ class ImagemController extends Controller
         $this->repository->new();
         $this->repository->create();
         
-        if(!is_null($repo->codimagem)) {
-            $imagem_inativa = $this->repository->model->find($repo->codimagem);
-            $imagem_inativa->inativo = Carbon::now();
-            $imagem_inativa->save();
+        $arquivo = $this->repository->model->codimagem . '.' . $extensao;
+        
+        if($data['model'] == 'produto') {
+
+            // Carrega Imagens do SLIM
+            $images = Slim::getImages();
+            if (!isset($images[0])) {
+                abort(500, 'Nenhuma imagem informada!');
+            }
+            $image = $images[0];
+
+            // Se tipo for diferente de JPEG
+            if ($image['input']['type'] != 'image/jpeg') {
+                abort(500, 'Imagem deve ser um JPEG!');
+            }
+
+            // Anexa imagem ao produto
+            $repo->ProdutoImagemS()->attach($this->repository->model->codimagem);
+
+            // Salva o arquivo
+            Slim::saveFile($image['output']['data'], $arquivo, './public/imagens', false);
+
+            // Se havia alguma imagem para inativar
+            if($data['imagem']) {
+                //$imagem_inativa = $this->repository->model->find($data['imagem']);
+                //$imagem_inativa->inativo = Carbon::now();
+                //$imagem_inativa->save();
+                $this->repository->model->inativo = Carbon::now();
+                $this->repository->save();                
+                $repo->ProdutoImagemS()->detach($data['imagem']);
+            }
+            
+            Session::flash('flash_update', 'Imagem inserida.');
+            return redirect("produto/{$data['id']}");
+
+        } else {
+        
+            if(!is_null($repo->codimagem)) {
+                $this->repository->model->inativo = Carbon::now();
+                $this->repository->save();
+            }
+
+            $this->repository->model->arquivo = $arquivo;
+            $this->repository->save();
+
+            $diretorio = './public/imagens';
+
+            try {
+
+                $codimagem->move($diretorio, $arquivo);
+                $repo->codimagem = $this->repository->model->codimagem;
+                $repo->save();
+                Session::flash('flash_create', 'Imagem cadastrada!');
+                return redirect(modelUrl($request->get('model')).'/'. $data['id']);  
+
+            } catch (\Symfony\Component\HttpFoundation\File\Exception\FileException $e) {
+
+                Session::flash('flash_danger', "Não foi possível cadastrar essa imagem!");
+                Session::flash('flash_danger_detail', $e->getMessage());
+                return redirect("{$data['model']}/{$data['id']}");  
+            }
+            
+            return redirect("imagem/{$this->repository->model->codimagem}");
         }
-        
-        $imagem_update = $this->repository->findOrFail($this->repository->model->codimagem);
-        $imagem_update->arquivo = $this->repository->model->codimagem.'.'.$extensao;
-        $imagem_update->save();
-        
-        $diretorio = './public/imagens';
-        $arquivo = $this->repository->model->codimagem.'.'.$extensao;       
-        
-        try {
-            $codimagem->move($diretorio, $arquivo);
-            $repo->codimagem = $this->repository->model->codimagem;
-            $repo->save();
-            Session::flash('flash_create', 'Imagem cadastrada!');
-            return redirect(modelUrl($request->get('model')).'/'. $data['id']);  
-        } catch (\Symfony\Component\HttpFoundation\File\Exception\FileException $e) {
-            Session::flash('flash_danger', "Não foi possível cadastrar essa imagem!");
-            Session::flash('flash_danger_detail', $e->getMessage());
-            return redirect(modelUrl($request->get('model')).'/'. $data['id']);  
-        }
-        
-        /*
-        if (!$this->repository->create()) {
-            abort(500);
-        }
-        */
-        
-        return redirect("imagem/{$this->repository->model->codimagem}");
     }
 
     /**
@@ -237,8 +307,8 @@ class ImagemController extends Controller
         $this->repository->authorize('view');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->codimagem);
-        $this->bc->header = $this->repository->model->codimagem;
+        $this->bc->addItem($this->repository->model->arquivo);
+        $this->bc->header = $this->repository->model->arquivo;
         
         // retorna show
         return view('imagem.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
@@ -250,6 +320,7 @@ class ImagemController extends Controller
      * @param    int  $id
      * @return  \Illuminate\Http\Response
      */
+    /*
     public function edit($id)
     {
         // busca regstro
@@ -266,6 +337,7 @@ class ImagemController extends Controller
         // retorna formulario edit
         return view('imagem.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
+    */
 
     /**
      * Update the specified resource in storage.
@@ -274,6 +346,7 @@ class ImagemController extends Controller
      * @param    int  $id
      * @return  \Illuminate\Http\Response
      */
+    /*
     public function update(Request $request, $id)
     {
         
@@ -284,6 +357,54 @@ class ImagemController extends Controller
         
         // redireciona para view
         return redirect("imagem/{$this->repository->model->codimagem}"); 
+    }
+    */
+    
+    public function delete(Request $request)
+    {
+        $data = $request->all();
+        try {
+            
+            switch ($data['model']) {
+                case 'marca': 
+                    $repo = $this->marcaRepository->findOrFail($data['id']);
+                    break;
+
+                case 'secao-produto': $repo = $this->secaoProdutoRepository->findOrFail($data['id']);
+                    break;
+
+                case 'familia-produto': 
+                    $repo = $this->familiaProdutoRepository->findOrFail($data['id']);
+                    break;
+
+                case 'grupo-produto': 
+                    $repo = $this->grupoProdutoRepository->findOrFail($data['id']);
+                    break;
+
+                case 'sub-grupo-produto': 
+                    $repo = $this->subGrupoProdutoRepository->findOrFail($data['id']);
+                    break;
+
+                case 'produto': 
+                    $repo = $this->produtoRepository->findOrFail($data['id']);
+                    break;
+            }            
+            
+            $this->repository->findOrFail($repo->codimagem);
+            $this->repository->inativo = Carbon::now();
+            $this->repository->save();              
+            
+            $repo->codimagem = null;
+            $repo->save();
+            
+            Session::flash('flash_delete', 'Imagem deletada!');
+            return Redirect::back();
+        }
+        catch(\Exception $e){
+            dd($e);
+            Session::flash('flash_error', "Erro ao excluir imagem! {$e}");
+            return Redirect::back();
+        }         
     }
     
 }

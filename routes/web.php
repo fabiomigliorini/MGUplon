@@ -201,7 +201,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('cest', 'CestController');
 
     /* Imagem */
-    Route::resource('imagem/{id}/delete', 'ImagemController@delete');
+    /*
     Route::delete('imagem/produto/{id}/delete', 'ImagemController@produtoDelete');
     Route::post('imagem/produtostore/{id}', 'ImagemController@produtoStore');
     //Route::resource('imagem/produto-imagens','ImagemController@produtoImagens');
@@ -210,7 +210,9 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('imagem/lixeira', 'ImagemController@lixeira');
     Route::get('imagem/esvaziar-lixeira', 'ImagemController@esvaziarLixeira');
     Route::post('imagem/inativar', 'ImagemController@inativar');
+    */
     
+    Route::get('imagem/delete', 'ImagemController@delete');
     Route::resource('imagem/edit', 'ImagemController@edit');
     Route::resource('imagem', 'ImagemController');
     

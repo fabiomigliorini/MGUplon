@@ -21,6 +21,26 @@
                 <div class='clearfix'></div>
             </div>
         </div>
+        <div class='card'>
+            <h4 class="card-header">Imagem</h4>
+            <div class='card-block'>
+                @if($model->codimagem)
+                <div class="text-right">
+                    <a href="{{ url("/imagem/delete/?model=familia-produto&id=$model->codfamiliaproduto") }}" class="btn btn-secondary btn-sm"><i class="fa fa-trash"></i> Excluir</a>
+                    <a href="{{ url("/imagem/create?model=familia-produto&id=$model->codfamiliaproduto") }}" class="btn btn-secondary btn-sm"><i class="fa fa-pencil"></i> Alterar</a>
+                </div>        
+                <a href="{{ url("imagem/{$model->Imagem->codimagem}") }}">
+                    <img class="img-fluid pull-right" src='<?php echo URL::asset('public/imagens/'.$model->Imagem->arquivo);?>'>
+                </a>
+                @else
+                <a title="Cadastrar imagem" href="{{ url("/imagem/create?model=familia-produto&id=$model->codfamiliaproduto") }}" class="btn btn-secondary">
+                    <i class="fa fa-picture-o"></i>
+                    Cadastrar imagem
+                </a>
+                @endif
+                <div class='clearfix'></div>
+            </div>
+        </div>        
     </div>
     <div class="col-md-8">
         <div class="collapse" id="collapsePesquisa">
