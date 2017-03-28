@@ -8,322 +8,227 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
 
-use MGLara\Jobs\EstoqueGeraMovimentoProdutoVariacao;
+use MGLara\Repositories\ProdutoBarraRepository;
 
-use MGLara\Models\ProdutoBarra;
-use MGLara\Models\Produto;
+use MGLara\Library\Breadcrumb\Breadcrumb;
+use MGLara\Library\JsonEnvelope\Datatable;
 
-use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
+/**
+ * @property  ProdutoBarraRepository $repository 
+ */
 class ProdutoBarraController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('permissao:produto-barra.inclusao', ['only' => ['create', 'store']]);
-        $this->middleware('permissao:produto-barra.alteracao', ['only' => ['edit', 'update']]);
-        $this->middleware('permissao:produto-barra.exclusao', ['only' => ['delete', 'destroy']]);
+
+    public function __construct(ProdutoBarraRepository $repository) {
+        $this->repository = $repository;
+        $this->bc = new Breadcrumb('Produto Barra');
+        $this->bc->addItem('Produto Barra', url('produto-barra'));
     }
+    
+    /**
+     * Display a listing of the resource.
+     *
+     * @return  \Illuminate\Http\Response
+     */
+    public function index(Request $request) {
+        
+        // Permissao
+        $this->repository->authorize('listing');
+        
+        // Breadcrumb
+        $this->bc->addItem('Listagem');
+        
+        // Filtro da listagem
+        if (!$filtro = $this->getFiltro()) {
+            $filtro = [
+                'filtros' => [
+                    'inativo' => 1,
+                ],
+                'order' => [[
+                    'column' => 0,
+                    'dir' => 'DESC',
+                ]],
+            ];
+        }
+        
+        
+        // retorna View
+        return view('produto-barra.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
+    }
+
+    /**
+     * Monta json para alimentar a Datatable do index
+     * 
+     * @param  Request $request
+     * @return  json
+     */
+    public function datatable(Request $request) {
+        
+        // Autorizacao
+        $this->repository->authorize('listing');
+
+        // Grava Filtro para montar o formulario da proxima vez que o index for carregado
+        $this->setFiltro([
+            'filtros' => $request['filtros'],
+            'order' => $request['order'],
+        ]);
+        
+        // Ordenacao
+        $columns[0] = 'codprodutobarra';
+        $columns[1] = 'inativo';
+        $columns[2] = 'codprodutobarra';
+        $columns[3] = 'variacao';
+        $columns[4] = 'codproduto';
+        $columns[5] = 'barras';
+        $columns[6] = 'referencia';
+        $columns[7] = 'codmarca';
+        $columns[8] = 'codprodutoembalagem';
+        $columns[9] = 'codprodutovariacao';
+
+        $sort = [];
+        if (!empty($request['order'])) {
+            foreach ($request['order'] as $order) {
+                $sort[] = [
+                    'column' => $columns[$order['column']],
+                    'dir' => $order['dir'],
+                ];
+            }
+        }
+
+        // Pega listagem dos registros
+        $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
+        
+        // Monta Totais
+        $recordsTotal = $regs['recordsTotal'];
+        $recordsFiltered = $regs['recordsFiltered'];
+        
+        // Formata registros para exibir no data table
+        $data = [];
+        foreach ($regs['data'] as $reg) {
+            $data[] = [
+                url('produto-barra', $reg->codprodutobarra),
+                formataData($reg->inativo, 'C'),
+                formataCodigo($reg->codprodutobarra),
+                $reg->variacao,
+                $reg->codproduto,
+                $reg->barras,
+                $reg->referencia,
+                $reg->codmarca,
+                $reg->codprodutoembalagem,
+                $reg->codprodutovariacao,
+            ];
+        }
+        
+        // Envelopa os dados no formato do data table
+        $ret = new Datatable($request['draw'], $recordsTotal, $recordsFiltered, $data);
+        
+        // Retorna o JSON
+        return collect($ret);
+        
+    }
+    
+    
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return  \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function create()
     {
-        $model = new ProdutoBarra();
-        $produto = Produto::findOrFail($request->codproduto);
-        return view('produto-barra.create', compact('model', 'produto'));
+        // cria um registro em branco
+        $this->repository->new();
+        
+        // autoriza
+        $this->repository->authorize('create');
+        
+        // breadcrumb
+        $this->bc->addItem('Novo');
+        
+        // retorna view
+        return view('produto-barra.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param    \Illuminate\Http\Request  $request
+     * @return  \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $model = new ProdutoBarra($request->all());
-        $model->codproduto = $request->input('codproduto');
+        parent::store($request);
         
-        if ($model->codprodutoembalagem == 0) {
-            $model->codprodutoembalagem = null;
-        }
+        // Mensagem de registro criado
+        Session::flash('flash_create', 'Produto Barra criado!');
         
-        if (!$model->validate())
-            $this->throwValidationException($request, $model->_validator);
+        // redireciona para o view
+        return redirect("produto-barra/{$this->repository->model->codprodutobarra}");
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param    int  $id
+     * @return  \Illuminate\Http\Response
+     */
+    public function show(Request $request, $id)
+    {
+        // busca registro
+        $this->repository->findOrFail($id);
         
-        $model->save();
-        Session::flash('flash_success', "Código de Barras '{$model->barras}' criado!");
-        return redirect("produto/$model->codproduto");
+        //autorizacao
+        $this->repository->authorize('view');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->variacao);
+        $this->bc->header = $this->repository->model->variacao;
+        
+        // retorna show
+        return view('produto-barra.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param    int  $id
+     * @return  \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $model = ProdutoBarra::findOrFail($id);
-        $produto = $model->Produto;
-        return view('produto-barra.edit',  compact('model', 'produto'));
+        // busca regstro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->variacao, url('produto-barra', $this->repository->model->codprodutobarra));
+        $this->bc->header = $this->repository->model->variacao;
+        $this->bc->addItem('Alterar');
+        
+        // retorna formulario edit
+        return view('produto-barra.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param    \Illuminate\Http\Request  $request
+     * @param    int  $id
+     * @return  \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $model = ProdutoBarra::findOrFail($id);
-        $codprodutovariacao_original = $model->codprodutovariacao;
-        $model->fill($request->all());
         
-        if ($model->codprodutoembalagem == 0) {
-            $model->codprodutoembalagem = null;
-        }
+        parent::update($request, $id);
         
-        if (!$model->validate()) {
-            $this->throwValidationException($request, $model->_validator);
-        }
+        // mensagem re registro criado
+        Session::flash('flash_update', 'Produto Barra alterado!');
         
-        $model->save();
-
-        //Recalcula movimento de estoque caso trocou o codigo de barras de variacao
-        if ($model->codprodutovariacao != $codprodutovariacao_original) {
-            $this->dispatch((new EstoqueGeraMovimentoProdutoVariacao($model->codprodutovariacao))->onQueue('medium'));
-            $this->dispatch((new EstoqueGeraMovimentoProdutoVariacao($codprodutovariacao_original))->onQueue('medium'));
-        }
-        
-        Session::flash('flash_success', "Código de Barras '{$model->barras}' atualizado!");
-        return redirect("produto/$model->codproduto");     
+        // redireciona para view
+        return redirect("produto-barra/{$this->repository->model->codprodutobarra}"); 
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        try{
-            ProdutoBarra::find($id)->delete();
-            $ret = ['resultado' => true, 'mensagem' => 'Código de Barras excluído com sucesso!'];
-        }
-        catch(\Exception $e){
-            $ret = ['resultado' => false, 'mensagem' => 'Erro ao excluir código de barras!', 'exception' => $e];
-        }
-        return json_encode($ret);
-    }
-
-
-    public function listagemJson(Request $request) 
-    {
-        if($request->get('q')) {
-
-            $query = DB::table('vwprodutobarra');
-            
-            $tokens = $request->get('q');
-
-            // Decide Ordem
-            $ordem = (strstr($tokens, '$'))?
-                    'vwprodutobarra.preco ASC, vwprodutobarra.produto ASC, vwprodutobarra.quantidade ASC nulls first, vwprodutobarra.descricao asc':
-                    'vwprodutobarra.produto ASC, vwprodutobarra.quantidade ASC nulls first, vwprodutobarra.descricao asc';
-
-            // Limpa string
-            $tokens = str_replace('$', ' ', $tokens);
-            $tokens = trim(preg_replace('/(\s\s+|\t|\n)/', ' ', $tokens));
-            $tokens = explode(' ', $tokens);
-
-            // Percorre todas strings
-            foreach ($tokens as $str) {
-                $query->where(function ($q2) use ($str) {
-
-                    $q2->where('descricao', 'ILIKE', "%$str%");
-
-                    if ($str == formataNumero((float) str_replace(',', '.', $str), 2)) {
-                        $q2->orWhere('preco', '=', (float) str_replace(',', '.', $str));
-                    } else {
-                        if (strlen($str) == 6 & is_numeric($str)) {
-                            $q2->orWhere('codproduto', '=', $str);
-                        }
-                        if (is_numeric($str)) {
-                            $q2->orWhere('barras', 'ilike', "%$str%");
-                        }
-                    }
-                });
-            }
-
-            switch ($request->get('ativo')) {
-
-                case 2: //Inativo
-                    $query->whereNotNull('inativo');
-                    break;
-
-                case 1: //Ativo
-                    $query->whereNull('inativo');
-                    break;
-
-                case 9: //Todos
-                default:
-
-            }
-
-            $query->select('codprodutobarra', 'descricao', 'sigla', 'codproduto', 'barras', 'preco', 'referencia', 'inativo', 'secaoproduto', 'familiaproduto', 'grupoproduto', 'subgrupoproduto', 'marca')
-                ->orderByRaw($ordem)
-                ->paginate(20);
-
-            $dados = $query->get();
-            //dd($query);
-            $resultado = [];
-            foreach ($dados as $item => $value)
-            {
-                $resultado[$item]=[
-                    'id'               => $value->codprodutobarra,
-                    'barras'           => $value->barras,
-                    'codproduto'       => formataCodigo($value->codproduto, 6),
-                    'produto'          => $value->descricao,
-                    'preco'            => formataNumero($value->preco),
-                    'referencia'       => $value->referencia,
-                    'inativo'          => $value->inativo,
-                    'secaoproduto'     => $value->secaoproduto,
-                    'familiaproduto'   => $value->familiaproduto,
-                    'grupoproduto'     => $value->grupoproduto,
-                    'subgrupoproduto'  => $value->subgrupoproduto,
-                    'marca'            => $value->marca,
-                    'unidademedida'    => $value->sigla,
-                ];
-            }
-            
-            return $resultado;
-            
-        } elseif($request->get('id')) {
-            
-            $model = ProdutoBarra::findOrFail($request->get('id'));
-            
-            return [
-                'id' => $model->codprodutobarra,
-                'codprodutobarra' => $model->codprodutobarra,
-                'produto' => $model->descricao(),
-                'barras' => $model->barras,
-                'referencia' => $model->referencia(),
-                'preco' => $model->preco(),
-            ];
-            
-        }
-    }
-    
-    public function select2(Request $request)
-    {
-        // Parametros que o Selec2 envia
-        $params = $request->get('params');
-        
-        // Quantidade de registros por pagina
-        $registros_por_pagina = 100;
-        
-        // Se veio termo de busca
-        if(!empty($params['term'])) {
-
-            // Numero da Pagina
-            $params['page'] = $params['page']??1;
-            
-            // Monta Query
-            $qry = DB::table('vwprodutobarra');
-            
-            $tokens = $params['term'];
-            
-            // Condicoes de busca
-            $ordem = (strstr($tokens, '$'))?
-                'vwprodutobarra.preco ASC, vwprodutobarra.produto ASC, vwprodutobarra.quantidade ASC nulls first, vwprodutobarra.descricao asc':
-                'vwprodutobarra.produto ASC, vwprodutobarra.quantidade ASC nulls first, vwprodutobarra.descricao asc'; 
-            
-            // Limpa string
-            $tokens = str_replace('$', ' ', $tokens);
-            $tokens = trim(preg_replace('/(\s\s+|\t|\n)/', ' ', $tokens));
-            $tokens = explode(' ', $tokens);
-            
-           
-            
-            foreach ($tokens as $str) {
-                $qry->where(function ($q2) use ($str) {
-                    $q2->where('descricao', 'ILIKE', "%$str%");
-                    if ($str == formataNumero((float) str_replace(',', '.', $str), 2)) {
-                        $q2->orWhere('preco', '=', (float) str_replace(',', '.', $str));
-                    } else {
-                        if (strlen($str) == 6 & is_numeric($str)) {
-                            $q2->orWhere('codproduto', '=', $str);
-                        }
-                        if (is_numeric($str)) {
-                            $q2->orWhere('barras', 'ilike', "%$str%");
-                        }
-                    }
-                });
-            }
-            
-            if ($request->get('somenteAtivos') == 'true') {
-                $qry->whereNull('inativo');
-            }
-            
-            // Total de registros
-            $total = $qry->count();
-            
-            // Ordenacao e dados para retornar
-            $qry->select('codprodutobarra', 'descricao', 'sigla', 'codproduto', 'barras', 'preco', 'referencia', 'inativo', 'secaoproduto', 'familiaproduto', 'grupoproduto', 'subgrupoproduto', 'marca');
-            $qry->orderByRaw($ordem);
-            $qry->limit($registros_por_pagina);
-            $qry->offSet($registros_por_pagina * ($params['page']-1));
-            
-            // Percorre registros
-            $results = [];
-            foreach ($qry->get() as $item) {
-                $results[] = [
-                    'id'               => $item->codprodutobarra,
-                    'barras'           => $item->barras,
-                    'codproduto'       => formataCodigo($item->codproduto, 6),
-                    'produto'          => $item->descricao,
-                    'preco'            => formataNumero($item->preco),
-                    'referencia'       => $item->referencia,
-                    'inativo'          => $item->inativo,
-                    'secaoproduto'     => $item->secaoproduto,
-                    'familiaproduto'   => $item->familiaproduto,
-                    'grupoproduto'     => $item->grupoproduto,
-                    'subgrupoproduto'  => $item->subgrupoproduto,
-                    'marca'            => $item->marca,
-                    'unidademedida'    => $item->sigla,
-                    'inativo'          => formataData($item->inativo, 'C')
-                ];
-            }
-            
-            // Monta Retorno
-            return [
-                'results' => $results,
-                'params' => $params,
-                'pagination' =>  [
-                    'more' => ($total > $params['page'] * $registros_por_pagina)?true:false,
-                ]
-            ];
-
-        } elseif($request->get('id')) {
-            
-            // Monta Retorno
-            $item = ProdutoBarra::findOrFail($request->get('id'));
-            return [
-                'id'                => $item->codprodutobarra,
-                'codprodutobarra'   => $item->codprodutobarra,
-                'produto'           => $item->descricao(),
-                'barras'            => $item->barras,
-                'referencia'        => $item->referencia(),
-                'preco'             => $item->preco()
-            ];
-        }
-    }
-    
-    
     
 }

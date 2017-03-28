@@ -6,28 +6,29 @@ namespace MGLara\Models;
  * Campos
  * @property  bigint                         $codprodutobarra                    NOT NULL DEFAULT nextval('tblprodutobarra_codprodutobarra_seq'::regclass)
  * @property  bigint                         $codproduto                         NOT NULL
- * @property  bigint                         $codprodutovariacao                 NOT NULL
+ * @property  varchar(100)                   $variacao                           
  * @property  varchar(50)                    $barras                             NOT NULL
- * @property  varchar(50)                    $referencia
+ * @property  varchar(50)                    $referencia                         
+ * @property  bigint                         $codmarca                           
  * @property  bigint                         $codprodutoembalagem                
  * @property  timestamp                      $alteracao                          
  * @property  bigint                         $codusuarioalteracao                
  * @property  timestamp                      $criacao                            
  * @property  bigint                         $codusuariocriacao                  
+ * @property  bigint                         $codprodutovariacao                 NOT NULL
  *
  * Chaves Estrangeiras
- * @property  Marca                          $Marca                         
- * @property  Produto                        $Produto                       
- * @property  ProdutoVariacao                $ProdutoVariacao               
- * @property  ProdutoEmbalagem               $ProdutoEmbalagem              
- * @property  UnidadeMedida                  $UnidadeMedida
+ * @property  ProdutoVariacao                $ProdutoVariacao
+ * @property  Marca                          $Marca
+ * @property  Produto                        $Produto
+ * @property  ProdutoEmbalagem               $ProdutoEmbalagem
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Usuario                        $UsuarioCriacao
  *
  * Tabelas Filhas
  * @property  ValeCompraModeloProdutoBarra[] $ValeCompraModeloProdutoBarraS
  * @property  ValeCompraProdutoBarra[]       $ValeCompraProdutoBarraS
- * @property  CupomFiscalProdutoBarra[]      $CupomFiscalProdutoBarraS
+ * @property  Cupomfiscalprodutobarra[]      $CupomfiscalprodutobarraS
  * @property  NegocioProdutoBarra[]          $NegocioProdutoBarraS
  * @property  NfeTerceiroItem[]              $NfeTerceiroItemS
  * @property  NotaFiscalProdutoBarra[]       $NotaFiscalProdutoBarraS
@@ -38,42 +39,34 @@ class ProdutoBarra extends MGModel
     protected $table = 'tblprodutobarra';
     protected $primaryKey = 'codprodutobarra';
     protected $fillable = [
-        'codproduto',
-        'codprodutovariacao',
-        'barras',
-        'variacao',
-        'referencia',
-        'codprodutoembalagem',
+          'codproduto',
+         'variacao',
+         'barras',
+         'referencia',
+         'codmarca',
+         'codprodutoembalagem',
+             'codprodutovariacao',
     ];
     protected $dates = [
         'alteracao',
         'criacao',
     ];
 
-    public function validate() {
-        $this->_regrasValidacao = [            
-            'codproduto'          => 'required',
-            'codprodutovariacao'  => 'required',
-            'barras'              => "uniqueMultiple:tblprodutobarra,codprodutobarra,$this->codprodutobarra,barras",
-        ];
-    
-        $this->_mensagensErro = [
-            'codproduto.required'           => 'O Código do Produto não pode ser vazio!',
-            'codprodutovariação.required'   => 'A Variação não pode ser vazia!',
-            'barras.unique_multiple'        => 'Este Código de Barras já existe!',
-        ];
-        
-        return parent::validate();
-    } 
-    
-    public function Produto()
-    {
-        return $this->belongsTo(Produto::class, 'codproduto', 'codproduto');
-    }
 
+    // Chaves Estrangeiras
     public function ProdutoVariacao()
     {
         return $this->belongsTo(ProdutoVariacao::class, 'codprodutovariacao', 'codprodutovariacao');
+    }
+
+    public function Marca()
+    {
+        return $this->belongsTo(Marca::class, 'codmarca', 'codmarca');
+    }
+
+    public function Produto()
+    {
+        return $this->belongsTo(Produto::class, 'codproduto', 'codproduto');
     }
 
     public function ProdutoEmbalagem()
@@ -102,10 +95,10 @@ class ProdutoBarra extends MGModel
     {
         return $this->hasMany(ValeCompraProdutoBarra::class, 'codprodutobarra', 'codprodutobarra');
     }
-    
-    public function CupomFiscalProdutoBarraS()
+
+    public function CupomfiscalprodutobarraS()
     {
-        return $this->hasMany(CupomFiscalProdutoBarra::class, 'codprodutobarra', 'codprodutobarra');
+        return $this->hasMany(Cupomfiscalprodutobarra::class, 'codprodutobarra', 'codprodutobarra');
     }
 
     public function NegocioProdutoBarraS()
@@ -121,116 +114,5 @@ class ProdutoBarra extends MGModel
     public function NotaFiscalProdutoBarraS()
     {
         return $this->hasMany(NotaFiscalProdutoBarra::class, 'codprodutobarra', 'codprodutobarra');
-    }
-
-    public function converteQuantidade($quantidade)
-    {
-        if (empty($this->codprodutoembalagem))
-            return $quantidade;
-        
-        return $quantidade * $this->ProdutoEmbalagem->quantidade;
-    }
-    
-    
-    public function calculaDigitoGtin($barras = null)
-    {
-        if (empty($barras)) {
-            $barras = $this->barras;
-        }
-        
-        //preenche com zeros a esquerda
-        $codigo = "000000000000000000" . $barras;
-        
-        //pega 18 digitos
-        $codigo = substr($codigo, -18);
-        $soma = 0;
-
-        //soma digito par *1 e impar *3
-        for ($i = 1; $i<strlen($codigo); $i++)
-        {
-            $digito = substr($codigo, $i-1, 1);
-            if ($i === 0 || !!($i && !($i%2))) {
-                $multiplicador = 1;
-            } else {
-                $multiplicador = 3;
-            }
-            $soma +=  $digito * $multiplicador;
-        }
-        
-        //subtrai da maior dezena
-        $digito = (ceil($soma/10)*10) - $soma;	
-
-        //retorna digitocalculado
-        return $digito;
-    }
-    
-    public function geraBarrasInterno()
-    {
-        $barras = (234000000000 + $this->codprodutobarra);
-        $this->barras = $barras . $this->calculaDigitoGtin($barras . '0');
-    }
-    
-    public function save(array $options = [])
-    {
-        
-        if (empty($this->barras)) {
-            if (empty($this->codprodutobarra)) {
-                $codprodutobarra = \DB::select("select nextval('tblprodutobarra_codprodutobarra_seq') codprodutobarra");
-                $codprodutobarra = intval($codprodutobarra['0']->codprodutobarra);
-                $this->codprodutobarra = $codprodutobarra;
-            }
-            $this->geraBarrasInterno();
-        }
-        
-        return parent::save();
-        
-    }
-    
-    public function descricao()
-    {
-        $descr = "{$this->Produto->produto} {$this->ProdutoVariacao->variacao}";
-        if (!empty($this->codprodutoembalagem)) {
-            $quant = formataNumero($this->ProdutoEmbalagem->quantidade, 0);
-            $descr = "{$descr} C/{$quant}";
-        }
-        return trim($descr);
-    }
-    
-    public function UnidadeMedida()
-    {
-        if (!empty($this->codprodutoembalagem)) {
-            return $this->ProdutoEmbalagem->UnidadeMedida();
-        } 
-        return $this->Produto->UnidadeMedida();
-    }
-    
-    public function referencia()
-    {
-        if (!empty($this->referencia)) {
-            return $this->referencia;
-        }
-        if (!empty($this->ProdutoVariacao->referencia)) {
-            return $this->ProdutoVariacao->referencia;
-        } 
-        return $this->Produto->referencia;
-    }
-
-    public function Marca()
-    {
-        if (!empty($this->ProdutoVariacao->codmarca)) {
-            return $this->ProdutoVariacao->Marca();
-        } 
-        return $this->Produto->Marca();
-    }
-
-    public function Preco()
-    {
-        if (!empty($this->codprodutoembalagem)) {
-            if (empty($this->ProdutoEmbalagem->preco)) {
-                return $this->ProdutoEmbalagem->quantidade * $this->produto->preco;
-            }
-            return (float) $this->ProdutoEmbalagem->preco;
-        }
-        return (float) $this->Produto->preco;
     }
 }

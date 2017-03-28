@@ -5,24 +5,29 @@ namespace MGLara\Models;
 /**
  * Campos
  * @property  bigint                         $codprodutovariacao                 NOT NULL DEFAULT nextval('tblprodutovariacao_codprodutovariacao_seq'::regclass)
- * @property  varchar(100)                   $variacao                           
  * @property  bigint                         $codproduto                         NOT NULL
+ * @property  varchar(100)                   $variacao                           
+ * @property  varchar(50)                    $referencia                         
  * @property  bigint                         $codmarca                           
  * @property  timestamp                      $alteracao                          
  * @property  bigint                         $codusuarioalteracao                
  * @property  timestamp                      $criacao                            
  * @property  bigint                         $codusuariocriacao                  
- * @property  varchar(50)                    $referencia                         
+ * @property  bigint                         $codopencart                        
+ * @property  date                           $dataultimacompra                   
+ * @property  numeric(14,6)                  $custoultimacompra                  
+ * @property  numeric(14,3)                  $quantidadeultimacompra             
+ * @property  timestamp                      $inativo                            
  *
  * Chaves Estrangeiras
- * @property  Marca                          $Marca                         
+ * @property  Marca                          $Marca
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Usuario                        $UsuarioCriacao
- * @property  Produto                        $Produto                       
+ * @property  Produto                        $Produto
  *
  * Tabelas Filhas
- * @property  ProdutoBarra[]                 $ProdutoBarraS
  * @property  EstoqueLocalProdutoVariacao[]  $EstoqueLocalProdutoVariacaoS
+ * @property  ProdutoBarra[]                 $ProdutoBarraS
  */
 
 class ProdutoVariacao extends MGModel
@@ -30,14 +35,20 @@ class ProdutoVariacao extends MGModel
     protected $table = 'tblprodutovariacao';
     protected $primaryKey = 'codprodutovariacao';
     protected $fillable = [
-        'variacao',
-        'codproduto',
-        'codmarca',
-        'referencia',
-    ];
+          'codproduto',
+         'variacao',
+         'referencia',
+         'codmarca',
+             'codopencart',
+         'dataultimacompra',
+         'custoultimacompra',
+         'quantidadeultimacompra',
+     ];
     protected $dates = [
         'alteracao',
         'criacao',
+        'dataultimacompra',
+        'inativo',
     ];
 
 
@@ -64,39 +75,15 @@ class ProdutoVariacao extends MGModel
 
 
     // Tabelas Filhas
-    public function ProdutoBarraS()
-    {
-        return $this->hasMany(ProdutoBarra::class, 'codprodutovariacao', 'codprodutovariacao');
-    }
-
     public function EstoqueLocalProdutoVariacaoS()
     {
         return $this->hasMany(EstoqueLocalProdutoVariacao::class, 'codprodutovariacao', 'codprodutovariacao');
     }
 
-
-    public function validate()
+    public function ProdutoBarraS()
     {
-        
-        $this->_regrasValidacao = [
-          'variacao' => "uniqueMultiple:tblprodutovariacao,codprodutovariacao,$this->codprodutovariacao,variacao,codproduto,$this->codproduto",
-          'codmarca' => "not_in:{$this->Produto->codmarca}"
-        ];
-        $this->_mensagensErro = [
-            'variacao.unique_multiple' => 'Esta Variação já está cadastrada!',
-            'variacao.min' => 'Variação deve ter mais de 3 caracteres!',
-            'variacao.required' => 'Já existe uma Variação em branco, preencha a descrição desta nova Variação!',
-            'codmarca.not_in' => 'Somente selecione a Marca caso seja diferente do produto!',
-        ];
-        
-        if (isset($this->codproduto) && empty($this->variacao))
-            if ($this->Produto->ProdutoVariacaoS()->whereNull('variacao')->count() > 0)
-                $this->_regrasValidacao['variacao'] = 'required|' . $this->_regrasValidacao['variacao'];
-
-        $ret = parent::validate();
-        
-        return $ret;
-    }    
+        return $this->hasMany(ProdutoBarra::class, 'codprodutovariacao', 'codprodutovariacao');
+    }
 
 
 }

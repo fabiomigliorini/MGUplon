@@ -216,4 +216,10 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('imagem/edit', 'ImagemController@edit');
     Route::resource('imagem', 'ImagemController');
     
+    /* Produto Barra */
+    Route::resource('produto-barra', 'ProdutoBarraController');
+
+    /* Produto Variação */
+    Route::resource('produto-variacao', 'ProdutoVariacaoController');
+
 });

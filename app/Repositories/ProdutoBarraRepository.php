@@ -232,4 +232,101 @@ class ProdutoBarraRepository extends MGRepository {
 
     }
     
+    public function calculaDigitoGtin($barras = null)
+    {
+        if (empty($barras)) {
+            $barras = $this->barras;
+        }
+        
+        //preenche com zeros a esquerda
+        $codigo = "000000000000000000" . $barras;
+        
+        //pega 18 digitos
+        $codigo = substr($codigo, -18);
+        $soma = 0;
+
+        //soma digito par *1 e impar *3
+        for ($i = 1; $i<strlen($codigo); $i++)
+        {
+            $digito = substr($codigo, $i-1, 1);
+            if ($i === 0 || !!($i && !($i%2))) {
+                $multiplicador = 1;
+            } else {
+                $multiplicador = 3;
+            }
+            $soma +=  $digito * $multiplicador;
+        }
+        
+        //subtrai da maior dezena
+        $digito = (ceil($soma/10)*10) - $soma;	
+
+        //retorna digitocalculado
+        return $digito;
+    }
+    
+    public function geraBarrasInterno()
+    {
+        $barras = (234000000000 + $this->codprodutobarra);
+        $this->barras = $barras . $this->calculaDigitoGtin($barras . '0');
+    }
+    
+    public function save(array $options = [])
+    {
+        if (empty($this->barras)) {
+            if (empty($this->codprodutobarra)) {
+                $codprodutobarra = \DB::select("select nextval('tblprodutobarra_codprodutobarra_seq') codprodutobarra");
+                $codprodutobarra = intval($codprodutobarra['0']->codprodutobarra);
+                $this->codprodutobarra = $codprodutobarra;
+            }
+            $this->geraBarrasInterno();
+        }
+    }
+    
+    public function descricao()
+    {
+        $descr = "{$this->Produto->produto} {$this->ProdutoVariacao->variacao}";
+        if (!empty($this->codprodutoembalagem)) {
+            $quant = formataNumero($this->ProdutoEmbalagem->quantidade, 0);
+            $descr = "{$descr} C/{$quant}";
+        }
+        return trim($descr);
+    }
+    
+    public function UnidadeMedida()
+    {
+        if (!empty($this->codprodutoembalagem)) {
+            return $this->ProdutoEmbalagem->UnidadeMedida();
+        } 
+        return $this->Produto->UnidadeMedida();
+    }
+    
+    public function referencia()
+    {
+        if (!empty($this->referencia)) {
+            return $this->referencia;
+        }
+        if (!empty($this->ProdutoVariacao->referencia)) {
+            return $this->ProdutoVariacao->referencia;
+        } 
+        return $this->Produto->referencia;
+    }
+
+    public function Marca()
+    {
+        if (!empty($this->ProdutoVariacao->codmarca)) {
+            return $this->ProdutoVariacao->Marca();
+        } 
+        return $this->Produto->Marca();
+    }
+
+    public function Preco()
+    {
+        if (!empty($this->codprodutoembalagem)) {
+            if (empty($this->ProdutoEmbalagem->preco)) {
+                return $this->ProdutoEmbalagem->quantidade * $this->produto->preco;
+            }
+            return (float) $this->ProdutoEmbalagem->preco;
+        }
+        return (float) $this->Produto->preco;
+    }    
 }

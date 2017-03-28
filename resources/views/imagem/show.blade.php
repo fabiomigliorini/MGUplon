@@ -2,7 +2,7 @@
 @section('content')
 
 <div class='row'>
-    <div class='col-md-4'>
+    <div class='col-md-6'>
         <div class='card'>
             <h4 class="card-header">Detalhes</h4>
             <div class='card-block'>
@@ -70,7 +70,7 @@
             </div>
         </div>        
     </div>
-    <div class='col-md-8'>
+    <div class='col-md-6'>
         <div class='card'>
             <h4 class="card-header">Imagem</h4>
             <div class='card-block text-center'>
