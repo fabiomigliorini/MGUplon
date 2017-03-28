@@ -26,7 +26,7 @@
             <div class='card-block'>
                 @if($model->codimagem)
                 <div class="text-right">
-                    <a href="{{ url("/imagem/delete/?model=sub-grupo-produto&id=$model->codsubgrupoproduto") }}" class="btn btn-secondary btn-sm"><i class="fa fa-trash"></i> Excluir</a>
+                    <button id="delete-imagem" class="btn btn-secondary btn-sm"><i class="fa fa-trash"></i> Excluir</button>
                     <a href="{{ url("/imagem/create?model=sub-grupo-produto&id=$model->codsubgrupoproduto") }}" class="btn btn-secondary btn-sm"><i class="fa fa-pencil"></i> Alterar</a>
                 </div>        
                 <a href="{{ url("imagem/{$model->Imagem->codimagem}") }}">
@@ -116,6 +116,24 @@
 
 
 @section('inscript')
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $( "#delete-imagem" ).click(function() {
+                swal({
+                    title: "Tem certeza que deseja excluir essa imagem?",
+                    type: "warning",
+                    showCancelButton: true,
+                    closeOnConfirm: false,
+                    closeOnCancel: true
+                },
+                function(isConfirm){
+                    if (isConfirm) {
+                        location.replace(baseUrl + "/imagem/delete/?model=sub-grupo-produto&id={{$model->codsubgrupoproduto}}");
+                    } 
+                });
+            });    
+        });    
+    </script>
     @include('layouts.includes.datatable.assets')
 
     @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('produto/datatable'), 'order' => $filtro['order'], 'filtros' => ['codsubgrupoproduto', 'codproduto' => 'codproduto', 'produto', 'inativo'] ])

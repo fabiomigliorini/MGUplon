@@ -1,7 +1,7 @@
 <fieldset class="form-group">
     {!! Form::label('arquivo', 'Arquivo') !!}
     <!--{!! Form::file('codimagem', null, ['class'=> 'form-control', 'id'=>'codimagem', 'accept'=>'image/*']) !!}-->
-    <input type="file" name="codimagem" id="codimagem" accept="image/*">
+    <input type="file" name="codimagem" id="codimagem" accept="image/*" required="">
 </fieldset>
 <fieldset class="form-group">
     {!! Form::label('observacoes', 'Observacoes') !!}
