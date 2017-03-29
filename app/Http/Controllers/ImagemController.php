@@ -164,7 +164,7 @@ class ImagemController extends Controller
      *
      * @return  \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         // cria um registro em branco
         $this->repository->new();
@@ -176,7 +176,13 @@ class ImagemController extends Controller
         $this->bc->addItem('Novo');
         
         // retorna view
-        return view('imagem.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        if($request->get('model') == 'produto') {
+            return view('imagem.produto', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        } else {
+            return view('imagem.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        }        
+        
+        
     }
 
     /**
@@ -220,14 +226,6 @@ class ImagemController extends Controller
                 break;
         }
         
-        $codimagem = Input::file('codimagem');
-        $extensao = $codimagem->getClientOriginalExtension();
-        
-        $this->repository->new();
-        $this->repository->create();
-        
-        $arquivo = $this->repository->model->codimagem . '.' . $extensao;
-        
         if($data['model'] == 'produto') {
 
             // Carrega Imagens do SLIM
@@ -242,6 +240,15 @@ class ImagemController extends Controller
                 abort(500, 'Imagem deve ser um JPEG!');
             }
 
+            // Salva para ganhar o ID
+            $this->repository->new();
+            $this->repository->create();
+
+            // Grava nome do arquivo nas observacoes
+            $arquivo = "{$this->repository->model->codimagem}.jpg";
+            $this->repository->model->arquivo = $arquivo;
+            $this->repository->save();      
+            
             // Anexa imagem ao produto
             $repo->ProdutoImagemS()->attach($this->repository->model->codimagem);
 
@@ -249,7 +256,7 @@ class ImagemController extends Controller
             Slim::saveFile($image['output']['data'], $arquivo, './public/imagens', false);
 
             // Se havia alguma imagem para inativar
-            if($data['imagem']) {
+            if(isset($data['imagem'])) {
                 //$imagem_inativa = $this->repository->model->find($data['imagem']);
                 //$imagem_inativa->inativo = Carbon::now();
                 //$imagem_inativa->save();
@@ -262,6 +269,14 @@ class ImagemController extends Controller
             return redirect("produto/{$data['id']}");
 
         } else {
+
+            $codimagem = Input::file('codimagem');
+            $extensao = $codimagem->getClientOriginalExtension();
+
+            $this->repository->new();
+            $this->repository->create();
+
+            $arquivo = $this->repository->model->codimagem . '.' . $extensao;
         
             if(!is_null($repo->codimagem)) {
                 $this->repository->model->inativo = Carbon::now();
@@ -406,5 +421,50 @@ class ImagemController extends Controller
             return Redirect::back();
         }         
     }
+    /**
+     * Inativa um registro
+     * 
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function inactivate($id) {
+        
+        // Busca o registro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // ativa
+        return ['OK' => $this->repository->inactivate()];
+        
+    }
     
+    public function inativar(Request $request)
+    {
+        if(empty($request->get('produto'))) {
+            $imagem = Imagem::find($request->get('codimagem'));
+            $Model = Imagem::relacionamentos($request->get('codimagem'));
+            $model = $Model::where('codimagem', $request->get('codimagem'))->first();            
+            
+            $model->codimagem = null;
+            $imagem->inativo = Carbon::now();
+            $msg = "Imagem '{$imagem->codimagem}' Inativada!";
+
+            $model->save();
+            $imagem->save();
+            
+        } else {
+            $model = Produto::find($request->get('produto'));
+            $model->ImagemS()->detach($request->get('codimagem'));
+            
+            $imagem = Imagem::find($request->get('codimagem'));
+            $imagem->inativo = Carbon::now();
+            $msg = "Imagem '{$imagem->codimagem}' Inativada!";
+
+            $imagem->save();            
+        }
+        
+        Session::flash('flash_success', $msg);
+    }    
 }

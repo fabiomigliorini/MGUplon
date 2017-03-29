@@ -232,10 +232,19 @@ class ProdutoBarraRepository extends MGRepository {
 
     }
     
+    public function converteQuantidade($quantidade)
+    {
+        if (!$this->model->codprodutoembalagem){
+            return $quantidade;
+        }
+        
+        return $quantidade * $this->model->ProdutoEmbalagem->quantidade;
+    }
+    
     public function calculaDigitoGtin($barras = null)
     {
         if (empty($barras)) {
-            $barras = $this->barras;
+            $barras = $this->model->barras;
         }
         
         //preenche com zeros a esquerda
@@ -266,27 +275,28 @@ class ProdutoBarraRepository extends MGRepository {
     
     public function geraBarrasInterno()
     {
-        $barras = (234000000000 + $this->codprodutobarra);
-        $this->barras = $barras . $this->calculaDigitoGtin($barras . '0');
+        $barras = (234000000000 + $this->model->codprodutobarra);
+        $this->model->barras = $barras . $this->calculaDigitoGtin($barras . '0');
     }
     
     public function save(array $options = [])
     {
-        if (empty($this->barras)) {
-            if (empty($this->codprodutobarra)) {
+        if (!$this->model->barras) {
+            if (!$this->model->codprodutobarra) {
                 $codprodutobarra = \DB::select("select nextval('tblprodutobarra_codprodutobarra_seq') codprodutobarra");
                 $codprodutobarra = intval($codprodutobarra['0']->codprodutobarra);
-                $this->codprodutobarra = $codprodutobarra;
+                $this->model->codprodutobarra = $codprodutobarra;
             }
             $this->geraBarrasInterno();
         }
+        return parent::save();
     }
     
     public function descricao()
     {
-        $descr = "{$this->Produto->produto} {$this->ProdutoVariacao->variacao}";
-        if (!empty($this->codprodutoembalagem)) {
-            $quant = formataNumero($this->ProdutoEmbalagem->quantidade, 0);
+        $descr = "{$this->model->Produto->produto} {$this->model->ProdutoVariacao->variacao}";
+        if ($this->model->codprodutoembalagem) {
+            $quant = formataNumero($this->model->ProdutoEmbalagem->quantidade, 0);
             $descr = "{$descr} C/{$quant}";
         }
         return trim($descr);
@@ -294,39 +304,39 @@ class ProdutoBarraRepository extends MGRepository {
     
     public function UnidadeMedida()
     {
-        if (!empty($this->codprodutoembalagem)) {
-            return $this->ProdutoEmbalagem->UnidadeMedida();
+        if ($this->model->codprodutoembalagem) {
+            return $this->model->ProdutoEmbalagem->UnidadeMedida();
         } 
-        return $this->Produto->UnidadeMedida();
+        return $this->model->Produto->UnidadeMedida();
     }
     
     public function referencia()
     {
-        if (!empty($this->referencia)) {
-            return $this->referencia;
+        if ($this->model->referencia) {
+            return $this->model->referencia;
         }
-        if (!empty($this->ProdutoVariacao->referencia)) {
-            return $this->ProdutoVariacao->referencia;
+        if ($this->model->ProdutoVariacao->referencia) {
+            return $this->model->ProdutoVariacao->referencia;
         } 
-        return $this->Produto->referencia;
+        return $this->model->Produto->referencia;
     }
 
     public function Marca()
     {
-        if (!empty($this->ProdutoVariacao->codmarca)) {
-            return $this->ProdutoVariacao->Marca();
+        if ($this->model->ProdutoVariacao->codmarca) {
+            return $this->model->ProdutoVariacao->Marca();
         } 
-        return $this->Produto->Marca();
+        return $this->model->Produto->Marca();
     }
 
     public function Preco()
     {
-        if (!empty($this->codprodutoembalagem)) {
-            if (empty($this->ProdutoEmbalagem->preco)) {
-                return $this->ProdutoEmbalagem->quantidade * $this->produto->preco;
+        if ($this->codprodutoembalagem) {
+            if (!$this->model->ProdutoEmbalagem->preco) {
+                return $this->model->ProdutoEmbalagem->quantidade * $this->model->produto->preco;
             }
-            return (float) $this->ProdutoEmbalagem->preco;
+            return (float) $this->model->ProdutoEmbalagem->preco;
         }
-        return (float) $this->Produto->preco;
+        return (float) $this->model->Produto->preco;
     }    
 }

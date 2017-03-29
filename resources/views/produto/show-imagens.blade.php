@@ -1,7 +1,7 @@
 <div id="div-imagens">
     <?php $imagens = $model->ProdutoImagemS()->orderBy('codimagem')->get(); ?>
     <p>
-        <a href="{{ url("/imagem/produto/$model->codproduto") }}">
+        <a href="{{ url("/imagem/create?model=produto&id=$model->codproduto") }}" title="Cadastrar imagem">
             Nova Imagem
             <i class="fa fa-plus"></i> 
         </a>
@@ -20,14 +20,14 @@
         @endif        
         @foreach($imagens as $i => $imagem)
             <div class="carousel-item {{ ($i == 0)?'active':'' }}">
-                <a href='{{ URL::asset('public/imagens/'.$imagem->observacoes) }}' target="_blank">
-                    <img class="d-block img-fluid" src="{{ URL::asset('public/imagens/'.$imagem->observacoes) }}" >
+                <a href="{{ URL::asset("public/imagens/$imagem->arquivo") }}" target="_blank">
+                    <img class="d-block img-fluid" src="{{ URL::asset('public/imagens/'.$imagem->arquivo) }}" >
                 </a>
                 <div class="carousel-caption">
-                    <p>{{ $imagem->observacoes }}</p>
+                    <p>{{ $imagem->arquivo }}</p>
                     <p>
                         <a href='{{ url("imagem/produto/$model->codproduto?imagem={$imagem->codimagem}") }}'><i class="text-white fa fa-pencil"></i></a>
-                        <a href="{{ url("imagem/produto/{$model->codproduto}/delete?imagem={$imagem->codimagem}") }}" data-excluir data-pergunta="Tem certeza que deseja excluir a imagem '{{ $imagem->observacoes }}'?" data-after-delete="recarregaDiv('div-imagens');"><i class="text-white fa fa-trash"></i></a>
+                        <a href="{{ url("imagem/produto/{$model->codproduto}/delete?imagem={$imagem->codimagem}") }}" data-excluir data-pergunta="Tem certeza que deseja excluir a imagem '{{ $imagem->arquivo }}'?" data-after-delete="recarregaDiv('div-imagens');"><i class="text-white fa fa-trash"></i></a>
                     </p>
                 </div>                
             </div>

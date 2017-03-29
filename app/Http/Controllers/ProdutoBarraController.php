@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
 
 use MGLara\Repositories\ProdutoBarraRepository;
+use MGLara\Repositories\ProdutoRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
@@ -17,14 +18,16 @@ use Carbon\Carbon;
 
 /**
  * @property  ProdutoBarraRepository $repository 
+ * @property  ProdutoRepository $produtoRepository 
  */
 class ProdutoBarraController extends Controller
 {
 
-    public function __construct(ProdutoBarraRepository $repository) {
+    public function __construct(ProdutoBarraRepository $repository, ProdutoRepository $produtoRepository) {
         $this->repository = $repository;
+        $this->produtoRepository = $produtoRepository;
         $this->bc = new Breadcrumb('Produto Barra');
-        $this->bc->addItem('Produto Barra', url('produto-barra'));
+        //$this->bc->addItem('Produto Barra', url('produto-barra'));
     }
     
     /**
@@ -135,7 +138,7 @@ class ProdutoBarraController extends Controller
      *
      * @return  \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         // cria um registro em branco
         $this->repository->new();
@@ -143,11 +146,16 @@ class ProdutoBarraController extends Controller
         // autoriza
         $this->repository->authorize('create');
         
+        // instancia produto
+        $this->produtoRepository->findOrFail($request->get('codproduto'));
+        
         // breadcrumb
-        $this->bc->addItem('Novo');
+        $this->bc->addItem('Produto', url('produto'));
+        $this->bc->addItem($this->produtoRepository->model->produto, url('produto', $this->produtoRepository->model->codproduto));
+        $this->bc->addItem('Novo Código de Barras');
         
         // retorna view
-        return view('produto-barra.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('produto-barra.create', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'produto'=>$this->produtoRepository->model]);
     }
 
     /**

@@ -203,10 +203,12 @@ class ProdutoVariacaoController extends Controller
             if(!$this->produtoBarraRepository->save()){
                 throw new \Exception ('Erro ao Criar Barras!');
             }
-            dd($this->produtoBarraRepository);
+            
             $i = 0;
-            foreach ($this->repository->Produto->ProdutoEmbalagemS as $pe)
+
+            foreach ($this->repository->model->Produto->ProdutoEmbalagemS as $pe)
             {
+                dd('Estamos aqui');
                 $this->produtoBarraRepository->new([
                     'codproduto' => $this->repository->model->codproduto,
                     'codprodutovariacao' =>  $this->repository->model->codprodutovariacao,
@@ -287,14 +289,13 @@ class ProdutoVariacaoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
         parent::update($request, $id);
         
         // mensagem re registro criado
         Session::flash('flash_update', 'Produto Variacao alterado!');
         
         // redireciona para view
-        return redirect("produto-variacao/{$this->repository->model->codprodutovariacao}"); 
+        return redirect("produto/{$this->repository->model->codproduto}");
     }
     
 }

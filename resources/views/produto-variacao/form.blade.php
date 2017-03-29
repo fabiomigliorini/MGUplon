@@ -1,7 +1,7 @@
 {!! Form::hidden('codproduto', Request::get('codproduto')) !!}    
 <fieldset class="form-group">
     {!! Form::label('variacao', 'Variaçao') !!}
-    {!! Form::text('variacao', null, ['class'=> 'form-control', 'id'=>'variacao']) !!}
+    {!! Form::text('variacao', null, ['class'=> 'form-control', 'id'=>'variacao', 'required'=>'true', 'maxlength'=>'100', 'autofocus']) !!}
 </fieldset>
 <fieldset class="form-group">
     {!! Form::label('codmarca', 'Marca') !!}
@@ -22,6 +22,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
     $("#variacao").Setcase();
+    $("#variacao").maxlength({alwaysShow: true});
     
     $('#form-principal').on("submit", function(e) {
         e.preventDefault();

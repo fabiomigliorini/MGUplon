@@ -34,8 +34,6 @@ $(document).ready(function() {
     });
     $("#observacoes").Setcase();
     $("#observacoes").maxlength({alwaysShow: true});
-    $("#arquivo").Setcase();
-    $("#arquivo").maxlength({alwaysShow: true});
 });
 </script>
 @endsection
