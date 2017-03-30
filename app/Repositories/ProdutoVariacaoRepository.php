@@ -55,7 +55,7 @@ class ProdutoVariacaoRepository extends MGRepository {
             'codmarca' => [
                 'numeric',
                 'nullable',
-                "not_in:{$this->Produto->codmarca}"
+                "not_in:{$this->model->Produto->codmarca}"
             ],
             'codopencart' => [
                 'numeric',
@@ -87,11 +87,11 @@ class ProdutoVariacaoRepository extends MGRepository {
             'custoultimacompra.numeric' => 'O campo "custoultimacompra" deve ser um número!',
             'quantidadeultimacompra.numeric' => 'O campo "quantidadeultimacompra" deve ser um número!',
         ]);
-
+/*
         if (isset($this->codproduto) && empty($this->variacao))
             if ($this->Produto->ProdutoVariacaoS()->whereNull('variacao')->count() > 0)
                 $this->_regrasValidacao['variacao'] = 'required|' . $this->_regrasValidacao['variacao'];
-        
+*/        
 
         return $this->validator->passes();
         

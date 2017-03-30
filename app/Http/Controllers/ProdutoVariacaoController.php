@@ -209,7 +209,6 @@ class ProdutoVariacaoController extends Controller
 
             foreach ($this->repository->model->Produto->ProdutoEmbalagemS as $pe)
             {
-                dd('Estamos aqui');
                 $this->produtoBarraRepository->new([
                     'codproduto' => $this->repository->model->codproduto,
                     'codprodutovariacao' =>  $this->repository->model->codprodutovariacao,
