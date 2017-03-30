@@ -18,44 +18,34 @@
 ?>
 {!! Form::hidden('codproduto', Request::get('codproduto')) !!}
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <fieldset class="form-group">
             {!! Form::label('codprodutovariacao', 'Variação') !!}
             {!! Form::select('codprodutovariacao', $variacoes, null, ['class'=> 'form-control', 'required'=>true, 'id' => 'codprodutovariacao', 'style'=>'width:100%']) !!}
         </fieldset>
-    </div>
-    <div class="col-md-3">    
         <fieldset class="form-group">
             {!! Form::label('codprodutoembalagem', 'Unidade de Medida') !!}
             {!! Form::select('codprodutoembalagem', $embalagens, null, ['class'=> 'form-control', 'id' => 'codprodutoembalagem']) !!}
         </fieldset>
-    </div>
-    <div class="col-md-4">
+    
         <fieldset class="form-group">
             {!! Form::label('barras', 'Barras') !!}
             <div id="barrasDiv">{!! Form::text('barras', null, ['class'=> 'form-control', 'id'=>'barras', 'maxlength'=>'50', 'required'=>'required']) !!}</div>
         </fieldset>
-    </div>      
-</div>
-<div class="row">
-  
-    <div class="col-md-4">
         <fieldset class="form-group">
             {!! Form::label('variacao', 'Detalhes') !!}
             {!! Form::text('variacao', null, ['class'=> 'form-control', 'id'=>'variacao', 'maxlength'=>'100']) !!}
         </fieldset>
-    </div>
-    <div class="col-md-4">
         <fieldset class="form-group">
             {!! Form::label('referencia', 'Referencia') !!}
             {!! Form::text('referencia', null, ['class'=> 'form-control', 'id'=>'referencia', 'maxlength'=>'50']) !!}
         </fieldset>
+
+        <fieldset class="form-group">
+           {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
+        </fieldset>
     </div>
 </div>
-
-<fieldset class="form-group">
-   {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
-</fieldset>
 
 @section('inscript')
 <script src="{{ URL::asset('public/assets/js/setcase.js') }}"></script>

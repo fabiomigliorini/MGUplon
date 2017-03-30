@@ -28,10 +28,10 @@ class Cest extends MGModel
     protected $table = 'tblcest';
     protected $primaryKey = 'codcest';
     protected $fillable = [
-          'cest',
-         'ncm',
-         'descricao',
-             'codncm',
+        'cest',
+        'ncm',
+        'descricao',
+        'codncm',
     ];
     protected $dates = [
         'alteracao',

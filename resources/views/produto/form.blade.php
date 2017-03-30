@@ -20,7 +20,7 @@
 
             <fieldset class="form-group col-md-6">
                 {!! Form::label('codfamiliaproduto', 'Família') !!}
-                {!! Form::select2FamiliaProduto('codfamiliaproduto', null, ['required' => true, 'class' => 'form-control','id'=>'codfamiliaproduto', 'placeholder' => 'Família', 'codsecaoproduto'=>'codsecaoproduto']) !!}
+                {!! Form::select2FamiliaProduto('codfamiliaproduto', null, ['required' => true, 'class' => 'form-control','id'=>'codfamiliaproduto', 'style'=>'width:100%', 'placeholder' => 'Grupo', 'codsecaoproduto'=>'codsecaoproduto']) !!}
             </fieldset>
         </div>
         <div class="row">
@@ -31,7 +31,7 @@
 
             <fieldset class="form-group col-md-6">
                 {!! Form::label('codsubgrupoproduto', 'Sub Grupo') !!}
-                {!! Form::select2SubGrupoProduto('codsubgrupoproduto', null, ['required' => true, 'class' => 'form-control','id'=>'codsubgrupoproduto', 'style'=>'width:100%', 'placeholder' => 'Sub Grupo', 'codgrupoproduto'=>'codgrupoproduto']) !!}        
+                {!! Form::select2SubGrupoProduto('codsubgrupoproduto', null, ['required' => true, 'class' => 'form-control','id'=>'codsubgrupoproduto', 'codgrupoproduto'=>'codgrupoproduto']) !!}        
             </fieldset>
         </div>
         <fieldset class="form-group">
@@ -210,6 +210,15 @@
 </style>
 <script type="text/javascript">
 $(document).ready(function() {
+    @if (!empty($model->codsubgrupoproduto))
+        $('#codfamiliaproduto').val({{ $model->SubGrupoProduto->GrupoProduto->codfamiliaproduto }}).change();
+        $('#codsecaoproduto').val({{ $model->SubGrupoProduto->GrupoProduto->FamiliaProduto->codsecaoproduto }});
+        $('#codgrupoproduto').val({{ $model->SubGrupoProduto->codgrupoproduto }});
+    @endif
+    
+    console.log('familia: ' + $('#codfamiliaproduto').val());
+    console.log('grupo: ' + $('#codgrupoproduto').val());
+    
     $('#form-principal').on("submit", function(e) {
         e.preventDefault();
         var currentForm = this;
@@ -227,11 +236,7 @@ $(document).ready(function() {
         });       
     });
     
-    @if (!empty($model->codsubgrupoproduto))
-        $('#codsecaoproduto').val({{ $model->SubGrupoProduto->GrupoProduto->FamiliaProduto->codsecaoproduto }});
-        $('#codfamiliaproduto').val({{ $model->SubGrupoProduto->GrupoProduto->codfamiliaproduto }});
-        $('#codgrupoproduto').val({{ $model->SubGrupoProduto->codgrupoproduto }});
-    @endif
+
 
     var codproduto = <?php echo (isset($model->codproduto) ? $model->codproduto:'""')?>;
     
@@ -297,8 +302,7 @@ $(document).ready(function() {
     $("#produto").Setcase();
 
 
-    console.log('familia: ' + $('#codfamiliaproduto').val());
-    console.log('grupo: ' + $('#codgrupoproduto').val());
+
 
 });
 </script>

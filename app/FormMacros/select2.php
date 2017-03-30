@@ -303,14 +303,14 @@ Form::macro('select2FamiliaProduto', function($name, $value = null, $options = [
             escapeMarkup: function (markup) { return markup; },
             
             ajax:{
-                url:baseUrl+'/familia-produto/select2',
+                url:baseUrl + '/familia-produto/select2',
                 delay: 300,
                 dataType:'json',
                 data: function (params) {
                     return {
                         params: params,
                         somenteAtivos: {$somenteAtivos},
-                        codsecaoproduto: $('#{$options['codsecaoproduto']}').val()
+                        codgrupoproduto: $('#{$options['codsecaoproduto']}').val()
                     };
                 },
             },
@@ -375,6 +375,8 @@ END;
 
     return $campo . $script;
 });
+
+
 
 /* GRUPO DE PRODUTO */
 Form::macro('select2GrupoProduto', function($name, $value = null, $options = [])

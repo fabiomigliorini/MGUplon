@@ -161,6 +161,7 @@ class ProdutoVariacaoController extends Controller
         $this->bc->addItem('Produto', url('produto'));
         $this->bc->addItem($this->produtoRepository->model->produto, url('produto', $this->produtoRepository->model->codproduto));
         $this->bc->addItem('Nova Variação');
+        $this->bc->header = 'Nova Variação';
         
         // retorna view
         return view('produto-variacao.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
@@ -272,9 +273,11 @@ class ProdutoVariacaoController extends Controller
         $this->repository->authorize('update');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->codprodutovariacao, url('produto-variacao', $this->repository->model->codprodutovariacao));
-        $this->bc->header = $this->repository->model->codprodutovariacao;
+        $this->bc->addItem('Produto', url('produto'));
+        $this->bc->addItem($this->repository->model->produto->produto, url('produto', $this->repository->model->codproduto));
+        $this->bc->addItem($this->repository->model->variacao);        
         $this->bc->addItem('Alterar');
+        $this->bc->header = $this->repository->model->variacao; 
         
         // retorna formulario edit
         return view('produto-variacao.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);

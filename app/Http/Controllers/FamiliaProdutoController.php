@@ -194,7 +194,7 @@ class FamiliaProdutoController extends Controller
         // Quantidade de registros por pagina
         $registros_por_pagina = 100;
         
-        if(!empty($request->get('id'))) {    
+        if(!empty($request->get('id'))) {
             // Monta Retorno
             $item = $this->repository->findOrFail($request->get('id'));
             return [

@@ -36,12 +36,12 @@ class NegocioProdutoBarra extends MGModel
     protected $table = 'tblnegocioprodutobarra';
     protected $primaryKey = 'codnegocioprodutobarra';
     protected $fillable = [
-          'codnegocio',
-         'quantidade',
-         'valorunitario',
-         'valortotal',
-         'codprodutobarra',
-             'codnegocioprodutobarradevolucao',
+        'codnegocio',
+        'quantidade',
+        'valorunitario',
+        'valortotal',
+        'codprodutobarra',
+        'codnegocioprodutobarradevolucao',
      ];
     protected $dates = [
         'alteracao',
@@ -97,6 +97,4 @@ class NegocioProdutoBarra extends MGModel
     {
         return $this->hasMany(NotaFiscalProdutoBarra::class, 'codnegocioprodutobarra', 'codnegocioprodutobarra');
     }
-
-
 }

@@ -40,6 +40,13 @@ class ProdutoVariacaoRepository extends MGRepository {
             'variacao' => [
                 'max:100',
                 'nullable',
+                Rule::unique('tblprodutovariacao')->ignore($id, 'codprodutovariacao')->where(function ($query) use ($data) {
+                    if(!isset($data['codproduto'])){
+                        return true;
+                    }
+                    
+                    $query->where('codproduto', $data['codproduto']);
+                })
             ],
             'referencia' => [
                 'max:50',
@@ -48,6 +55,7 @@ class ProdutoVariacaoRepository extends MGRepository {
             'codmarca' => [
                 'numeric',
                 'nullable',
+                "not_in:{$this->Produto->codmarca}"
             ],
             'codopencart' => [
                 'numeric',
@@ -69,13 +77,21 @@ class ProdutoVariacaoRepository extends MGRepository {
             'codproduto.numeric' => 'O campo "codproduto" deve ser um número!',
             'codproduto.required' => 'O campo "codproduto" deve ser preenchido!',
             'variacao.max' => 'O campo "variacao" não pode conter mais que 100 caracteres!',
+            'variacao.unique' => 'Esta Variação já está cadastrada!',
+            'variacao.required' => 'Já existe uma Variação em branco, preencha a descrição desta nova Variação!',
             'referencia.max' => 'O campo "referencia" não pode conter mais que 50 caracteres!',
             'codmarca.numeric' => 'O campo "codmarca" deve ser um número!',
+            'codmarca.not_in' => 'Somente selecione a Marca caso seja diferente do produto!',
             'codopencart.numeric' => 'O campo "codopencart" deve ser um número!',
             'dataultimacompra.date' => 'O campo "dataultimacompra" deve ser uma data!',
             'custoultimacompra.numeric' => 'O campo "custoultimacompra" deve ser um número!',
             'quantidadeultimacompra.numeric' => 'O campo "quantidadeultimacompra" deve ser um número!',
         ]);
+
+        if (isset($this->codproduto) && empty($this->variacao))
+            if ($this->Produto->ProdutoVariacaoS()->whereNull('variacao')->count() > 0)
+                $this->_regrasValidacao['variacao'] = 'required|' . $this->_regrasValidacao['variacao'];
+        
 
         return $this->validator->passes();
         

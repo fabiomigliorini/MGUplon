@@ -10,6 +10,7 @@ use MGLara\Http\Controllers\Controller;
 
 use MGLara\Repositories\ProdutoBarraRepository;
 use MGLara\Repositories\ProdutoRepository;
+use MGLara\Jobs\EstoqueGeraMovimentoProdutoVariacao;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
@@ -212,12 +213,15 @@ class ProdutoBarraController extends Controller
         $this->repository->authorize('update');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->variacao, url('produto-barra', $this->repository->model->codprodutobarra));
-        $this->bc->header = $this->repository->model->variacao;
+        $this->bc->addItem('Produto', url('produto'));
+        $this->bc->addItem($this->repository->model->produto->produto, url('produto', $this->repository->model->codproduto));
+        $this->bc->addItem($this->repository->model->barras);        
         $this->bc->addItem('Alterar');
+        $this->bc->header = $this->repository->model->barras;         
+        
         
         // retorna formulario edit
-        return view('produto-barra.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('produto-barra.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'produto'=>$this->repository->model->Produto]);
     }
 
     /**
@@ -229,14 +233,40 @@ class ProdutoBarraController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Busca registro para autorizar
+        $this->repository->findOrFail($id);
+        $codprodutovariacao_original = $this->repository->model->codprodutovariacao;
         
-        parent::update($request, $id);
+        // Valida dados
+        $data = $request->all();
+        if (!$this->repository->validate($data, $id)) {
+            $this->throwValidationException($request, $this->repository->validator);
+        }
+        
+        // autorizacao
+        $this->repository->fill($data);
+        $this->repository->authorize('update');
+        
+        if ($this->repository->model->codprodutoembalagem == 0) {
+            $this->repository->model->codprodutoembalagem = null;
+        }        
+        
+        // salva
+        if (!$this->repository->update()) {
+            abort(500);
+        }
+        
+        //Recalcula movimento de estoque caso trocou o codigo de barras de variacao
+        if ($this->repository->model->codprodutovariacao != $codprodutovariacao_original) {
+            $this->dispatch((new EstoqueGeraMovimentoProdutoVariacao($this->repository->model->codprodutovariacao))->onQueue('medium'));
+            $this->dispatch((new EstoqueGeraMovimentoProdutoVariacao($codprodutovariacao_original))->onQueue('medium'));
+        }
         
         // mensagem re registro criado
         Session::flash('flash_update', 'Produto Barra alterado!');
         
         // redireciona para view
-        return redirect("produto-barra/{$this->repository->model->codprodutobarra}"); 
+        return redirect("produto/{$this->repository->model->codproduto}"); 
     }
     
 }

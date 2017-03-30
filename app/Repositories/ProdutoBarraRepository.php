@@ -44,6 +44,8 @@ class ProdutoBarraRepository extends MGRepository {
             'barras' => [
                 'max:50',
                 'required',
+                Rule::unique('tblprodutobarra')->ignore($id, 'codprodutobarra'),
+
             ],
             'referencia' => [
                 'max:50',
@@ -67,6 +69,7 @@ class ProdutoBarraRepository extends MGRepository {
             'variacao.max' => 'O campo "variacao" não pode conter mais que 100 caracteres!',
             'barras.max' => 'O campo "barras" não pode conter mais que 50 caracteres!',
             'barras.required' => 'O campo "barras" deve ser preenchido!',
+            'barras.unique'        => 'Este Código de Barras já existe!',
             'referencia.max' => 'O campo "referencia" não pode conter mais que 50 caracteres!',
             'codmarca.numeric' => 'O campo "codmarca" deve ser um número!',
             'codprodutoembalagem.numeric' => 'O campo "codprodutoembalagem" deve ser um número!',
