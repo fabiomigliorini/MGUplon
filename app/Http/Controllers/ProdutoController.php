@@ -111,11 +111,11 @@ class ProdutoController extends Controller
         $columns[0] = 'codproduto';
         $columns[1] = 'inativo';
         $columns[2] = 'codproduto';
-        $columns[3] = 'referencia';
-        $columns[4] = 'produto';
-        $columns[5] = 'codsubgrupoproduto';
-        $columns[6] = 'codmarca';
-        $columns[7] = 'codunidademedida';
+        $columns[3] = 'produto';
+        $columns[4] = 'codsubgrupoproduto';
+        $columns[5] = 'codmarca';
+        $columns[6] = 'codunidademedida';
+        $columns[7] = 'referencia';
         $columns[8] = 'preco';
 
         $sort = [];
@@ -142,11 +142,11 @@ class ProdutoController extends Controller
                 url('produto', $reg->codproduto),
                 formataData($reg->inativo, 'C'),
                 formataCodigo($reg->codproduto),
-                $reg->referencia,
                 $reg->produto,
                 $reg->SubGrupoProduto->subgrupoproduto,
                 $reg->Marca->marca,
                 $reg->UnidadeMedida->sigla,
+                $reg->referencia,
                 $reg->preco,
             ];
         }
@@ -417,29 +417,38 @@ class ProdutoController extends Controller
      */
     public function update(Request $request, $id) 
     {
-        
-        $model = Produto::findOrFail($id);
-        $model->fill($request->all());
-        
+        // Busca registro para autorizar
+        $this->repository->findOrFail($id);
+
+        // Valida dados
+        $data = $request->all();
+                
         if(is_null($request->input('importado'))) {
-            $model->importado = FALSE;
+            $this->repositoray->model->importado = FALSE;
         }
         
         if(is_null($request->input('site'))) {
-            $model->site = FALSE;
+            $this->repositoray->model->site = FALSE;
         }
+        
+        // autorizacao
+        $this->repository->fill($data);
+        $this->repositoray->authorize('update');
 
         DB::beginTransaction();
         
-        if (!$model->validate())
-            $this->throwValidationException($request, $model->_validator);
+        if (!$this->repository->validate($data, $id)) {
+            $this->throwValidationException($request, $this->repository->validator);
+        }
         
         try {
-            $preco = $model->getOriginal('preco');
+            $preco = $this->repository->getOriginal('preco');
             
-            if (!$model->save())
+            if (!$this->repository->save()){
                 throw new Exception ('Erro ao alterar Produto!');
-            if($preco != $model->preco) {
+            }
+            
+            if($preco != $this->repository->model->preco) {
                 $historico = new ProdutoHistoricoPreco();
                 $historico->codproduto  = $model->codproduto;
                 $historico->precoantigo = $preco;
@@ -453,7 +462,7 @@ class ProdutoController extends Controller
             return redirect("produto/$model->codproduto");           
         } catch (Exception $ex) {
             DB::rollBack();
-            $this->throwValidationException($request, $model->_validator);              
+            $this->throwValidationException($request, $this->repository->validator);
         }        
 
     }

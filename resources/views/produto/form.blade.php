@@ -20,7 +20,7 @@
 
             <fieldset class="form-group col-md-6">
                 {!! Form::label('codfamiliaproduto', 'Família') !!}
-                {!! Form::select2FamiliaProduto('codfamiliaproduto', null, ['required' => true, 'class' => 'form-control','id'=>'codfamiliaproduto', 'style'=>'width:100%', 'placeholder' => 'Grupo', 'codsecaoproduto'=>'codsecaoproduto']) !!}
+                {!! Form::select2FamiliaProduto('codfamiliaproduto', null, ['required' => true, 'class' => 'form-control','id'=>'codfamiliaproduto', 'style'=>'width:100%', 'placeholder' => 'Família', 'codsecaoproduto'=>'codsecaoproduto']) !!}
             </fieldset>
         </div>
         <div class="row">

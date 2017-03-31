@@ -310,7 +310,7 @@ Form::macro('select2FamiliaProduto', function($name, $value = null, $options = [
                     return {
                         params: params,
                         somenteAtivos: {$somenteAtivos},
-                        codgrupoproduto: $('#{$options['codsecaoproduto']}').val()
+                        codsecaoproduto: $('#{$options['codsecaoproduto']}').val()
                     };
                 },
             },

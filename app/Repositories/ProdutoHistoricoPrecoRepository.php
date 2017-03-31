@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 use MGLara\Models\ProdutoHistoricoPreco;
+use MGLara\Models\Produto;
 
 /**
  * Description of ProdutoHistoricoPrecoRepository
@@ -42,12 +43,10 @@ class ProdutoHistoricoPrecoRepository extends MGRepository {
                 'nullable',
             ],
             'precoantigo' => [
-                'digits',
                 'numeric',
                 'nullable',
             ],
             'preconovo' => [
-                'digits',
                 'numeric',
                 'nullable',
             ],
@@ -55,9 +54,7 @@ class ProdutoHistoricoPrecoRepository extends MGRepository {
             'codproduto.numeric' => 'O campo "codproduto" deve ser um número!',
             'codproduto.required' => 'O campo "codproduto" deve ser preenchido!',
             'codprodutoembalagem.numeric' => 'O campo "codprodutoembalagem" deve ser um número!',
-            'precoantigo.digits' => 'O campo "precoantigo" deve conter no máximo 2 dígitos!',
             'precoantigo.numeric' => 'O campo "precoantigo" deve ser um número!',
-            'preconovo.digits' => 'O campo "preconovo" deve conter no máximo 2 dígitos!',
             'preconovo.numeric' => 'O campo "preconovo" deve ser um número!',
         ]);
 
@@ -78,25 +75,23 @@ class ProdutoHistoricoPrecoRepository extends MGRepository {
         // Query da Entidade
         $qry = ProdutoHistoricoPreco::query();
         
-        // Filtros
-        if(!empty($filters['id'])) {
+        if(!empty($filters['codproduto']) and !empty($filters['codproduto'])){
             $qry->whereHas('Produto', function($q) use ($filters) {
-                $q->where('codproduto',  $filters['id']);
-            });
-        }
-        
-        if(!empty($filters['produto'])) {
-            $qry->whereHas('Produto', function($q) use ($filters) {
-                $q->palavras('produto',  $filters['produto']);
-            });
-        }
-        
-        if(!empty($filters['referencia'])) {
-            $qry->whereHas('Produto', function($q) use ($filters) {
-                $q->palavras('referencia', $filters['referencia']);
+                $q->where('codproduto',  $filters['codproduto']);
             });
         }
 
+        if(!empty($filters['produto'])){
+            $qry->produto(removeAcentos ($filters['produto']));
+        }
+
+        if(!empty($filters['referencia']) and !empty($filters['referencia'])){
+            $qry->whereHas('Produto', function($q) use ($filters) {
+                $referencia = $filters['referencia'];
+                $q->where('referencia', 'ILIKE', "%$referencia%");
+            });
+        }
+        
         if (!empty($filters['alteracao_de'])) {
             $qry->where('criacao', '>=', $filters['alteracao_de']);
         }
@@ -105,18 +100,20 @@ class ProdutoHistoricoPrecoRepository extends MGRepository {
             $qry->where('criacao', '<=', $filters['alteracao_ate']);
         }
 
-        if (!empty($filters['codmarca'])) {
+        if(!empty($filters['codmarca']) and !empty($filters['codmarca'])) {
             $qry->whereHas('Produto', function($q) use ($filters) {
-                $q->where('codmarca', $filters['codmarca']);
+                $codmarca = $filters['codmarca'];
+                $q->where('codmarca', $codmarca);
             });        
         }
         
-        if (!empty($filters['codusuario'])) {
+        if(!empty($filters['codusuario']) and !empty($filters['codusuario'])){
             $qry->where('codusuariocriacao', $filters['codusuario']);
         }
-        
+
+         
         $count = $qry->count();
-        
+    
         switch ($filters['inativo']) {
             case 2: //Inativos
                 $qry = $qry->inativo();
@@ -149,7 +146,8 @@ class ProdutoHistoricoPrecoRepository extends MGRepository {
             'recordsFiltered' => $count
             , 'recordsTotal' => ProdutoHistoricoPreco::count()
             , 'data' => $qry->get()
-        ];        
+        ];
+        
     }
     
 }

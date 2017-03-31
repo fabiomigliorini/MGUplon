@@ -31,3 +31,6 @@ input[type="datetime-local"].form-control,
 input[type="month"].form-control {
     line-height: 1.4rem !important;
 }
+.select2-container--default .select2-selection--single .select2-selection__clear {
+    z-index: 100 !important;
+}

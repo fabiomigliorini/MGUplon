@@ -41,7 +41,7 @@ class ProdutoHistoricoPrecoController extends Controller
                     'inativo' => 1,
                 ],
                 'order' => [[
-                    'column' => 11, 
+                    'column' => 3,
                     'dir' => 'DESC'
                 ]],
             ];
@@ -81,7 +81,7 @@ class ProdutoHistoricoPrecoController extends Controller
         $columns[9] = 'preconovo';
         $columns[10] = 'precoantigo';
         $columns[11] = 'codusuariocriacao';
-        $columns[12] = 'alteracao';
+        $columns[12] = 'criacao';
 
         $sort = [];
         if (!empty($request['order'])) {
@@ -120,7 +120,7 @@ class ProdutoHistoricoPrecoController extends Controller
                 formataNumero($reg->precoantigo),
                 formataNumero($reg->preconovo),
                 $reg->UsuarioCriacao->usuario,
-                formataData($reg->alteracao, 'L')
+                formataData($reg->criacao, 'L')
             ];
         }
         

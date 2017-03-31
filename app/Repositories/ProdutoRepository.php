@@ -226,41 +226,128 @@ class ProdutoRepository extends MGRepository {
         $qry = Produto::query();
         
         // Filtros
-         if (!empty($filters['codproduto'])) {
+        if (!empty($filters['codproduto'])) {
             $qry->where('codproduto', '=', $filters['codproduto']);
         }
 
-         if (!empty($filters['produto'])) {
+        if(!empty($filters['barras'])) {
+            
+            $barras = $filters['barras'];
+            
+            $qry->whereIn('codproduto', function ($query) use ($barras) {
+                $query->select('codproduto')
+                    ->from('tblprodutobarra')
+                    ->where('barras', 'ilike', "%$barras%");
+            });
+        }
+        
+        if (!empty($filters['produto'])) {
             $qry->palavras('produto', $filters['produto']);
         }
 
-         if (!empty($filters['referencia'])) {
+        if (!empty($filters['referencia'])) {
             $qry->palavras('referencia', $filters['referencia']);
         }
-
-         if (!empty($filters['codunidademedida'])) {
-            $qry->where('codunidademedida', '=', $filters['codunidademedida']);
+        
+        if(empty($filters['preco_de']) && !empty($filters['preco_ate'])) {
+            
+            $sql = "codproduto in (
+                        select pe.codproduto 
+                        from tblprodutoembalagem pe 
+                        inner join tblproduto p on (p.codproduto = pe.codproduto) 
+                        where coalesce(pe.preco, pe.quantidade * p.preco) <= {$filters['preco_ate']}
+                        or p.preco <= {$filters['preco_ate']}
+                    )
+                    ";
+            
+            $qry->whereRaw($sql);
+            
+        }
+        
+        if(!empty($filters['preco_de']) && !empty($filters['preco_ate'])) {
+            
+            $sql = "codproduto in (
+                        select pe.codproduto 
+                        from tblprodutoembalagem pe 
+                        inner join tblproduto p on (p.codproduto = pe.codproduto) 
+                        where coalesce(pe.preco, pe.quantidade * p.preco) between {$filters['preco_de']} and {$filters['preco_ate']}
+                        or p.preco between {$filters['preco_de']} and {$filters['preco_ate']}
+                            )
+                    ";
+            
+            $qry->whereRaw($sql);
+            
         }
 
-         if (!empty($filters['codsubgrupoproduto'])) {
-            $qry->where('codsubgrupoproduto', '=', $filters['codsubgrupoproduto']);
-        }
-
-         if (!empty($filters['codmarca'])) {
+        if (!empty($filters['codmarca'])) {
             $qry->where('codmarca', '=', $filters['codmarca']);
         }
-
-         if (!empty($filters['preco'])) {
-            $qry->where('preco', '=', $filters['preco']);
+        
+        if(!empty($filters['codsubgrupoproduto'])) {
+            
+            $qry->where('codsubgrupoproduto', $filters['codsubgrupoproduto']);
+            
+        } elseif (!empty($filters['codgrupoproduto'])) {
+            
+            $qry->join('tblsubgrupoproduto', 'tblsubgrupoproduto.codsubgrupoproduto', '=', 'tblproduto.codsubgrupoproduto');
+            $qry->where('tblsubgrupoproduto.codgrupoproduto', $filters['codgrupoproduto']);
+            
+        } elseif (!empty($filters['codfamiliaproduto'])) {
+            
+            $qry->join('tblsubgrupoproduto', 'tblsubgrupoproduto.codsubgrupoproduto', '=', 'tblproduto.codsubgrupoproduto');
+            $qry->join('tblgrupoproduto', 'tblgrupoproduto.codgrupoproduto', '=', 'tblsubgrupoproduto.codgrupoproduto');
+            $qry->where('tblgrupoproduto.codfamiliaproduto', $filters['codfamiliaproduto']);
+            
+        } elseif (!empty($filters['codsecaoproduto'])) {
+            
+            $qry->join('tblsubgrupoproduto', 'tblsubgrupoproduto.codsubgrupoproduto', '=', 'tblproduto.codsubgrupoproduto');
+            $qry->join('tblgrupoproduto', 'tblgrupoproduto.codgrupoproduto', '=', 'tblsubgrupoproduto.codgrupoproduto');
+            $qry->join('tblfamiliaproduto', 'tblfamiliaproduto.codfamiliaproduto', '=', 'tblgrupoproduto.codfamiliaproduto');
+            $qry->where('tblfamiliaproduto.codsecaoproduto', $filters['codsecaoproduto']);
+            
         }
 
+        if (!empty($filters['codtributacao'])) {
+            $qry->where('codtributacao', '=', $filters['codtributacao']);
+        }
+
+        if (!empty($filters['codncm'])) {
+            $qry->where('codncm', '=', $filters['codncm']);
+        }
+        
+        if (!empty($filters['site'])) {
+            $qry->where('site', '=', $filters['site']);
+        }
+
+        if(!empty($filters['criacao_de'])) {
+            $qry->where('criacao', '>=', $filters['criacao_de']);
+        }
+
+        if(!empty($filters['criacao_ate'])) {
+            $qry->where('criacao', '<=', $filters['criacao_ate']);
+        }
+
+        if(!empty($filters['alteracao_de'])) {
+            $qry->where('alteracao', '>=', $filters['alteracao_de']);
+        }
+
+        if(!empty($filters['alteracao_ate'])) {
+            $qry->where('alteracao', '<=', $filters['alteracao_ate']);
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        /*
          if (!empty($filters['importado'])) {
             $qry->where('importado', '=', $filters['importado']);
         }
 
-         if (!empty($filters['codtributacao'])) {
-            $qry->where('codtributacao', '=', $filters['codtributacao']);
-        }
 
           if (!empty($filters['codtipoproduto'])) {
             $qry->where('codtipoproduto', '=', $filters['codtipoproduto']);
@@ -309,7 +396,7 @@ class ProdutoRepository extends MGRepository {
          if (!empty($filters['codopencartvariacao'])) {
             $qry->where('codopencartvariacao', '=', $filters['codopencartvariacao']);
         }
-
+        */
         
         $count = $qry->count();
     
