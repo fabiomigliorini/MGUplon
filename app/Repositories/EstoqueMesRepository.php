@@ -551,6 +551,7 @@ class EstoqueMesRepository extends MGRepository {
             'tblestoquemovimento.saidaquantidade',
             'tblestoquemovimento.saidavalor',
             'tblestoquemovimento.observacoes',
+            'tblestoquemovimento.manual',
             
             'tblestoquemovimentotipo.descricao',
             
@@ -655,6 +656,7 @@ class EstoqueMesRepository extends MGRepository {
                 'urlestoquemesrelacionado' => $urlestoquemesrelacionado,
                 'urldocumento' => $urldocumento,
                 'observacoes' => $reg->observacoes,
+                'manual' => $reg->manual,
             ];
         }
         return $ret;

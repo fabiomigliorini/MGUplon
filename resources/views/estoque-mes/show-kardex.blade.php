@@ -36,7 +36,7 @@
             <td>
               {{ $mov['descricao'] }}
               @if (!empty($mov['urlestoquemesrelacionado']))
-                <a class='pull-right' href='{{ $mov['urlestoquemesrelacionado'] }}'>
+                <a class='pull-right btn btn-secondary btn-sm' href='{{ $mov['urlestoquemesrelacionado'] }}'>
                   <i class='fa fa-external-link'></i>
                 </a>
               @endif
@@ -59,6 +59,16 @@
                 <span>
                   {!! nl2br(e($mov['observacoes'])) !!}
                 </span>
+              @endif
+              @if ($mov['manual'])
+                <div class='btn-group pull-right'>
+                  <a class='btn btn-secondary btn-sm' href='{{ url("estoque-movimento/{$mov['codestoquemovimento']}/edit") }}'>
+                    <i class='fa fa-pencil'></i>
+                  </a>
+                  <a class='btn btn-secondary btn-sm' href='{{ url("estoque-movimento/{$mov['codestoquemovimento']}/edit") }}'>
+                    <i class='fa fa-trash'></i>
+                  </a>
+                </div>
               @endif
             </td>
         </tr>

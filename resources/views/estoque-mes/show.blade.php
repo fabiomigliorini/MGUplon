@@ -254,13 +254,20 @@
                     @endif
                   </h6>
                   
-                  <small class='text-muted'>Conferido</small>
+                  <small class='text-muted'>
+                    Conferido 
+                  </small>
                   <h6 class="">
                     @if (!empty($es->ultimaconferencia))
-                      {{ $es->ultimaconferencia->diffForHumans() }}
+                      <a href="#" data-toggle="collapse" data-target="#collapseTimelineConferencia" aria-expanded="false" aria-controls="collapseTimelineConferencia">
+                        {{ $es->ultimaconferencia->diffForHumans() }}
+                      </a>
                     @else
                       Nunca
                     @endif
+                    <a class='btn btn-secondary btn-sm' href="{{ url("estoque-saldo-conferencia/create?codestoquesaldo={$es->codestoquesaldo}") }}">
+                      <i class="fa fa-plus" ></i>
+                    </a> 
                   </h6>
 
                   @if (!empty($elpv->vencimento))
@@ -277,7 +284,13 @@
         
     </div>      
 
-    @endif      
+    @endif
+    
+    <div class="collapse" id="collapseTimelineConferencia">
+        @if (!empty($es))
+          @include('estoque-mes.show-timeline-conferencia', ['es' => $es])
+        @endif
+    </div>
             
     <div class='card'>
       <div class="card-block">
@@ -287,7 +300,7 @@
               <a class="nav-link {{ (!empty($em) && ($eml->codestoquemes == $em->codestoquemes))?'active':'' }}" href='{{ url("kardex/{$el->codestoquelocal}/{$pv->codprodutovariacao}/$str_fiscal/{$eml->mes->year}/{$eml->mes->month}") }}'>
                 <div class="row">
                   <div class="col-md-12">
-                    {{ $eml->mes->format('m/Y') }}
+                    {{ $eml->mes->format('M/y') }}
                     {{ badge($eml->saldoquantidade) }}
                     <br>
                     <small class="text-muted text-center">{{ formataNumero($eml->customedio, 6) }}</small>
@@ -304,14 +317,13 @@
       </div>          
       <div class='card-block'>
         @if (!empty($movs))
-          @include('estoque-mes.kardex', $movs)
+          @include('estoque-mes.show-kardex', $movs)
         @endif
       </div>
     </div>
   </div>
 </div>
-
-
+        
 
 
 @section('buttons')
