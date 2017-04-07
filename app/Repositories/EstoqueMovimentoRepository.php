@@ -21,6 +21,7 @@ class EstoqueMovimentoRepository extends MGRepository {
     
     public function boot() {
         $this->model = new EstoqueMovimento();
+        $this->repoMes = new EstoqueMesRepository();
     }
     
     //put your code here
@@ -248,9 +249,10 @@ class EstoqueMovimentoRepository extends MGRepository {
         
     }
     
-    public static function movimentaEstoqueSaldoConferencia (EstoqueSaldoConferencia $conf) 
+    public function movimentaEstoqueSaldoConferencia (EstoqueSaldoConferencia $conf) 
     {
-        EstoqueSaldoRepository::atualizaUltimaConferencia($conf->EstoqueSaldo);
+        $repoSaldo = new EstoqueSaldoRepository();
+        $repoSaldo->atualizaUltimaConferencia($conf->EstoqueSaldo);
 
         $codestoquemovimentoGerado = [];
         
@@ -263,8 +265,8 @@ class EstoqueMovimentoRepository extends MGRepository {
             } else {
                 $repo->new();
             }
-
-            $mes = EstoqueMesRepository::buscaOuCria($conf->EstoqueSaldo, $conf->data);
+            
+            $mes = $this->repoMes->buscaOuCria($conf->EstoqueSaldo, $conf->data);
 
             $repo->model->codestoquemes = $mes->codestoquemes;
             $repo->model->codestoquemovimentotipo = EstoqueMovimentoTipo::AJUSTE;
@@ -317,16 +319,16 @@ class EstoqueMovimentoRepository extends MGRepository {
     
     public function create($data = null) {
         $ret = parent::create($data);
-        EstoqueMesRepository::calculaCustoMedio($this->model->EstoqueMes);
+        $this->repoMes->calculaCustoMedio($this->model->EstoqueMes);
         return $ret;
     }
     
     public function update($id = null, $data = null) {
         $anterior = $this->model->fresh();
         $ret = parent::update($id, $data);
-        EstoqueMesRepository::calculaCustoMedio($this->model->EstoqueMes);
+        $this->repoMes->calculaCustoMedio($this->model->EstoqueMes);
         if ($anterior->codestoquemes != $this->model->codestoquemes) {
-            EstoqueMesRepository::calculaCustoMedio($anterior->EstoqueMes);
+            $this->repoMes->calculaCustoMedio($anterior->EstoqueMes);
         }
         return $ret;
     }
@@ -334,20 +336,20 @@ class EstoqueMovimentoRepository extends MGRepository {
     public function delete($id = null) {
         $mes = $this->model->EstoqueMes;
         $ret = parent::delete($id);
-        EstoqueMesRepository::calculaCustoMedio($mes);
+        $this->repoMes->calculaCustoMedio($mes);
         return $ret;
     }
     
     
     public function activate($id = null) {
         $ret = parent::activate($id);
-        EstoqueMesRepository::calculaCustoMedio($this->model->EstoqueMes);
+        $this->repoMes->calculaCustoMedio($this->model->EstoqueMes);
         return $ret;
     }
     
     public function inactivate($id = null) {
         $ret = parent::inactivate($id);
-        EstoqueMesRepository::calculaCustoMedio($this->model->EstoqueMes);
+        $this->repoMes->calculaCustoMedio($this->model->EstoqueMes);
         return $ret;
     }
     

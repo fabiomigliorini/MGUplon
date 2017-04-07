@@ -49,6 +49,6 @@ class EstoqueCalculaCustoMedio extends Job implements ShouldQueue
     {
         $repo = new EstoqueMesRepository();
         $mes = $repo->findOrFail($this->codestoquemes);
-        EstoqueMesRepository::calculaCustoMedio($mes, $this->ciclo);
+        $repo->calculaCustoMedio($mes, $this->ciclo);
     }
 }

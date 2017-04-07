@@ -1375,7 +1375,7 @@ class EstoqueSaldoRepository extends MGRepository {
         return $ret;
     }
     
-    public static function pivotProduto($codproduto, $fiscal) {
+    public function pivotProduto($codproduto, $fiscal) {
         
         $qry = EstoqueSaldo::query();
         
@@ -1431,7 +1431,7 @@ class EstoqueSaldoRepository extends MGRepository {
         
     }
 
-    public static function atualizaUltimaConferencia (EstoqueSaldo $model) {
+    public function atualizaUltimaConferencia (EstoqueSaldo $model) {
 
         return DB::update("update tblestoquesaldo 
                     set ultimaconferencia = (select max(conf.criacao) from tblestoquesaldoconferencia conf where conf.inativo is null and conf.codestoquesaldo = tblestoquesaldo.codestoquesaldo)

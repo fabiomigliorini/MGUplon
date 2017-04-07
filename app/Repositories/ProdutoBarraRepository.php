@@ -200,7 +200,7 @@ class ProdutoBarraRepository extends MGRepository {
         
     }
 
-    public static function buscaPorBarras($barras)
+    public function buscaPorBarras($barras)
     {
         //Procura pelo Codigo de Barras
         if ($ret = ProdutoBarra::where('barras', '=', $barras)->first()) {

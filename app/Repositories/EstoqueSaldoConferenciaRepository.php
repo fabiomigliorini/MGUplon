@@ -21,6 +21,7 @@ class EstoqueSaldoConferenciaRepository extends MGRepository {
     
     public function boot() {
         $this->model = new EstoqueSaldoConferencia();
+        $this->repoMovimento = new EstoqueMovimentoRepository();
     }
     
     //put your code here
@@ -205,7 +206,6 @@ class EstoqueSaldoConferenciaRepository extends MGRepository {
     
     public function create($data = null) {
 
-        DB::beginTransaction();
         
         if (!empty($data)) {
             $this->new($data);
@@ -222,9 +222,7 @@ class EstoqueSaldoConferenciaRepository extends MGRepository {
             return false;
         }
         
-        EstoqueMovimentoRepository::movimentaEstoqueSaldoConferencia($this->model);
-        
-        DB::commit();
+        $this->repoMovimento->movimentaEstoqueSaldoConferencia($this->model);
         
         return true;
         
@@ -232,13 +230,13 @@ class EstoqueSaldoConferenciaRepository extends MGRepository {
     
     public function activate($id = null) {
         $ret = parent::activate($id);
-        EstoqueMovimentoRepository::movimentaEstoqueSaldoConferencia($this->model);
+        $this->repoMovimento->movimentaEstoqueSaldoConferencia($this->model);
         return $ret;
     }
     
     public function inactivate($id = null) {
         $ret = parent::inactivate($id);
-        EstoqueMovimentoRepository::movimentaEstoqueSaldoConferencia($this->model);
+        $this->repoMovimento->movimentaEstoqueSaldoConferencia($this->model);
         return $ret;
     }
     

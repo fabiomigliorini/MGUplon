@@ -7,16 +7,26 @@
             </div>
         </article>
         @foreach ($es->EstoqueSaldoConferenciaS()->orderBy('criacao', 'desc')->limit(200)->get() as $i => $conf)
+        <?php
+            $class = (empty($conf->inativo)?'primary':'danger')
+        ?>
         <article class="timeline-item {{ ($i % 2 == 0)?'alt':'' }}">
             <div class="timeline-desk">
                 <div class="panel">
                     <div class="timeline-box">
                         <span class="arrow{{ ($i % 2 == 0)?'-alt':'' }}"></span>
-                        <span class="timeline-icon bg-primary"><i class="zmdi zmdi-circle"></i></span>
-                        <h4 class="text-primary">
-                          <a href="{{ url('estoque-saldo-conferencia', $conf->codestoquesaldoconferencia) }}">
-                            {{ $conf->criacao->diffForHumans() }}
-                          </a>
+                        <span class="timeline-icon bg-{{ $class }}"><i class="zmdi zmdi-circle"></i></span>
+                        <h4 class="text-{{ $class }}">
+                          @if (!empty($conf->inativo))
+                            Conferência Inativada
+                            <a href="{{ url('estoque-saldo-conferencia', $conf->codestoquesaldoconferencia) }}">
+                              <s>{{ $conf->criacao->diffForHumans() }}</s>
+                            </a>
+                          @else
+                            <a href="{{ url('estoque-saldo-conferencia', $conf->codestoquesaldoconferencia) }}">
+                              {{ $conf->criacao->diffForHumans() }}
+                            </a>
+                          @endif
                         </h4>
                         <p class="timeline-date text-muted">
                           <small>
@@ -28,10 +38,10 @@
                         </p>
                         <p>
                           Informado 
-                          <span class="text-primary">{{ formataNumero($conf->quantidadeinformada, 3) }}</span>
+                          <span class="text-{{ $class }}">{{ formataNumero($conf->quantidadeinformada, 3) }}</span>
                           (<s>{{ formataNumero($conf->quantidadesistema, 3) }}</s>),
                           custando 
-                          <span class="text-primary">{{ formataNumero($conf->customedioinformado, 6) }}</span>
+                          <span class="text-{{ $class }}">{{ formataNumero($conf->customedioinformado, 6) }}</span>
                           (<s>{{ formataNumero($conf->customediosistema, 6) }}</s>).
                         </p>
                         <p>
