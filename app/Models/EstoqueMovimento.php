@@ -27,14 +27,14 @@ namespace MGLara\Models;
  * @property  EstoqueMes                     $EstoqueMes
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Usuario                        $UsuarioCriacao
- * @property  EstoqueMovimento               $EstoqueMovimento
+ * @property  EstoqueMovimento               $EstoqueMovimentoOrigem
  * @property  EstoqueSaldoConferencia        $EstoqueSaldoConferencia
  * @property  EstoqueMovimentoTipo           $EstoqueMovimentoTipo
  * @property  NegocioProdutoBarra            $NegocioProdutoBarra
  * @property  NotaFiscalProdutoBarra         $NotaFiscalProdutoBarra
  *
  * Tabelas Filhas
- * @property  EstoqueMovimento[]             $EstoqueMovimentoS
+ * @property  EstoqueMovimento[]             $EstoqueMovimentoDestinoS
  */
 
 class EstoqueMovimento extends MGModel
@@ -42,19 +42,19 @@ class EstoqueMovimento extends MGModel
     protected $table = 'tblestoquemovimento';
     protected $primaryKey = 'codestoquemovimento';
     protected $fillable = [
-          'codestoquemovimentotipo',
-         'entradaquantidade',
-         'entradavalor',
-         'saidaquantidade',
-         'saidavalor',
-         'codnegocioprodutobarra',
-         'codnotafiscalprodutobarra',
-         'codestoquemes',
-         'manual',
-         'data',
-             'codestoquemovimentoorigem',
-         'observacoes',
-         'codestoquesaldoconferencia',
+        'codestoquemovimentotipo',
+        'entradaquantidade',
+        'entradavalor',
+        'saidaquantidade',
+        'saidavalor',
+        'codnegocioprodutobarra',
+        'codnotafiscalprodutobarra',
+        'codestoquemes',
+        'manual',
+        'data',
+        'codestoquemovimentoorigem',
+        'observacoes',
+        'codestoquesaldoconferencia',
     ];
     protected $dates = [
         'data',
@@ -79,7 +79,7 @@ class EstoqueMovimento extends MGModel
         return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
     }
 
-    public function EstoqueMovimento()
+    public function EstoqueMovimentoOrigem()
     {
         return $this->belongsTo(EstoqueMovimento::class, 'codestoquemovimentoorigem', 'codestoquemovimento');
     }
@@ -106,7 +106,7 @@ class EstoqueMovimento extends MGModel
 
 
     // Tabelas Filhas
-    public function EstoqueMovimentoS()
+    public function EstoqueMovimentoDestinoS()
     {
         return $this->hasMany(EstoqueMovimento::class, 'codestoquemovimentoorigem', 'codestoquemovimento');
     }

@@ -184,4 +184,14 @@ class EstoqueMovimentoTipoRepository extends MGRepository {
         
     }
     
+    public function tipoDestino (EstoqueMovimentoTipo $model = null) {
+        
+        if (empty($model)) {
+            $model = $this->model;
+        }
+        
+        return $model->EstoqueMovimentoTipoDestinoS()->first();
+        
+    }
+    
 }

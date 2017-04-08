@@ -351,7 +351,7 @@ class EstoqueMesRepository extends MGRepository {
         }
         
         $repo_sld = new EstoqueSaldoRepository();
-        if (!$repo_sld->buscaOuCria($elpv, $fiscal)) {
+        if (!$sld = $repo_sld->buscaOuCria($elpv, $fiscal)) {
             return false;
         }
         
@@ -488,7 +488,7 @@ class EstoqueMesRepository extends MGRepository {
             }
         }
         
-        $proximo = self::buscaProximos(1, $mes);
+        $proximo = $this->buscaProximos(1, $mes);
         if (isset($proximo[0])) {
             $mesesRecalcular[] = $proximo[0]->codestoquemes;
         } else {
@@ -552,6 +552,7 @@ class EstoqueMesRepository extends MGRepository {
             'tblestoquemovimento.saidavalor',
             'tblestoquemovimento.observacoes',
             'tblestoquemovimento.manual',
+            'tblestoquemovimento.codestoquesaldoconferencia',
             
             'tblestoquemovimentotipo.descricao',
             
@@ -635,7 +636,7 @@ class EstoqueMesRepository extends MGRepository {
             $urlestoquemesrelacionado = null;
             if (!empty($reg->codestoquemesorigem)) {
                 $urlestoquemesrelacionado = url('estoque-mes', $reg->codestoquemesorigem);
-            } elseif ($filho = $reg->EstoqueMovimentoS()->first()) {
+            } elseif ($filho = $reg->EstoqueMovimentoDestinoS()->first()) {
                 $urlestoquemesrelacionado = url('estoque-mes', $filho->codestoquemes);
             }
                 
@@ -657,6 +658,7 @@ class EstoqueMesRepository extends MGRepository {
                 'urldocumento' => $urldocumento,
                 'observacoes' => $reg->observacoes,
                 'manual' => $reg->manual,
+                'codestoquesaldoconferencia' => $reg->codestoquesaldoconferencia,
             ];
         }
         return $ret;

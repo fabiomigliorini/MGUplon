@@ -103,11 +103,6 @@ class EstoqueMesController extends Controller
         $this->bc->addItem($pv->Produto->produto, url('produto', $pv->codproduto));
         $this->bc->addItem('Kardex');
         $this->bc->header = 'Kardex ' . $pv->Produto->produto;
-
-        $ems = [];
-        if (!empty($es)) {
-            $ems = $es->EstoqueMesS()->orderBy('mes', 'asc')->get();
-        }
         
         $movs = [];
         if (!empty($em)) {
@@ -115,6 +110,13 @@ class EstoqueMesController extends Controller
         }
         
         $repo_es = new EstoqueSaldoRepository();
+
+        $ems = [];
+        if (!empty($es)) {
+            $mesAtual = Carbon::create($ano, $mes, 1);
+            $ems = $repo_es->meses($mesAtual, $es, 3, 6);
+        }
+        
         $slds = $repo_es->saldosPorFisicoFiscal($pv->codproduto);
         $els = $repo_es->saldosPorLocal($pv->codproduto, $fiscal);
         $pvs = $repo_es->saldosPorVariacao($pv->codproduto, $fiscal, $el->codestoquelocal);

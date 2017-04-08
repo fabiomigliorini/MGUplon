@@ -138,7 +138,8 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('estoque-saldo', 'EstoqueSaldoController');
     Route::get('estoque-saldo/{id}/zera', 'EstoqueSaldoController@zera');
     
-    
+    /* EstoqueMovimento */
+    Route::resource('estoque-movimento', 'EstoqueMovimentoController', ['only' => ['edit', 'update', 'create', 'store', 'destroy']]);
     
     /* Gerador de Codigo */
     Route::get('gerador-codigo/{tabela}/model', 'GeradorCodigoController@showModel');

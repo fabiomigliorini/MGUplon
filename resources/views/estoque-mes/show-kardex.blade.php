@@ -30,15 +30,24 @@
     </thead>
     <tbody>
       @foreach ($movs['movimento'] as $mov)
-        <tr>
+        <?php
+            $class='';
+            if ($mov['manual']) {
+                $class='table-danger';
+            } elseif (!empty($mov['codestoquesaldoconferencia'])) {
+                $class='table-warning';
+            }
+        ?>
+        <tr class='{{ $class }}'>
             <td>{{ $mov['data']->format('d/M') }}</td>
             <td class="text-muted small">{{ $mov['data']->format('H:i') }}</td>
             <td>
-              {{ $mov['descricao'] }}
               @if (!empty($mov['urlestoquemesrelacionado']))
-                <a class='pull-right btn btn-secondary btn-sm' href='{{ $mov['urlestoquemesrelacionado'] }}'>
-                  <i class='fa fa-external-link'></i>
+                <a  href='{{ $mov['urlestoquemesrelacionado'] }}'>
+                {{ $mov['descricao'] }}
                 </a>
+              @else
+                {{ $mov['descricao'] }}
               @endif
             </td>
             <td class="text-right ">{{ formataNumero($mov['entradaquantidade'], 3) }}</td>

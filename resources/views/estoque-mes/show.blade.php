@@ -76,28 +76,15 @@
         <div class='card'>
           <div class='card-block'>
             <ul class="nav nav-pills">
-              <div class='row'>
-                <li class="nav-item col-md-12">
-                  <a class="nav-link active" href='{{ url("kardex/{$el->codestoquelocal}/{$pv->codprodutovariacao}/$str_fiscal/$ano/$mes") }}'>
-                    {{ $el->estoquelocal }}
-                    @if (isset($els[$el->codestoquelocal]))
-                      {{ badge($els[$el->codestoquelocal]['saldoquantidade']) }}
-                    @endif
-                  </a>
-                </li>            
-              </div>
-              <hr>
               @foreach ($els as $item)
-                @if ($item['codestoquelocal'] != $el->codestoquelocal)
                 <div class='row'>
                   <li class="nav-item col-md-12">
-                    <a class="nav-link" href='{{ url("kardex/{$item['codestoquelocal']}/{$pv->codprodutovariacao}/$str_fiscal/$ano/$mes") }}'>
+                    <a class="nav-link {{ ($item['codestoquelocal']==$el->codestoquelocal)?'active':''  }}" href='{{ url("kardex/{$item['codestoquelocal']}/{$pv->codprodutovariacao}/$str_fiscal/$ano/$mes") }}'>
                       {{ $item['estoquelocal'] }}
                       {{ badge($item['saldoquantidade']) }}
                     </a>
                   </li>            
                 </div>
-                @endif
               @endforeach
             </ul>
           </div>
@@ -291,30 +278,30 @@
           @include('estoque-mes.show-timeline-conferencia', ['es' => $es])
         @endif
     </div>
-            
-    <div class='card'>
+
+    <div class="card">
       <div class="card-block">
-        <ul class="nav nav-pills">
-          @forelse ($ems as $eml)
-            <li class="nav-item">
-              <a class="nav-link {{ (!empty($em) && ($eml->codestoquemes == $em->codestoquemes))?'active':'' }}" href='{{ url("kardex/{$el->codestoquelocal}/{$pv->codprodutovariacao}/$str_fiscal/{$eml->mes->year}/{$eml->mes->month}") }}'>
-                <div class="row">
-                  <div class="col-md-12">
-                    {{ $eml->mes->format('M/y') }}
-                    {{ badge($eml->saldoquantidade) }}
-                    <br>
-                    <small class="text-muted text-center">{{ formataNumero($eml->customedio, 6) }}</small>
-                  </div>
-                </div>
-              </a>
-            </li>
-          @empty
-            <li class="nav-item">
-              <p>Não há movimentação em mês algum!</p>
-            </li>
-          @endforelse
+        <ul class="nav nav-pills row">
+            @forelse ($ems as $eml)
+            <div class="col-md-2">
+              <li class="nav-item" style="width: 100%">
+                <a class="nav-link {{ (!empty($em) && ($eml->codestoquemes == $em->codestoquemes))?'active':'' }}" href='{{ url("kardex/{$el->codestoquelocal}/{$pv->codprodutovariacao}/$str_fiscal/{$eml->mes->year}/{$eml->mes->month}") }}'>
+                      {{ ucfirst($eml->mes->formatLocalized('%B/%y')) }}
+                      <br>
+                      <div class="">
+                      <small class="text-muted">{{ formataNumero($eml->customedio, 6) }}</small>
+                      {{ badge($eml->saldoquantidade) }}
+                      </div>
+                </a>
+              </li>
+            </div>
+            @empty
+              <li class="nav-item">
+                <p>Não há movimentação em mês algum!</p>
+              </li>
+            @endforelse
         </ul>
-      </div>          
+      </div>
       <div class='card-block'>
         @if (!empty($movs))
           @include('estoque-mes.show-kardex', $movs)

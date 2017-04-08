@@ -1242,11 +1242,21 @@ Form::macro('select2EstoqueMovimentoTipo', function($name, $selected = null, $op
         $options['manual'] = false;
     }
 
-    if ($options['manual']) {
-        $op = MGLara\Models\EstoqueMovimentoTipo::where('manual', '=', true)->orderBy('descricao')->pluck('descricao', 'codestoquemovimentotipo')->prepend('', '');
-    } else {
-        $op = MGLara\Models\EstoqueMovimentoTipo::orderBy('descricao')->pluck('descricao', 'codestoquemovimentotipo')->prepend('', '');
+    if (!isset($options['transferencia'])) {
+        $options['transferencia'] = false;
     }
+
+    $qry = MGLara\Models\EstoqueMovimentoTipo::orderBy('descricao');
+    
+    if ($options['manual']) {
+        $qry = $qry->where('manual', '=', true);
+    }
+    
+    if (!$options['transferencia']) {
+        $qry = $qry->where('transferencia', '=', false);
+    }
+    
+    $op = $qry->pluck('descricao', 'codestoquemovimentotipo')->prepend('', '');
 
     return Form::select2($name, $op, $selected, $options);
 });

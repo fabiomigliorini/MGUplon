@@ -1,423 +1,259 @@
-{!! Form::hidden('codestoquemes') !!}
 
-<div class="form-group">
-    <label for="data" class="col-sm-2 control-label">
-        Data:
-    </label>
-    <div class="col-md-2">
-        {!! Form::datetimeLocal('data', $model->data, ['class'=> 'form-control text-center', 'id'=>'data', 'required'=>'required']) !!}
-    </div>
+<div class='row'>
+  <div class='col-md-2'>
+    <fieldset class="form-group">
+      {!! Form::label('data', 'Data') !!}
+      {!! Form::datetimeLocalMG('data', null, ['class'=> 'form-control text-center', 'id'=>'data', 'required'=>'required']) !!}
+    </fieldset>  
+    <fieldset class="form-group">
+      {!! Form::label('transferencia', 'Transferência') !!}
+      {!! Form::select2('transferencia', ['0' => 'Movimento', '1' => 'Transferencia'], null, ['class'=> 'form-control text-center', 'id'=>'transferencia', 'required'=>'required']) !!}
+    </fieldset>  
+    <fieldset class="form-group">
+      {!! Form::label('codestoquemovimentotipo', 'Tipo do Movimento') !!}
+      {!! Form::select2EstoqueMovimentoTipo('codestoquemovimentotipo', null, ['class'=> 'form-control', 'id'=>'codestoquemovimentotipo', 'manual'=>true, 'transferencia'=>false, 'step'=>'1', 'min'=>'1', 'required'=>'required', 'autofocus']) !!}
+    </fieldset>  
+    <fieldset class="form-group">
+      {!! Form::label('fiscal', 'Fiscal') !!}
+      {!! Form::select2FisicoFiscal('fiscal', null, ['class'=> 'form-control', 'id'=>'fiscal', 'required'=>'required']) !!}
+    </fieldset>  
+  </div>
+  <div class='col-md-3'>
+    <fieldset class="form-group">
+      {!! Form::label('codproduto', 'Produto') !!}
+      {!! Form::select2Produto('codproduto', null, ['class'=> 'form-control', 'id'=>'codproduto', 'required'=>'required']) !!}
+    </fieldset>  
+    <fieldset class="form-group">
+      {!! Form::label('codprodutovariacao', 'Variação') !!}
+      {!! Form::select2ProdutoVariacao('codprodutovariacao', null, ['class'=> 'form-control', 'codproduto'=>'codproduto', 'id'=>'codprodutovariacao', 'required'=>'required']) !!}
+    </fieldset>  
+    <fieldset class="form-group">
+      {!! Form::label('codestoquelocal', 'Local') !!}
+      {!! Form::select2EstoqueLocal('codestoquelocal', null, ['class'=> 'form-control', 'id'=>'codestoquelocal', 'required'=>'required']) !!}
+    </fieldset>  
+    <fieldset class="form-group">
+      <div class='row'>
+        <div class='col-md-6'>
+          {!! Form::label('saldoquantidade', 'Saldo') !!}
+          {!! Form::number('saldoquantidade', null, ['class'=> 'form-control text-right', 'disabled', 'id'=>'saldoquantidade', 'step'=>'0.001', 'min'=>'0.001']) !!}        
+        </div>
+        <div class='col-md-6'>
+          {!! Form::label('saldoquantidade', 'Custo') !!}
+          {!! Form::number('customedio', null, ['class'=> 'form-control text-right', 'disabled', 'id'=>'customedio', 'step'=>'0.000001', 'min'=>'0.000001']) !!}        
+        </div>
+      </div>
+    </fieldset>  
+  </div>
+  <div class='col-md-3'>
+    <fieldset class="form-group">
+      {!! Form::label('codprodutodestino', 'Destino') !!}
+      {!! Form::select2Produto('codprodutodestino', null, ['class'=> 'form-control', 'id'=>'codprodutodestino', 'required'=>'required']) !!}
+    </fieldset>  
+    <fieldset class="form-group">
+      {!! Form::label('codprodutovariacaodestino', 'Variação Destino') !!}
+      {!! Form::select2ProdutoVariacao('codprodutovariacaodestino', null, ['class'=> 'form-control', 'codproduto'=>'codprodutodestino', 'id'=>'codprodutovariacaodestino', 'required'=>'required']) !!}
+    </fieldset>  
+    <fieldset class="form-group">
+      {!! Form::label('codestoquelocaldestino', 'Local Destino') !!}
+      {!! Form::select2EstoqueLocal('codestoquelocaldestino', null, ['class'=> 'form-control', 'id'=>'codestoquelocaldestino', 'required'=>'required']) !!}
+    </fieldset>  
+    <fieldset class="form-group">
+      <div class='row'>
+        <div class='col-md-6'>
+          {!! Form::label('saldoquantidadedestino', 'Saldo') !!}
+          {!! Form::number('saldoquantidadedestino', null, ['class'=> 'form-control text-right', 'disabled', 'id'=>'saldoquantidadedestino', 'step'=>'0.001', 'min'=>'0.001']) !!}        
+        </div>
+        <div class='col-md-6'>
+          {!! Form::label('saldoquantidade', 'Custo') !!}
+          {!! Form::number('customediodestino', null, ['class'=> 'form-control text-right', 'disabled', 'id'=>'customediodestino', 'step'=>'0.000001', 'min'=>'0.000001']) !!}        
+        </div>
+      </div>
+    </fieldset>  
+  </div>  
+  
+  <div class='col-md-2'>
+    <fieldset class="form-group">
+      {!! Form::label('entradaquantidade', 'Quantidade Entrada') !!}
+      {!! Form::number('entradaquantidade', null, ['class'=> 'form-control text-right', 'id'=>'entradaquantidade', 'step'=>'0.001', 'min'=>'0.001']) !!}
+    </fieldset>  
+    <fieldset class="form-group">
+      {!! Form::label('entradavalorunitario', 'Custo Entrada') !!}
+      {!! Form::number('entradavalorunitario', null, ['class'=> 'form-control text-right', 'id'=>'entradavalorunitario', 'step'=>'0.000001', 'min'=>'0.000001']) !!}
+    </fieldset>  
+    <fieldset class="form-group">
+      {!! Form::label('entradavalor', 'Total Entrada') !!}
+      {!! Form::number('entradavalor', null, ['class'=> 'form-control text-right', 'id'=>'entradavalor', 'step'=>'0.01', 'min'=>'0.01']) !!}
+    </fieldset>  
+  </div>  
+  
+  <div class='col-md-2'>
+    <fieldset class="form-group">
+      {!! Form::label('saidaquantidade', 'Quantidade Saída') !!}
+      {!! Form::number('saidaquantidade', null, ['class'=> 'form-control text-right', 'id'=>'saidaquantidade', 'step'=>'0.001', 'min'=>'0.001']) !!}
+    </fieldset>  
+    <fieldset class="form-group">
+      {!! Form::label('saidavalorunitario', 'Custo Saída') !!}
+      {!! Form::number('saidavalorunitario', null, ['class'=> 'form-control text-right', 'id'=>'saidavalorunitario', 'step'=>'0.000001', 'min'=>'0.000001']) !!}
+    </fieldset>  
+    <fieldset class="form-group">
+      {!! Form::label('saidavalor', 'Total Saída') !!}
+      {!! Form::number('saidavalor', null, ['class'=> 'form-control text-right', 'id'=>'saidavalor', 'step'=>'0.01', 'min'=>'0.01']) !!}
+    </fieldset>  
+  </div>  
 </div>
 
-<div class="form-group">
-    <label for="codestoquemovimentotipo" class="col-sm-2 control-label">
-        Tipo:
-    </label>
-    <div class="col-md-3">
-        {!! Form::select2EstoqueMovimentoTipo('codestoquemovimentotipo', null, ['class'=> 'form-control', 'manual' => true, 'required'=>'required', 'id'=>'codestoquemovimentotipo', 'onChange' => 'habilitaValores()']) !!}
-    </div>
-</div>
-
-<div class="form-group collapse" id='divOrigem'>
-    <label for="codprodutoorigem" class="col-sm-2 control-label">
-        Origem:
-    </label>
-    <div class="col-md-4">
-        {!! Form::select2Produto('codprodutoorigem', $codprodutoorigem, ['class'=> 'form-control', 'id'=>'codprodutoorigem']) !!}
-    </div>
-    <div class="col-md-2">
-        {!! Form::select2ProdutoVariacao('codprodutovariacaoorigem', $codprodutovariacaoorigem, ['class'=> 'form-control', 'id'=>'codprodutovariacaoorigem', 'codproduto' => 'codprodutoorigem']) !!}
-    </div>
-    <div class="col-md-2">
-        {!! Form::select2EstoqueLocal('codestoquelocalorigem', $codestoquelocalorigem, ['class'=> 'form-control', 'style'=>'width:100%', 'id'=>'codestoquelocalorigem']) !!}
-    </div>
-</div>
-
-<div class="form-group">
-    <label for="entradaquantidade" class="col-sm-2 control-label">
-        Entrada:
-    </label>
-    <div class="col-md-2">
-        {!! Form::number('entradaquantidade', null, ['class'=> 'form-control text-right', 'id'=>'entradaquantidade', 'min' => 0, 'step' => 0.001, 'onChange'=>'calculaTotal("entrada")']) !!}
-    </div>
-    <label for="entradaquantidade" class="col-sm-1 control-label">
-        Unitário:
-    </label>
-    <div class="col-md-2">
-        {!! Form::number('entradaunitario', null, ['class'=> 'form-control text-right', 'id'=>'entradaunitario', 'min' => 0, 'step' => 0.000001, 'onChange'=>'calculaTotal("entrada")']) !!}
-    </div>
-    <label for="entradaquantidade" class="col-sm-1 control-label">
-        Total:
-    </label>
-    <div class="col-md-2">
-        {!! Form::number('entradavalor', null, ['class'=> 'form-control text-right', 'id'=>'entradavalor', 'min' => 0, 'step' => 0.01, 'onChange'=>'calculaUnitario("entrada")']) !!}
-    </div>
-</div>
-
-<div class="form-group">
-    <label for="saidaquantidade" class="col-sm-2 control-label">
-        Saída:
-    </label>
-    <div class="col-md-2">
-        {!! Form::number('saidaquantidade', null, ['class'=> 'form-control text-right', 'min' => 0, 'step' => 0.001, 'id'=>'saidaquantidade', 'onChange'=>'calculaTotal("saida")']) !!}
-    </div>
-    <label for="saidaquantidade" class="col-sm-1 control-label">
-        Saída:
-    </label>
-    <div class="col-md-2">
-        {!! Form::number('saidaunitario', null, ['class'=> 'form-control text-right', 'id'=>'saidaunitario', 'min' => 0, 'step' => 0.000001, 'onChange'=>'calculaTotal("saida")']) !!}
-    </div>
-    <label for="saidaquantidade" class="col-sm-1 control-label">
-        Total:
-    </label>
-    <div class="col-md-2">
-        {!! Form::number('saidavalor', null, ['class'=> 'form-control text-right', 'id'=>'saidavalor', 'min' => 0, 'step' => 0.01, 'onChange'=>'calculaUnitario("saida")']) !!}
-    </div>    
-    
-</div>
-
-
-
-
-<div class="form-group">
-    <label for="observacoes" class="col-sm-2 control-label">
-        Observações:
-    </label>
-    <div class="col-md-8">
-        {!! Form::textarea('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes']) !!}
-    </div>
-</div>
-
-
-<div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-        {!! Form::submit('Salvar', array('class' => 'btn btn-primary', 'id'=>'Submit')) !!}
-        <a href='{{url("estoque-mes/{$model->codestoquemes}")}}' class='btn btn-danger'>
-            Cancelar
-        </a>
-    </div>
-</div>
+<fieldset class="form-group">
+    {!! Form::label('observacoes', 'Observacoes') !!}
+    {!! Form::textarea('observacoes', null, ['class'=> 'form-control', 'rows' => 3, 'id'=>'observacoes', 'maxlength'=>'200']) !!}
+</fieldset>
+<fieldset class="form-group">
+   {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
+</fieldset>
 
 @section('inscript')
+<script src="{{ URL::asset('public/assets/js/setcase.js') }}"></script>
+<script src="{{ URL::asset('public/assets/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js') }}"></script>
 <script type="text/javascript">
-
+<?php
+use MGLara\Models\EstoqueMovimentoTipo;
+$tipos = EstoqueMovimentoTipo::select('codestoquemovimentotipo')->where('manual', true)->where('preco', 1)->get();
+$tipoPrecoInformado = [];
+foreach ($tipos as $tipo) {
+    $tipoPrecoInformado[] = $tipo->codestoquemovimentotipo;
+}
+?>
 function habilitaValores()
 {
     var tipoPrecoInformado = {{ json_encode($tipoPrecoInformado) }};
-    var tipoOrigem = {{ json_encode($tipoOrigem) }};
     var codestoquemovimentotipo = parseInt($('#codestoquemovimentotipo').val());
-
-    if ($.inArray(codestoquemovimentotipo, tipoPrecoInformado) >= 0) {
-        $("#entradaunitario").removeAttr('disabled');
-        $("#saidaunitario").removeAttr('disabled');
+    
+    if ($('#transferencia').val() == 1) {
+        $("#entradaquantidade").prop('disabled', true);
+        $("#entradavalorunitario").prop('disabled', true);
+        $("#saidavalorunitario").prop('disabled', true);
+        $("#entradavalor").prop('disabled', true);
+        $("#saidavalor").prop('disabled', true);
+    } else if ($.inArray(codestoquemovimentotipo, tipoPrecoInformado) >= 0) {
+        $("#entradaquantidade").removeAttr('disabled');
+        $("#entradavalorunitario").removeAttr('disabled');
+        $("#saidavalorunitario").removeAttr('disabled');
         $("#entradavalor").removeAttr('disabled');
         $("#saidavalor").removeAttr('disabled');
     } else {
-        $("#entradaunitario").prop('disabled', true);
-        $("#saidaunitario").prop('disabled', true);
+        $("#entradaquantidade").removeAttr('disabled');
+        $("#entradavalorunitario").prop('disabled', true);
+        $("#saidavalorunitario").prop('disabled', true);
         $("#entradavalor").prop('disabled', true);
         $("#saidavalor").prop('disabled', true);
-    }
-    
-    if ($.inArray(codestoquemovimentotipo, tipoOrigem) >= 0) {
-        $("#codestoquelocalorigem").removeAttr('disabled');
-        $("#codprodutoorigem").removeAttr('disabled');
-        $("#codprodutovariacaoorigem").removeAttr('disabled');
-        $('#divOrigem').collapse('show');
-        $("#saidaquantidade").prop('disabled', true);
-        $("#saidaunitario").prop('disabled', true);
-        $("#saidavalor").prop('disabled', true);
-    } else {
-        $("#codestoquelocalorigem").prop('disabled', true);
-        $("#codprodutoorigem").prop('disabled', true);
-        $("#codprodutovariacaoorigem").prop('disabled', true);
-        $('#divOrigem').collapse('hide');
-        $("#saidaquantidade").removeAttr('disabled');
-        $("#saidaunitario").removeAttr('disabled');
-        $("#saidavalor").removeAttr('disabled');
     }
     
 }
 
 function calculaUnitario(campo) 
 {
-    
     var qtd = $('#' + campo + 'quantidade').val();
-    
     var tot = $('#' + campo + 'valor').val();
-    
+    var unitario = tot;
     if (qtd > 0) {
-        $('#' + campo + 'unitario').val(Math.round((tot/qtd)*1000000)/1000000);
+        unitario = Math.round((tot/qtd)*1000000)/1000000;
     }
-    
+    $('#' + campo + 'valorunitario').val(unitario);
 }    
 
 function calculaTotal(campo) 
 {
-    
     var qtd = $('#' + campo + 'quantidade').val();
-    
     if (qtd == '') {
         qtd = 1;
     }
-        
-    var un = $('#' + campo + 'unitario').val();
-
+    var un = $('#' + campo + 'valorunitario').val();
     var total = Math.round(qtd * un * 100) / 100;
-    
     if (un == '') {
         $('#' + campo + 'valor').val(null);
     } else {
         $('#' + campo + 'valor').val(total);
     }
-    
-}    
+}   
 
+function habilitaTipo()
+{
+    if ($('#transferencia').val() == 1) {
+        $("#codestoquemovimentotipo").prop('disabled', true);
+        $("#codprodutodestino").removeAttr('disabled');
+        $("#codprodutovariacaodestino").removeAttr('disabled');
+        $("#codestoquelocaldestino").removeAttr('disabled');
+    } else {
+        $("#codestoquemovimentotipo").removeAttr('disabled');
+        $("#codprodutodestino").prop('disabled', true);
+        $("#codprodutovariacaodestino").prop('disabled', true);
+        $("#codestoquelocaldestino").prop('disabled', true);
+    }
+    
+    habilitaValores();
+}
+
+    
 $(document).ready(function() {
+    
     calculaUnitario('entrada');
     calculaUnitario('saida');
     habilitaValores();
+    habilitaTipo();
     
-    $('#form-estoque-movimento').on("submit", function(e) {
-        var currentForm = this;
+    $('#form-principal').on("submit", function(e) {
         e.preventDefault();
-        bootbox.confirm("Tem certeza que deseja salvar?", function(result) {
-            if (result) {
-                currentForm.submit();
-            }
+        var currentForm = this;
+        swal({
+          title: "Tem certeza que deseja salvar?",
+          type: "warning",
+          showCancelButton: true,
+          closeOnConfirm: false,
+          closeOnCancel: true
+        },
+        function(isConfirm){
+          if (isConfirm) {
+            currentForm.submit();
+          }
         });
     });
     
-});
-</script>
-@endsection
-
-<?php
-
-/*
-use MGLara\Models\EstoqueLocal;
-use MGLara\Models\EstoqueMovimentoTipo;
-
-$el = EstoqueLocal::lists('estoquelocal', 'codestoquelocal')->all();
-$tipos = [''=>''] + EstoqueMovimentoTipo::lists('descricao', 'codestoquemovimentotipo')->all();
-$options = EstoqueMovimentoTipo::all();
-
-$disabled = 0;
-if(isset($model->EstoqueMovimentoTipo)) {
-    if($model->EstoqueMovimentoTipo->preco == 1) {
-        $disabled = 1;
-    } elseif ($model->EstoqueMovimentoTipo->preco == 2) {
-        $disabled = 2;
-    } elseif ($model->EstoqueMovimentoTipo->preco == 3) {
-        $disabled = 3;
-    }
-}
-?>
-
-
-
-
-<?php 
-$items = [];
-foreach ($options as $option)
-{
-    $items[$option['codestoquemovimentotipo']] = $option['preco'];
-    $items[$option['codestoquemovimentotipo'].'origem'] = $option['codestoquemovimentotipoorigem'];
-}
-if(isset($model)) {
-    //$datainicial = $model->data;
-    if (!empty($model->codestoquemovimentoorigem)) {
-        $estoquelocal = $model->EstoqueMovimentoOrigem->EstoqueMes->EstoqueSaldo->EstoqueLocalProdutoVariacao->EstoqueLocal->codestoquelocal;
-        $produto = $model->EstoqueMovimentoOrigem->EstoqueMes->EstoqueSaldo->EstoqueLocalProdutoVariacao->Produto->codproduto;
-    } else {
-        $estoquelocal = $model->EstoqueMes->EstoqueSaldo->EstoqueLocalProdutoVariacao->EstoqueLocal->codestoquelocal;
-        $produto = $model->EstoqueMes->EstoqueSaldo->EstoqueLocalProdutoVariacao->Produto->codproduto;
-    }
-} else {
-    //$datainicial = $model->EstoqueMes->mes->year.'-'.$model->EstoqueMes->mes->month.'-'. date("t", mktime(0,0,0,$model->EstoqueMes->mes->month,'01',$model->EstoqueMes->mes->year));
-    $estoquelocal = $model->EstoqueMes->EstoqueSaldo->EstoqueLocalProdutoVariacao->EstoqueLocal->codestoquelocal;
-    $produto = $model->EstoqueMes->EstoqueSaldo->EstoqueLocalProdutoVariacao->Produto->codproduto;
-}
-?>
-@section('inscript')
-<style type="text/css">
-    #saldoEstoqueLocal {
-        position: relative;
-    }
-    #popoversaldos {
-        top: 0px; 
-        left: 420px; 
-        display: block;
-        min-width: 300px;
-    }
-    #saldoEstoqueLocalContent strong {
-        float: left;
-        margin-right: 5px;
-        text-align: right;
-        width: 105px;
-    }    
-</style>
-<script type="text/javascript">
-$(document).ready(function() {
-    
-    $('#estoqueMovimento').on("submit", function(e){
-        var currentForm = this;
-        e.preventDefault();
-        bootbox.confirm("Tem certeza que deseja salvar?", function(result) {
-            if (result) {
-                currentForm.submit();
-            }
-        });
-    });    
-
-    var tipos = <?php echo json_encode($items)?>;
-    $('#codestoquemovimentotipo').select2({
-        allowClear: true,
-        width: 'resolve'        
-    })<?php echo (isset($model->codestoquemovimentotipo) ? ".select2('val', $model->codestoquemovimentotipo);" : ';');?>
-    
-    $('#data').datetimepicker({
-        locale: 'pt-br',
-        format: 'DD/MM/YYYY HH:mm:ss'
+    $('#transferencia').change(function() {
+        habilitaTipo();
     });
-    $("#data").val("<?php echo formataData($model->data, 'L');?>").change();
-    
-    $('#codestoquelocal').select2({
-        allowClear: true,
-        width: 'resolve'        
-    })<?php echo (isset($estoquelocal) ? ".select2('val', $estoquelocal);" : ';');?>
-    
-
-    $('#saidavalor, #entradavalor').autoNumeric('init', {aSep:'.', aDec:',', altDec:'.', mDec:2 });
-    $('#saidaquantidade, #entradaquantidade, .saldoquantidade').autoNumeric('init', {aSep:'.', aDec:',', altDec:'.', mDec:3 });
     
     
-    <?php if ($disabled > 1) :?>
-        $('#entradavalor, #saidavalor').prop("disabled", true);
-    <?php endif;?>
-     
     $('#codestoquemovimentotipo').change(function() {
-        if(tipos[$('#codestoquemovimentotipo').val()] == 1) {
-            $('#entradavalor, #saidavalor').prop("disabled", false);
-        } else {
-            $('#entradavalor, #saidavalor').prop("disabled", true);
-        }
-        
-        if(tipos[$('#codestoquemovimentotipo').val()+'origem'] == null) {
-            
-            $("#divOrigem").fadeOut("slow", function() {
-                $(this).addClass("hide");
-            });            
-        } else {
-            $("#divOrigem").fadeIn("slow", function() {
-                $(this).removeClass("hide");
-            });              
-        }
+        habilitaValores();
     });
     
-    if($('#codestoquemovimentotipo').val()) {
-        if(tipos[$('#codestoquemovimentotipo').val()+'origem'] == null) {
-            
-            $("#divOrigem").fadeOut("slow", function() {
-                $(this).addClass("hide");
-            });            
-        } else {
-            $("#divOrigem").fadeIn("slow", function() {
-                $(this).removeClass("hide");
-            });              
+    $('#entradaquantidade').change(function() {
+        if ($('#entradavalorunitario').val() == '' && $('#entradaquantidade').val() != '') {
+            $('#entradavalorunitario').val($('#customedio').val());
         }
-    }
-
-    $('#codproduto').select2({
-        minimumInputLength: 3,
-        allowClear: true,
-        closeOnSelect: true,
-        placeholder: 'Produto',
-        formatResult:function(item) {
-            var markup = "<div class='row'>";
-            markup    += "<small class='text-muted col-md-2'> <small>#" + item.barras + "<br>" + item.id + "</small></small>";
-            markup    += "<div class='col-md-8'>" + item.produto + "<small class='muted text-right pull-right'></small></div>";
-            markup    += "<div><div class='col-md-8 text-right pull-right'><small class='span1 text-muted'></small>" + item.preco + "";
-            markup    += "</div></div>";
-            markup    += "</div>";
-            return markup;
-        },
-        formatSelection:function(item) { 
-            return item.produto + " - " + item.preco; 
-        },
-        ajax: {
-            url: baseUrl+'/produto/listagem-json',
-            dataType: 'json',
-            quietMillis: 500,
-            data: function(term, current_page) { 
-                return {
-                    q: term, 
-                    per_page: 10, 
-                    current_page: current_page
-                }; 
-            },
-            results:function(data,page) {
-                //var more = (current_page * 20) < data.total;
-                return {
-                    results: data, 
-                    //more: data.mais
-                };
-            }
-        },
-        initSelection: function (element, callback) {
-            $.ajax({
-                type: "GET",
-                url: baseUrl+'/produto/listagem-json',
-                data: "id=<?php echo $produto;?>",
-                dataType: "json",
-                success: function(result) { 
-                    callback(result[0]); 
-                }
-            });
-        },
-        width:'resolve'
-    })<?php echo (isset($produto) ? ".select2('val', $produto);" : ';');?>
-
-    if($('#codestoquelocal').val()) {
-        $("#saldoEstoqueLocalContent").empty();
-        var codproduto = $('#codproduto').val();
-        var codestoquelocal = $('#codestoquelocal').val();
-        var fiscal = <?php echo $model->EstoqueMes->EstoqueSaldo->fiscal; ?>;
-        estoqueSaldo(codproduto, codestoquelocal, fiscal);
-    }
-    
-    $('#codestoquelocal').change(function() {
-        $("#saldoEstoqueLocalContent").empty();
-        var codproduto = $('#codproduto').val();
-        var codestoquelocal = $('#codestoquelocal').val();
-        var fiscal = <?php echo $model->EstoqueMes->EstoqueSaldo->fiscal; ?>;
-        estoqueSaldo(codproduto, codestoquelocal, fiscal);
+        calculaTotal('entrada');
+    });
+    $('#entradavalorunitario').change(function() {
+        calculaTotal('entrada');
+    });
+    $('#entradavalor').change(function() {
+        calculaUnitario('entrada');
     });
     
-    function estoqueSaldo(codproduto, codestoquelocal, fiscal) {
-        $.getJSON(baseUrl + '/produto/estoque-saldo?codproduto='+codproduto+'&codestoquelocal='+codestoquelocal+'&fiscal='+fiscal)
-            .done(function(data) {
-                $('#saldoEstoqueLocal').removeClass('hide');
-                if(data.length > 0){
-                    $.each(data, function(k, v) {
-                        $('#saldoEstoqueLocalContent').prepend('<p><strong>Quantidade:</strong> <span class="saldoquantidade">' + v.saldoquantidade + '</span></p>' +
-                            '<p><strong>Valor:</strong> <span class="saldovalor">' + v.saldovalor +'</span></p>' +
-                            '<p><strong>Custo médio:</strong> <span class="customedio">' + v.customedio +'</span></p>');
-                    });
-                    $('.saldoquantidade').autoNumeric('init', {aSep:'.', aDec:',', altDec:'.', mDec:3 });
-                    $('.customedio').autoNumeric('init', {aSep:'.', aDec:',', altDec:'.', mDec:6 });
-                    $('.saldovalor').autoNumeric('init', {aSep:'.', aDec:',', altDec:'.', mDec:2 });
-                } else {
-                    $('#saldoEstoqueLocalContent').prepend('<p>Sem saldo</p>');
-                }
-            }).fail(function(error ) {
-                return console.log(error)
-            });    
-        return false;    
-    }
+    $('#saidaquantidade').change(function() {
+        if ($('#saidavalorunitario').val() == '' && $('#saidaquantidade').val() != '') {
+            $('#saidavalorunitario').val($('#customedio').val());
+        }
+        calculaTotal('saida');
+    });
+    $('#saidavalorunitario').change(function() {
+        calculaTotal('saida');
+    });
+    $('#saidavalor').change(function() {
+        calculaUnitario('saida');
+    });
+    
+    
+    $("#observacoes").maxlength({alwaysShow: true});
 });
-
 </script>
 @endsection
- * 
- */
