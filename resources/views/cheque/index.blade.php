@@ -6,139 +6,68 @@
     <h4 class="card-header">Pesquisa</h4>
     <div class="card-block">
         <div class="card-text">
-            {!! Form::model($filtro, ['id' => 'form-search', 'autocomplete' => 'on'])!!}
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <label for="codcheque" class="control-label">#</label>
-                        {!! Form::number('codcheque', null, ['class'=> 'form-control', 'id'=>'codcheque', 'step'=>1, 'min'=>1]) !!}
+            {!! Form::model($filtro['filtros'], ['id' => 'form-search', 'autocomplete' => 'on'])!!}
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label class="control-label">#</label>
+                            {!! Form::number('codcheque', null, ['class' => 'form-control text-right', 'placeholder' => '#', 'step'=>1, 'min'=>1, 'id' => 'codcheque']) !!}
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label class="control-label">Banco</label>
+                            {!! Form::select2Banco('codbanco', null, ['class'=> 'form-control', 'id' => 'codbanco']) !!}
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label class="control-label">Agência</label>
+                            {!! Form::number('agencia', null, ['class' => 'form-control', 'step' => 1, 'placeholder' => '', 'id' => 'agencia']) !!}
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label class="control-label">Número</label>
+                            {!! Form::number('numero', null, ['class' => 'form-control', 'step' => 1, 'placeholder' => '', 'id' => 'numero']) !!}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label class="control-label">Pessoa</label>
+                            {!! Form::select2Pessoa('codpessoa', null, ['class' => 'form-control', 'placeholder' => 'Pessoa']) !!}
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label class="control-label">Emitente</label>
+                            {!! Form::text('emitente', null, ['class' => 'form-control', 'placeholder' => 'Emitente', 'id' => 'emitente']) !!}
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label class="control-label">Valor de</label>
+                            {!! Form::number('valor_de', null, ['class' => 'form-control', 'step' => 1, 'placeholder' => '', 'id' => 'valor_de']) !!}
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label class="control-label">Valor até</label>
+                            {!! Form::number('valor_ate', null, ['class' => 'form-control', 'step' => 1, 'placeholder' => '', 'id' => 'valor_ate']) !!}
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="codcheque" class="control-label">Cheque</label>
-                        {!! Form::text('codcheque', null, ['class'=> 'form-control', 'id'=>'codcheque']) !!}
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label class="control-label">Status</label>
+                            {!! Form::select2('indstatus',  $status, ['class'=> 'form-control', 'id'=>'indstatus']) !!}
+                       </div>
+                        <div class="form-group col-md-12">
+                            <label class="control-label">Vencimento De</label>
+                            {!! Form::date('vencimento_de', null, ['class'=> 'form-control', 'id' => 'vencimento_de']) !!}
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label class="control-label">Até</label>
+                            {!! Form::date('vencimento_ate', null, ['class'=> 'form-control', 'id' => 'vencimento_ate']) !!}
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="inativo" class="control-label">Ativos</label>
+                            {!! Form::select2Inativo('inativo', null, ['class'=> 'form-control', 'id'=>'inativo']) !!}
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="cmc7" class="control-label">Cmc7</label>
-                        {!! Form::text('cmc7', null, ['class'=> 'form-control', 'id'=>'cmc7']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codbanco" class="control-label">Codbanco</label>
-                        {!! Form::text('codbanco', null, ['class'=> 'form-control', 'id'=>'codbanco']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="agencia" class="control-label">Agencia</label>
-                        {!! Form::text('agencia', null, ['class'=> 'form-control', 'id'=>'agencia']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="contacorrente" class="control-label">Contacorrente</label>
-                        {!! Form::text('contacorrente', null, ['class'=> 'form-control', 'id'=>'contacorrente']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="emitente" class="control-label">Emitente</label>
-                        {!! Form::text('emitente', null, ['class'=> 'form-control', 'id'=>'emitente']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="numero" class="control-label">Numero</label>
-                        {!! Form::text('numero', null, ['class'=> 'form-control', 'id'=>'numero']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="emissao" class="control-label">Emissao</label>
-                        {!! Form::text('emissao', null, ['class'=> 'form-control', 'id'=>'emissao']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="vencimento" class="control-label">Vencimento</label>
-                        {!! Form::text('vencimento', null, ['class'=> 'form-control', 'id'=>'vencimento']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="repasse" class="control-label">Repasse</label>
-                        {!! Form::text('repasse', null, ['class'=> 'form-control', 'id'=>'repasse']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="destino" class="control-label">Destino</label>
-                        {!! Form::text('destino', null, ['class'=> 'form-control', 'id'=>'destino']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="devolucao" class="control-label">Devolucao</label>
-                        {!! Form::text('devolucao', null, ['class'=> 'form-control', 'id'=>'devolucao']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="motivodevolucao" class="control-label">Motivodevolucao</label>
-                        {!! Form::text('motivodevolucao', null, ['class'=> 'form-control', 'id'=>'motivodevolucao']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="observacao" class="control-label">Observacao</label>
-                        {!! Form::text('observacao', null, ['class'=> 'form-control', 'id'=>'observacao']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="lancamento" class="control-label">Lancamento</label>
-                        {!! Form::text('lancamento', null, ['class'=> 'form-control', 'id'=>'lancamento']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="cancelamento" class="control-label">Cancelamento</label>
-                        {!! Form::text('cancelamento', null, ['class'=> 'form-control', 'id'=>'cancelamento']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="valor" class="control-label">Valor</label>
-                        {!! Form::text('valor', null, ['class'=> 'form-control', 'id'=>'valor']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codpessoa" class="control-label">Codpessoa</label>
-                        {!! Form::text('codpessoa', null, ['class'=> 'form-control', 'id'=>'codpessoa']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="indstatus" class="control-label">Indstatus</label>
-                        {!! Form::text('indstatus', null, ['class'=> 'form-control', 'id'=>'indstatus']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codtitulo" class="control-label">Codtitulo</label>
-                        {!! Form::text('codtitulo', null, ['class'=> 'form-control', 'id'=>'codtitulo']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="inativo" class="control-label">Ativos</label>
-                        {!! Form::select2Inativo('inativo', null, ['class'=> 'form-control', 'id'=>'inativo']) !!}
-                    </div>
-                </div>
+            
                 <div class="clearfix"></div>
             {!! Form::close() !!}
             <div class='clearfix'></div>
@@ -149,7 +78,7 @@
 
 <div class='card'>
     <div class='card-block table-responsive'>
-        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Cheque', 'Banco', 'Agencia', 'Conta Corrente', 'Numero', 'Pessoa',  'Emitente(s)', 'Valor', 'Emissão', 'Vencimento', 'Status' ]])
+        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Banco', 'Agencia', 'Contacorrente', 'Numero', 'Pessoa', 'Emitentes', 'Valor', 'Data Emissão', 'Data Vencimento', 'Status' ]])
         <div class='clearfix'></div>
     </div>
 </div>
@@ -164,11 +93,86 @@
 
     @include('layouts.includes.datatable.assets')
 
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('cheque/datatable'), 'order' => 3, 'order_dir' => 'ASC', 'filtros' => ['codcheque', 'codcheque', 'inativo', 'cmc7', 'codbanco', 'agencia', 'contacorrente', 'emitente', 'numero', 'emissao', 'vencimento', 'repasse', 'destino', 'devolucao', 'motivodevolucao', 'observacao', 'lancamento', 'cancelamento', 'valor', 'codpessoa', 'indstatus', 'codtitulo', ] ])
+    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('cheque/datatable'), 'order' => $filtro['order'], 'filtros' => ['codcheque', 'inativo', 'codbanco', 'agencia', 'contacorrente', 'emitente', 'numero', 'valor_de', 'valor_ate', 'vencimento_de', 'vencimento_ate', 'indstatus'] ])
 
     <script type="text/javascript">
         $(document).ready(function () {
+            //----- Valor
+            var valor_de = $('input[name=valor_de]').val();
+            if(valor_de.length > 0 ){
+                $('input[name=valor_ate]').attr('min', valor_de);
+            }
+
+            var valor_ate = $('input[name=valor_ate]').val();
+            if(valor_de.length > 0 ){
+                $('input[name=valor_de]').attr('min', valor_ate);
+            }
+
+            $('input[name=valor_de]').on('change', function(e) {
+                e.preventDefault();
+                setValorMin();
+            }).blur(function () {
+                setValorMin();
+            });
+
+            $('input[name=valor_ate]').on('change', function(e) {
+                e.preventDefault();
+                setValorMax();
+            }).blur(function () {
+                setValorMax();
+            });
+
+            //----- Data
+
+            var vencimento_de = $('input[name=vencimento_de]').val();
+            if(vencimento_de.length > 0 ){
+                $('input[name=vencimento_ate]').attr('min', vencimento_de);
+            }
+            $('input[name=vencimento_de]').on('change', function(e) {
+                e.preventDefault();
+                var valor = $(this).val();
+                if(valor.length === 0 ) {
+                    $('input[name=vencimento_ate]').empty();
+                    $('input[name=vencimento_ate]').attr('min', '');
+                } else {
+                    $('input[name=vencimento_ate]').attr('min', valor);
+                }
+
+            });
+
+            var vencimento_ate = $('input[name=vencimento_ate]').val();
+            if(vencimento_ate.length > 0){
+                $('input[name=vencimento_de]').attr('max', vencimento_ate);
+            }
+            $('input[name=vencimento_ate]').on('change', function(e) {
+                e.preventDefault();
+                var valor = $(this).val();
+                if(valor.length === 0 ) {
+                    $('input[name=vencimento_de]').empty();
+                    $('input[name=vencimento_de]').attr('max', '');
+                } else {
+                    $('input[name=vencimento_de]').attr('max', valor);
+                }
+            });
         });
+
+        function setValorMin() {
+            var valor = $('input[name=valor_de]').val();
+            if(valor.length === 0 ) {
+                $('input[name=valor_ate]').empty();
+                $('input[name=valor_ate]').attr('min', '');
+            } else {
+                $('input[name=valor_ate]').attr('min', valor);
+            }
+        };
+
+        function setValorMax() {
+            var valor_de = $('input[name=valor_de]').val();
+            var preco_ate = $('input[name=valor_ate]').val();
+            if(valor_de.length === 0 ) {
+                $('input[name=valor_de]').attr('max', preco_ate);
+            }
+        };
     </script>
 
 @endsection

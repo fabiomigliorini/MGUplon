@@ -14,8 +14,8 @@ namespace MGLara\Models;
  * @property  date                           $compensacao                        
  *
  * Chaves Estrangeiras
- * @property  Cheque                         $Cheque                        
- * @property  ChequeRepasse                  $ChequeRepasse                 
+ * @property  Cheque                         $Cheque
+ * @property  ChequeRepasse                  $ChequeRepasse
  * @property  Usuario                        $UsuarioCriacao
  * @property  Usuario                        $UsuarioAlteracao
  *
@@ -28,9 +28,9 @@ class ChequeRepasseCheque extends MGModel
     protected $table = 'tblchequerepassecheque';
     protected $primaryKey = 'codchequerepassecheque';
     protected $fillable = [
-        'codcheque',
-        'codchequerepasse',
-        'compensacao',
+          'codcheque',
+         'codchequerepasse',
+             'compensacao',
     ];
     protected $dates = [
         'criacao',
@@ -45,9 +45,9 @@ class ChequeRepasseCheque extends MGModel
         return $this->belongsTo(Cheque::class, 'codcheque', 'codcheque');
     }
 
-    public function Chequerepasse()
+    public function ChequeRepasse()
     {
-        return $this->belongsTo(Chequerepasse::class, 'codchequerepasse', 'codchequerepasse');
+        return $this->belongsTo(ChequeRepasse::class, 'codchequerepasse', 'codchequerepasse');
     }
 
     public function UsuarioCriacao()

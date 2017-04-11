@@ -1,7 +1,7 @@
 <?php
 
 namespace MGLara\Models;
-use MGLara\Models\Banco;
+
 /**
  * Campos
  * @property  bigint                         $codcheque                          NOT NULL DEFAULT nextval('tblcheque_codcheque_seq'::regclass)
@@ -28,13 +28,14 @@ use MGLara\Models\Banco;
  * @property  bigint                         $codpessoa                          NOT NULL
  * @property  smallint                       $indstatus                          NOT NULL DEFAULT 1
  * @property  bigint                         $codtitulo                          
+ * @property  timestamp                      $inativo                            
  *
  * Chaves Estrangeiras
+ * @property  Pessoa                         $Pessoa
+ * @property  Titulo                         $Titulo
  * @property  Banco                          $Banco
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Usuario                        $UsuarioCriacao
- * @property  Pessoa                         $Pessoa
- * @property  Titulo                         $Titulo
  *
  * Tabelas Filhas
  * @property  ChequeRepasseCheque[]          $ChequeRepasseChequeS
@@ -44,29 +45,6 @@ use MGLara\Models\Banco;
 
 class Cheque extends MGModel
 {
-
-    const INDSTATUS_AREPASSAR = 1;
-    const INDSTATUS_REPASSADO = 2;
-    const INDSTATUS_DEVOLVIDO = 3;
-    const INDSTATUS_EMCOBRANCA = 4;
-    const INDSTATUS_LIQUIDADO = 5;
-
-    public static $indstatus_descricao = [
-        self::INDSTATUS_AREPASSAR => 'À Repassar',
-        self::INDSTATUS_REPASSADO => 'Repassado',
-        self::INDSTATUS_DEVOLVIDO => 'Devolvido',
-        self::INDSTATUS_EMCOBRANCA => 'Em Cobranca',
-        self::INDSTATUS_LIQUIDADO => 'Liquidado'
-    ];
-
-    public static $indstatus_class = [
-        self::INDSTATUS_AREPASSAR => 'label-primary',
-        self::INDSTATUS_REPASSADO => 'label-warning',
-        self::INDSTATUS_DEVOLVIDO => 'label-danger',
-        self::INDSTATUS_EMCOBRANCA => 'label-danger',
-        self::INDSTATUS_LIQUIDADO => 'label-success'
-    ];
-
     protected $table = 'tblcheque';
     protected $primaryKey = 'codcheque';
     protected $fillable = [
@@ -78,11 +56,18 @@ class Cheque extends MGModel
          'numero',
          'emissao',
          'vencimento',
+         'repasse',
+         'destino',
+         'devolucao',
+         'motivodevolucao',
          'observacao',
+         'lancamento',
+          'cancelamento',
          'valor',
-         'codpessoa',
-         'indstatus'
-    ];
+            'codpessoa',
+         'indstatus',
+         'codtitulo',
+     ];
     protected $dates = [
         'emissao',
         'vencimento',
@@ -92,10 +77,21 @@ class Cheque extends MGModel
         'alteracao',
         'cancelamento',
         'criacao',
+        'inativo',
     ];
 
 
     // Chaves Estrangeiras
+    public function Pessoa()
+    {
+        return $this->belongsTo(Pessoa::class, 'codpessoa', 'codpessoa');
+    }
+
+    public function Titulo()
+    {
+        return $this->belongsTo(Titulo::class, 'codtitulo', 'codtitulo');
+    }
+
     public function Banco()
     {
         return $this->belongsTo(Banco::class, 'codbanco', 'codbanco');
@@ -109,16 +105,6 @@ class Cheque extends MGModel
     public function UsuarioCriacao()
     {
         return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
-    }
-
-    public function Pessoa()
-    {
-        return $this->belongsTo(Pessoa::class, 'codpessoa', 'codpessoa');
-    }
-
-    public function Titulo()
-    {
-        return $this->belongsTo(Titulo::class, 'codtitulo', 'codtitulo');
     }
 
 

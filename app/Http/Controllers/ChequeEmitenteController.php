@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
 
-use MGLara\Repositories\ChequeMotivoDevolucaoRepository;
+use MGLara\Repositories\ChequeEmitenteRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
@@ -16,15 +16,15 @@ use MGLara\Library\JsonEnvelope\Datatable;
 use Carbon\Carbon;
 
 /**
- * @property  ChequeMotivoDevolucaoRepository $repository 
+ * @property  ChequeEmitenteRepository $repository 
  */
-class ChequeMotivoDevolucaoController extends Controller
+class ChequeEmitenteController extends Controller
 {
 
-    public function __construct(ChequeMotivoDevolucaoRepository $repository) {
+    public function __construct(ChequeEmitenteRepository $repository) {
         $this->repository = $repository;
-        $this->bc = new Breadcrumb('Motivo de Devolução de Cheques');
-        $this->bc->addItem('Motivo de Devolução de Cheques', url('cheque-motivo-devolucao'));
+        $this->bc = new Breadcrumb('Cheque Emitente');
+        $this->bc->addItem('Cheque Emitente', url('cheque-emitente'));
     }
     
     /**
@@ -55,7 +55,7 @@ class ChequeMotivoDevolucaoController extends Controller
         
         
         // retorna View
-        return view('cheque-motivo-devolucao.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
+        return view('cheque-emitente.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
     }
 
     /**
@@ -76,11 +76,13 @@ class ChequeMotivoDevolucaoController extends Controller
         ]);
         
         // Ordenacao
-        $columns[0] = 'codchequemotivodevolucao';
+        $columns[0] = 'codchequeemitente';
         $columns[1] = 'inativo';
-        $columns[2] = 'codchequemotivodevolucao';
-        $columns[3] = 'numero';
-        $columns[4] = 'chequemotivodevolucao';
+        $columns[2] = 'codchequeemitente';
+        $columns[3] = 'codchequeemitente';
+        $columns[4] = 'codcheque';
+        $columns[5] = 'cnpj';
+        $columns[6] = 'emitente';
 
         $sort = [];
         if (!empty($request['order'])) {
@@ -101,13 +103,15 @@ class ChequeMotivoDevolucaoController extends Controller
         
         // Formata registros para exibir no data table
         $data = [];
-        foreach ($regs['data'] as $reg){
+        foreach ($regs['data'] as $reg) {
             $data[] = [
-                url('cheque-motivo-devolucao', $reg->codchequemotivodevolucao),
+                url('cheque-emitente', $reg->codchequeemitente),
                 formataData($reg->inativo, 'C'),
-                formataCodigo($reg->codchequemotivodevolucao),
-                $reg->numero,
-                $reg->chequemotivodevolucao,
+                formataCodigo($reg->codchequeemitente),
+                $reg->codchequeemitente,
+                $reg->codcheque,
+                $reg->cnpj,
+                $reg->emitente,
             ];
         }
         
@@ -137,7 +141,7 @@ class ChequeMotivoDevolucaoController extends Controller
         $this->bc->addItem('Novo');
         
         // retorna view
-        return view('cheque-motivo-devolucao.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('cheque-emitente.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -151,10 +155,10 @@ class ChequeMotivoDevolucaoController extends Controller
         parent::store($request);
         
         // Mensagem de registro criado
-        Session::flash('flash_create', 'Motivo de Devolução de Cheques criado!');
+        Session::flash('flash_create', 'Cheque Emitente criado!');
         
         // redireciona para o view
-        return redirect("cheque-motivo-devolucao/{$this->repository->model->codchequemotivodevolucao}");
+        return redirect("cheque-emitente/{$this->repository->model->codchequeemitente}");
     }
 
     /**
@@ -172,11 +176,11 @@ class ChequeMotivoDevolucaoController extends Controller
         $this->repository->authorize('view');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->numero);
-        $this->bc->header = $this->repository->model->numero;
+        $this->bc->addItem($this->repository->model->codchequeemitente);
+        $this->bc->header = $this->repository->model->codchequeemitente;
         
         // retorna show
-        return view('cheque-motivo-devolucao.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('cheque-emitente.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -194,12 +198,12 @@ class ChequeMotivoDevolucaoController extends Controller
         $this->repository->authorize('update');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->numero, url('cheque-motivo-devolucao', $this->repository->model->codchequemotivodevolucao));
-        $this->bc->header = $this->repository->model->numero;
+        $this->bc->addItem($this->repository->model->codchequeemitente, url('cheque-emitente', $this->repository->model->codchequeemitente));
+        $this->bc->header = $this->repository->model->codchequeemitente;
         $this->bc->addItem('Alterar');
         
         // retorna formulario edit
-        return view('cheque-motivo-devolucao.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('cheque-emitente.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -215,10 +219,10 @@ class ChequeMotivoDevolucaoController extends Controller
         parent::update($request, $id);
         
         // mensagem re registro criado
-        Session::flash('flash_update', 'Motivo de Devolução de Cheques alterado!');
+        Session::flash('flash_update', 'Cheque Emitente alterado!');
         
         // redireciona para view
-        return redirect("cheque-motivo-devolucao/{$this->repository->model->codchequemotivodevolucao}"); 
+        return redirect("cheque-emitente/{$this->repository->model->codchequeemitente}"); 
     }
     
 }

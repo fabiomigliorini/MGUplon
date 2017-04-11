@@ -8,11 +8,11 @@ namespace MGLara\Models;
  * @property  bigint                         $codportador                        NOT NULL
  * @property  date                           $data                               NOT NULL
  * @property  varchar()                      $observacoes                        DEFAULT 200
- * @property  timestamp                      $criacao
- * @property  bigint                         $codusuariocriacao
- * @property  timestamp                      $alteracao
- * @property  bigint                         $codusuarioalteracao
- * @property  timestamp                      $inativo
+ * @property  timestamp                      $criacao                            
+ * @property  bigint                         $codusuariocriacao                  
+ * @property  timestamp                      $alteracao                          
+ * @property  bigint                         $codusuarioalteracao                
+ * @property  timestamp                      $inativo                            
  *
  * Chaves Estrangeiras
  * @property  Usuario                        $UsuarioCriacao
@@ -28,11 +28,10 @@ class ChequeRepasse extends MGModel
     protected $table = 'tblchequerepasse';
     protected $primaryKey = 'codchequerepasse';
     protected $fillable = [
-        'codportador',
-        'data',
-        'observacoes',
-        'inativo',
-    ];
+          'codportador',
+         'data',
+         'observacoes',
+         ];
     protected $dates = [
         'data',
         'criacao',
@@ -65,25 +64,4 @@ class ChequeRepasse extends MGModel
     }
 
 
-    public static function search($parametros)
-    {
-        $query = ChequeRepasse::query();
-
-        if (!empty($parametros['codchequemotivodevolucao'])) {
-            $query->where('codchequemotivodevolucao', $parametros['codchequemotivodevolucao']);
-        }
-
-        if (!empty($parametros['numero'])) {
-            $query->where('numero', $parametros['numero']);
-        }
-
-        if (!empty($parametros['chequemotivodevolucao'])) {
-            $palavras = explode(' ', $parametros['chequemotivodevolucao']);
-            foreach ($palavras as $palavra) {
-                $query->where('chequemotivodevolucao', 'ilike', "%{$palavra}%");
-            }
-        }
-
-        return $query;
-    }
 }

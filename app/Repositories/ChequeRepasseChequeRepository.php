@@ -7,18 +7,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
-use MGLara\Models\ChequeMotivoDevolucao;
+use MGLara\Models\ChequeRepasseCheque;
 
 /**
- * Description of ChequeMotivoDevolucaoRepository
+ * Description of ChequeRepasseChequeRepository
  * 
  * @property  Validator $validator
- * @property  ChequeMotivoDevolucao $model
+ * @property  ChequeRepasseCheque $model
  */
-class ChequeMotivoDevolucaoRepository extends MGRepository {
+class ChequeRepasseChequeRepository extends MGRepository {
     
     public function boot() {
-        $this->model = new ChequeMotivoDevolucao();
+        $this->model = new ChequeRepasseCheque();
     }
     
     //put your code here
@@ -29,23 +29,28 @@ class ChequeMotivoDevolucaoRepository extends MGRepository {
         }
         
         if (empty($id)) {
-            $id = $this->model->codchequemotivodevolucao;
+            $id = $this->model->codchequerepassecheque;
         }
         
         $this->validator = Validator::make($data, [
-            'numero' => [
+            'codcheque' => [
                 'numeric',
                 'required',
             ],
-            'chequemotivodevolucao' => [
-                'max:200',
+            'codchequerepasse' => [
+                'numeric',
                 'required',
             ],
+            'compensacao' => [
+                'date',
+                'nullable',
+            ],
         ], [
-            'numero.numeric' => 'O campo "numero" deve ser um número!',
-            'numero.required' => 'O campo "numero" deve ser preenchido!',
-            'chequemotivodevolucao.max' => 'O campo "chequemotivodevolucao" não pode conter mais que 200 caracteres!',
-            'chequemotivodevolucao.required' => 'O campo "chequemotivodevolucao" deve ser preenchido!',
+            'codcheque.numeric' => 'O campo "codcheque" deve ser um número!',
+            'codcheque.required' => 'O campo "codcheque" deve ser preenchido!',
+            'codchequerepasse.numeric' => 'O campo "codchequerepasse" deve ser um número!',
+            'codchequerepasse.required' => 'O campo "codchequerepasse" deve ser preenchido!',
+            'compensacao.date' => 'O campo "compensacao" deve ser uma data!',
         ]);
 
         return $this->validator->passes();
@@ -58,7 +63,7 @@ class ChequeMotivoDevolucaoRepository extends MGRepository {
         }
         
         if ($this->model->ChequeDevolucaoS->count() > 0) {
-            return 'Motivo de Devolução de Cheques sendo utilizada em "ChequeDevolucao"!';
+            return 'Cheque Repasse Cheque sendo utilizada em "ChequeDevolucao"!';
         }
         
         return false;
@@ -67,19 +72,19 @@ class ChequeMotivoDevolucaoRepository extends MGRepository {
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
         
         // Query da Entidade
-        $qry = ChequeMotivoDevolucao::query();
+        $qry = ChequeRepasseCheque::query();
         
         // Filtros
-         if (!empty($filters['codchequemotivodevolucao'])) {
-            $qry->where('codchequemotivodevolucao', '=', $filters['codchequemotivodevolucao']);
+         if (!empty($filters['codchequerepassecheque'])) {
+            $qry->where('codchequerepassecheque', '=', $filters['codchequerepassecheque']);
         }
 
-         if (!empty($filters['numero'])) {
-            $qry->where('numero', '=', $filters['numero']);
+         if (!empty($filters['codcheque'])) {
+            $qry->where('codcheque', '=', $filters['codcheque']);
         }
 
-         if (!empty($filters['chequemotivodevolucao'])) {
-            $qry->palavras('chequemotivodevolucao', $filters['chequemotivodevolucao']);
+         if (!empty($filters['codchequerepasse'])) {
+            $qry->where('codchequerepasse', '=', $filters['codchequerepasse']);
         }
 
          if (!empty($filters['criacao'])) {
@@ -98,7 +103,11 @@ class ChequeMotivoDevolucaoRepository extends MGRepository {
             $qry->where('codusuarioalteracao', '=', $filters['codusuarioalteracao']);
         }
 
-         
+         if (!empty($filters['compensacao'])) {
+            $qry->where('compensacao', '=', $filters['compensacao']);
+        }
+
+        
         $count = $qry->count();
     
         switch ($filters['inativo']) {
@@ -131,7 +140,7 @@ class ChequeMotivoDevolucaoRepository extends MGRepository {
         // Registros
         return [
             'recordsFiltered' => $count
-            , 'recordsTotal' => ChequeMotivoDevolucao::count()
+            , 'recordsTotal' => ChequeRepasseCheque::count()
             , 'data' => $qry->get()
         ];
         

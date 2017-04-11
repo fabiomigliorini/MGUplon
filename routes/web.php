@@ -1,5 +1,4 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,10 +10,7 @@
 |
 */
 
-
-
 Auth::routes();
-
 
 /* Acessar da rede interna sem autenticacao, ou da rede externa com autenticacao */
 Route::group(['middleware' => 'redeconfiavel'], function() {
@@ -167,7 +163,10 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('cheque', 'ChequeController');
     Route::get('cheque/consulta/{cmc7}', 'ChequeController@consulta');
     Route::get('cheque/consultaemitente/{cnpj}', 'ChequeController@consultaemitente');
-
+    
+    Route::resource('cheque-repasse', 'ChequeRepasseController');
+    Route::post('cheque-repasse/consulta', 'ChequeRepasseController@consulta');
+    
     /* Dominio */
     Route::get('dominio', 'DominioController@index');
     Route::post('dominio/exporta-estoque', 'DominioController@exportaEstoque');

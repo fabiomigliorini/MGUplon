@@ -14,7 +14,7 @@ namespace MGLara\Models;
  * @property  bigint                         $codusuariocriacao                  
  *
  * Chaves Estrangeiras
- * @property  Cheque                         $Cheque                        
+ * @property  Cheque                         $Cheque
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Usuario                        $UsuarioCriacao
  *
@@ -26,10 +26,10 @@ class ChequeEmitente extends MGModel
     protected $table = 'tblchequeemitente';
     protected $primaryKey = 'codchequeemitente';
     protected $fillable = [
-        'codcheque',
-        'cnpj',
-        'emitente',
-    ];
+          'codcheque',
+         'cnpj',
+         'emitente',
+        ];
     protected $dates = [
         'alteracao',
         'criacao',

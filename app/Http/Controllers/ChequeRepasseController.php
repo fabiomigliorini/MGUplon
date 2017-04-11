@@ -3,37 +3,29 @@
 namespace MGLara\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
-use DB;
-use MGLara\Repositories\ChequeRepository;
+
+use MGLara\Repositories\ChequeRepasseRepository;
+use \MGLara\Repositories\ChequeRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
 
 use Carbon\Carbon;
 
-use MGLara\Repositories\BancoRepository;
-use MGLara\Repositories\PessoaRepository;
-use MGLara\Library\Cmc7\Cmc7;
-use MGLara\Repositories\ChequeEmitenteRepository;
-use MGLara\Repositories\ChequeRepasseRepository;
-
 /**
- * @property  ChequeRepository $repository 
+ * @property  ChequeRepasseRepository $repository 
  */
-
-class ChequeController extends Controller
+class ChequeRepasseController extends Controller
 {
-    //
-    public function __construct(ChequeRepository $repository) {
-        $this->repository = $repository;
 
-        
-        $this->bc = new Breadcrumb('Cheque');
-        $this->bc->addItem('Cheque', url('cheque'));
+    public function __construct(ChequeRepasseRepository $repository) {
+        $this->repository = $repository;
+        $this->bc = new Breadcrumb('Cheque Repasse');
+        $this->bc->addItem('Cheque Repasse', url('cheque-repasse'));
     }
     
     /**
@@ -62,10 +54,9 @@ class ChequeController extends Controller
             ];
         }
         
-        $status = $this->repository->status_select2();
         
         // retorna View
-        return view('cheque.index', ['bc'=>$this->bc, 'filtro'=>$filtro,'status'=>$status]);
+        return view('cheque-repasse.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
     }
 
     /**
@@ -84,23 +75,16 @@ class ChequeController extends Controller
             'filtros' => $request['filtros'],
             'order' => $request['order'],
         ]);
-        //'Banco', 'Agencia', 'Contacorrente', 'Numero', 'Pessoa', 'Emitentes', 'Valor', 'Data Emissão', 'Data Vencimento', 'Status'
-        // Ordenacao
-        $columns[0] = 'codcheque';
-        $columns[1] = 'inativo';
-        $columns[2] = 'codcheque';
-        $columns[3] = 'codbanco';
-        $columns[4] = 'agencia';
-        $columns[5] = 'contacorrente';
-        $columns[6] = 'numero';
-        $columns[7] = 'codpessoa';
-        $columns[8] = 'emitente';
-        $columns[9] = 'valor';
-        $columns[10] = 'vencimento';
-        $columns[11] = 'vencimento';
-        $columns[12] = 'indstatus';
-
         
+        // Ordenacao
+        $columns[0] = 'codchequerepasse';
+        $columns[1] = 'inativo';
+        $columns[2] = 'codchequerepasse';
+        $columns[3] = 'codchequerepasse';
+        $columns[4] = 'codportador';
+        $columns[5] = 'data';
+        $columns[6] = 'observacoes';
+
         $sort = [];
         if (!empty($request['order'])) {
             foreach ($request['order'] as $order) {
@@ -110,11 +94,10 @@ class ChequeController extends Controller
                 ];
             }
         }
-         
-         
+
         // Pega listagem dos registros
         $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
-    
+        
         // Monta Totais
         $recordsTotal = $regs['recordsTotal'];
         $recordsFiltered = $regs['recordsFiltered'];
@@ -122,21 +105,14 @@ class ChequeController extends Controller
         // Formata registros para exibir no data table
         $data = [];
         foreach ($regs['data'] as $reg) {
-            $status = $this->repository->status($reg->indstatus);
             $data[] = [
-                url('cheque', $reg->codcheque),
+                url('cheque-repasse', $reg->codchequerepasse),
                 formataData($reg->inativo, 'C'),
-                formataCodigo($reg->codcheque),
-                $reg->Banco->banco,
-                $reg->agencia,
-                $reg->contacorrente,
-                $reg->numero,
-                $reg->Pessoa->pessoa,
-                $reg->emitente,
-                formataNumero($reg->valor, 2),
-                formataData($reg->emissao),
-                formataData($reg->vencimento),
-                '<span class="'.$status['label'].'">'.$status['status'].'</span>',
+                formataCodigo($reg->codchequerepasse),
+                $reg->codchequerepasse,
+                $reg->codportador,
+                $reg->data,
+                $reg->observacoes,
             ];
         }
         
@@ -166,7 +142,7 @@ class ChequeController extends Controller
         $this->bc->addItem('Novo');
         
         // retorna view
-        return view('cheque.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('cheque-repasse.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -177,36 +153,32 @@ class ChequeController extends Controller
      */
     public function store(Request $request)
     {
+        
         // busca dados do formulario
         $data = $request->all();
-      
+        
         $data = $this->repository->parseData($data);
         
         // valida dados
         if (!$this->repository->validate($data)) {
             $this->throwValidationException($request, $this->repository->validator);
         }
-        
         // preenche dados 
         $this->repository->new($data);
-        
         // autoriza
         $this->repository->authorize('create');
-        
+
         DB::beginTransaction();
-        
-        // cria
-        if (!$this->repository->create($data)) {
-            abort(500);
-        }
-       
+            if (!$this->repository->create($data)) {
+                abort(500);
+            }
         DB::commit();
-       
+        
         // Mensagem de registro criado
-        Session::flash('flash_create', 'Cheque criado!');
+        Session::flash('flash_create', 'Cheque Repasse criado!');
         
         // redireciona para o view
-        return redirect("cheque/{$this->repository->model->codcheque}");
+        return redirect("cheque-repasse/{$this->repository->model->codchequerepasse}");
     }
 
     /**
@@ -224,12 +196,12 @@ class ChequeController extends Controller
         $this->repository->authorize('view');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->cmc7);
-        $this->bc->header = $this->repository->model->cmc7;
-        $status = $this->repository->status($this->repository->model['indstatus']);
+        $this->bc->addItem($this->repository->model->codchequerepasse);
+        $this->bc->header = $this->repository->model->codchequerepasse;
+        //$cheques = $this->repository->model->ChequeRepasseChequeS;
+        //dd($cheques);
         // retorna show
-        
-        return view('cheque.show', ['bc'=>$this->bc, 'model'=>$this->repository->model,'status'=>$status]);
+        return view('cheque-repasse.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -247,12 +219,12 @@ class ChequeController extends Controller
         $this->repository->authorize('update');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->cmc7, url('cheque', $this->repository->model->codcheque));
-        $this->bc->header = $this->repository->model->cmc7;
+        $this->bc->addItem($this->repository->model->codchequerepasse, url('cheque-repasse', $this->repository->model->codchequerepasse));
+        $this->bc->header = $this->repository->model->codchequerepasse;
         $this->bc->addItem('Alterar');
         
         // retorna formulario edit
-        return view('cheque.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('cheque-repasse.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -264,62 +236,88 @@ class ChequeController extends Controller
      */
     public function update(Request $request, $id)
     {
-  
-        // busca dados do formulario
-        $data = $request->all();
-      
-        $data = $this->repository->parseData($data);
         
-        // valida dados
-        if (!$this->repository->validate($data)) {
-            $this->throwValidationException($request, $this->repository->validator);
-        }
-        
-        // autoriza
-        $this->repository->authorize('create');
-        
-        DB::beginTransaction();
-        
-        // atualiza dados
-        if (!$this->repository->update($id, $data)) {
-            abort(500);
-        }
-       
-        DB::commit();
+        parent::update($request, $id);
         
         // mensagem re registro criado
-        Session::flash('flash_update', 'Cheque alterado!');
+        Session::flash('flash_update', 'Cheque Repasse alterado!');
         
         // redireciona para view
-        return redirect("cheque/{$this->repository->model->codcheque}"); 
+        return redirect("cheque-repasse/{$this->repository->model->codchequerepasse}"); 
     }
     
-    public function destroy($id) {
-        
-        // autorizacao
-        $this->repository->authorize('delete');
-        
-        DB::beginTransaction();
-            $retorno = $this->repository->delete($id);
-        DB::commit();
-        
-        return ['OK' => $retorno];   
-    }
-    
-    public function consulta($cmc7) {
-        
-        // Autorizacao
+    public function consulta(Request $request){
+        // Pega listagem dos registros
         $this->repository->authorize('listing');
-        
-        $ret = $this->repository->consultaCmc7($cmc7);
 
-        return $ret;
-    }
-    
-    public function consultaemitente($cnpj) {
+        $columns[0] = 'codcheque';
+        $columns[1] = 'inativo';
+        $columns[2] = 'codcheque';
+        $columns[3] = 'codbanco';
+        $columns[4] = 'agencia';
+        $columns[5] = 'contacorrente';
+        $columns[6] = 'numero';
+        $columns[7] = 'codpessoa';
+        $columns[8] = 'emitente';
+        $columns[9] = 'valor';
+        $columns[10] = 'vencimento';
+        $columns[11] = 'vencimento';
+        $columns[12] = 'indstatus';
+
+        $sort = [];
+        if (!empty($request['order'])) {
+            foreach ($request['order'] as $order) {
+                $sort[] = [
+                    'column' => $columns[$order['column']],
+                    'dir' => $order['dir'],
+                ];
+            }
+        }
+        $filtros = [
+            'vencimento_de' => $request['vencimento_de'],
+            'vencimento_ate' => $request['vencimento_ate'],
+            'inativo' => 1
+        ];
         
-        $ret = $this->repository->consultaEmitente($cnpj);
-        return $ret;
+        $repoCheque = new ChequeRepository();
+        $regs = $repoCheque->listing($filtros, $sort, 1, 1000);
         
+        $recordsTotal = $regs['recordsTotal'];
+        $recordsFiltered = $regs['recordsFiltered'];
+        
+         // Formata registros para exibir
+        $data = [];
+        foreach ($regs['data'] as $reg) {
+            $emits = [];
+            
+            foreach($reg->ChequeEmitenteS as $emit){
+                $emits[] = [
+                'cnpj'=>formataCpfCnpj($emit->cnpj),
+                'emitente'=>$emit->emitente
+                ];
+            }
+            
+            $status = $repoCheque->status($reg->indstatus);
+            $data[] = [
+                'urlcheque' => url('cheque', $reg->codcheque),
+                'codcheque' => $reg->codcheque,
+                'codchequerepassecheque' => '',
+                'banco' => $reg->Banco->banco,
+                'agencia' => $reg->agencia,
+                'contacorrente' => $reg->contacorrente,
+                'numero' =>  $reg->numero,
+                'pessoa' => $reg->Pessoa->pessoa,
+                'emitentes' => $emits,
+                'valor_formatado'=>formataNumero($reg->valor, 2),
+                'valor'=>$reg->valor,
+                'emissao' => formataData($reg->emissao),
+                'vencimento' => formataData($reg->vencimento),
+                'status' => '<span class="'.$status['label'].'">'.$status['status'].'</span>',
+            ];
+        }
+        
+        return ['data'=>$data,'recordsTotal'=>$recordsTotal,'recordsFiltered'=>$recordsFiltered];
     }
+   
+   
 }

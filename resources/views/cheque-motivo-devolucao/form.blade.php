@@ -3,7 +3,7 @@
     {!! Form::number('numero', null, ['class'=> 'form-control', 'id'=>'numero', 'step'=>'1', 'min'=>'1', 'required'=>'required', 'autofocus']) !!}
 </fieldset>
 <fieldset class="form-group">
-    {!! Form::label('chequemotivodevolucao', 'Descrição') !!}
+    {!! Form::label('chequemotivodevolucao', 'Chequemotivodevolucao') !!}
     {!! Form::text('chequemotivodevolucao', null, ['class'=> 'form-control', 'id'=>'chequemotivodevolucao', 'maxlength'=>'200', 'required'=>'required']) !!}
 </fieldset>
 <fieldset class="form-group">

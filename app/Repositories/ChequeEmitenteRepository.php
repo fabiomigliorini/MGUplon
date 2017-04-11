@@ -7,18 +7,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
-use MGLara\Models\Banco;
+use MGLara\Models\ChequeEmitente;
 
 /**
- * Description of BancoRepository
+ * Description of ChequeEmitenteRepository
  * 
  * @property  Validator $validator
- * @property  Banco $model
+ * @property  ChequeEmitente $model
  */
-class BancoRepository extends MGRepository {
+class ChequeEmitenteRepository extends MGRepository {
     
     public function boot() {
-        $this->model = new Banco();
+        $this->model = new ChequeEmitente();
     }
     
     //put your code here
@@ -29,26 +29,29 @@ class BancoRepository extends MGRepository {
         }
         
         if (empty($id)) {
-            $id = $this->model->codbanco;
+            $id = $this->model->codchequeemitente;
         }
         
         $this->validator = Validator::make($data, [
-            'banco' => [
-                'max:50',
-                'nullable',
-            ],
-            'sigla' => [
-                'max:3',
-                'nullable',
-            ],
-            'numerobanco' => [
+            'codcheque' => [
                 'numeric',
-                'nullable',
+                'required',
+            ],
+            'cnpj' => [
+                'numeric',
+                'required',
+            ],
+            'emitente' => [
+                'max:100',
+                'required',
             ],
         ], [
-            'banco.max' => 'O campo "banco" não pode conter mais que 50 caracteres!',
-            'sigla.max' => 'O campo "sigla" não pode conter mais que 3 caracteres!',
-            'numerobanco.numeric' => 'O campo "numerobanco" deve ser um número!',
+            'codcheque.numeric' => 'O campo "codcheque" deve ser um número!',
+            'codcheque.required' => 'O campo "codcheque" deve ser preenchido!',
+            'cnpj.numeric' => 'O campo "cnpj" deve ser um número!',
+            'cnpj.required' => 'O campo "cnpj" deve ser preenchido!',
+            'emitente.max' => 'O campo "emitente" não pode conter mais que 100 caracteres!',
+            'emitente.required' => 'O campo "emitente" deve ser preenchido!',
         ]);
 
         return $this->validator->passes();
@@ -60,37 +63,29 @@ class BancoRepository extends MGRepository {
             $this->findOrFail($id);
         }
         
-        if ($this->model->ChequeS->count() > 0) {
-            return 'Banco sendo utilizada em "Cheque"!';
-        }
-        
-        if ($this->model->PortadorS->count() > 0) {
-            return 'Banco sendo utilizada em "Portador"!';
-        }
-        
         return false;
     }
     
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
         
         // Query da Entidade
-        $qry = Banco::query();
+        $qry = ChequeEmitente::query();
         
         // Filtros
-         if (!empty($filters['codbanco'])) {
-            $qry->where('codbanco', '=', $filters['codbanco']);
+         if (!empty($filters['codchequeemitente'])) {
+            $qry->where('codchequeemitente', '=', $filters['codchequeemitente']);
         }
 
-         if (!empty($filters['banco'])) {
-            $qry->palavras('banco', $filters['banco']);
+         if (!empty($filters['codcheque'])) {
+            $qry->where('codcheque', '=', $filters['codcheque']);
         }
 
-         if (!empty($filters['sigla'])) {
-            $qry->palavras('sigla', $filters['sigla']);
+         if (!empty($filters['cnpj'])) {
+            $qry->where('cnpj', '=', $filters['cnpj']);
         }
 
-         if (!empty($filters['numerobanco'])) {
-            $qry->where('numerobanco', '=', $filters['numerobanco']);
+         if (!empty($filters['emitente'])) {
+            $qry->palavras('emitente', $filters['emitente']);
         }
 
          if (!empty($filters['alteracao'])) {
@@ -109,7 +104,7 @@ class BancoRepository extends MGRepository {
             $qry->where('codusuariocriacao', '=', $filters['codusuariocriacao']);
         }
 
-         
+        
         $count = $qry->count();
     
         switch ($filters['inativo']) {
@@ -142,31 +137,10 @@ class BancoRepository extends MGRepository {
         // Registros
         return [
             'recordsFiltered' => $count
-            , 'recordsTotal' => Banco::count()
+            , 'recordsTotal' => ChequeEmitente::count()
             , 'data' => $qry->get()
         ];
         
-    }
-    
-    public function findByNumero($numerobanco) {
-        return $this->model = Banco::where('numerobanco', '=', $numerobanco)->first();
-    }
-    
-    public function findOrCreateByNumero ($numerobanco) {
-        
-        if ($model = $this->findByNumero($numerobanco)) {
-            return $model;
-        }
-        
-        if ($this->create([
-            'numerobanco' => $numerobanco,
-            'banco' => "$numerobanco Criado Automaticamente",
-            'sigla' => $numerobanco,
-        ])) {
-            return $this->model;
-        }
-        
-        return false;
     }
     
 }

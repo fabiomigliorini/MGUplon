@@ -1,13 +1,13 @@
 @extends('layouts.default')
 @section('content')
 <div class='row'>
-    <div class="col-md-12">
+    <div class="col-md-4">
         <div class="card">
             <h4 class="card-header">Alterar</h4>
             <div class="card-block">
-                {!! Form::model($model, ['method' => 'PATCH', 'id' => 'form-principal', 'action' => ['ChequeController@update', $model->codcheque] ]) !!}
+                {!! Form::model($model, ['method' => 'PATCH', 'id' => 'form-principal', 'action' => ['ChequeRepasseController@update', $model->codchequerepasse] ]) !!}
                     @include('errors.form_error')
-                    @include('cheque.form')
+                    @include('cheque-repasse.form')
                 {!! Form::close() !!}
             </div>
         </div>

@@ -11,6 +11,7 @@ namespace MGLara\Models;
  * @property  bigint                         $codusuariocriacao                  
  * @property  timestamp                      $alteracao                          
  * @property  bigint                         $codusuarioalteracao                
+ * @property  timestamp                      $inativo                            
  *
  * Chaves Estrangeiras
  * @property  Usuario                        $UsuarioCriacao
@@ -27,10 +28,11 @@ class ChequeMotivoDevolucao extends MGModel
     protected $fillable = [
           'numero',
          'chequemotivodevolucao',
-        ];
+         ];
     protected $dates = [
         'criacao',
         'alteracao',
+        'inativo',
     ];
 
 

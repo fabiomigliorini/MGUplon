@@ -3,6 +3,7 @@
     <div class='col-md-6'>
         <div class='row'>
             <div class="form-group col-md-12">
+                001052990860853885621000879557 99682184134
                 {!! Form::label('cmc7', 'CMC7:', []) !!}
                 {!! Form::text('cmc7', null, ['class'=> 'form-control', 'id'=>'cmc7', 'required'=>'required']) !!}
                 <div id="warning_cmc7"></div>
@@ -183,7 +184,7 @@ $(document).on('change', '#cnpj', function(){
         success: function(retorno) {
             if( retorno.codpessoa   != null){
                 if(codpessoa== null || codpessoa==''){
-                    $('#codpessoa').val(retorno.codpessoa).change();
+                    $('#codpessoa').html("<option value='"+retorno.codpessoa+"' selected>"+retorno.pessoa+"</option>").change();
                 }
                 campocnpj.parent().parent().find("#emitente").val(retorno.pessoa);
             }
@@ -199,7 +200,7 @@ $(document).on('change', '#cnpj', function(){
 });
 //------ Funcao que Carrega Campos
 function CarregaCampos(codchequeemitente,cnpj,emitente){
-    console.log('Teste'+codchequeemitente);
+   
     var html = null;
     html = "<div id='cademitente' class='row'>";
     html = html +  '<input type="hidden" name="chequeemitente_codchequeemitente[]" value="'+codchequeemitente+'">';
