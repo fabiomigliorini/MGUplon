@@ -8,19 +8,22 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 use MGLara\Models\EstoqueMovimento;
-use MGLara\Models\EstoqueSaldoConferencia;
 use MGLara\Models\EstoqueMovimentoTipo;
+
+use MGLara\Models\EstoqueSaldoConferencia;
 
 /**
  * Description of EstoqueMovimentoRepository
  * 
  * @property  Validator $validator
  * @property  EstoqueMovimento $model
+ * @property  EstoqueMesRepository $repoMes
  */
 class EstoqueMovimentoRepository extends MGRepository {
     
     public function boot() {
         $this->model = new EstoqueMovimento();
+        $this->repoMes = new EstoqueMesRepository();
     }
     
     //put your code here
@@ -34,28 +37,24 @@ class EstoqueMovimentoRepository extends MGRepository {
             $id = $this->model->codestoquemovimento;
         }
         
-        $this->validator = Validator::make($data, [
-            'codestoquemovimentotipo' => [
-                'numeric',
+        $rules = [
+            'transferencia' => [
+                'boolean',
                 'required',
             ],
             'entradaquantidade' => [
-                'digits',
                 'numeric',
                 'nullable',
             ],
             'entradavalor' => [
-                'digits',
                 'numeric',
                 'nullable',
             ],
             'saidaquantidade' => [
-                'digits',
                 'numeric',
                 'nullable',
             ],
             'saidavalor' => [
-                'digits',
                 'numeric',
                 'nullable',
             ],
@@ -66,14 +65,6 @@ class EstoqueMovimentoRepository extends MGRepository {
             'codnotafiscalprodutobarra' => [
                 'numeric',
                 'nullable',
-            ],
-            'codestoquemes' => [
-                'numeric',
-                'required',
-            ],
-            'manual' => [
-                'boolean',
-                'required',
             ],
             'data' => [
                 'date',
@@ -91,23 +82,45 @@ class EstoqueMovimentoRepository extends MGRepository {
                 'numeric',
                 'nullable',
             ],
-        ], [
+        ];
+        
+        if (empty($data['codestoquemes'])) {
+            $rules['codproduto'] = [
+                'numeric',
+                'required',
+            ];
+            $rules['codprodutovariacao'] = [
+                'numeric',
+                'required',
+            ];
+            $rules['codestoquelocal'] = [
+                'numeric',
+                'required',
+            ];
+            $rules['fiscal'] = [
+                'numeric',
+                'required',
+            ];
+        }
+        
+        if (!$data['transferencia']) {
+            $rules['codestoquemovimentotipo'] = [
+                'numeric',
+                'required',
+            ];
+        }
+        
+        $this->validator = Validator::make($data, $rules, [
             'codestoquemovimentotipo.numeric' => 'O campo "codestoquemovimentotipo" deve ser um número!',
             'codestoquemovimentotipo.required' => 'O campo "codestoquemovimentotipo" deve ser preenchido!',
-            'entradaquantidade.digits' => 'O campo "entradaquantidade" deve conter no máximo 3 dígitos!',
             'entradaquantidade.numeric' => 'O campo "entradaquantidade" deve ser um número!',
-            'entradavalor.digits' => 'O campo "entradavalor" deve conter no máximo 2 dígitos!',
             'entradavalor.numeric' => 'O campo "entradavalor" deve ser um número!',
-            'saidaquantidade.digits' => 'O campo "saidaquantidade" deve conter no máximo 3 dígitos!',
             'saidaquantidade.numeric' => 'O campo "saidaquantidade" deve ser um número!',
-            'saidavalor.digits' => 'O campo "saidavalor" deve conter no máximo 2 dígitos!',
             'saidavalor.numeric' => 'O campo "saidavalor" deve ser um número!',
             'codnegocioprodutobarra.numeric' => 'O campo "codnegocioprodutobarra" deve ser um número!',
             'codnotafiscalprodutobarra.numeric' => 'O campo "codnotafiscalprodutobarra" deve ser um número!',
             'codestoquemes.numeric' => 'O campo "codestoquemes" deve ser um número!',
             'codestoquemes.required' => 'O campo "codestoquemes" deve ser preenchido!',
-            'manual.boolean' => 'O campo "manual" deve ser um verdadeiro/falso (booleano)!',
-            'manual.required' => 'O campo "manual" deve ser preenchido!',
             'data.date' => 'O campo "data" deve ser uma data!',
             'data.required' => 'O campo "data" deve ser preenchido!',
             'codestoquemovimentoorigem.numeric' => 'O campo "codestoquemovimentoorigem" deve ser um número!',
@@ -248,9 +261,33 @@ class EstoqueMovimentoRepository extends MGRepository {
         
     }
     
-    public static function movimentaEstoqueSaldoConferencia (EstoqueSaldoConferencia $conf) 
+    public function movimentoDestino($model = null) {
+        if (empty($model)) {
+            $model = $this->model;
+        }
+        return $model->EstoqueMovimentoDestinoS()->first();
+    }
+    
+    public function fill($data) {
+        if (! $data['data'] instanceof Carbon) {
+            $data['data'] = Carbon::createFromFormat('Y-m-d\TH:i', $data['data']);
+        }
+        
+        parent::fill($data);
+        
+        if (empty($data['codprodutovariacao'])) {
+            $data['codestoquelocal'] = $this->model->EstoqueMes->EstoqueSaldo->EstoqueLocalProdutoVariacao->codestoquelocal;
+            $data['codprodutovariacao'] = $this->model->EstoqueMes->EstoqueSaldo->EstoqueLocalProdutoVariacao->codprodutovariacao;
+            $data['fiscal'] = $this->model->EstoqueMes->EstoqueSaldo->fiscal;
+        }
+        $mes = $this->repoMes->buscaOuCriaPelaChave($data['codestoquelocal'], $data['codprodutovariacao'], $data['fiscal'], $data['data']);
+        $this->model->codestoquemes = $mes->codestoquemes;
+    }
+    
+    public function movimentaEstoqueSaldoConferencia (EstoqueSaldoConferencia $conf) 
     {
-        EstoqueSaldoRepository::atualizaUltimaConferencia($conf->EstoqueSaldo);
+        $repoSaldo = new EstoqueSaldoRepository();
+        $repoSaldo->atualizaUltimaConferencia($conf->EstoqueSaldo);
 
         $codestoquemovimentoGerado = [];
         
@@ -263,8 +300,8 @@ class EstoqueMovimentoRepository extends MGRepository {
             } else {
                 $repo->new();
             }
-
-            $mes = EstoqueMesRepository::buscaOuCria($conf->EstoqueSaldo, $conf->data);
+            
+            $mes = $this->repoMes->buscaOuCria($conf->EstoqueSaldo, $conf->data);
 
             $repo->model->codestoquemes = $mes->codestoquemes;
             $repo->model->codestoquemovimentotipo = EstoqueMovimentoTipo::AJUSTE;
@@ -300,12 +337,11 @@ class EstoqueMovimentoRepository extends MGRepository {
                 ::whereNotIn('codestoquemovimento', $codestoquemovimentoGerado)
                 ->where('codestoquesaldoconferencia', $conf->codestoquesaldoconferencia)
                 ->get();
-        foreach ($movExcedente as $mov)
-        {
-            foreach ($mov->EstoqueMovimentoS as $movDest)
-            {
-                $movDest->codestoquemovimentoorigem = null;
-                $movDest->save();
+        foreach ($movExcedente as $mov) {
+            foreach ($mov->EstoqueMovimentoDestinoS()->get() as $movDest) {
+                $repo->update($movDest->codestoquemovimento, [
+                    codestoquemovimentoorigem => null
+                ]);
             }
             $repo->model = $mov;
             $repo->delete();
@@ -315,41 +351,88 @@ class EstoqueMovimentoRepository extends MGRepository {
        
     }
     
+    private function geraMovimentoDestino($data = null) {
+        if (empty($data)) {
+            $data = $this->data;
+        }
+        
+        // se nao e transferencia
+        if (!$data['transferencia']) {
+            return true;
+        }
+        
+        // Se nao tem tipo de destino
+        $repoTipo = new EstoqueMovimentoTipoRepository();
+        if (!$tipo = $repoTipo->tipoDestino($this->model->EstoqueMovimentoTipo)) {
+            return true;
+        }
+
+        // Procura se ja existe movimento de destino
+        $repoDest = new EstoqueMovimentoRepository();
+        $movs = [];
+        if ($mov = $this->movimentoDestino()) {
+            $repoDest->model = $mov;
+        } else {
+            $mov = $repoDest->new();
+        }
+        
+        // inverte valores
+        $data['codestoquelocal'] = $data['codestoquelocaldestino'];
+        $data['codprodutovariacao'] = $data['codprodutovariacaodestino'];
+        $data['fiscal'] = $data['codestoquelocaldestino'];
+        $data['codestoquemovimentotipo'] = $tipo->codestoquemovimentotipo;
+        $data['codestoquemovimentoorigem'] = $this->model->codestoquemovimento;
+        $data['entradaquantidade'] = $this->model->saidaquantidade;
+        $data['entradavalor'] = $this->model->saidavalor;
+        $data['saidaquantidade'] = $this->model->entradaquantidade;
+        $data['saidavalor'] = $this->model->entradavalor;
+        
+        // Salva
+        $repoDest->fill($data);
+        if (!$repoDest->save()) {
+            return false;
+        }
+
+        $movs[] = $mov->codestoquemovimento;
+        
+        return true;
+    }
+    
     public function create($data = null) {
         $ret = parent::create($data);
-        EstoqueMesRepository::calculaCustoMedio($this->model->EstoqueMes);
+        $this->repoMes->calculaCustoMedio($this->model->EstoqueMes);
+        $this->geraMovimentoDestino();
         return $ret;
     }
     
     public function update($id = null, $data = null) {
         $anterior = $this->model->fresh();
         $ret = parent::update($id, $data);
-        EstoqueMesRepository::calculaCustoMedio($this->model->EstoqueMes);
+        $this->repoMes->calculaCustoMedio($this->model->EstoqueMes);
         if ($anterior->codestoquemes != $this->model->codestoquemes) {
-            EstoqueMesRepository::calculaCustoMedio($anterior->EstoqueMes);
+            $this->repoMes->calculaCustoMedio($anterior->EstoqueMes);
         }
+        $this->geraMovimentoDestino();
         return $ret;
     }
 
     public function delete($id = null) {
         $mes = $this->model->EstoqueMes;
         $ret = parent::delete($id);
-        EstoqueMesRepository::calculaCustoMedio($mes);
+        $this->repoMes->calculaCustoMedio($mes);
         return $ret;
     }
     
     
     public function activate($id = null) {
         $ret = parent::activate($id);
-        EstoqueMesRepository::calculaCustoMedio($this->model->EstoqueMes);
+        $this->repoMes->calculaCustoMedio($this->model->EstoqueMes);
         return $ret;
     }
     
     public function inactivate($id = null) {
         $ret = parent::inactivate($id);
-        EstoqueMesRepository::calculaCustoMedio($this->model->EstoqueMes);
+        $this->repoMes->calculaCustoMedio($this->model->EstoqueMes);
         return $ret;
-    }
-    
-    
+    }    
 }

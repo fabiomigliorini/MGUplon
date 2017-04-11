@@ -1,74 +1,103 @@
 @extends('layouts.default')
 @section('content')
-<nav class="navbar navbar-default" id="submenu">
-    <div class="container-fluid"> 
-        <ul class="nav navbar-nav">
-            <li><a href="<?php echo url("estoque-movimento/$model->codestoquemovimento/edit");?>"><span class="glyphicon glyphicon-pencil"></span> Alterar</a></li> 
-            <li>
-                {!! Form::open(['method' => 'DELETE',  'id'=>'deleteId', 'route' => ['estoque-movimento.destroy', $model->codestoquemovimento]]) !!}
-                <span class="glyphicon glyphicon-trash"></span>
-                {!! Form::submit('Excluir') !!}
-                {!! Form::close() !!}
-            </li>
-        </ul>
+
+<div class='row'>
+    <div class='col-md-4'>
+        <div class='card'>
+            <h4 class="card-header">Detalhes</h4>
+            <div class='card-block'>
+                <table class="table table-bordered table-striped table-hover table-sm col-md-6">
+                  <tbody>  
+                    <tr> 
+                      <th>#</th> 
+                      <td>{{ $model->codestoquemovimento }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Estoque Movimento</th> 
+                      <td>{{ $model->codestoquemovimento }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Codestoquemovimentotipo</th> 
+                      <td>{{ $model->codestoquemovimentotipo }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Entradaquantidade</th> 
+                      <td>{{ $model->entradaquantidade }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Entradavalor</th> 
+                      <td>{{ $model->entradavalor }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Saidaquantidade</th> 
+                      <td>{{ $model->saidaquantidade }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Saidavalor</th> 
+                      <td>{{ $model->saidavalor }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Codnegocioprodutobarra</th> 
+                      <td>{{ $model->codnegocioprodutobarra }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Codnotafiscalprodutobarra</th> 
+                      <td>{{ $model->codnotafiscalprodutobarra }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Codestoquemes</th> 
+                      <td>{{ $model->codestoquemes }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Manual</th> 
+                      <td>{{ $model->manual }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Data</th> 
+                      <td>{{ $model->data }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Codestoquemovimentoorigem</th> 
+                      <td>{{ $model->codestoquemovimentoorigem }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Observacoes</th> 
+                      <td>{{ $model->observacoes }}</td> 
+                    </tr>
+                    <tr> 
+                      <th>Codestoquesaldoconferencia</th> 
+                      <td>{{ $model->codestoquesaldoconferencia }}</td> 
+                    </tr>
+                  </tbody> 
+                </table>
+                <div class='clearfix'></div>
+            </div>
+        </div>
     </div>
-</nav>
-<ol class="breadcrumb header">Movimento #{{ $model->codestoquemovimento }}</ol>
-<hr>
-<div class="row">
-  <div class="col-lg-12">
-      <table class="detail-view table table-striped table-condensed"> 
-        <tbody>  
-          <tr> 
-            <th class="col-md-2">#</th> 
-            <td class="col-md-10">{{ formataCodigo($model->codestoquemovimento) }}</td> 
-          </tr>
-          <tr> 
-            <th>Tipo</th> 
-            <td>{{ $model->EstoqueMovimentoTipo->descricao or '' }}</td> 
-          </tr>
-          <tr> 
-            <th>Movimento Estoque Origem</th> 
-            <td>{{ $model->EstoqueMovimentoOrigem->codestoquemovimentoorigem or '' }}</td> 
-          </tr>
-          <tr> 
-            <th>Data</th> 
-            <td><?php if(!empty($model->data)) echo formataData($model->data, 'M');?></td> 
-          </tr>
-          <tr> 
-            <th>Quantidade Entrada</th> 
-            <td>{{ $model->entradaquantidade }}</td> 
-          </tr>
-          <tr> 
-            <th>Valor Entrada</th> 
-            <td>{{ $model->entradavalor }}</td> 
-          </tr>
-          <tr> 
-            <th>Quantidade Saída</th> 
-            <td>{{ $model->saidaquantidade }}</td> 
-          </tr> 
-          <tr> 
-            <th>Valor Saída</th> 
-            <td>{{ $model->saidavalor }}</td> 
-          </tr>          
-        </tbody> 
-      </table>
-  </div>    
 </div>
-<hr>
-@include('includes.autor')
+
+@section('buttons')
+
+    <a class="btn btn-secondary btn-sm" href="{{ url("estoque-movimento/$model->codestoquemovimento/edit") }}"><i class="fa fa-pencil"></i></a>
+    @if(empty($model->inativo))
+        <a class="btn btn-secondary btn-sm" href="{{ url("estoque-movimento/$model->codestoquemovimento/inactivate") }}" data-activate data-question="Tem certeza que deseja inativar '{{ $model->codestoquemovimento }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-ban"></i></a>
+    @else
+        <a class="btn btn-secondary btn-sm" href="{{ url("estoque-movimento/$model->codestoquemovimento/activate") }}" data-activate data-question="Tem certeza que deseja ativar '{{ $model->codestoquemovimento }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-circle-o"></i></a>
+    @endif
+    <a class="btn btn-secondary btn-sm" href="{{ url("estoque-movimento/$model->codestoquemovimento") }}" data-delete data-question="Tem certeza que deseja excluir '{{ $model->codestoquemovimento }}'?" data-after="location.replace('{{ url('estoque-movimento') }}');"><i class="fa fa-trash"></i></a>                
+    
+@endsection
+@section('inactive')
+
+    @include('layouts.includes.inactive', [$model])
+    
+@endsection
+@section('creation')
+
+    @include('layouts.includes.creation', [$model])
+    
+@endsection
 @section('inscript')
-<script type="text/javascript">
-$(document).ready(function() {
-    $('#Delete').click(function (e) {
-        bootbox.confirm("Deseja excluir esse registro?", function(result) {
-            if (result)
-            {
-                $('form').submit();
-            }
-        }); 
-    });
-});
-</script>
+
 @endsection
 @stop

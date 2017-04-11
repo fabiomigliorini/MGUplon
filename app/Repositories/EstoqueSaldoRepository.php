@@ -1375,7 +1375,7 @@ class EstoqueSaldoRepository extends MGRepository {
         return $ret;
     }
     
-    public static function pivotProduto($codproduto, $fiscal) {
+    public function pivotProduto($codproduto, $fiscal) {
         
         $qry = EstoqueSaldo::query();
         
@@ -1431,7 +1431,7 @@ class EstoqueSaldoRepository extends MGRepository {
         
     }
 
-    public static function atualizaUltimaConferencia (EstoqueSaldo $model) {
+    public function atualizaUltimaConferencia (EstoqueSaldo $model) {
 
         return DB::update("update tblestoquesaldo 
                     set ultimaconferencia = (select max(conf.criacao) from tblestoquesaldoconferencia conf where conf.inativo is null and conf.codestoquesaldo = tblestoquesaldo.codestoquesaldo)
@@ -1550,6 +1550,38 @@ class EstoqueSaldoRepository extends MGRepository {
             ];
                 
         }
+        
+        return $ret;
+        
+    }
+    
+    /**
+     * Busca Meses do Saldo
+     * 
+     * @param Carbon $mesCentral
+     * @param EstoqueSaldo $model
+     * @param int $quantidadeApos
+     * @param int $quantidadeTotal
+     * @return EstoqueMes[]
+     */
+    public function meses(Carbon $mesCorrente, EstoqueSaldo $model = null, $quantidadeApos = 5, $quantidadeTotal = 12) {
+        
+        if (empty($model)) {
+            $model = $this->model;
+        }
+
+        $apos = $model->EstoqueMesS()->where('mes', '>=', $mesCorrente)->orderBy('mes', 'asc')->limit($quantidadeTotal)->get();
+        $ant = $model->EstoqueMesS()->where('mes', '<', $mesCorrente)->orderBy('mes', 'desc')->limit($quantidadeTotal)->get();
+        $ant = $ant->reverse();
+        
+        $filtradosApos = $apos->take($quantidadeApos + 1);
+        $filtradosAnt = $ant->take(($quantidadeTotal - $filtradosApos->count()) * -1);
+        
+        if (($filtradosAnt->count() + $filtradosApos->count()) < $quantidadeTotal) {
+            $filtradosApos = $apos->take($quantidadeTotal - $filtradosAnt->count());
+        }
+        
+        $ret = $filtradosAnt->merge($filtradosApos);
         
         return $ret;
         

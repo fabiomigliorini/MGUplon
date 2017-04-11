@@ -15,6 +15,7 @@ namespace MGLara\Models;
  * @property  bigint                         $codestoquemovimentotipoorigem      
  * @property  boolean                        $manual                             NOT NULL DEFAULT false
  * @property  boolean                        $atualizaultimaentrada              NOT NULL DEFAULT false
+ * @property  boolean                        $transferencia                      NOT NULL DEFAULT false
  *
  * Chaves Estrangeiras
  * @property  EstoqueMovimentoTipo           $EstoqueMovimentoTipoOrigem
@@ -38,6 +39,7 @@ class EstoqueMovimentoTipo extends MGModel
          'codestoquemovimentotipoorigem',
          'manual',
          'atualizaultimaentrada',
+         'transferencia',
     ];
     protected $dates = [
         'alteracao',
@@ -68,9 +70,9 @@ class EstoqueMovimentoTipo extends MGModel
 
 
     // Tabelas Filhas
-    public function EstoqueMovimentoTipoS()
+    public function EstoqueMovimentoTipoDestinoS()
     {
-        return $this->hasMany(EstoqueMovimentoTipo::class, 'codestoquemovimentotipo', 'codestoquemovimentotipoorigem');
+        return $this->hasMany(EstoqueMovimentoTipo::class, 'codestoquemovimentotipoorigem', 'codestoquemovimentotipo');
     }
 
     public function NaturezaOperacaoS()
@@ -78,7 +80,7 @@ class EstoqueMovimentoTipo extends MGModel
         return $this->hasMany(NaturezaOperacao::class, 'codestoquemovimentotipo', 'codestoquemovimentotipo');
     }
 
-    public function EstoqueMovimentoDestinoS()
+    public function EstoqueMovimentoS()
     {
         return $this->hasMany(EstoqueMovimento::class, 'codestoquemovimentotipo', 'codestoquemovimentotipo');
     }

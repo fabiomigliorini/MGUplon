@@ -32,25 +32,25 @@
         <div class='row'>
             <div class="col-md-2">
                 <fieldset class="form-group">
-                    {!! Form::label('corredor', 'Localização') !!}
+                    {!! Form::label('corredor', 'Corredor') !!}
                     {!! Form::number('corredor', null, ['class'=> 'form-control text-center', 'placeholder' => 'Corredor', 'id'=>'corredor', 'step'=>1, 'min'=>1]) !!}
                 </fieldset>
             </div>
             <div class="col-md-2">
                 <fieldset class="form-group">
-                    {!! Form::label('corredor', 'Localização') !!}
+                    {!! Form::label('prateleira', 'Prateleira') !!}
                           {!! Form::number('prateleira', null, ['class'=> 'form-control text-center', 'placeholder' => 'Prateleira', 'id'=>'corredor', 'step'=>1, 'min'=>1]) !!}
                 </fieldset>
             </div>
             <div class="col-md-2">
                 <fieldset class="form-group">
-                    {!! Form::label('corredor', 'Localização') !!}
+                    {!! Form::label('coluna', 'Coluna') !!}
                           {!! Form::number('coluna', null, ['class'=> 'form-control text-center', 'placeholder' => 'Coluna', 'id'=>'corredor', 'step'=>1, 'min'=>1]) !!}
                 </fieldset>
             </div>
             <div class="col-md-2">
                 <fieldset class="form-group">
-                    {!! Form::label('corredor', 'Localização') !!}
+                    {!! Form::label('bloco', 'Bloco') !!}
                           {!! Form::number('bloco', null, ['class'=> 'form-control text-center', 'placeholder' => 'Bloco', 'id'=>'corredor', 'step'=>1, 'min'=>1]) !!}
                 </fieldset>
             </div>

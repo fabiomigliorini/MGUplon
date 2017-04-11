@@ -23,6 +23,8 @@ use MGLara\Models\TipoProduto;
 use MGLara\Repositories\ProdutoHistoricoPrecoRepository;
 use MGLara\Library\IntegracaoOpenCart\IntegracaoOpenCart;
 
+use MGLara\Models\Produto;
+
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
 

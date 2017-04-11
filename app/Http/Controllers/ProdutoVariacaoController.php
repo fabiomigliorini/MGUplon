@@ -12,6 +12,7 @@ use MGLara\Repositories\ProdutoVariacaoRepository;
 use MGLara\Repositories\ProdutoRepository;
 use MGLara\Repositories\ProdutoBarraRepository;
 
+use MGLara\Models\ProdutoVariacao;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
@@ -298,6 +299,71 @@ class ProdutoVariacaoController extends Controller
         
         // redireciona para view
         return redirect("produto/{$this->repository->model->codproduto}");
+    }
+
+    public function select2(Request $request)
+    {
+        // Parametros que o Selec2 envia
+        $params = $request->get('params');
+        
+        // Quantidade de registros por pagina
+        $registros_por_pagina = 100;
+        
+        if($request->get('id')) {
+            
+            // Monta Retorno
+            $item = ProdutoVariacao::findOrFail($request->get('id'));
+            return [
+                'id' => $item->codprodutovariacao,
+                'variacao' => empty($item->variacao)?'{ Sem Variacao }':$item->variacao
+            ];
+        } else {
+
+            // Numero da Pagina
+            $params['page'] = $params['page']??1;
+            
+            // Monta Query
+            $qry = ProdutoVariacao::where('codproduto', '=', $request->codproduto);
+
+            foreach (explode(' ', trim($request->get('q'))) as $palavra) {
+                if (!empty($palavra)) {
+                    $qry->where('variacao', 'ilike', "%$palavra%");
+                }
+            }
+
+
+
+            //if ($request->get('somenteAtivos') == 'true') {
+            //    $qry->ativo();
+            //}
+            
+            // Total de registros
+            $total = $qry->count();
+            
+            // Ordenacao e dados para retornar
+            $qry->select('variacao', 'codprodutovariacao');
+            $qry->orderByRaw('variacao nulls first');
+            $qry->limit($registros_por_pagina);
+            $qry->offSet($registros_por_pagina * ($params['page']-1));
+            
+            // Percorre registros
+            $results = [];
+            foreach ($qry->get() as $item) {
+                $results[] = [
+                    'id' => $item->codprodutovariacao,
+                    'variacao' => empty($item->variacao)?'{ Sem Variacao }':$item->variacao
+                ];
+            }
+            
+            // Monta Retorno
+            return [
+                'results' => $results,
+                'params' => $params,
+                'pagination' =>  [
+                    'more' => ($total > $params['page'] * $registros_por_pagina)?true:false,
+                ]
+            ];
+        }
     }
     
 }

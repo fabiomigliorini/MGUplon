@@ -7,9 +7,9 @@
                 Pesquisa Produto
             </h4>
             <div class="card-block">
-                {!! Form::model('filtro', ['form-horizontal', 'id' => 'form-filtro']) !!}
+                {!! Form::model($data, ['form-horizontal', 'id' => 'form-filtro']) !!}
                 <fieldset class="form-group">
-                    {!! Form::label('codestoquelocal', 'Barras') !!}
+                    {!! Form::label('codestoquelocal', 'Local') !!}
                     {!! Form::select2EstoqueLocal('codestoquelocal', null, ['class'=> 'form-control', 'id'=>'codestoquelocal']) !!}
                 </fieldset>
                 <fieldset class="form-group">
@@ -46,6 +46,15 @@
 <script src="{{ URL::asset('public/assets/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js') }}"></script>
 <script type="text/javascript">
 
+function redireciona(codestoquemes) {
+    @if (empty($data['codestoquesaldo']))
+    toastr['success']('Conferência salva!');
+    limpaFiltro();
+    @else
+    window.location.href = '{{ url('estoque-mes') }}/' + codestoquemes
+    @endif
+}
+
 function salva() {
     
     // Executa Pergunta
@@ -73,8 +82,7 @@ function salva() {
                     
                     // Se executou
                     if (retorno.OK) {
-                        toastr['success']('Conferência salva!');
-                        limpaFiltro();
+                        redireciona(retorno.codestoquemes);
                     // Se não executou
                     } else {
                         swal({

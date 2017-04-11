@@ -52,6 +52,8 @@ class AuthServiceProvider extends ServiceProvider
         \MGLara\Models\Imagem::class                => \MGLara\Policies\ImagemPolicy::class,
         \MGLara\Models\ProdutoBarra::class          => \MGLara\Policies\ProdutoBarraPolicy::class,
         \MGLara\Models\ProdutoVariacao::class       => \MGLara\Policies\ProdutoVariacaoPolicy::class,
+        \MGLara\Models\EstoqueMovimento::class      => \MGLara\Policies\EstoqueMovimentoPolicy::class,
+
         \MGLara\Models\ChequeRepasse::class         => \MGLara\Policies\ChequeRepassePolicy::class,
     ];
 

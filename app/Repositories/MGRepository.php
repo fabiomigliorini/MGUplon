@@ -10,6 +10,7 @@ use Carbon\Carbon;
  *
  * @property string $model_class
  * @property Validator $validator
+ * @property Array $data
  * @property MGModel $model
  * @property array $sort
  */
@@ -45,8 +46,11 @@ abstract class MGRepository {
      * @return MGModel
      */
     public function new($attributes = []) {
-        if (!$this->model = new $this->model_class($attributes)) {
+        if (!$this->model = new $this->model_class()) {
             return false;
+        }
+        if (!empty($attributes)) {
+            $this->fill($attributes);
         }
         return $this->model;
     }
@@ -78,6 +82,7 @@ abstract class MGRepository {
      * @param type $data
      */
     public function fill($data) {
+        $this->data = $data;
         $this->model->fill($data);
     }
     
