@@ -222,4 +222,8 @@ Route::group(['middleware' => 'auth'], function() {
     /* Produto Variação */
     Route::resource('produto-variacao', 'ProdutoVariacaoController');
 
+    /* Prancheta */
+    Route::resource('prancheta', 'PranchetaController');
+    Route::resource('prancheta-produto-barra', 'PranchetaProdutoBarraController');
+
 });

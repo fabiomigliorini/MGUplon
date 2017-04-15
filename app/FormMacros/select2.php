@@ -1310,3 +1310,11 @@ Form::macro('select2FisicoFiscal', function($name, $selected = null, $options = 
     $options['placeholder'] = 'Físico / Fiscal';
     return Form::select2($name, $opcoes, $selected, $options);
 });
+
+/* UNIDADES DE MEDIDA */
+Form::macro('select2Prancheta', function($name, $selected = null, $options = [])
+{
+    $medidas = MGLara\Models\Prancheta::orderBy('prancheta')->pluck('prancheta', 'codprancheta')->prepend('', '');
+    return Form::select2($name, $medidas, $selected, $options);
+});
+
