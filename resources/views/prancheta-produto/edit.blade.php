@@ -5,9 +5,9 @@
         <div class="card">
             <h4 class="card-header">Alterar</h4>
             <div class="card-block">
-                {!! Form::model($model, ['method' => 'PATCH', 'id' => 'form-principal', 'action' => ['PranchetaProdutoBarraController@update', $model->codpranchetaprodutobarra] ]) !!}
+                {!! Form::model($model, ['method' => 'PATCH', 'id' => 'form-principal', 'action' => ['PranchetaProdutoController@update', $model->codpranchetaproduto] ]) !!}
                     @include('errors.form_error')
-                    @include('prancheta-produto-barra.form')
+                    @include('prancheta-produto.form')
                 {!! Form::close() !!}
             </div>
         </div>

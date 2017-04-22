@@ -4,36 +4,38 @@ namespace MGLara\Models;
 
 /**
  * Campos
- * @property  bigint                         $codpranchetaprodutobarra           NOT NULL DEFAULT nextval('tblpranchetaprodutobarra_codpranchetaprodutobarra_seq'::regclass)
- * @property  varchar(200)                   $observacoes                        
+ * @property  bigint                         $codpranchetaproduto                NOT NULL DEFAULT nextval('tblpranchetaproduto_codpranchetaproduto_seq'::regclass)
+ * @property  bigint                         $codprancheta                       NOT NULL
+ * @property  bigint                         $codproduto                         NOT NULL
  * @property  timestamp                      $criacao                            
  * @property  timestamp                      $alteracao                          
  * @property  bigint                         $codusuariocriacao                  
  * @property  bigint                         $codusuarioalteracao                
- * @property  bigint                         $codprancheta                       NOT NULL
- * @property  bigint                         $codprodutobarra                    NOT NULL
+ * @property  timestamp                      $inativo                            
+ * @property  varchar(200)                   $observacoes                        
  *
  * Chaves Estrangeiras
  * @property  Usuario                        $UsuarioCriacao
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Prancheta                      $Prancheta
- * @property  ProdutoBarra                   $ProdutoBarra
+ * @property  Produto                        $Produto
  *
  * Tabelas Filhas
  */
 
-class PranchetaProdutoBarra extends MGModel
+class PranchetaProduto extends MGModel
 {
-    protected $table = 'tblpranchetaprodutobarra';
-    protected $primaryKey = 'codpranchetaprodutobarra';
+    protected $table = 'tblpranchetaproduto';
+    protected $primaryKey = 'codpranchetaproduto';
     protected $fillable = [
-          'observacoes',
-             'codprancheta',
-         'codprodutobarra',
+          'codprancheta',
+         'codproduto',
+              'observacoes',
     ];
     protected $dates = [
         'criacao',
         'alteracao',
+        'inativo',
     ];
 
 
@@ -53,9 +55,9 @@ class PranchetaProdutoBarra extends MGModel
         return $this->belongsTo(Prancheta::class, 'codprancheta', 'codprancheta');
     }
 
-    public function ProdutoBarra()
+    public function Produto()
     {
-        return $this->belongsTo(ProdutoBarra::class, 'codprodutobarra', 'codprodutobarra');
+        return $this->belongsTo(Produto::class, 'codproduto', 'codproduto');
     }
 
 

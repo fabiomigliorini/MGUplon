@@ -224,6 +224,6 @@ Route::group(['middleware' => 'auth'], function() {
 
     /* Prancheta */
     Route::resource('prancheta', 'PranchetaController');
-    Route::resource('prancheta-produto-barra', 'PranchetaProdutoBarraController');
+    Route::resource('prancheta-produto', 'PranchetaProdutoController');
 
 });

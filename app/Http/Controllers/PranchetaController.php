@@ -175,10 +175,10 @@ class PranchetaController extends Controller
         $this->bc->addItem($this->repository->model->prancheta);
         $this->bc->header = $this->repository->model->prancheta;
         
-        $produtos = $this->repository->montaListagemProdutos();
+        $itens = $this->repository->listagemProdutos();
         
         // retorna show
-        return view('prancheta.show', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'produtos'=>$produtos]);
+        return view('prancheta.show', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'itens'=>$itens]);
     }
 
     /**

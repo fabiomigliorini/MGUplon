@@ -133,11 +133,4 @@ class ProdutoImagemRepository extends MGRepository {
         
     }
     
-    public function buscaPorProdutos($codprodutos) {
-        
-        $ret = ProdutoImagem::whereIn('codproduto', $codprodutos)->get();
-        return $ret->groupBy('codproduto');
-        
-    }
-    
 }

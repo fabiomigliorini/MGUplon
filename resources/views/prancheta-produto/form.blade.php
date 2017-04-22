@@ -1,14 +1,14 @@
 <fieldset class="form-group">
-    {!! Form::label('codprancheta', 'Prancheta') !!}
-    {!! Form::select2Prancheta('codprancheta', null, ['class'=> 'form-control', 'id'=>'codprancheta', 'step'=>'1', 'min'=>'1', 'required'=>'required']) !!}
+    {!! Form::label('codprancheta', 'Codprancheta') !!}
+    {!! Form::number('codprancheta', null, ['class'=> 'form-control', 'id'=>'codprancheta', 'step'=>'1', 'min'=>'1', 'required'=>'required', 'autofocus']) !!}
 </fieldset>
 <fieldset class="form-group">
-    {!! Form::label('barras', 'Barras') !!}
-    {!! Form::text('barras', null, ['class'=> 'form-control', 'id'=>'barras', 'step'=>'1', 'min'=>'1', 'required'=>'required']) !!}
+    {!! Form::label('codproduto', 'Codproduto') !!}
+    {!! Form::number('codproduto', null, ['class'=> 'form-control', 'id'=>'codproduto', 'step'=>'1', 'min'=>'1', 'required'=>'required']) !!}
 </fieldset>
 <fieldset class="form-group">
     {!! Form::label('observacoes', 'Observacoes') !!}
-    {!! Form::textarea('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes', 'maxlength'=>'200', 'autofocus']) !!}
+    {!! Form::text('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes', 'maxlength'=>'200']) !!}
 </fieldset>
 <fieldset class="form-group">
    {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}

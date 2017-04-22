@@ -17,7 +17,7 @@ namespace MGLara\Models;
  * @property  Usuario                        $UsuarioCriacao
  *
  * Tabelas Filhas
- * @property  PranchetaProdutoBarra[]        $PranchetaProdutoBarraS
+ * @property  PranchetaProduto[]        $PranchetaProdutoS
  */
 
 class Prancheta extends MGModel
@@ -47,9 +47,9 @@ class Prancheta extends MGModel
 
 
     // Tabelas Filhas
-    public function PranchetaProdutoBarraS()
+    public function PranchetaProdutoS()
     {
-        return $this->hasMany(PranchetaProdutoBarra::class, 'codprancheta', 'codprancheta');
+        return $this->hasMany(PranchetaProduto::class, 'codprancheta', 'codprancheta');
     }
 
 

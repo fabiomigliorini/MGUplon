@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
 
-use MGLara\Repositories\PranchetaProdutoBarraRepository;
+use MGLara\Repositories\PranchetaProdutoRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
@@ -16,15 +16,15 @@ use MGLara\Library\JsonEnvelope\Datatable;
 use Carbon\Carbon;
 
 /**
- * @property  PranchetaProdutoBarraRepository $repository 
+ * @property  PranchetaProdutoRepository $repository 
  */
-class PranchetaProdutoBarraController extends Controller
+class PranchetaProdutoController extends Controller
 {
 
-    public function __construct(PranchetaProdutoBarraRepository $repository) {
+    public function __construct(PranchetaProdutoRepository $repository) {
         $this->repository = $repository;
-        $this->bc = new Breadcrumb('Prancheta Produto Barra');
-        $this->bc->addItem('Prancheta Produto Barra', url('prancheta-produto-barra'));
+        $this->bc = new Breadcrumb('Produtos da Prancheta');
+        $this->bc->addItem('Produtos da Prancheta', url('prancheta-produto'));
     }
     
     /**
@@ -55,7 +55,7 @@ class PranchetaProdutoBarraController extends Controller
         
         
         // retorna View
-        return view('prancheta-produto-barra.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
+        return view('prancheta-produto.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
     }
 
     /**
@@ -76,13 +76,12 @@ class PranchetaProdutoBarraController extends Controller
         ]);
         
         // Ordenacao
-        $columns[0] = 'codpranchetaprodutobarra';
+        $columns[0] = 'codpranchetaproduto';
         $columns[1] = 'inativo';
-        $columns[2] = 'codpranchetaprodutobarra';
-        $columns[3] = 'codpranchetaprodutobarra';
-        $columns[4] = 'observacoes';
-        $columns[5] = 'codprancheta';
-        $columns[6] = 'codprodutobarra';
+        $columns[2] = 'codpranchetaproduto';
+        $columns[3] = 'codproduto';
+        $columns[4] = 'codprancheta';
+        $columns[5] = 'observacoes';
 
         $sort = [];
         if (!empty($request['order'])) {
@@ -105,13 +104,12 @@ class PranchetaProdutoBarraController extends Controller
         $data = [];
         foreach ($regs['data'] as $reg) {
             $data[] = [
-                url('prancheta-produto-barra', $reg->codpranchetaprodutobarra),
+                url('prancheta-produto', $reg->codpranchetaproduto),
                 formataData($reg->inativo, 'C'),
-                formataCodigo($reg->codpranchetaprodutobarra),
-                $reg->codpranchetaprodutobarra,
-                $reg->observacoes,
+                formataCodigo($reg->codpranchetaproduto),
+                $reg->codproduto,
                 $reg->codprancheta,
-                $reg->codprodutobarra,
+                $reg->observacoes,
             ];
         }
         
@@ -129,10 +127,10 @@ class PranchetaProdutoBarraController extends Controller
      *
      * @return  \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function create()
     {
         // cria um registro em branco
-        $this->repository->new($request->all());
+        $this->repository->new();
         
         // autoriza
         $this->repository->authorize('create');
@@ -141,7 +139,7 @@ class PranchetaProdutoBarraController extends Controller
         $this->bc->addItem('Novo');
         
         // retorna view
-        return view('prancheta-produto-barra.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('prancheta-produto.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -155,10 +153,10 @@ class PranchetaProdutoBarraController extends Controller
         parent::store($request);
         
         // Mensagem de registro criado
-        Session::flash('flash_create', 'Prancheta Produto Barra criado!');
+        Session::flash('flash_create', 'Produtos da Prancheta criado!');
         
         // redireciona para o view
-        return redirect("prancheta-produto-barra/{$this->repository->model->codpranchetaprodutobarra}");
+        return redirect("prancheta-produto/{$this->repository->model->codpranchetaproduto}");
     }
 
     /**
@@ -176,11 +174,11 @@ class PranchetaProdutoBarraController extends Controller
         $this->repository->authorize('view');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->codpranchetaprodutobarra);
-        $this->bc->header = $this->repository->model->codpranchetaprodutobarra;
+        $this->bc->addItem($this->repository->model->codproduto);
+        $this->bc->header = $this->repository->model->codproduto;
         
         // retorna show
-        return view('prancheta-produto-barra.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('prancheta-produto.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -198,12 +196,12 @@ class PranchetaProdutoBarraController extends Controller
         $this->repository->authorize('update');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->codpranchetaprodutobarra, url('prancheta-produto-barra', $this->repository->model->codpranchetaprodutobarra));
-        $this->bc->header = $this->repository->model->codpranchetaprodutobarra;
+        $this->bc->addItem($this->repository->model->codproduto, url('prancheta-produto', $this->repository->model->codpranchetaproduto));
+        $this->bc->header = $this->repository->model->codproduto;
         $this->bc->addItem('Alterar');
         
         // retorna formulario edit
-        return view('prancheta-produto-barra.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('prancheta-produto.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -219,10 +217,10 @@ class PranchetaProdutoBarraController extends Controller
         parent::update($request, $id);
         
         // mensagem re registro criado
-        Session::flash('flash_update', 'Prancheta Produto Barra alterado!');
+        Session::flash('flash_update', 'Produtos da Prancheta alterado!');
         
         // redireciona para view
-        return redirect("prancheta-produto-barra/{$this->repository->model->codpranchetaprodutobarra}"); 
+        return redirect("prancheta-produto/{$this->repository->model->codpranchetaproduto}"); 
     }
     
 }

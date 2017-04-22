@@ -7,9 +7,9 @@
                 Novo
             </h4>
             <div class="card-block">
-                {!! Form::model($model, ['method' => 'POST', 'class' => 'form-horizontal', 'id' => 'form-principal', 'route' => 'prancheta-produto-barra.store']) !!}
+                {!! Form::model($model, ['method' => 'POST', 'class' => 'form-horizontal', 'id' => 'form-principal', 'route' => 'prancheta-produto.store']) !!}
                     @include('errors.form_error')
-                    @include('prancheta-produto-barra.form')
+                    @include('prancheta-produto.form')
                 {!! Form::close() !!}   
             </div>
         </div>

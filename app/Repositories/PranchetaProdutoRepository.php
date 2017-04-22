@@ -7,18 +7,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
-use MGLara\Models\PranchetaProdutoBarra;
+use MGLara\Models\PranchetaProduto;
 
 /**
- * Description of PranchetaProdutoBarraRepository
+ * Description of PranchetaProdutoRepository
  * 
  * @property  Validator $validator
- * @property  PranchetaProdutoBarra $model
+ * @property  PranchetaProduto $model
  */
-class PranchetaProdutoBarraRepository extends MGRepository {
+class PranchetaProdutoRepository extends MGRepository {
     
     public function boot() {
-        $this->model = new PranchetaProdutoBarra();
+        $this->model = new PranchetaProduto();
     }
     
     //put your code here
@@ -29,41 +29,29 @@ class PranchetaProdutoBarraRepository extends MGRepository {
         }
         
         if (empty($id)) {
-            $id = $this->model->codpranchetaprodutobarra;
+            $id = $this->model->codpranchetaproduto;
         }
         
-        $rules = [
-            'observacoes' => [
-                'max:200',
-                'nullable',
-            ],
+        $this->validator = Validator::make($data, [
             'codprancheta' => [
                 'numeric',
                 'required',
             ],
-        ];
-
-        if (empty($data['codprodutobarra'])) {
-            $rules['barras'] = [
-                'required',
-            ];
-        } else {
-            $rules['codprodutobarra'] = [
+            'codproduto' => [
                 'numeric',
                 'required',
-            ];
-        }
-        
-        
-        $this->validator = Validator::make($data, $rules, [
-            'observacoes.max' => 'O campo "observacoes" não pode conter mais que 200 caracteres!',
+            ],
+            'observacoes' => [
+                'max:200',
+                'nullable',
+            ],
+        ], [
             'codprancheta.numeric' => 'O campo "codprancheta" deve ser um número!',
             'codprancheta.required' => 'O campo "codprancheta" deve ser preenchido!',
-            'codprodutobarra.numeric' => 'O campo "codprodutobarra" deve ser um número!',
-            'codprodutobarra.required' => 'O campo "codprodutobarra" deve ser preenchido!',
-            'barras.required' => 'O campo "barras" deve ser preenchido!',
+            'codproduto.numeric' => 'O campo "codproduto" deve ser um número!',
+            'codproduto.required' => 'O campo "codproduto" deve ser preenchido!',
+            'observacoes.max' => 'O campo "observacoes" não pode conter mais que 200 caracteres!',
         ]);
-        
 
         return $this->validator->passes();
         
@@ -80,15 +68,19 @@ class PranchetaProdutoBarraRepository extends MGRepository {
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
         
         // Query da Entidade
-        $qry = PranchetaProdutoBarra::query();
+        $qry = PranchetaProduto::query();
         
         // Filtros
-         if (!empty($filters['codpranchetaprodutobarra'])) {
-            $qry->where('codpranchetaprodutobarra', '=', $filters['codpranchetaprodutobarra']);
+         if (!empty($filters['codpranchetaproduto'])) {
+            $qry->where('codpranchetaproduto', '=', $filters['codpranchetaproduto']);
         }
 
-         if (!empty($filters['observacoes'])) {
-            $qry->palavras('observacoes', $filters['observacoes']);
+         if (!empty($filters['codprancheta'])) {
+            $qry->where('codprancheta', '=', $filters['codprancheta']);
+        }
+
+         if (!empty($filters['codproduto'])) {
+            $qry->where('codproduto', '=', $filters['codproduto']);
         }
 
          if (!empty($filters['criacao'])) {
@@ -107,12 +99,8 @@ class PranchetaProdutoBarraRepository extends MGRepository {
             $qry->where('codusuarioalteracao', '=', $filters['codusuarioalteracao']);
         }
 
-         if (!empty($filters['codprancheta'])) {
-            $qry->where('codprancheta', '=', $filters['codprancheta']);
-        }
-
-         if (!empty($filters['codprodutobarra'])) {
-            $qry->where('codprodutobarra', '=', $filters['codprodutobarra']);
+          if (!empty($filters['observacoes'])) {
+            $qry->palavras('observacoes', $filters['observacoes']);
         }
 
         
@@ -148,23 +136,9 @@ class PranchetaProdutoBarraRepository extends MGRepository {
         // Registros
         return [
             'recordsFiltered' => $count
-            , 'recordsTotal' => PranchetaProdutoBarra::count()
+            , 'recordsTotal' => PranchetaProduto::count()
             , 'data' => $qry->get()
         ];
-        
-    }
-    
-    public function fill($data) {
-        
-        if (empty($data['codprodutobarra']) && !empty($data['barras'])) {
-            $repo_pb = new ProdutoBarraRepository();
-            if ($pb = $repo_pb->buscaPorBarras($data['barras'])) {
-                $data['codprodutobarra'] = $pb->codprodutobarra;
-            }
-        }
-        
-        parent::fill($data);
-        
         
     }
     

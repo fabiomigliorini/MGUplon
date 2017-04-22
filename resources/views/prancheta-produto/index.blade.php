@@ -9,20 +9,14 @@
             {!! Form::model($filtro['filtros'], ['id' => 'form-search', 'autocomplete' => 'on'])!!}
                 <div class="col-md-2">
                     <div class="form-group">
-                        <label for="codpranchetaprodutobarra" class="control-label">#</label>
-                        {!! Form::number('codpranchetaprodutobarra', null, ['class'=> 'form-control', 'id'=>'codpranchetaprodutobarra', 'step'=>1, 'min'=>1]) !!}
+                        <label for="codpranchetaproduto" class="control-label">#</label>
+                        {!! Form::number('codpranchetaproduto', null, ['class'=> 'form-control', 'id'=>'codpranchetaproduto', 'step'=>1, 'min'=>1]) !!}
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="codpranchetaprodutobarra" class="control-label">Prancheta Produto Barra</label>
-                        {!! Form::text('codpranchetaprodutobarra', null, ['class'=> 'form-control', 'id'=>'codpranchetaprodutobarra']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="observacoes" class="control-label">Observacoes</label>
-                        {!! Form::text('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes']) !!}
+                        <label for="codproduto" class="control-label">Produtos da Prancheta</label>
+                        {!! Form::text('codproduto', null, ['class'=> 'form-control', 'id'=>'codproduto']) !!}
                     </div>
                 </div>
                 <div class="col-md-1">
@@ -33,8 +27,8 @@
                 </div>
                 <div class="col-md-1">
                     <div class="form-group">
-                        <label for="codprodutobarra" class="control-label">Codprodutobarra</label>
-                        {!! Form::text('codprodutobarra', null, ['class'=> 'form-control', 'id'=>'codprodutobarra']) !!}
+                        <label for="observacoes" class="control-label">Observacoes</label>
+                        {!! Form::text('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes']) !!}
                     </div>
                 </div>
                 <div class="col-md-1">
@@ -53,14 +47,14 @@
 
 <div class='card'>
     <div class='card-block table-responsive'>
-        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Prancheta Produto Barra', 'Observacoes', 'Codprancheta', 'Codprodutobarra', ]])
+        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Produtos da Prancheta', 'Codprancheta', 'Observacoes', ]])
         <div class='clearfix'></div>
     </div>
 </div>
 
 @section('buttons')
 
-    <a class="btn btn-secondary btn-sm" href="{{ url("prancheta-produto-barra/create") }}"><i class="fa fa-plus"></i></a> 
+    <a class="btn btn-secondary btn-sm" href="{{ url("prancheta-produto/create") }}"><i class="fa fa-plus"></i></a> 
     <a class="btn btn-secondary btn-sm" href="#collapsePesquisa" data-toggle="collapse" aria-expanded="false" aria-controls="collapsePesquisa"><i class='fa fa-search'></i></a>
     
 @endsection
@@ -68,7 +62,7 @@
 
     @include('layouts.includes.datatable.assets')
 
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('prancheta-produto-barra/datatable'), 'order' => $filtro['order'], 'filtros' => ['codpranchetaprodutobarra', 'codpranchetaprodutobarra', 'inativo', 'observacoes', 'codprancheta', 'codprodutobarra', ] ])
+    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('prancheta-produto/datatable'), 'order' => $filtro['order'], 'filtros' => ['codpranchetaproduto', 'codproduto', 'inativo', 'codprancheta', 'observacoes', ] ])
 
     <script type="text/javascript">
         $(document).ready(function () {
