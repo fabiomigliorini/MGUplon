@@ -680,4 +680,80 @@ class ProdutoRepository extends MGRepository {
         return $arrRet;
     }
     
+    public function detalhes ($model = null) {
+        
+        if (empty($model)) {
+            $model = $this->model;
+        }
+        
+        $produto = $model;
+        
+        //Embalagem
+        $embalagem = collect();
+        $embalagem[0] = (object)[
+            'codprodutoembalagem' => null,
+            'codembalagem' => null,
+            'sigla' => $model->UnidadeMedida->sigla,
+            'quantidade' => 1,
+            'preco' => $model->preco,
+            'precocalculado' => false,
+            'variacao' => collect(),
+        ];
+        foreach ($model->ProdutoEmbalagemS()->orderBy('quantidade')->get() as $pe) {
+            $preco = $pe->preco;
+            $precocalculado = false;
+            if (empty($preco)) {
+                $preco = $model->preco * $pe->quantidade;
+                $precocalculado = true;
+            }
+            $embalagem[$pe->codprodutoembalagem] = (object)[
+                'codprodutoembalagem' => $pe->codprodutoembalagem,
+                'codembalagem' => $pe->codembalagem,
+                'sigla' => $pe->UnidadeMedida->sigla,
+                'quantidade' => $pe->quantidade,
+                'preco' => $preco,
+                'precocalculado' => $precocalculado,
+                'variacao' => collect(),
+            ];
+        }
+
+        $variacao = collect();
+        foreach ($model->ProdutoVariacaoS()->orderByRaw('variacao asc nulls first')->get() as $pv) {
+
+            foreach ($pv->ProdutoBarraS()->orderBy('barras')->get() as $pb) {
+                $codprodutoembalagem = $pb->codprodutoembalagem;
+                if (empty($codprodutoembalagem)) {
+                    $codprodutoembalagem = 0;
+                }
+
+                if (!isset($embalagem[$codprodutoembalagem]->variacao[$pv->codprodutovariacao])) {
+                    $variacao = (object)[
+                        'codprodutovariacao' => $pv->codprodutovariacao,
+                        'variacao' => $pv->variacao,
+                        'marca' => empty($pv->codmarca)?'':$pv->Marca->marca,
+                        'barras' => collect(),
+                    ];
+                    $embalagem[$codprodutoembalagem]->variacao[$pv->codprodutovariacao] = $variacao;
+                }
+
+                $barras = (object)[
+                    'codprodutobarra' => $pb->codprodutobarra,
+                    'barras' => $pb->barras,
+                ];
+
+                $embalagem[$codprodutoembalagem]->variacao[$pv->codprodutovariacao]->barras[$pb->codprodutobarra] = $barras;
+
+            }
+        }
+        
+        $repo_imagem = new ProdutoImagemRepository();
+        $imagem = $repo_imagem->buscaPorProdutos($model->codproduto);
+        
+        $produto->imagem = $imagem[$model->codproduto];
+        $produto->embalagem = $embalagem;
+        $produto->variacao = $variacao;
+        
+        return $produto;
+    }
+    
 }

@@ -133,4 +133,27 @@ class ProdutoImagemRepository extends MGRepository {
         
     }
     
+    public function buscaPorProdutos($codprodutos) {
+        
+        if (is_int($codprodutos)) {
+            $codprodutos = [$codprodutos];
+        }
+        
+        $qry = ProdutoImagem::whereIn('codproduto', $codprodutos);
+        $repo_img = new ImagemRepository();
+        
+        $ret = collect();
+        foreach ($qry->get() as $item) {
+            $imagem = $item->Imagem;
+            $imagem->url = $repo_img->url($item->Imagem);
+            if (empty($ret[$item->codproduto])) {
+                $ret[$item->codproduto] = collect();
+            }
+            $ret[$item->codproduto][$item->codprodutoimagem] = $imagem;
+        }
+        
+        return $ret;
+        
+    }
+    
 }

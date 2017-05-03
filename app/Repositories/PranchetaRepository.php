@@ -136,8 +136,7 @@ class PranchetaRepository extends MGRepository {
         
     }
     
-    public function listagemProdutos($model = null) {
-        
+    public function listagemProdutos($model = null, $codestoquelocal = null) {
         
         if (empty($model)) {
             $model = $this->model;
@@ -145,186 +144,78 @@ class PranchetaRepository extends MGRepository {
         
         $qry = $model->PranchetaProdutoS()->ativo();
         
-        $qry->select([
-            'tblpranchetaproduto.codpranchetaproduto',
-            'tblpranchetaproduto.observacoes',
-            'tblproduto.codproduto',
-            'tblproduto.produto',
-            'tblproduto.preco',
-            'tblsecaoproduto.codsecaoproduto',
-            'tblsecaoproduto.secaoproduto',
-            'tblfamiliaproduto.codfamiliaproduto',
-            'tblfamiliaproduto.familiaproduto',
-            'tblgrupoproduto.codgrupoproduto',
-            'tblgrupoproduto.grupoproduto',
-            'tblsubgrupoproduto.codsubgrupoproduto',
-            'tblsubgrupoproduto.subgrupoproduto',
-            'tblsecaoproduto.secaoproduto',
-            'tblfamiliaproduto.familiaproduto',
-            'tblgrupoproduto.grupoproduto',
-            'tblsubgrupoproduto.subgrupoproduto',
-            'tblunidademedida.sigla',
-        ]);
-        
-        $qry->leftJoin('tblproduto', 'tblproduto.codproduto', '=', 'tblpranchetaproduto.codproduto');
-        $qry->leftJoin('tblmarca', 'tblmarca.codmarca', '=', 'tblproduto.codmarca');
-        $qry->leftJoin('tblsubgrupoproduto', 'tblsubgrupoproduto.codsubgrupoproduto', '=', 'tblproduto.codsubgrupoproduto');
-        $qry->leftJoin('tblgrupoproduto', 'tblgrupoproduto.codgrupoproduto', '=', 'tblsubgrupoproduto.codgrupoproduto');
-        $qry->leftJoin('tblfamiliaproduto', 'tblfamiliaproduto.codfamiliaproduto', '=', 'tblgrupoproduto.codfamiliaproduto');
-        $qry->leftJoin('tblsecaoproduto', 'tblsecaoproduto.codsecaoproduto', '=', 'tblfamiliaproduto.codsecaoproduto');
-        $qry->leftJoin('tblunidademedida', 'tblunidademedida.codunidademedida', '=', 'tblproduto.codunidademedida');
-        
-        $qry->orderBy('tblsecaoproduto.secaoproduto', 'asc');
-        $qry->orderBy('tblfamiliaproduto.familiaproduto', 'asc');
-        $qry->orderBy('tblgrupoproduto.grupoproduto', 'asc');
-        $qry->orderBy('tblsubgrupoproduto.subgrupoproduto', 'asc');
-        $qry->orderBy('tblproduto.produto', 'asc');
-        
-        $itens = $qry->get();
-        
-        $secoes = collect([]);
-        
-        foreach ($itens as $item) {
+        $marca = collect([]);
+        $secao = collect([]);
+        $familia = collect([]);
+        $grupo = collect([]);
+        $subgrupo = collect([]);
+        $produto = collect([]);
+        foreach ($qry->get() as $item) {
             
-            //Secao
-            if (!isset($secoes[$item->codsecaoproduto])) {
-                $secao = (object) [
-                    'codsecaoproduto' => $item->codsecaoproduto,
-                    'secaoproduto' => $item->secaoproduto,
-                    'quantidadeprodutos' => 0,
-                    'familiaproduto' => collect([]),
-                ];
-                $secoes[$item->codsecaoproduto] = $secao;
-            }
-            $secoes[$item->codsecaoproduto]->quantidadeprodutos++;
-            
-            //Familia
-            if (!isset($secoes[$item->codsecaoproduto]->familiaproduto[$item->codfamiliaproduto])) {
-                $familia = (object)[
-                    'codfamiliaproduto' => $item->codfamiliaproduto,
-                    'familiaproduto' => $item->familiaproduto,
-                    'quantidadeprodutos' => 0,
-                    'grupoproduto' => collect([]),
-                ];
-                $secoes[$item->codsecaoproduto]->familiaproduto[$item->codfamiliaproduto] = $familia;
-            }
-            $secoes[$item->codsecaoproduto]->familiaproduto[$item->codfamiliaproduto]->quantidadeprodutos++;
-            
-            //Grupo
-            if (!isset($secoes[$item->codsecaoproduto]->familiaproduto[$item->codfamiliaproduto]->grupoproduto[$item->codgrupoproduto])) {
-                $grupo = (object)[
-                    'codgrupoproduto' => $item->codgrupoproduto,
-                    'grupoproduto' => $item->grupoproduto,
-                    'quantidadeprodutos' => 0,
-                    'subgrupoproduto' => collect([]),
-                ];
-                $secoes[$item->codsecaoproduto]->familiaproduto[$item->codfamiliaproduto]->grupoproduto[$item->codgrupoproduto] = $grupo;
-            }
-            $secoes[$item->codsecaoproduto]->familiaproduto[$item->codfamiliaproduto]->grupoproduto[$item->codgrupoproduto]->quantidadeprodutos++;
-            
-            //Sub-Grupo
-            if (!isset($secoes[$item->codsecaoproduto]->familiaproduto[$item->codfamiliaproduto]->grupoproduto[$item->codgrupoproduto]->subgrupoproduto[$item->codsubgrupoproduto])) {
-                $subgrupo = (object)[
-                    'codsubgrupoproduto' => $item->codsubgrupoproduto,
-                    'subgrupoproduto' => $item->subgrupoproduto,
-                    'quantidadeprodutos' => 0,
-                    'produto' => collect([]),
-                ];
-                $secoes[$item->codsecaoproduto]->familiaproduto[$item->codfamiliaproduto]->grupoproduto[$item->codgrupoproduto]->subgrupoproduto[$item->codsubgrupoproduto] = $subgrupo;
-            }
-            $secoes[$item->codsecaoproduto]->familiaproduto[$item->codfamiliaproduto]->grupoproduto[$item->codgrupoproduto]->subgrupoproduto[$item->codsubgrupoproduto]->quantidadeprodutos++;
-            
-            //Imagens
-            $imagem = collect([]);
-            foreach ($item->Produto->ProdutoImagemS as $img) {
-                $imagem[] = (object)[
-                    'codimagem' => $img->codimagem,
-                    'url' => asset('public/imagens/' . $img->observacoes),
-                ];
-            }
-            
-            //Embalagem
-            $embalagem = collect([]);
-            $embalagem[0] = (object)[
-                'codprodutoembalagem' => null,
-                'codembalagem' => $item->codembalagem,
-                'sigla' => $item->Produto->UnidadeMedida->sigla,
-                'quantidade' => 1,
-                'preco' => $item->Produto->preco,
-                'precocalculado' => false,
-                'variacao' => collect([]),
-            ];
-            foreach ($item->Produto->ProdutoEmbalagemS()->orderBy('quantidade')->get() as $pe) {
-                $preco = $pe->preco;
-                $precocalculado = false;
-                if (empty($preco)) {
-                    $preco = $item->Produto->preco * $pe->quantidade;
-                    $precocalculado = true;
-                }
-                $embalagem[$pe->codprodutoembalagem] = (object)[
-                    'codprodutoembalagem' => $pe->codprodutoembalagem,
-                    'codembalagem' => $pe->codembalagem,
-                    'sigla' => $pe->UnidadeMedida->sigla,
-                    'quantidade' => $pe->quantidade,
-                    'preco' => $preco,
-                    'precocalculado' => $precocalculado,
-                    'variacao' => collect([]),
-                ];
-            }
-            
-            $variacao = collect([]);
-            foreach ($item->Produto->ProdutoVariacaoS()->orderByRaw('variacao asc nulls first')->get() as $pv) {
+            if (!isset($subgrupo[$item->Produto->codsubgrupoproduto])) {
+                $subgrupo[$item->Produto->codsubgrupoproduto] = $item->Produto->SubGrupoProduto;
                 
-                foreach ($pv->ProdutoBarraS()->orderBy('barras')->get() as $pb) {
-                    $codprodutoembalagem = $pb->codprodutoembalagem;
-                    if (empty($codprodutoembalagem)) {
-                        $codprodutoembalagem = 0;
+                if (!isset($grupo[$item->Produto->SubGrupoProduto->codgrupoproduto])) {
+                    $grupo[$item->Produto->SubGrupoProduto->codgrupoproduto] = $item->Produto->SubGrupoProduto->GrupoProduto;
+                    
+                    if (!isset($familia[$item->Produto->SubGrupoProduto->GrupoProduto->codfamiliaproduto])) {
+                        $familia[$item->Produto->SubGrupoProduto->GrupoProduto->codfamiliaproduto] = $item->Produto->SubGrupoProduto->GrupoProduto->FamiliaProduto;
+                        
+                        if (!isset($secao[$item->Produto->SubGrupoProduto->GrupoProduto->FamiliaProduto->codsecaoproduto])) {
+                            $secao[$item->Produto->SubGrupoProduto->GrupoProduto->FamiliaProduto->codsecaoproduto] = $item->Produto->SubGrupoProduto->GrupoProduto->FamiliaProduto->SecaoProduto;
+                        }
                     }
-                    
-                    if (!isset($embalagem[$codprodutoembalagem]->variacao[$pv->codprodutovariacao])) {
-                        $variacao = (object)[
-                            'codprodutovariacao' => $pv->codprodutovariacao,
-                            'variacao' => $pv->variacao,
-                            'marca' => empty($pv->codmarca)?'':$pv->Marca->marca,
-                            'barras' => collect([]),
-                        ];
-                        $embalagem[$codprodutoembalagem]->variacao[$pv->codprodutovariacao] = $variacao;
-                    }
-                    
-                    $barras = (object)[
-                        'codprodutobarra' => $pb->codprodutobarra,
-                        'barras' => $pb->barras,
-                    ];
-                    
-                    $embalagem[$codprodutoembalagem]->variacao[$pv->codprodutovariacao]->barras[$pb->codprodutobarra] = $barras;
-                    
                 }
-                
+            
             }
             
-            //Produto
-            $produto = (object)[
-                'codpranchetaproduto' => $item->codpranchetaproduto,
-                'observacoes' => $item->observacoes,
-                'codproduto' => $item->codproduto,
-                'produto' => $item->produto,
-                'preco' => $item->preco,
-                'sigla' => $item->sigla,
-                'marca' => $item->marca,
-                'imagem' => $imagem,
-                'embalagem' => $embalagem,
-                'variacao' => $variacao,
-            ];
-            $secoes[$item->codsecaoproduto]->familiaproduto[$item->codfamiliaproduto]->grupoproduto[$item->codgrupoproduto]->subgrupoproduto[$item->codsubgrupoproduto]->produto[$item->codproduto] = $produto;
+            if (!isset($marca[$item->Produto->codmarca])) {
+                $marca[$item->Produto->codmarca] = $item->Produto->Marca;
+            }
+            
+            $quantidade = null;
+            foreach ($item->Produto->ProdutoVariacaoS as $variacao) {
+                $qry = $variacao->EstoqueLocalProdutoVariacaoS();
+                if (!empty($codestoquelocal)) {
+                    $qry = $qry->where('codestoquelocal', '=', $codestoquelocal);
+                }
+                foreach ($qry->get() as $elpv) {
+                    foreach ($elpv->EstoqueSaldoS()->where('fiscal', false)->get() as $saldo) {
+                        $quantidade += $saldo->saldoquantidade;
+                    }
+                }
+            }
+            
+            $produto[$item->codproduto] = $item->Produto;
+            $produto[$item->codproduto]->saldoquantidade = $quantidade;
             
         }
         
+        $repo_img = new ProdutoImagemRepository();
+        $imagem = $repo_img->buscaPorProdutos($produto->keys());
+        
         $ret = [
-            'quantidadeprodutos' => $itens->count(),
-            'secaoproduto' => $secoes,
+            'marca' => $marca,
+            'secao' => $secao,
+            'familia' => $familia,
+            'grupo' => $grupo,
+            'subgrupo' => $subgrupo,
+            'produto' => $produto,
+            'imagem' => $imagem,
         ];
         
         return $ret;
+    }
+    
+    public function detalhesProduto ($codproduto, $codestoquelocal = null) {
+        $repo_prod = new ProdutoRepository();
+        if (!$repo_prod->find($codproduto)) {
+            return false;
+        }
+        
+        $detalhes = $repo_prod->detalhes();
+        
+        return $detalhes;
     }
     
 }

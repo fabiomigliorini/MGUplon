@@ -83,30 +83,29 @@ class ImagemRepository extends MGRepository {
         $qry = Imagem::query();
         
         // Filtros
-         if (!empty($filters['codimagem'])) {
+        if (!empty($filters['codimagem'])) {
             $qry->where('codimagem', '=', $filters['codimagem']);
         }
 
-         if (!empty($filters['observacoes'])) {
+        if (!empty($filters['observacoes'])) {
             $qry->palavras('observacoes', $filters['observacoes']);
         }
 
-          if (!empty($filters['criacao'])) {
+        if (!empty($filters['criacao'])) {
             $qry->where('criacao', '=', $filters['criacao']);
         }
 
-         if (!empty($filters['codusuariocriacao'])) {
+        if (!empty($filters['codusuariocriacao'])) {
             $qry->where('codusuariocriacao', '=', $filters['codusuariocriacao']);
         }
 
-         if (!empty($filters['alteracao'])) {
+        if (!empty($filters['alteracao'])) {
             $qry->where('alteracao', '=', $filters['alteracao']);
         }
 
-         if (!empty($filters['codusuarioalteracao'])) {
+        if (!empty($filters['codusuarioalteracao'])) {
             $qry->where('codusuarioalteracao', '=', $filters['codusuarioalteracao']);
         }
-
         
         $count = $qry->count();
     
@@ -144,6 +143,14 @@ class ImagemRepository extends MGRepository {
             , 'data' => $qry->get()
         ];
         
+    }
+    
+    public function url ($model = null) {
+        if (empty($model)) {
+            $model = $this->model;
+        }
+        
+        return asset('public/imagens/' . $model->observacoes);
     }
     
 }
