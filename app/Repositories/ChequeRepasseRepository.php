@@ -113,28 +113,21 @@ class ChequeRepasseRepository extends MGRepository {
     
     public function salvaChequeRepasseCheque($model, $codcheques) {
         
-        $repoCheq = new ChequeRepasseChequeRepository();
+        $repoRepasCheq = new ChequeRepasseChequeRepository();
+        $repoCheq = new ChequeRepository();
         
-        $codchequerepassecheques = '';
         foreach ($codcheques as $cheq) {
-           //salvar emitentes e guardar num array os ids
+          
             $data = [
                'codchequerepasse'=>$model->codchequerepasse,
                'codcheque'=>$cheq['codcheque']
             ];
-            if($cheq['codchequerepassecheque']<>''){
-                $repoCheq->update($cheq['codchequerepassecheque'],$data);
-            }else{
-                $repoCheq->create($data);  
-            }
-            $codchequerepassecheques[] = $repoCheq->model->codchequerepassecheque;
+            
+            $repoRepasCheq->create($data);
+            $repoCheq->update($cheq['codcheque'],['indstatus'=>2]);
+            
         }
-        if(!empty($codchequerepassecheques)){
-            $cheqs = $this->model->ChequeRepasseChequeS()->whereNotIn('codchequerepassecheque', $codchequerepassecheques)->get();
-            foreach ($cheqs as $cheq) {
-                $repoCheq->delete($cheq->codchequerepassecheque);
-            }
-        }
+        
         return true;
     }
     

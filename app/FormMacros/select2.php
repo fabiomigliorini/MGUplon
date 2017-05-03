@@ -147,6 +147,19 @@ Form::macro('select2Usuario', function($name, $selected = null, $options = [])
     return Form::select2($name, $usuarios, $selected, $options);
 });
 
+/* MOTIVOS DEVOLUÇÃO :: CHEQUE */
+Form::macro('select2Chequemotivodevolucao', function($name, $selected = null, $options = [])
+{
+    $motivosdevolucao = MGLara\Models\ChequeMotivoDevolucao::orderBy('numero')->get();
+    $mots = [];
+    foreach($motivosdevolucao as $row){
+        $mots[$row['codchequemotivodevolucao']] = $row['numero'].' - '.$row['chequemotivodevolucao'];
+    }
+    return Form::select2($name, $mots, $selected, $options);
+
+    
+});
+
 /* GRUPO CLIENTE */
 Form::macro('select2GrupoCliente', function($name, $selected = null, $options = [])
 {

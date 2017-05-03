@@ -4,11 +4,11 @@
             <div class='row'>
                 <div class="form-group col-md-2">
                     {!! Form::label('vencimento_de', 'De', ['control-label']) !!}
-                    {!! Form::date('vencimento_de', '2017-01-19', ['class'=> 'form-control text-right', 'id'=>'vencimento_de']) !!}
+                    {!! Form::date('vencimento_de', '', ['class'=> 'form-control text-right', 'id'=>'vencimento_de']) !!}
                 </div>
                 <div class="form-group col-md-2">
                     {!! Form::label('vencimento_ate', 'Até', ['control-label']) !!}
-                    {!! Form::date('vencimento_ate', '2017-01-24', ['class'=> 'form-control text-right', 'id'=>'vencimento_ate']) !!}
+                    {!! Form::date('vencimento_ate', '', ['class'=> 'form-control text-right', 'id'=>'vencimento_ate']) !!}
                 </div>
                 <div class="form-group col-md-2">
                     <label class="col-md-12">&nbsp;</label>

@@ -42,7 +42,7 @@ class ChequeController extends Controller
      * @return  \Illuminate\Http\Response
      */
     public function index(Request $request) {
-        
+
         // Permissao
         $this->repository->authorize('listing');
         
@@ -53,7 +53,7 @@ class ChequeController extends Controller
         if (!$filtro = $this->getFiltro()) {
             $filtro = [
                 'filtros' => [
-                    'inativo' => 1,
+                    'inativo' => 1
                 ],
                 'order' => [[
                     'column' => 0,
@@ -61,13 +61,13 @@ class ChequeController extends Controller
                 ]],
             ];
         }
-        
+      
         $status = $this->repository->status_select2();
         
         // retorna View
         return view('cheque.index', ['bc'=>$this->bc, 'filtro'=>$filtro,'status'=>$status]);
     }
-
+ 
     /**
      * Monta json para alimentar a Datatable do index
      * 
@@ -88,17 +88,18 @@ class ChequeController extends Controller
         // Ordenacao
         $columns[0] = 'codcheque';
         $columns[1] = 'inativo';
-        $columns[2] = 'codcheque';
-        $columns[3] = 'codbanco';
-        $columns[4] = 'agencia';
-        $columns[5] = 'contacorrente';
-        $columns[6] = 'numero';
-        $columns[7] = 'codpessoa';
-        $columns[8] = 'emitente';
-        $columns[9] = 'valor';
-        $columns[10] = 'vencimento';
+        $columns[2] = 'selecao';
+        $columns[3] = 'codcheque';
+        $columns[4] = 'codbanco';
+        $columns[5] = 'agencia';
+        $columns[6] = 'contacorrente';
+        $columns[7] = 'numero';
+        $columns[8] = 'codpessoa';
+        $columns[9] = 'emitente';
+        $columns[10] = 'valor';
         $columns[11] = 'vencimento';
-        $columns[12] = 'indstatus';
+        $columns[12] = 'vencimento';
+        $columns[13] = 'indstatus';
 
         
         $sort = [];
@@ -123,16 +124,23 @@ class ChequeController extends Controller
         $data = [];
         foreach ($regs['data'] as $reg) {
             $status = $this->repository->status($reg->indstatus);
+            
+            $emits = '';
+            foreach($reg->ChequeEmitenteS as $emit){
+                $emits .= '&bull; '.$emit->emitente.' <br>';
+            }
+            
             $data[] = [
                 url('cheque', $reg->codcheque),
                 formataData($reg->inativo, 'C'),
+                '<input type="checkbox" name="chequeseleciona[]" data-valor="'.$reg->valor.'" onclick="chequeseleciona()" value="'.$reg->codcheque.'">',
                 formataCodigo($reg->codcheque),
                 $reg->Banco->banco,
                 $reg->agencia,
                 $reg->contacorrente,
                 $reg->numero,
                 $reg->Pessoa->pessoa,
-                $reg->emitente,
+                $emits,
                 formataNumero($reg->valor, 2),
                 formataData($reg->emissao),
                 formataData($reg->vencimento),
