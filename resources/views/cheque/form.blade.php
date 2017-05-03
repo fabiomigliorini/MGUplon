@@ -3,7 +3,6 @@
     <div class='col-md-6'>
         <div class='row'>
             <div class="form-group col-md-12">
-                001052990860853885621000879557 99682184134
                 {!! Form::label('cmc7', 'CMC7:', []) !!}
                 {!! Form::text('cmc7', null, ['class'=> 'form-control', 'id'=>'cmc7', 'required'=>'required']) !!}
                 <div id="warning_cmc7"></div>

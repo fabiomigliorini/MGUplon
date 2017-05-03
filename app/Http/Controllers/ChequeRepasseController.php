@@ -198,8 +198,6 @@ class ChequeRepasseController extends Controller
         // breadcrumb
         $this->bc->addItem($this->repository->model->codchequerepasse);
         $this->bc->header = $this->repository->model->codchequerepasse;
-        //$cheques = $this->repository->model->ChequeRepasseChequeS;
-        //dd($cheques);
         // retorna show
         return view('cheque-repasse.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
@@ -276,11 +274,12 @@ class ChequeRepasseController extends Controller
         $filtros = [
             'vencimento_de' => $request['vencimento_de'],
             'vencimento_ate' => $request['vencimento_ate'],
+            'indstatus' => 1,
             'inativo' => 1
         ];
         
         $repoCheque = new ChequeRepository();
-        $regs = $repoCheque->listing($filtros, $sort, 1, 1000);
+        $regs = $repoCheque->listing($filtros, $sort, null, 1000);
         
         $recordsTotal = $regs['recordsTotal'];
         $recordsFiltered = $regs['recordsFiltered'];

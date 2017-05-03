@@ -211,8 +211,11 @@ class ChequeRepository extends MGRepository {
         if (!parent::update($id, $data)) {
             return false;
         }
-        
-        return $this->salvaEmitentes($this->model, $data['emitentes']);
+        if(!empty($data['emitentes'])){
+            return $this->salvaEmitentes($this->model, $data['emitentes']);
+        }else{
+            return true;
+        }
     }
     
     public function salvaEmitentes($model, $emitentes) {
@@ -279,7 +282,7 @@ class ChequeRepository extends MGRepository {
     }
     
     public function listing($filters = [], $sort = [], $start = null, $length = null) {
-        
+       
         // Query da Entidade
         $qry = Cheque::query();
         
@@ -318,7 +321,7 @@ class ChequeRepository extends MGRepository {
                 $qry->where('emitente', 'ilike', "%{$palavra}%");
             }
         }
-
+        
         if (!empty($filters['valor_de'])) {
             $qry->where('valor','>=', $filters['valor_de']);
         }
@@ -326,7 +329,7 @@ class ChequeRepository extends MGRepository {
             $qry->where('valor','<=', $filters['valor_ate']);
         }
         if (!empty($filters['indstatus'])) {
-            $qry->where('indstatus',$filters['indstatus']);
+            $qry->where('indstatus','=',$filters['indstatus']);
         }
 
         if (!empty($filters['vencimento_de'])){
@@ -335,8 +338,7 @@ class ChequeRepository extends MGRepository {
         if (!empty($filters['vencimento_ate'])){
             $qry->where('vencimento','<=', $filters['vencimento_ate']);
         }
-        
-
+         
          if (!empty($filters['repasse'])) {
             $qry->where('repasse', '=', $filters['repasse']);
         }
@@ -543,6 +545,7 @@ class ChequeRepository extends MGRepository {
     }
     public function status_select2(){
         $std = [];
+        //$std[''] = 'Todos';
         foreach($this->status_lista() as $sts){
             $std[$sts['codigo']] = $sts['status'];
         }

@@ -77,7 +77,7 @@
                         <span class="menu-arrow"></span>
                     </a>
                     <ul class="list-unstyled">
-                        <li><a href="{{ url('cheque') }}">Cadastro</a></li>
+                        <li><a href="{{ url('cheque') }}">Cadastros</a></li>
                         <li><a href="{{ url('cheque-repasse') }}">Repasses</a></li>
                         <li><a href="{{ url('cheque-motivo-devolucao') }}">Motivos de Devolução</a></li>
                     </ul>
