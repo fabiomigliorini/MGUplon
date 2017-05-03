@@ -315,7 +315,21 @@
 
 @section('buttons')
 
-    
+    <?php
+
+    $codestoquelocal = null;
+    $codprodutovariacao = null;
+
+    if (isset($elpv)) {
+        $codestoquelocal = $elpv->codestoquelocal;
+        $codprodutovariacao = $elpv->codprodutovariacao;
+    }
+
+    ?>
+    <a class='btn btn-secondary btn-sm' href='{{ url("estoque-movimento/create?codestoquelocal={$codestoquelocal}&codprodutovariacao={$codprodutovariacao}&fiscal=$str_fiscal&ano={$ano}&mes={$mes}") }}'>
+      <i class='fa fa-plus'></i>
+    </a>
+
 @endsection
 @section('inactive')
 

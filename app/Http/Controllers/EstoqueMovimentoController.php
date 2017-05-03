@@ -18,7 +18,7 @@ use MGLara\Library\JsonEnvelope\Datatable;
 use Carbon\Carbon;
 
 /**
- * @property  EstoqueMovimentoRepoesitory $repository 
+ * @property  EstoqueMovimentoRepository $repository 
  */
 class EstoqueMovimentoController extends Controller
 {
@@ -34,19 +34,33 @@ class EstoqueMovimentoController extends Controller
      *
      * @return  \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         // cria um registro em branco
         $this->repository->new();
         
         // autoriza
         $this->repository->authorize('create');
+
+        $model = $this->repository->model;
+        
+        if (empty($request->data) && !empty($request->mes) && !empty($request->ano)) {
+            $data = Carbon::create($request->ano, $request->mes);
+            $model->data = $data->endOfMonth();
+        }
+        
+        if (!empty($request->fiscal)) {
+            $model->fiscal = ($request->fiscal == 'fiscal');
+        }
+        
+        $model->codestoquelocal = $request->codestoquelocal;
+        $model->codprodutovariacao = $request->codprodutovariacao;
         
         // breadcrumb
         $this->bc->addItem('Novo');
         
         // retorna view
-        return view('estoque-movimento.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('estoque-movimento.create', ['bc'=>$this->bc, 'model'=>$model]);
     }
 
     /**

@@ -55,6 +55,10 @@ class EstoqueMovimento extends MGModel
         'codestoquemovimentoorigem',
         'observacoes',
         'codestoquesaldoconferencia',
+        'codestoquelocal',
+        'codprodutovariacao',
+        'codproduto',
+        'fiscal',
     ];
     protected $dates = [
         'data',
