@@ -36,6 +36,17 @@
                         <li><a href="{{ url('tipo-produto') }}">Tipos</a></li>
                         <li><a href="{{ url('unidade-medida') }}">Unidades de medida</a></li>
                         <li><a href="{{ url('ncm') }}">NCM</a></li>
+                        
+                        <li class="has_sub">
+                            <a href="javascript:void(0);" class="waves-effect subdrop">
+                              <span>Prancheta</span>
+                              <span class="menu-arrow"></span>
+                            </a>
+                            <ul class="list-unstyled">
+                                <li><a href="{{ url('prancheta') }}"><span>Categorias</span></a></li>
+                                <li><a href="{{ url('prancheta-produto') }}"><span>Produtos</span></a></li>
+                            </ul>
+                        </li>                        
 
                     </ul>
                 </li>

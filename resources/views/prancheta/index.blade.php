@@ -21,12 +21,6 @@
                 </div>
                 <div class="col-md-1">
                     <div class="form-group">
-                        <label for="observacoes" class="control-label">Observacoes</label>
-                        {!! Form::text('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
                         <label for="inativo" class="control-label">Ativos</label>
                         {!! Form::select2Inativo('inativo', null, ['class'=> 'form-control', 'id'=>'inativo']) !!}
                     </div>
@@ -56,7 +50,7 @@
 
     @include('layouts.includes.datatable.assets')
 
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('prancheta/datatable'), 'order' => $filtro['order'], 'filtros' => ['codprancheta', 'prancheta', 'inativo', 'observacoes', ] ])
+    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('prancheta/datatable'), 'order' => $filtro['order'], 'filtros' => ['codprancheta', 'prancheta', 'inativo'] ])
 
     <script type="text/javascript">
         $(document).ready(function () {

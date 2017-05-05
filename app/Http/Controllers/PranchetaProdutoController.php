@@ -47,8 +47,8 @@ class PranchetaProdutoController extends Controller
                     'inativo' => 1,
                 ],
                 'order' => [[
-                    'column' => 0,
-                    'dir' => 'DESC',
+                    'column' => 4,
+                    'dir' => 'ASC',
                 ]],
             ];
         }
@@ -76,12 +76,13 @@ class PranchetaProdutoController extends Controller
         ]);
         
         // Ordenacao
-        $columns[0] = 'codpranchetaproduto';
-        $columns[1] = 'inativo';
-        $columns[2] = 'codpranchetaproduto';
-        $columns[3] = 'codproduto';
-        $columns[4] = 'codprancheta';
-        $columns[5] = 'observacoes';
+        $columns[0] = 'tblpranchetaproduto.codpranchetaproduto';
+        $columns[1] = 'tblpranchetaproduto.inativo';
+        $columns[2] = 'tblpranchetaproduto.codpranchetaproduto';
+        $columns[3] = 'tblpranchetaproduto.codproduto';
+        $columns[4] = 'tblproduto.produto';
+        $columns[5] = 'tblprancheta.prancheta';
+        $columns[6] = 'tblpranchetaproduto.observacoes';
 
         $sort = [];
         if (!empty($request['order'])) {
@@ -107,8 +108,9 @@ class PranchetaProdutoController extends Controller
                 url('prancheta-produto', $reg->codpranchetaproduto),
                 formataData($reg->inativo, 'C'),
                 formataCodigo($reg->codpranchetaproduto),
-                $reg->codproduto,
-                $reg->codprancheta,
+                formataCodigo($reg->codproduto, 6),
+                $reg->produto,
+                $reg->prancheta,
                 $reg->observacoes,
             ];
         }
@@ -153,7 +155,7 @@ class PranchetaProdutoController extends Controller
         parent::store($request);
         
         // Mensagem de registro criado
-        Session::flash('flash_create', 'Produtos da Prancheta criado!');
+        Session::flash('flash_create', 'Produto da Prancheta criado!');
         
         // redireciona para o view
         return redirect("prancheta-produto/{$this->repository->model->codpranchetaproduto}");
@@ -174,8 +176,8 @@ class PranchetaProdutoController extends Controller
         $this->repository->authorize('view');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->codproduto);
-        $this->bc->header = $this->repository->model->codproduto;
+        $this->bc->addItem($this->repository->model->Produto->produto);
+        $this->bc->header = $this->repository->model->Produto->produto;
         
         // retorna show
         return view('prancheta-produto.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
@@ -196,8 +198,8 @@ class PranchetaProdutoController extends Controller
         $this->repository->authorize('update');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->codproduto, url('prancheta-produto', $this->repository->model->codpranchetaproduto));
-        $this->bc->header = $this->repository->model->codproduto;
+        $this->bc->addItem($this->repository->model->Produto->produto, url('prancheta-produto', $this->repository->model->codpranchetaproduto));
+        $this->bc->header = $this->repository->model->Produto->produto;
         $this->bc->addItem('Alterar');
         
         // retorna formulario edit
@@ -217,7 +219,7 @@ class PranchetaProdutoController extends Controller
         parent::update($request, $id);
         
         // mensagem re registro criado
-        Session::flash('flash_update', 'Produtos da Prancheta alterado!');
+        Session::flash('flash_update', 'Produto da Prancheta alterado!');
         
         // redireciona para view
         return redirect("prancheta-produto/{$this->repository->model->codpranchetaproduto}"); 

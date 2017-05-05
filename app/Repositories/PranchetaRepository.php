@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 use MGLara\Models\Prancheta;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Description of PranchetaRepository
@@ -136,58 +137,50 @@ class PranchetaRepository extends MGRepository {
         
     }
     
-    public function listagemProdutos($model = null, $codestoquelocal = null) {
+    public function listagemProdutos($codestoquelocal = null) {
         
-        if (empty($model)) {
-            $model = $this->model;
-        }
+        $filtro_codestoquelocal = empty($codestoquelocal)?'':"and elpv.codestoquelocal = $codestoquelocal";
         
-        $qry = $model->PranchetaProdutoS()->ativo();
+        $sql = "
+            select 
+                pr.codproduto, 
+                pr.codmarca, 
+                p.codprancheta, 
+                p.prancheta, 
+                pp.codpranchetaproduto, 
+                pr.produto, 
+                pr.preco, 
+                (
+                    select sum(es.saldoquantidade) as saldoquantidade
+                    from tblprodutovariacao pv
+                    inner join tblestoquelocalprodutovariacao elpv on (elpv.codprodutovariacao = pv.codprodutovariacao $filtro_codestoquelocal)
+                    inner join tblestoquesaldo es on (es.codestoquelocalprodutovariacao = elpv.codestoquelocalprodutovariacao and es.fiscal = false)
+                    where pv.codproduto = pp.codproduto
+                ) as saldoquantidade
+            from tblprancheta p
+            inner join tblpranchetaproduto pp on (pp.codprancheta = p.codprancheta)
+            inner join tblproduto pr on (pr.codproduto = pp.codproduto)
+            where p.inativo is null
+            and pp.inativo is null
+            order by p.prancheta, pr.produto
+        ";
         
-        $marca = collect([]);
-        $secao = collect([]);
-        $familia = collect([]);
-        $grupo = collect([]);
-        $subgrupo = collect([]);
-        $produto = collect([]);
-        foreach ($qry->get() as $item) {
+        $itens = DB::select($sql);
+        
+        $marca = collect();
+        $prancheta = collect();
+        $produto = collect();
+        foreach ($itens as $item) {
             
-            if (!isset($subgrupo[$item->Produto->codsubgrupoproduto])) {
-                $subgrupo[$item->Produto->codsubgrupoproduto] = $item->Produto->SubGrupoProduto;
-                
-                if (!isset($grupo[$item->Produto->SubGrupoProduto->codgrupoproduto])) {
-                    $grupo[$item->Produto->SubGrupoProduto->codgrupoproduto] = $item->Produto->SubGrupoProduto->GrupoProduto;
-                    
-                    if (!isset($familia[$item->Produto->SubGrupoProduto->GrupoProduto->codfamiliaproduto])) {
-                        $familia[$item->Produto->SubGrupoProduto->GrupoProduto->codfamiliaproduto] = $item->Produto->SubGrupoProduto->GrupoProduto->FamiliaProduto;
-                        
-                        if (!isset($secao[$item->Produto->SubGrupoProduto->GrupoProduto->FamiliaProduto->codsecaoproduto])) {
-                            $secao[$item->Produto->SubGrupoProduto->GrupoProduto->FamiliaProduto->codsecaoproduto] = $item->Produto->SubGrupoProduto->GrupoProduto->FamiliaProduto->SecaoProduto;
-                        }
-                    }
-                }
-            
+            if (!isset($prancheta[$item->codprancheta])) {
+                $prancheta[$item->codprancheta] = Prancheta::findOrFail($item->codprancheta);
             }
             
-            if (!isset($marca[$item->Produto->codmarca])) {
-                $marca[$item->Produto->codmarca] = $item->Produto->Marca;
+            if (!isset($marca[$item->codmarca])) {
+                $marca[$item->codmarca] = \MGLara\Models\Marca::findOrFail($item->codmarca);
             }
             
-            $quantidade = null;
-            foreach ($item->Produto->ProdutoVariacaoS as $variacao) {
-                $qry = $variacao->EstoqueLocalProdutoVariacaoS();
-                if (!empty($codestoquelocal)) {
-                    $qry = $qry->where('codestoquelocal', '=', $codestoquelocal);
-                }
-                foreach ($qry->get() as $elpv) {
-                    foreach ($elpv->EstoqueSaldoS()->where('fiscal', false)->get() as $saldo) {
-                        $quantidade += $saldo->saldoquantidade;
-                    }
-                }
-            }
-            
-            $produto[$item->codproduto] = $item->Produto;
-            $produto[$item->codproduto]->saldoquantidade = $quantidade;
+            $produto[$item->codproduto] = $item;
             
         }
         
@@ -195,25 +188,25 @@ class PranchetaRepository extends MGRepository {
         $imagem = $repo_img->buscaPorProdutos($produto->keys());
         
         $ret = [
-            'marca' => $marca,
-            'secao' => $secao,
-            'familia' => $familia,
-            'grupo' => $grupo,
-            'subgrupo' => $subgrupo,
             'produto' => $produto,
+            'marca' => $marca,
+            'prancheta' => $prancheta,
             'imagem' => $imagem,
         ];
         
         return $ret;
     }
     
-    public function detalhesProduto ($codproduto, $codestoquelocal = null) {
-        $repo_prod = new ProdutoRepository();
-        if (!$repo_prod->find($codproduto)) {
+    public function detalhesProduto ($codpranchetaproduto, $codestoquelocal = null) {
+        
+        $repo_prancheta_produto = new PranchetaProdutoRepository();
+        
+        if (!$repo_prancheta_produto->find($codpranchetaproduto)) {
             return false;
         }
         
-        $detalhes = $repo_prod->detalhes();
+        $repo_prod = new ProdutoRepository();
+        $detalhes = $repo_prod->detalhes($repo_prancheta_produto->model->Produto, $codestoquelocal);
         
         return $detalhes;
     }

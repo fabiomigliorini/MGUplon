@@ -680,7 +680,7 @@ class ProdutoRepository extends MGRepository {
         return $arrRet;
     }
     
-    public function detalhes ($model = null) {
+    public function detalhes ($model = null, $codestoquelocal = null) {
         
         if (empty($model)) {
             $model = $this->model;
@@ -716,7 +716,20 @@ class ProdutoRepository extends MGRepository {
                 'variacao' => collect(),
             ];
         }
-
+        
+        $filtro_estoquelocal = empty($codestoquelocal)?'':"and elpv.codestoquelocal = $codestoquelocal";
+        $sql_saldos = "
+            select pv.codprodutovariacao, sum(es.saldoquantidade) as saldoquantidade
+            from tblprodutovariacao pv
+            inner join tblestoquelocalprodutovariacao elpv on (elpv.codprodutovariacao = pv.codprodutovariacao $filtro_estoquelocal)
+            inner join tblestoquesaldo es on (es.codestoquelocalprodutovariacao = elpv.codestoquelocalprodutovariacao and es.fiscal = false)
+            where pv.codproduto = {$model->codproduto}
+            group by pv.codprodutovariacao, pv.variacao
+            order by pv.codprodutovariacao
+            ";
+        $saldos = collect(DB::select($sql_saldos));
+        $saldos = $saldos->keyBy('codprodutovariacao');
+        
         $variacao = collect();
         foreach ($model->ProdutoVariacaoS()->orderByRaw('variacao asc nulls first')->get() as $pv) {
 
@@ -727,10 +740,13 @@ class ProdutoRepository extends MGRepository {
                 }
 
                 if (!isset($embalagem[$codprodutoembalagem]->variacao[$pv->codprodutovariacao])) {
+                    $saldo = !empty($saldos[$pv->codprodutovariacao])?$saldos[$pv->codprodutovariacao]->saldoquantidade:null;
+                    $saldo = floor($saldo / $embalagem[$codprodutoembalagem]->quantidade);
                     $variacao = (object)[
                         'codprodutovariacao' => $pv->codprodutovariacao,
                         'variacao' => $pv->variacao,
                         'marca' => empty($pv->codmarca)?'':$pv->Marca->marca,
+                        'saldoquantidade' => $saldo,
                         'barras' => collect(),
                     ];
                     $embalagem[$codprodutoembalagem]->variacao[$pv->codprodutovariacao] = $variacao;

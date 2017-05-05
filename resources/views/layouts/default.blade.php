@@ -1,5 +1,7 @@
 @include('layouts.includes.header_start')
 @include('layouts.includes.header_end')
+@include('layouts.includes.topbar')
+@include('layouts.includes.leftbar')
 
 <!-- ============================================================== -->
 <!-- Start right Content here -->
