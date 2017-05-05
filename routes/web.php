@@ -225,6 +225,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('produto-variacao', 'ProdutoVariacaoController');
 
     /* Prancheta */
+    Route::get('prancheta/{id}/produto/{codproduto}/{codestoquelocal?}', 'PranchetaController@showProduto');
     Route::resource('prancheta', 'PranchetaController');
     Route::resource('prancheta-produto', 'PranchetaProdutoController');
 

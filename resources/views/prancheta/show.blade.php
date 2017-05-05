@@ -1,147 +1,83 @@
 @extends('layouts.default')
 @section('content')
 
-<div class='row'>
-    <div class='col-md-4'>
-        <div class='card'>
-            <h4 class="card-header">Detalhes</h4>
-            <div class='card-block'>
-                <table class="table table-bordered table-striped table-hover table-sm col-md-6">
-                  <tbody>  
-                    <tr> 
-                      <th>#</th> 
-                      <td>{{ $model->codprancheta }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Prancheta</th> 
-                      <td>{{ $model->prancheta }}</td> 
-                    </tr>
-                    <tr> 
-                      <th>Observacoes</th> 
-                      <td>{{ $model->observacoes }}</td> 
-                    </tr>
-                  </tbody> 
-                </table>
-                <div class='clearfix'></div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class='row'>
-@foreach ($itens['secaoproduto'] as $secao)
-  @foreach ($secao->familiaproduto as $familia)
-    @foreach ($familia->grupoproduto as $grupo)
-      @foreach ($grupo->subgrupoproduto as $subgrupo)
-        <!--
-        <h1>
-        {{ $secao->secaoproduto }} >> {{ $familia->familiaproduto }} >> {{ $grupo->grupoproduto }} >> {{ $subgrupo->subgrupoproduto }}
-        </h1>
-        <div class='row'>
-        -->
-        @foreach ($subgrupo->produto as $produto)
-          <?php $produtos[$produto->codproduto] = $produto; ?>
-          <div class="col-md-2">
-            <div class="card">
-              <div id="car{{ $produto->codproduto }}" class="carousel slide" data-ride="carousel" data-interval="1500">
-                <div class="carousel-inner" role="listbox">
-                  @foreach ($produto->imagem as $imagem)
-                  <div class="carousel-item {{ ($loop->first)?'active':'' }} ">
-                    <img class="d-block img-fluid" src="{{$imagem->url}}" alt="First slide">
-                  </div>
-                  @endforeach
-                </div>
-              </div>              
-              <div class="card-block">
-                <h4>{{ $produto->produto }}</h4>
-                @foreach ($produto->embalagem as $embalagem) 
-                  <a href="#" class="flex-column align-items-start codprodutoembalagem" data-codprodutoembalagem='{{ $embalagem->codprodutoembalagem }}' data-codproduto='{{ $produto->codproduto }}'>
-                    <div class="d-flex w-100 justify-content-between">
-                        <small class="text-muted">
-                          {{ $embalagem->sigla }}
-                          C/{{ formataNumero($embalagem->quantidade, 0) }}
-                        </small>
-                        <span class='pull-right'>
-                          {{ formataNumero($embalagem->preco, 2) }} 
-                        </span>
-                    </div>
-                  </a>
-                @endforeach
-              </div>
-            </div>
-          </div>
-        @endforeach
-        <!--
-        </div>
-        -->
-      @endforeach 
-    @endforeach 
-  @endforeach 
-@endforeach 
-</div>
-<hr>
-<pre>
-<?php
-print_r($itens);
 
-?>
-</pre>
-<?php /*
-@foreach ($produtos['produtos'] as $prod) 
-  <div class='row'>
-    <div class='col-md-12'>
-        <div class='card'>
-          <h4 class="card-header">
-            {{$prod[0]->secaoproduto}} /
-            {{$prod[0]->familiaproduto}} /
-            {{$prod[0]->grupoproduto}} /
-            {{$prod[0]->subgrupoproduto}}
-        </h4>
-          <div class='card-block'>
-    
-  @foreach ($prod as $p)
-    <div class="col-md-2">
-        <!-- Simple card -->
-        <div class="card">
-            @if (!empty($produtos['imagens'][$p->codproduto]))
-              <img class="card-img-top img-fluid" src="{{ asset('public/imagens/' . $produtos['imagens'][$p->codproduto][0]->Imagem->observacoes) }}" alt="Card image cap">
-            @endif
-            <div class="card-block">
-                <h6 class="card-title">
-                  <a href="{{ url("produto/{$p->codproduto}") }}">
-                  {{ $p->produto }} 
-                  </a>
-                </h6>
-              <span class="text-muted pull-left">
-
-                  @if (!empty($p->variacao))
-                  <small class="text-muted">
-                      {{ $p->variacao }}
-                  </small>
-                  @endif
-                  @if (!empty($p->quantidade))
-                  <small class="text-muted">
-                      {{ $p->siglaembalagem }} C/
-                      {{ formatanumero($p->quantidade, 0) }}
-                  </small>
-                  @endif
-                {{ $p->barras }}
-              </span>
-                <h1 class="card-title text-primary pull-right">
-                    {{ formataNumero($p->preco) }}
-                </h1>
-              <div class="clearfix"></div>
-            </div>
-        </div>
-    </div>
+<div class='card'>
+    <div class='card-block'>
+<div class="portfolioFilter">
+  <a href="#" data-filter="*" class="current waves-effect waves-light">Todos</a>
+  @foreach ($itens['marca']->sortBy('marca') as $marca)
+  <a href="#" data-filter=".marca-{{ $marca->codmarca }}" class="waves-effect waves-light">
+      @if (!empty($marca->codimagem))
+      <img height="50" src='{{ asset("public/imagens/{$marca->Imagem->observacoes}") }}' alt='{{$marca->marca}}' title="{{$marca->marca}}">
+      @else
+        {{ $marca->marca }}
+      @endif
+  </a>
   @endforeach
-  </div>
+  @foreach ($itens['secao']->sortBy('secaoproduto') as $secao)
+    <a href="#" data-filter=".secao-{{ $secao->codsecaoproduto }}" class="waves-effect waves-light">{{ $secao->secaoproduto }}</a>
+    @foreach ($itens['familia']->where('codsecaoproduto', $secao->codsecaoproduto)->sortBy('familiaproduto') as $familia)
+      <a href="#" data-filter=".familia-{{ $familia->codfamiliaproduto }}" class="waves-effect waves-light">{{ $familia->familiaproduto }}</a>
+      @foreach ($itens['grupo']->where('codfamiliaproduto', $familia->codfamiliaproduto)->sortBy('grupoproduto') as $grupo)
+        <a href="#" data-filter=".grupo-{{ $grupo->codgrupoproduto }}" class="waves-effect waves-light">{{ $grupo->grupoproduto }}</a>
+          @foreach ($itens['subgrupo']->where('codgrupoproduto', $grupo->codgrupoproduto)->sortBy('subgrupoproduto') as $subgrupo)
+            <a href="#" data-filter=".subgrupo-{{ $subgrupo->codsubgrupoproduto }}" class="waves-effect waves-light">{{ $subgrupo->subgrupoproduto }}</a>
+          @endforeach
+      @endforeach
+    @endforeach
+  @endforeach
+</div>
+</div>
+</div>
+            
+
+  <div class="row port m-b-20">
+    <div class="portfolioContainer">
+      @foreach ($itens['produto'] as $produto)
+        <div class="col-md-2 marca-{{ $produto->codmarca }} secao-{{ $produto->SubGrupoProduto->GrupoProduto->FamiliaProduto->codsecaoproduto }} familia-{{ $produto->SubGrupoProduto->GrupoProduto->codfamiliaproduto }}  grupo-{{ $produto->SubGrupoProduto->codgrupoproduto }} subgrupo-{{ $produto->codsubgrupoproduto }} ">
+          <div class="thumb">
+            <a href="{{ url("prancheta/{$model->codprancheta}/produto/{$produto->codproduto}/$codestoquelocal") }}" class="image-popup" title="{{ $produto->produto }}">
+              @if (isset($itens['imagem'][$produto->codproduto]))
+                <div id="car{{ $produto->codproduto }}" class="carousel slide" data-ride="carousel" data-interval="1500" >
+                  <div class="carousel-caption d-none d-md-block" style="">
+                    <h4><small>R$</small> {{ formataNumero($produto->preco, 2) }}</h4>
+                    <i class="fa fa-cubes"></i> 
+                    @if (!empty($produto->saldoquantidade))
+                      {{ formataNumero($produto->saldoquantidade, 0) }}
+                    @else
+                      Sem Saldo
+                    @endif
+                  </div>
+                  <div class="carousel-inner" role="listbox">
+                      @foreach ($itens['imagem'][$produto->codproduto] as $imagem)
+                        <div class="carousel-item {{ ($loop->first)?'active':'' }} ">
+                          <img class="d-block img-fluid thumb-img" src="{{$imagem->url}}" alt="First slide">
+                        </div>
+                      @endforeach
+                  </div>
+                </div>
+              @else
+                <div class="gal-detail text-xs-center">
+                  <h4 class="m-t-10">{{ $produto->produto }}</h4>
+                  <h4><small>R$</small> {{ formataNumero($produto->preco, 2) }}</h4>
+                  <p class="text-muted">
+                    <i class="fa fa-cubes"></i>
+                    @if (!empty($produto->saldoquantidade))
+                      {{ formataNumero($produto->saldoquantidade, 0) }}
+                    @else
+                      Sem Saldo
+                    @endif
+                  </p>
+                </div>
+              @endif              
+            </a>
+          </div>
         </div>
-    </div>
-  </div>
-@endforeach
- * 
- */
-?>
+      @endforeach
+    </div><!-- end portfoliocontainer-->
+  </div> <!-- End row -->
+
 @section('buttons')
 
     <a class="btn btn-secondary btn-sm" href="{{ url("prancheta/$model->codprancheta/edit") }}"><i class="fa fa-pencil"></i></a>
@@ -164,40 +100,55 @@ print_r($itens);
     
 @endsection
 @section('inscript')
+<script src='http://localhost/MGUplon.original/Uplon/Admin/PHP/Vertical/assets/plugins/isotope/js/isotope.pkgd.min.js'></script>
+<script src='http://localhost/MGUplon.original/Uplon/Admin/PHP/Vertical/assets/plugins/magnific-popup/js/jquery.magnific-popup.min.js'></script>
 <script type="text/javascript">
-    
-var produtos = {!! json_encode($produtos) !!};
-
-function selecionaEmbalagem(codproduto, codprodutoembalagem) {
-    var produto = produtos[codproduto];
-    if (codprodutoembalagem == '') codprodutoembalagem = 0;
-    var embalagem = produto.embalagem[codprodutoembalagem];
-    var qtdVariacao = Object.keys(embalagem.variacao).length;
-    if (qtdVariacao == 1) {
-        var codprodutovariacao = null;
-        $.each(embalagem.variacao, function(i, item) {
-            codprodutovariacao = item.codprodutovariacao;
-        });
-        selecionaVariacao(codproduto, codprodutoembalagem, codprodutovariacao);
-    }
-}
-
-function selecionaVariacao(codproduto, codprodutoembalagem, codprodutovariacao) {
-    var barras = null;
-    $.each(produtos[codproduto].embalagem[codprodutoembalagem].variacao[codprodutovariacao].barras, function(i, item) {
-        barras = item;
-    });
-    console.log(barras.barras);
-}
-    
 $(document).ready(function() {
-    $("a.codprodutoembalagem").click(function (e) {
+    $("a.linkBarras").click(function (e) {
         e.preventDefault();
-        var codproduto = $(this).data('codproduto');
-        var codprodutoembalagem = $(this).data('codprodutoembalagem');
-        selecionaEmbalagem (codproduto, codprodutoembalagem);
+        var barras = $(this).data('barras');
+        console.log(barras);
+    });
+    
+    
+});
+
+
+/**
+* Theme: Uplon Admin Template
+* Author: Coderthemes
+* Component: Peity Chart
+* 
+*/
+
+$(window).load(function(){
+    var $container = $('.portfolioContainer');
+    $container.isotope({
+        filter: '*',
+        animationOptions: {
+            duration: 750,
+            easing: 'linear',
+            queue: false
+        }
+    });
+
+    $('.portfolioFilter a').click(function(){
+        $('.portfolioFilter .current').removeClass('current');
+        $(this).addClass('current');
+
+        var selector = $(this).attr('data-filter');
+        $container.isotope({
+            filter: selector,
+            animationOptions: {
+                duration: 750,
+                easing: 'linear',
+                queue: false
+            }
+        });
+        return false;
     });
 });
 </script>
+
 @endsection
 @stop

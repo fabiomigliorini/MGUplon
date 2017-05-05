@@ -182,6 +182,16 @@ abstract class MGRepository {
         return $this->model = $this->model_class::findOrFail($id);
     }
     
+    /**
+     * busca um registro
+     * 
+     * @param integer $id
+     * @return MGModel
+     */
+    public function find($id) {
+        return $this->model = $this->model_class::find($id);
+    }
+    
     public function save() {
         if ($this->model->exists) {
             return $this->update();

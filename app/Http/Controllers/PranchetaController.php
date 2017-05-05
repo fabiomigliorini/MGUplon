@@ -175,10 +175,38 @@ class PranchetaController extends Controller
         $this->bc->addItem($this->repository->model->prancheta);
         $this->bc->header = $this->repository->model->prancheta;
         
-        $itens = $this->repository->listagemProdutos();
+        $itens = $this->repository->listagemProdutos(null, $request->codestoquelocal);
+        
+        if ($request->debug == 'true') {
+            return $itens;
+        }
         
         // retorna show
-        return view('prancheta.show', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'itens'=>$itens]);
+        return view('prancheta.show', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'itens'=>$itens, 'codestoquelocal' => $request->codestoquelocal]);
+    }
+    
+    public function showProduto(Request $request, $id, $codproduto, $codestoquelocal = null) 
+    {
+        
+        // busca registro
+        $this->repository->findOrFail($id);
+        $produto = $this->repository->detalhesProduto($codproduto, $codestoquelocal);
+        
+        //autorizacao
+        $this->repository->authorize('view');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->prancheta, url('prancheta', $this->repository->model->codprancheta));
+        $this->bc->addItem($produto->produto);
+        $this->bc->header = $this->repository->model->prancheta;
+
+        
+        if ($request->debug == 'true') {
+            return $produto;
+        }
+        
+        // retorna show
+        return view('prancheta.show-produto', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'produto'=>$produto, 'codestoquelocal' => $codestoquelocal]);
     }
 
     /**
