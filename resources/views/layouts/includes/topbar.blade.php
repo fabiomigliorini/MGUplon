@@ -172,6 +172,9 @@
                     <a href="{{ url('usuario/' . Auth::user()->codusuario) }}" class="dropdown-item notify-item">
                         <i class="zmdi zmdi-account-circle"></i> <span>Perfil</span>
                     </a>
+                    <a href="{{ url('usuario/mudar-senha') }}" class="dropdown-item notify-item">
+                        <i class="fa fa-exchange"></i> <span>Mudar senha</span>
+                    </a>
 
                     <!--
                     <!-- item->
