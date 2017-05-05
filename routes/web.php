@@ -75,9 +75,11 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('ncm', 'NcmController');
 
     /* Usuários */
-    Route::put('usuario/{id}/ativar', 'UsuarioController@ativar');
-    Route::put('usuario/{id}/inativar', 'UsuarioController@inativar');
+   // Route::put('usuario/{id}/ativar', 'UsuarioController@ativar');
+    //Route::put('usuario/{id}/inativar', 'UsuarioController@inativar');
     Route::get('usuario/datatable', 'UsuarioController@datatable');
+    Route::get('usuario/mudar-senha', 'UsuarioController@mudarSenha');
+    Route::post('usuario/mudar-senha', 'UsuarioController@mudarSenhaUpdate');
     Route::get('usuario/{id}/grupos', 'UsuarioController@grupos');
     Route::post('usuario/{id}/grupos', 'UsuarioController@gruposCreate');
     Route::delete('usuario/{id}/grupos', 'UsuarioController@gruposDestroy');

@@ -5,7 +5,8 @@ namespace MGLara\Http\Controllers;
 use MGLara\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-
+use Illuminate\Support\Facades\Auth;
+    
 use MGLara\Repositories\UsuarioRepository;
 use MGLara\Repositories\GrupoUsuarioRepository;
 use MGLara\Repositories\FilialRepository;
@@ -13,6 +14,7 @@ use MGLara\Repositories\GrupoUsuarioUsuarioRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
+
 
 class UsuarioController extends Controller
 {
@@ -201,7 +203,6 @@ class UsuarioController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
         parent::update($request, $id);
         
         // mensagem re registro criado
@@ -264,4 +265,46 @@ class UsuarioController extends Controller
         
     }
     
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function mudarSenha(Request $request)
+    {
+        // busca registro
+        $this->repository->findOrFail(Auth::user()->codusuario);
+        
+        //autorizacao
+        $this->repository->authorize('view');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->usuario);
+        $this->bc->header = $this->repository->model->usuario;
+        
+        // retorna show
+        return view('usuario.mudar-senha', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+    }
+    
+    public function mudarSenhaUpdate(Request $request)
+    {
+        // Busca registro para autorizar
+        $this->repository->findOrFail(Auth::user()->codusuario);
+
+        // Valida dados
+        $data = $request->all();
+        $data['senha'] = bcrypt($data['senha']);
+        // autorizacao
+        $this->repository->fill($data);
+        $this->repository->authorize('update');
+        
+        // salva
+        if (!$this->repository->update()) {
+            abort(500);
+        }        
+        
+        Session::flash('flash_update', 'Registro alterado!');
+        return ['OK' => 'Senha alterada com sucesso!'];       
+    }
 }
