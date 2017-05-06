@@ -4,7 +4,7 @@
 </fieldset>
 <fieldset class="form-group">
     {!! Form::label('observacoes', 'Observacoes') !!}
-    {!! Form::text('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes', 'maxlength'=>'200']) !!}
+    {!! Form::textarea('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes', 'maxlength'=>'200']) !!}
 </fieldset>
 <fieldset class="form-group">
    {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
@@ -33,7 +33,6 @@ $(document).ready(function() {
     });
     $("#prancheta").Setcase();
     $("#prancheta").maxlength({alwaysShow: true});
-    $("#observacoes").Setcase();
     $("#observacoes").maxlength({alwaysShow: true});
 });
 </script>

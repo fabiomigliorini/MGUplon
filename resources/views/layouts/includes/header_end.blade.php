@@ -16,6 +16,4 @@
 <!-- Begin page -->
 <div id="wrapper" class="enlarged forced">
 
-    @include('layouts.includes.topbar')
-    @include('layouts.includes.leftbar')
     

@@ -152,6 +152,12 @@ class ProdutoImagemRepository extends MGRepository {
             $ret[$item->codproduto][$item->codprodutoimagem] = $imagem;
         }
         
+        foreach ($codprodutos as $codproduto) {
+            if (empty($ret[$codproduto])) {
+                $ret[$codproduto] = collect();
+            }
+        }
+        
         return $ret;
         
     }

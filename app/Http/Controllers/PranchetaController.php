@@ -23,8 +23,8 @@ class PranchetaController extends Controller
 
     public function __construct(PranchetaRepository $repository) {
         $this->repository = $repository;
-        $this->bc = new Breadcrumb('Prancheta');
-        $this->bc->addItem('Prancheta', url('prancheta'));
+        $this->bc = new Breadcrumb('Categorias de Prancheta');
+        $this->bc->addItem('Categorias de Prancheta', url('prancheta'));
     }
     
     /**
@@ -182,33 +182,10 @@ class PranchetaController extends Controller
         }
         
         // retorna show
-        return view('prancheta.show', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'itens'=>$itens, 'codestoquelocal' => $request->codestoquelocal]);
+        $quiosque = (bool) $request->quiosque;
+        return view('prancheta.show', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'itens'=>$itens, 'codestoquelocal' => $request->codestoquelocal, 'quiosque'=>$quiosque]);
     }
     
-    public function showProduto(Request $request, $id, $codproduto, $codestoquelocal = null) 
-    {
-        
-        // busca registro
-        $this->repository->findOrFail($id);
-        $produto = $this->repository->detalhesProduto($codproduto, $codestoquelocal);
-        
-        //autorizacao
-        $this->repository->authorize('view');
-        
-        // breadcrumb
-        $this->bc->addItem($this->repository->model->prancheta, url('prancheta', $this->repository->model->codprancheta));
-        $this->bc->addItem($produto->produto);
-        $this->bc->header = $this->repository->model->prancheta;
-
-        
-        if ($request->debug == 'true') {
-            return $produto;
-        }
-        
-        // retorna show
-        return view('prancheta.show-produto', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'produto'=>$produto, 'codestoquelocal' => $codestoquelocal]);
-    }
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -249,6 +226,30 @@ class PranchetaController extends Controller
         
         // redireciona para view
         return redirect("prancheta/{$this->repository->model->codprancheta}"); 
+    }
+    
+    public function quiosque(Request $request, $codestoquelocal = null) 
+    {
+        $itens = $this->repository->listagemProdutos($codestoquelocal);
+        
+        if ($request->debug == 'true') {
+            return $itens;
+        }
+        
+        return view('prancheta.quiosque', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'itens'=>$itens, 'codestoquelocal' => $request->codestoquelocal]);
+    }
+    
+    public function quiosqueProduto(Request $request, $codpranchetaproduto, $codestoquelocal = null) 
+    {
+        // busca registro
+        $produto = $this->repository->detalhesProduto($codpranchetaproduto, $codestoquelocal);
+        
+        if ($request->debug == 'true') {
+            return $produto;
+        }
+        
+        // retorna show
+        return view('prancheta.quiosque-produto', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'produto'=>$produto, 'codestoquelocal' => $codestoquelocal]);
     }
     
 }

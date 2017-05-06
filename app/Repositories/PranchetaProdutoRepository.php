@@ -69,38 +69,52 @@ class PranchetaProdutoRepository extends MGRepository {
         
         // Query da Entidade
         $qry = PranchetaProduto::query();
+        $qry->select([
+            'tblpranchetaproduto.codpranchetaproduto',
+            'tblpranchetaproduto.observacoes',
+            'tblpranchetaproduto.criacao',
+            'tblpranchetaproduto.codusuariocriacao',
+            'tblpranchetaproduto.alteracao',
+            'tblpranchetaproduto.codusuarioalteracao',
+            'tblpranchetaproduto.codproduto',
+            'tblproduto.produto',
+            'tblprancheta.prancheta',
+        ]);
+        
+        $qry->join('tblproduto', 'tblproduto.codproduto', '=', 'tblpranchetaproduto.codproduto');
+        $qry->join('tblprancheta', 'tblprancheta.codprancheta', '=', 'tblpranchetaproduto.codprancheta');
         
         // Filtros
          if (!empty($filters['codpranchetaproduto'])) {
-            $qry->where('codpranchetaproduto', '=', $filters['codpranchetaproduto']);
+            $qry->where('tblpranchetaproduto.codpranchetaproduto', '=', $filters['codpranchetaproduto']);
         }
 
          if (!empty($filters['codprancheta'])) {
-            $qry->where('codprancheta', '=', $filters['codprancheta']);
+            $qry->where('tblpranchetaproduto.codprancheta', '=', $filters['codprancheta']);
         }
 
          if (!empty($filters['codproduto'])) {
-            $qry->where('codproduto', '=', $filters['codproduto']);
+            $qry->where('tblpranchetaproduto.codproduto', '=', $filters['codproduto']);
         }
 
          if (!empty($filters['criacao'])) {
-            $qry->where('criacao', '=', $filters['criacao']);
+            $qry->where('tblpranchetaproduto.criacao', '=', $filters['criacao']);
         }
 
          if (!empty($filters['alteracao'])) {
-            $qry->where('alteracao', '=', $filters['alteracao']);
+            $qry->where('tblpranchetaproduto.alteracao', '=', $filters['alteracao']);
         }
 
          if (!empty($filters['codusuariocriacao'])) {
-            $qry->where('codusuariocriacao', '=', $filters['codusuariocriacao']);
+            $qry->where('tblpranchetaproduto.codusuariocriacao', '=', $filters['codusuariocriacao']);
         }
 
          if (!empty($filters['codusuarioalteracao'])) {
-            $qry->where('codusuarioalteracao', '=', $filters['codusuarioalteracao']);
+            $qry->where('tblpranchetaproduto.codusuarioalteracao', '=', $filters['codusuarioalteracao']);
         }
 
           if (!empty($filters['observacoes'])) {
-            $qry->palavras('observacoes', $filters['observacoes']);
+            $qry->palavras('tblpranchetaproduto.observacoes', $filters['observacoes']);
         }
 
         

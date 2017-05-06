@@ -13,22 +13,16 @@
                         {!! Form::number('codpranchetaproduto', null, ['class'=> 'form-control', 'id'=>'codpranchetaproduto', 'step'=>1, 'min'=>1]) !!}
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="form-group">
-                        <label for="codproduto" class="control-label">Produtos da Prancheta</label>
-                        {!! Form::text('codproduto', null, ['class'=> 'form-control', 'id'=>'codproduto']) !!}
+                        <label for="codproduto" class="control-label">Produto</label>
+                        {!! Form::select2Produto('codproduto', null, ['class'=> 'form-control', 'id'=>'codproduto']) !!}
                     </div>
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <div class="form-group">
-                        <label for="codprancheta" class="control-label">Codprancheta</label>
-                        {!! Form::text('codprancheta', null, ['class'=> 'form-control', 'id'=>'codprancheta']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="observacoes" class="control-label">Observacoes</label>
-                        {!! Form::text('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes']) !!}
+                        <label for="codprancheta" class="control-label">Prancheta</label>
+                        {!! Form::select2Prancheta('codprancheta', null, ['class'=> 'form-control', 'id'=>'codprancheta']) !!}
                     </div>
                 </div>
                 <div class="col-md-1">
@@ -47,7 +41,7 @@
 
 <div class='card'>
     <div class='card-block table-responsive'>
-        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Produtos da Prancheta', 'Codprancheta', 'Observacoes', ]])
+        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', '# Produto', 'Produto', 'Prancheta', 'Observacoes', ]])
         <div class='clearfix'></div>
     </div>
 </div>
@@ -62,7 +56,7 @@
 
     @include('layouts.includes.datatable.assets')
 
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('prancheta-produto/datatable'), 'order' => $filtro['order'], 'filtros' => ['codpranchetaproduto', 'codproduto', 'inativo', 'codprancheta', 'observacoes', ] ])
+    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('prancheta-produto/datatable'), 'order' => $filtro['order'], 'filtros' => ['codpranchetaproduto', 'codproduto', 'inativo', 'codprancheta'] ])
 
     <script type="text/javascript">
         $(document).ready(function () {

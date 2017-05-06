@@ -17,6 +17,10 @@ Route::group(['middleware' => 'redeconfiavel'], function() {
     Route::get('produto/consulta/{barras}', 'ProdutoController@consulta');
     Route::get('produto/quiosque', 'ProdutoController@quiosque');
     Route::get('produto-barra/select2', 'ProdutoBarraController@select2');
+    
+    /* Prancheta */
+    Route::get('prancheta/quiosque/{codestoquelocal?}', 'PranchetaController@quiosque');
+    Route::get('prancheta/quiosque/produto/{codpranchetaproduto}/{codestoquelocal?}', 'PranchetaController@quiosqueProduto');
 });    
     
     
