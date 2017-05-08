@@ -40,6 +40,7 @@ class PranchetaProdutoRepository extends MGRepository {
             'codproduto' => [
                 'numeric',
                 'required',
+                Rule::unique('tblpranchetaproduto')->ignore($id, 'codpranchetaproduto'),
             ],
             'observacoes' => [
                 'max:200',
@@ -50,6 +51,7 @@ class PranchetaProdutoRepository extends MGRepository {
             'codprancheta.required' => 'O campo "codprancheta" deve ser preenchido!',
             'codproduto.numeric' => 'O campo "codproduto" deve ser um número!',
             'codproduto.required' => 'O campo "codproduto" deve ser preenchido!',
+            'codproduto.unique' => 'O produto já está vinculado à uma prancheta!',
             'observacoes.max' => 'O campo "observacoes" não pode conter mais que 200 caracteres!',
         ]);
 
