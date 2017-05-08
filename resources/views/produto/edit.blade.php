@@ -1,5 +1,9 @@
 @extends('layouts.default')
 @section('content')
+<?php
+$model->codfamiliaproduto = $model->SubGrupoProduto->GrupoProduto->codfamiliaproduto;
+$model->codgrupoproduto = $model->SubGrupoProduto->GrupoProduto->codgrupoproduto;
+?>
 <div class='row'>
     <div class="col-md-12">
         <div class="card">

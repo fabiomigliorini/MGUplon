@@ -47,7 +47,7 @@ class NegocioProdutoBarraController extends Controller
                     'inativo' => 1,
                 ],
                 'order' => [[
-                    'column' => 0,
+                    'column' => 3,
                     'dir' => 'DESC',
                 ]],
             ];
@@ -76,16 +76,15 @@ class NegocioProdutoBarraController extends Controller
         ]);
         
         // Ordenacao
-        $columns[0] = 'codnegocioprodutobarra';
+        $columns[0] = 'codnegocio';
         $columns[1] = 'inativo';
-        $columns[2] = 'codnegocioprodutobarra';
-        $columns[3] = 'codnegocioprodutobarra';
+        $columns[2] = 'codnegocio';
+        $columns[3] = 'lancamento';
         $columns[4] = 'codnegocio';
         $columns[5] = 'quantidade';
         $columns[6] = 'valorunitario';
         $columns[7] = 'valortotal';
         $columns[8] = 'codprodutobarra';
-        $columns[9] = 'codnegocioprodutobarradevolucao';
 
         $sort = [];
         if (!empty($request['order'])) {
@@ -107,17 +106,27 @@ class NegocioProdutoBarraController extends Controller
         // Formata registros para exibir no data table
         $data = [];
         foreach ($regs['data'] as $reg) {
+            $quantidade = $reg->quantidade;
+            $valor = $reg->valorunitario;
+            
+            if (!empty($reg->ProdutoBarra->codprodutoembalagem)){
+                $quantidade *= $reg->ProdutoBarra->ProdutoEmbalagem->quantidade;
+                $valor /= $reg->ProdutoBarra->ProdutoEmbalagem->quantidade;
+            }
+            
             $data[] = [
-                url('negocio-produto-barra', $reg->codnegocioprodutobarra),
+                url('negocio', $reg->codnegocio),
                 formataData($reg->inativo, 'C'),
-                formataCodigo($reg->codnegocioprodutobarra),
-                $reg->codnegocioprodutobarra,
-                $reg->codnegocio,
-                $reg->quantidade,
-                $reg->valorunitario,
-                $reg->valortotal,
-                $reg->codprodutobarra,
-                $reg->codnegocioprodutobarradevolucao,
+                formataCodigo($reg->codnegocio),
+                formataData($reg->Negocio->lancamento),
+                $reg->Negocio->Pessoa->fantasia,
+                $reg->Negocio->NaturezaOperacao->naturezaoperacao,
+                $reg->Negocio->Filial->filial,
+                $reg->ProdutoBarra->ProdutoVariacao->variacao,
+                $reg->ProdutoBarra->barras,
+                formataNumero($valor, 2),
+                $reg->ProdutoBarra->Produto->UnidadeMedida->sigla,
+                formataNumero($quantidade, 3)
             ];
         }
         
@@ -126,7 +135,6 @@ class NegocioProdutoBarraController extends Controller
         
         // Retorna o JSON
         return collect($ret);
-        
     }
     
     

@@ -22,6 +22,7 @@ use MGLara\Library\JsonEnvelope\Datatable;
 use Illuminate\Support\Facades\Input;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use DB;
 
 use MGLara\Library\SlimImageCropper\Slim;
 
@@ -434,6 +435,33 @@ class ImagemController extends Controller
         
         // autorizacao
         $this->repository->authorize('update');
+        
+        $sql = "
+            SELECT
+                  tc.table_name AS foreign_table_name
+                , kcu.column_name AS foreign_column_name 
+                , ccu.column_name 
+            FROM 
+                information_schema.table_constraints AS tc 
+                JOIN information_schema.key_column_usage AS kcu
+                  ON tc.constraint_name = kcu.constraint_name
+                JOIN information_schema.constraint_column_usage AS ccu
+                  ON ccu.constraint_name = tc.constraint_name
+            WHERE constraint_type = 'FOREIGN KEY' 
+            AND ccu.table_name='tblimagem';
+        ";
+            
+        $filhas = DB::select($sql);
+        
+        foreach ($filhas as $filha){
+            $sql_filha = DB::select("select codimagem from $filha->foreign_table_name where codimagem = $id");
+            
+            if(!empty($sql_filha)){
+                dd($sql_filha);
+            }
+        }
+        
+        dd($filhas);
         
         // ativa
         return ['OK' => $this->repository->inactivate()];

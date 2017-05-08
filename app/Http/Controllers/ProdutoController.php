@@ -244,51 +244,7 @@ class ProdutoController extends Controller
         // redireciona para o view
         return redirect("produto/{$this->repository->model->codproduto}");
     }    
-    
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function storee(Request $request)
-    {
-        $model = new Produto($request->all());
         
-        DB::beginTransaction();
-        
-        if (!$model->validate())
-            $this->throwValidationException($request, $model->_validator);
-        
-        try {
-            if (!$model->save())
-                throw new Exception ('Erro ao Criar Produto!');
-            
-            $pv = new ProdutoVariacao();
-            $pv->codproduto = $model->codproduto;
-                    
-            if (!$pv->save())
-                throw new Exception ('Erro ao Criar Variação!');
-            
-            $pb = new ProdutoBarra();
-            $pb->codproduto = $model->codproduto;
-            $pb->codprodutovariacao = $pv->codprodutovariacao;
-            //$pb->barras = str_pad($model->codproduto, 6, '0', STR_PAD_LEFT);
-                    
-            if (!$pb->save())
-                throw new Exception ('Erro ao Criar Barras!');
-            
-            DB::commit();
-            Session::flash('flash_success', "Produto '{$model->produto}' criado!");
-            return redirect("produto/$model->codproduto");               
-            
-        } catch (Exception $ex) {
-            DB::rollBack();
-            $this->throwValidationException($request, $model->_validator);              
-        }
-     
-    }
-    
     /**
      * Display the specified resource.
      *
@@ -321,14 +277,6 @@ class ProdutoController extends Controller
                 break;
             case 'div-embalagens':
                 $view = 'produto.show-embalagens';
-                break;
-            case 'div-negocios':
-                //$parametrosNpb = self::filtroEstatico($request, 'produto.show.npb', [], ['negocio_lancamento_de', 'negocio_lancamento_ate']);
-                //$npbs = NegocioProdutoBarra::search($parametrosNpb, 10);
-
-                $parametrosNpb = $this->setFiltro($request, 'produto.show.npb');
-                $npbs = $this->negocioProdutoBarraRepository->listing($parametrosNpb, [['column'=>'criacao', 'dir'=>'DESC']]);
-                $view = 'produto.show-negocios';
                 break;
             case 'div-notasfiscais':
                 $parametrosNfpb = self::filtroEstatico($request, 'produto.show.nfpb', [], ['notasfiscais_lancamento_de', 'notasfiscais_lancamento_ate']);
@@ -417,25 +365,25 @@ class ProdutoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id) 
+    public function update(Request $request, $id)
     {
         // Busca registro para autorizar
         $this->repository->findOrFail($id);
 
         // Valida dados
         $data = $request->all();
-                
-        if(is_null($request->input('importado'))) {
-            $this->repositoray->model->importado = FALSE;
+        
+        if(!isset($data['importado'])) {
+            $data['importado'] = FALSE;
         }
         
-        if(is_null($request->input('site'))) {
-            $this->repositoray->model->site = FALSE;
+        if(!isset($data['site'])) {
+            $data['site'] = FALSE;
         }
         
         // autorizacao
         $this->repository->fill($data);
-        $this->repositoray->authorize('update');
+        $this->repository->authorize('update');
 
         DB::beginTransaction();
         
@@ -444,24 +392,27 @@ class ProdutoController extends Controller
         }
         
         try {
-            $preco = $this->repository->getOriginal('preco');
+            $preco = $this->repository->model['original']['preco'];
             
             if (!$this->repository->save()){
                 throw new Exception ('Erro ao alterar Produto!');
             }
             
             if($preco != $this->repository->model->preco) {
-                $historico = new ProdutoHistoricoPreco();
-                $historico->codproduto  = $model->codproduto;
-                $historico->precoantigo = $preco;
-                $historico->preconovo   = $model->preco;
-                if (!$historico->save())
+                $this->produtoHistoricoPrecoRepository->new([
+                    'codproduto'  => $this->repository->model->codproduto,
+                    'precoantigo' => $preco,
+                    'preconovo'   => $this->repository->model->preco
+                ]);
+                
+                if (!$this->produtoHistoricoPrecoRepository->create()){
                     throw new Exception ('Erro ao gravar Historico!');
+                }
             }
             
             DB::commit();
-            Session::flash('flash_success', "Produto '{$model->produto}' alterado!");
-            return redirect("produto/$model->codproduto");           
+            Session::flash('flash_update', 'Produto alterado!');
+            return redirect("produto/{$this->repository->model->codproduto}"); 
         } catch (Exception $ex) {
             DB::rollBack();
             $this->throwValidationException($request, $this->repository->validator);
@@ -735,16 +686,22 @@ class ProdutoController extends Controller
 
     public function typeahead(Request $request) 
     {
-        $sql = $this->repository->model->query()
-            ->palavras('produto', $request->get('q'))
-            ->select('produto', 'codproduto')
-            ->where('codproduto', '<>',  ($request->get('codproduto')?$request->get('codproduto'):0))
+        $sql = $this->repository->model->query();
+        $sql->palavras('produto', $request->get('q'))
+            ->select('produto', 'codproduto');
+            
+        if($request->get('codsubgrupoproduto') != 'null') {
+            $sql->where('codsubgrupoproduto', $request->get('codsubgrupoproduto'));
+        }
+            
+        $sql->where('codproduto', '!=',  ($request->get('codproduto')?$request->get('codproduto'):0))
             ->orderBy('produto', 'DESC')
-            ->limit(15)
-            ->get();
+            ->limit(15);
+        
+        $query = $sql->get();
         
         $resultado = [];
-        foreach ($sql as $key => $value) {
+        foreach ($query as $key => $value) {
             $resultado[] = [
                 'produto' => $value['produto'],
                 'codproduto' => $value['codproduto']

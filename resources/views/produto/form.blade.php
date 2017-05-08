@@ -211,13 +211,8 @@
 <script type="text/javascript">
 $(document).ready(function() {
     @if (!empty($model->codsubgrupoproduto))
-        $('#codfamiliaproduto').val({{ $model->SubGrupoProduto->GrupoProduto->codfamiliaproduto }}).change();
         $('#codsecaoproduto').val({{ $model->SubGrupoProduto->GrupoProduto->FamiliaProduto->codsecaoproduto }});
-        $('#codgrupoproduto').val({{ $model->SubGrupoProduto->codgrupoproduto }});
     @endif
-    
-    console.log('familia: ' + $('#codfamiliaproduto').val());
-    console.log('grupo: ' + $('#codgrupoproduto').val());
     
     $('#form-principal').on("submit", function(e) {
         e.preventDefault();
@@ -236,8 +231,6 @@ $(document).ready(function() {
         });       
     });
     
-
-
     var codproduto = <?php echo (isset($model->codproduto) ? $model->codproduto:'""')?>;
     
     function descricaoProdutoTypeahead(codsubgrupoproduto, codproduto) {
@@ -300,9 +293,6 @@ $(document).ready(function() {
     descricaoProdutoTypeahead($('#codsubgrupoproduto').val(), codproduto);
     
     $("#produto").Setcase();
-
-
-
 
 });
 </script>
