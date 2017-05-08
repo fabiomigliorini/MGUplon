@@ -278,14 +278,6 @@ class ProdutoController extends Controller
             case 'div-embalagens':
                 $view = 'produto.show-embalagens';
                 break;
-            case 'div-negocios':
-                //$parametrosNpb = self::filtroEstatico($request, 'produto.show.npb', [], ['negocio_lancamento_de', 'negocio_lancamento_ate']);
-                //$npbs = NegocioProdutoBarra::search($parametrosNpb, 10);
-
-                $parametrosNpb = $this->setFiltro($request, 'produto.show.npb');
-                $npbs = $this->negocioProdutoBarraRepository->listing($parametrosNpb, [['column'=>'criacao', 'dir'=>'DESC']]);
-                $view = 'produto.show-negocios';
-                break;
             case 'div-notasfiscais':
                 $parametrosNfpb = self::filtroEstatico($request, 'produto.show.nfpb', [], ['notasfiscais_lancamento_de', 'notasfiscais_lancamento_ate']);
                 $nfpbs = NotaFiscalProdutoBarra::search($parametrosNfpb, 10);

@@ -105,53 +105,40 @@ class NegocioProdutoBarraRepository extends MGRepository {
         $qry = NegocioProdutoBarra::query();
         
         // Filtros
-         if (!empty($filters['codnegocioprodutobarra'])) {
-            $qry->where('codnegocioprodutobarra', '=', $filters['codnegocioprodutobarra']);
-        }
-
-         if (!empty($filters['codnegocio'])) {
-            $qry->where('codnegocio', '=', $filters['codnegocio']);
-        }
-
-         if (!empty($filters['quantidade'])) {
-            $qry->where('quantidade', '=', $filters['quantidade']);
-        }
-
-         if (!empty($filters['valorunitario'])) {
-            $qry->where('valorunitario', '=', $filters['valorunitario']);
-        }
-
-         if (!empty($filters['valortotal'])) {
-            $qry->where('valortotal', '=', $filters['valortotal']);
-        }
-
-         if (!empty($filters['codprodutobarra'])) {
-            $qry->where('codprodutobarra', '=', $filters['codprodutobarra']);
-        }
-
-         if (!empty($filters['alteracao'])) {
-            $qry->where('alteracao', '=', $filters['alteracao']);
-        }
-
-         if (!empty($filters['codusuarioalteracao'])) {
-            $qry->where('codusuarioalteracao', '=', $filters['codusuarioalteracao']);
-        }
-
-         if (!empty($filters['criacao'])) {
-            $qry->where('criacao', '=', $filters['criacao']);
-        }
-
-         if (!empty($filters['codusuariocriacao'])) {
-            $qry->where('codusuariocriacao', '=', $filters['codusuariocriacao']);
-        }
-
-         if (!empty($filters['codnegocioprodutobarradevolucao'])) {
-            $qry->where('codnegocioprodutobarradevolucao', '=', $filters['codnegocioprodutobarradevolucao']);
-        }
-
+        $qry = $qry->join('tblnegocio', function($join) use ($filters) {
+            $join->on('tblnegocio.codnegocio', '=', 'tblnegocioprodutobarra.codnegocio');
+        });
         
-        $count = $qry->count();
-    
+        if (!empty($filters['negocio_codpessoa']))
+            $qry = $qry->where('tblnegocio.codpessoa', '=', $filters['negocio_codpessoa']);
+        
+        if (!empty($filters['negocio_codnaturezaoperacao']))
+            $qry = $qry->where('tblnegocio.codnaturezaoperacao', '=', $filters['negocio_codnaturezaoperacao']);
+        
+        if (!empty($filters['negocio_codfilial']))
+            $qry = $qry->where('tblnegocio.codfilial', '=', $filters['negocio_codfilial']);
+        
+        if (!empty($filters['negocio_lancamento_de']))
+            $qry = $qry->where('tblnegocio.lancamento', '>=', $filters['negocio_lancamento_de']);
+        
+        if (!empty($filters['negocio_lancamento_ate']))
+            $qry = $qry->where('tblnegocio.lancamento', '<=', $filters['negocio_lancamento_ate']);
+        
+        if (!empty($filters['negocio_codproduto']))
+        {
+            $qry = $qry->join('tblprodutobarra', function($join) use ($filters) {
+                $join->on('tblprodutobarra.codprodutobarra', '=', 'tblnegocioprodutobarra.codprodutobarra');
+            });
+            $qry = $qry->join('tblprodutovariacao', function($join) use ($filters) {
+                $join->on('tblprodutovariacao.codprodutovariacao', '=', 'tblprodutobarra.codprodutovariacao');
+            });
+            $qry = $qry->where('tblprodutovariacao.codproduto', '=', $filters['negocio_codproduto']);
+        }
+
+        if (!empty($filters['negocio_codprodutovariacao']))
+            $qry->where('tblprodutovariacao.codprodutovariacao', '=', $filters['negocio_codprodutovariacao']);
+        
+        /*
         switch ($filters['inativo']) {
             case 2: //Inativos
                 $qry = $qry->inativo();
@@ -165,7 +152,9 @@ class NegocioProdutoBarraRepository extends MGRepository {
                 $qry = $qry->ativo();
                 break;
         }
-        
+        */
+        $count = $qry->count();
+
         // Paginacao
         if (!empty($start)) {
             $qry->offset($start);
