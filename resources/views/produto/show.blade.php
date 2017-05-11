@@ -32,7 +32,7 @@
                         <a class="nav-link" data-toggle="tab" href="#tab-negocio" role="tab">Negócios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#nfes" role="tab">NFE's</a>
+                        <a class="nav-link" data-toggle="tab" href="#tab-notasfiscais" role="tab">NFE's</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#observacoes" role="tab">Observações</a>
@@ -116,8 +116,7 @@
                     <div class="tab-pane" id="tab-fiscal" role="tabpanel">
                         @include('produto.show-ncm')
                     </div>
-                    <div class="tab-pane" id="tab-negocio" role="tabpanel">
-                        <!-- FILTRO NEGOCIO -->
+                    <div role="tabpanel" class="tab-pane fade" id="tab-negocio">
                         <div class="collapse" id="collapseNegocios">
                             <div class='well well-sm'>
                                 {!! Form::model(Request::session()->get('MGLara.Http.Controllers.NegocioProdutoBarraController.filtros'), ['route' => ['produto.show', 'produto'=> $model->codproduto], 'class' => 'form-horizontal', 'method' => 'GET', 'id' => 'produto-negocio-search', 'role' => 'search', 'autocomplete' => 'off'])!!}
@@ -127,31 +126,31 @@
                                             {!! Form::label('negocio_lancamento_de', 'De') !!}
                                             {!! Form::date('negocio_lancamento_de', null, ['class' => 'form-control', 'id' => 'negocio_lancamento_de', 'placeholder' => 'De']) !!}
                                         </div> 
-                                        <div class="form-group">
-                                            {!! Form::label('negocio_lancamento_ate', 'Até') !!}
-                                            {!! Form::date('negocio_lancamento_ate', null, ['class' => 'form-control', 'id' => 'negocio_lancamento_ate', 'placeholder' => 'Até']) !!}
-                                        </div>
 
                                         <div class="form-group">
                                             {!! Form::label('negocio_codfilial', 'Filial') !!}
                                             {!! Form::select2Filial('negocio_codfilial', null, ['style'=>'width:100%', 'id'=>'negocio_codfilial']) !!}
                                         </div>                                    
-                                    </div>
-                                    <div class="col-md-6">
                                         <div class="form-group">
                                             {!! Form::label('negocio_codnaturezaoperacao', 'Natureza de Operação') !!}
                                             {!! Form::select2NaturezaOperacao('negocio_codnaturezaoperacao', null, ['style'=>'width:100%', 'id' => 'negocio_codnaturezaoperacao']) !!}
                                         </div>
 
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {!! Form::label('negocio_lancamento_ate', 'Até') !!}
+                                            {!! Form::date('negocio_lancamento_ate', null, ['class' => 'form-control', 'id' => 'negocio_lancamento_ate', 'placeholder' => 'Até']) !!}
+                                        </div>
+                                        <div class="form-group">
+                                            {!! Form::label('negocio_codpessoa', 'Pessoa') !!}
+                                            {!! Form::select2Pessoa('negocio_codpessoa', null, ['class' => 'form-control', 'id'=>'negocio_codpessoa', 'style'=>'width:100%', 'placeholder' => 'Pessoa', 'ativo' => 9]) !!}
+                                        </div>                            
                                         <div class="form-group">
                                             {!! Form::label('negocio_codprodutovariacao', 'Variação') !!}
                                             {!! Form::select2ProdutoVariacao('negocio_codprodutovariacao', null, ['style'=>'width:100%', 'id' => 'negocio_codprodutovariacao', 'codproduto'=>'negocio_codproduto']) !!}
                                         </div>
 
-                                        <div class="form-group">
-                                            {!! Form::label('negocio_codpessoa', 'Pessoa') !!}
-                                            {!! Form::select2Pessoa('negocio_codpessoa', null, ['class' => 'form-control', 'id'=>'negocio_codpessoa', 'style'=>'width:100%', 'placeholder' => 'Pessoa', 'ativo' => 9]) !!}
-                                        </div>                            
                                     </div>
                                 </div>
                                 {!! Form::hidden('negocio_codproduto', $model->codproduto, ['id'=>'negocio_codproduto']) !!}
@@ -159,13 +158,59 @@
                             </div>
                         </div>
                         <br>
-                        <div id="div-negocioss" class="table-responsive">
+                        <div id="div-negocios" class="table-responsive">
                             <a class='btn btn-secondary btn-sm' href='#collapseNegocios' data-toggle='collapse' aria-expanded='false' aria-controls='collapseNegocios'><i class='fa fa-search'></i></a>
                             @include('layouts.includes.datatable.html', ['id' => 'negocios', 'colunas' => ['URL', 'Inativo Desde', 'Negócio', 'Lançamento', 'Pessoa', 'Operação', 'Filial', 'Variação', 'Barras', 'Valor', 'UND', 'QTD']])
                             <div class="clearfix"></div>
                         </div>
                     </div>
-                    <div class="tab-pane" id="nfes" role="tabpanel">NFE's</div>
+                    <div role="tabpanel" class="tab-pane fade" id="tab-notasfiscais">
+                        <div class="collapse" id="filtro-notasfiscais">
+                            <div class='well well-sm'>
+                                {!! Form::model(Request::session()->get('MGLara.Http.Controllers.NotaFiscalProdutoBarraController.filtros'), ['route' => ['produto.show', 'produto'=> $model->codproduto], 'class' => 'form-horizontal', 'method' => 'GET', 'id' => 'produto-notasfiscais-search', 'role' => 'search', 'autocomplete' => 'off'])!!}
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {!! Form::label('notasfiscais_lancamento_de', 'De') !!}
+                                        {!! Form::date('notasfiscais_lancamento_de', null, ['class' => 'form-control', 'id' => 'notasfiscais_lancamento_de', 'placeholder' => 'De']) !!}
+                                    </div>
+                                    <div class="form-group">
+                                        {!! Form::label('notasfiscais_codfilial', 'Filial') !!}
+                                        {!! Form::select2Filial('notasfiscais_codfilial', null, ['style'=>'width:100%', 'id'=>'notasfiscais_codfilial']) !!}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {!! Form::label('notasfiscais_codnaturezaoperacao', 'Natureza de Operação') !!}
+                                        {!! Form::select2NaturezaOperacao('notasfiscais_codnaturezaoperacao', null, ['style'=>'width:100%', 'id' => 'notasfiscais_codnaturezaoperacao']) !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {!! Form::label('notasfiscais_lancamento_ate', 'Até') !!}
+                                        {!! Form::date('notasfiscais_lancamento_ate', null, ['class' => 'form-control', 'id' => 'notasfiscais_lancamento_ate', 'placeholder' => 'Até']) !!}
+                                    </div>
+                                    <div class="form-group">
+                                        {!! Form::label('notasfiscais_codpessoa', 'Pessoa') !!}
+                                        {!! Form::select2Pessoa('notasfiscais_codpessoa', null, ['class' => 'form-control','id'=>'notasfiscais_codpessoa', 'style'=>'width:100%', 'placeholder' => 'Pessoa', 'ativo' => 9]) !!}
+                                    </div>
+                                    <div class="form-group">
+                                        {!! Form::label('notasfiscais_codnaturezaoperacao', 'Variação') !!}
+                                        {!! Form::select2ProdutoVariacao('notasfiscais_codprodutovariacao', null, ['style'=>'width:100%', 'id' => 'notasfiscais_codprodutovariacao', 'codproduto'=>'notasfiscais_codproduto']) !!}
+                                    </div>
+
+                                </div>
+                                    {!! Form::hidden('notasfiscais_codproduto', $model->codproduto, ['id'=>'notasfiscais_codproduto']) !!}
+                                    {!! Form::hidden('_div', 'div-notasfiscais', ['id'=>'notasfiscais_page']) !!}
+
+                                {!! Form::close() !!}
+                            </div>
+                        </div>
+                        <br>
+                        <div id="div-notasfiscais" class="table-responsive">
+                            <a class='btn btn-secondary btn-sm' href='#filtro-notasfiscais' data-toggle='collapse' aria-expanded='false' aria-controls='filtro-notasfiscais'><i class='fa fa-search'></i></a>
+                            @include('layouts.includes.datatable.html', ['id' => 'nfes', 'colunas' => ['URL', 'Inativo Desde', 'Nota', 'Lançamento', 'Pessoa', 'Operação', 'Filial', 'Variação', 'Barras', 'Valor', 'UND', 'QTD']])
+                            <div class="clearfix"></div>                    
+                        </div>
+                    </div>
                     <div class="tab-pane" id="observacoes" role="tabpanel">
                         {!! $model->observacoes !!}
                     </div>
@@ -214,7 +259,7 @@ function mostraListagemNegocios()
 {
     var datable_negocios = $('#negocios').DataTable({
         dom: 'rtpi',
-        pageLength: 100,
+        pageLength: 10,
         language: {
             url: "http://localhost/MGUplon/public/assets/plugins/datatables/Portuguese-Brasil.lang"
         },
@@ -286,51 +331,111 @@ function mostraListagemNegocios()
     });
 }
 
-/*function mostraListagemNotasFiscais()
+function mostraListagemNotasFiscais()
 {
-    console.log('mostraListagemNotasFiscais');
-    
-    //Serializa FORM
-    var frmValues = $("#produto-notasfiscais-search").serialize();
-    
-    // Busca Listagem
-    $.ajax({
-        type: 'GET',
-        url: baseUrl + '/produto/' + {{ $model->codproduto }},
-        data: frmValues
-    })
-    .done(function (data) {
-        
-        $('#div-notasfiscais').html($(data).html()); 
-        
-        $('#div-notasfiscais-listagem').infinitescroll({
-            loading : {
-                finishedMsg: "<div class='end-msg'>Fim dos registros</div>",
-                msgText: "<div class='center'>Carregando mais itens...</div>",
-                img: baseUrl + '/public/img/ajax-loader.gif'
+    var datable_nfes = $('#nfes').DataTable({
+        dom: 'rtpi',
+        pageLength: 10,
+        language: {
+            url: "http://localhost/MGUplon/public/assets/plugins/datatables/Portuguese-Brasil.lang"
+        },
+        processing: true,
+        serverSide: true,
+        order: 
+        [
+                ],
+        ajax: {
+            url: 'http://localhost/MGUplon/nota-fiscal-produto-barra/datatable',
+            data: function ( d ) {
+                d.filtros = new Object;
+                    d.filtros.notasfiscais_lancamento_de         = $('#notasfiscais_lancamento_de').val();
+                    d.filtros.notasfiscais_lancamento_ate        = $('#notasfiscais_lancamento_ate').val();
+                    d.filtros.notasfiscais_codfilial             = $('#notasfiscais_codfilial').val();
+                    d.filtros.notasfiscais_codnaturezaoperacao   = $('#notasfiscais_codnaturezaoperacao').val();
+                    d.filtros.notasfiscais_codprodutovariacao    = $('#notasfiscais_codprodutovariacao').val();
+                    d.filtros.notasfiscais_codpessoa             = $('#notasfiscais_codpessoa').val();
+                    d.filtros.notasfiscais_codproduto            = $('#notasfiscais_codproduto').val();
+                }
+        },
+        lengthChange: false,
+        columnDefs: [
+                        {
+                targets: [0, 1],
+                visible: false,
             },
-            navSelector : "#div-notasfiscais .pagination",
-            nextSelector : "#div-notasfiscais .pagination li.active + li a",
-            itemSelector : "#div-notasfiscais-listagem div.list-group-item"
-        });
-        
-    })
-    .fail(function (e) {
-        console.log('Erro no filtro');
-        console.log(e);
+            {
+                render: function ( data, type, row ) {
+                    return '<a href="' + row[0] + '">' + data +'</a>';
+                },
+                targets: 2
+            }
+        ],
+        initComplete: function(settings, json) {
+            datable_nfes.buttons().container().appendTo('#nfes_wrapper .col-md-12:eq(0)');
+            $('#nfes_paginate, #nfes_info').addClass('col-md-12');
+            $('ul.pagination').addClass('pull-left');
+        },
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            if (aData[1] != null) {
+                $(nRow).addClass('table-danger');
+            }
+        }
     });
-}*/
+
+    $('#notasfiscais_lancamento_de').change(function() {
+        datable_nfes.ajax.reload();
+    });
+    
+    $('#notasfiscais_lancamento_ate').change(function() {
+        datable_nfes.ajax.reload();
+    });
+    
+    $('#notasfiscais_codfilial').change(function() {
+        datable_nfes.ajax.reload();
+    });
+    
+    $('#notasfiscais_codnaturezaoperacao').change(function() {
+        datable_nfes.ajax.reload();
+    });
+    
+    $('#notasfiscais_codprodutovariacao').change(function() {
+        datable_nfes.ajax.reload();
+    });
+    
+    $('#notasfiscais_codpessoa').change(function() {
+        datable_nfes.ajax.reload();
+    });
+}
 
 $(document).ready(function() {
-    ////////// LISTAGEM DE NEGOCIOS /////////
-    //
-    // Listagem de Negocios -- Troca ABA
     var listagemNegocioAberta = false;
     $('a[href="#tab-negocio"]').on('shown.bs.tab', function (e) {
         if (!listagemNegocioAberta)
             mostraListagemNegocios();
         listagemNegocioAberta = true;
     });
+    
+    var listagemNotasFiscaisAberta = false;
+    $('a[href="#tab-notasfiscais"]').on('shown.bs.tab', function (e) {
+        if (!listagemNotasFiscaisAberta)
+            mostraListagemNotasFiscais();
+        listagemNotasFiscaisAberta = true;
+    });
+
+    var listagemEstoqueAberta = false;
+    $('a[href="#tab-estoque"]').on('shown.bs.tab', function (e) {
+        recarregaDiv('div-estoque');
+        listagemEstoqueAberta = true;
+    });
+    
+    
+    
+    //
+    //
+    //
+    ////////// LISTAGEM DE NEGOCIOS /////////
+    //
+    // Listagem de Negocios -- Troca ABA
     
 /*
     // Listagem de Negocios -- Alteração Formulário
@@ -345,12 +450,6 @@ $(document).ready(function() {
     ////////// LISTAGEM DE NOTAS FISCAIS /////////
     //
     // Listagem de Notas Fiscais -- Troca ABA
-    var listagemNotasFiscaisAberta = false;
-    $('a[href="#tab-notasfiscais"]').on('shown.bs.tab', function (e) {
-        if (!listagemNotasFiscaisAberta)
-            mostraListagemNotasFiscais();
-        listagemNotasFiscaisAberta = true;
-    });
     
     // Listagem de Negocios -- Alteração Formulário
     $("#produto-notasfiscais-search").on("change", function (event) {
@@ -359,11 +458,6 @@ $(document).ready(function() {
     });
     /////////////////////////////////////////
 */
-    var listagemEstoqueAberta = false;
-    $('a[href="#tab-estoque"]').on('shown.bs.tab', function (e) {
-        recarregaDiv('div-estoque');
-        listagemEstoqueAberta = true;
-    });
     
     $('#sincronizar').hide();
     $('#integracao-open-cart').click(function (e) {

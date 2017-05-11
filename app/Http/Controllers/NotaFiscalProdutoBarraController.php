@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use MGLara\Http\Controllers\Controller;
 
-use MGLara\Repositories\NegocioProdutoBarraRepository;
+use MGLara\Repositories\NotaFiscalProdutoBarraRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
@@ -16,15 +16,15 @@ use MGLara\Library\JsonEnvelope\Datatable;
 use Carbon\Carbon;
 
 /**
- * @property  NegocioProdutoBarraRepository $repository 
+ * @property  NotaFiscalProdutoBarraRepository $repository 
  */
-class NegocioProdutoBarraController extends Controller
+class NotaFiscalProdutoBarraController extends Controller
 {
 
-    public function __construct(NegocioProdutoBarraRepository $repository) {
+    public function __construct(NotaFiscalProdutoBarraRepository $repository) {
         $this->repository = $repository;
-        $this->bc = new Breadcrumb('Negocio Produto Barra');
-        $this->bc->addItem('Negocio Produto Barra', url('negocio-produto-barra'));
+        $this->bc = new Breadcrumb('Nota Fiscal Produto Barra');
+        $this->bc->addItem('Nota Fiscal Produto Barra', url('nota-fiscal-produto-barra'));
     }
     
     /**
@@ -55,7 +55,7 @@ class NegocioProdutoBarraController extends Controller
         
         
         // retorna View
-        return view('negocio-produto-barra.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
+        return view('nota-fiscal-produto-barra.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
     }
 
     /**
@@ -76,18 +76,18 @@ class NegocioProdutoBarraController extends Controller
         ]);
         
         // Ordenacao
-        $columns[0] = 'codnegocio';
+        $columns[0] = 'codnotafiscalprodutobarra';
         $columns[1] = 'inativo';
-        $columns[2] = 'codnegocio';
-        $columns[3] = 'lancamento';
-        $columns[4] = 'codpessoa';
-        $columns[5] = 'codoperacao';
-        $columns[6] = 'codfilial';
-        $columns[7] = 'variacao';
-        $columns[8] = 'barras';
-        $columns[9] = 'valor';
-        $columns[10] = 'unidademedida';
-        $columns[11] = 'quantidade';
+        $columns[2] = 'codnotafiscalprodutobarra';
+        $columns[3] = 'tblnotafiscal.saida';
+        $columns[4] = 'codnotafiscal';
+        $columns[5] = 'codprodutobarra';
+        $columns[6] = 'codcfop';
+        $columns[7] = 'descricaoalternativa';
+        $columns[8] = 'quantidade';
+        $columns[9] = 'valorunitario';
+        $columns[10] = 'valortotal';
+
 
         $sort = [];
         if (!empty($request['order'])) {
@@ -111,20 +111,19 @@ class NegocioProdutoBarraController extends Controller
         foreach ($regs['data'] as $reg) {
             $quantidade = $reg->quantidade;
             $valor = $reg->valorunitario;
-            
-            if (!empty($reg->ProdutoBarra->codprodutoembalagem)){
+            if (!empty($reg->ProdutoBarra->codprodutoembalagem))
+            {
                 $quantidade *= $reg->ProdutoBarra->ProdutoEmbalagem->quantidade;
                 $valor /= $reg->ProdutoBarra->ProdutoEmbalagem->quantidade;
-            }
-            
+            }            
             $data[] = [
-                url('negocio', $reg->codnegocio),
+                url('nota-fiscal', $reg->codnotafiscal),
                 formataData($reg->inativo, 'C'),
-                formataCodigo($reg->codnegocio),
-                formataData($reg->Negocio->lancamento),
-                $reg->Negocio->Pessoa->fantasia,
-                $reg->Negocio->NaturezaOperacao->naturezaoperacao,
-                $reg->Negocio->Filial->filial,
+                formataNumeroNota($reg->NotaFiscal->emitida, $reg->NotaFiscal->serie, $reg->NotaFiscal->numero, $reg->NotaFiscal->modelo),
+                formataData($reg->NotaFiscal->saida),
+                $reg->NotaFiscal->Pessoa->fantasia,
+                $reg->NotaFiscal->NaturezaOperacao->naturezaoperacao,
+                $reg->NotaFiscal->Filial->filial,
                 $reg->ProdutoBarra->ProdutoVariacao->variacao,
                 $reg->ProdutoBarra->barras,
                 formataNumero($valor, 2),
@@ -138,6 +137,7 @@ class NegocioProdutoBarraController extends Controller
         
         // Retorna o JSON
         return collect($ret);
+        
     }
     
     
@@ -158,7 +158,7 @@ class NegocioProdutoBarraController extends Controller
         $this->bc->addItem('Novo');
         
         // retorna view
-        return view('negocio-produto-barra.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('nota-fiscal-produto-barra.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -172,10 +172,10 @@ class NegocioProdutoBarraController extends Controller
         parent::store($request);
         
         // Mensagem de registro criado
-        Session::flash('flash_create', 'Negocio Produto Barra criado!');
+        Session::flash('flash_create', 'Nota Fiscal Produto Barra criado!');
         
         // redireciona para o view
-        return redirect("negocio-produto-barra/{$this->repository->model->codnegocioprodutobarra}");
+        return redirect("nota-fiscal-produto-barra/{$this->repository->model->codnotafiscalprodutobarra}");
     }
 
     /**
@@ -193,11 +193,11 @@ class NegocioProdutoBarraController extends Controller
         $this->repository->authorize('view');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->codnegocioprodutobarra);
-        $this->bc->header = $this->repository->model->codnegocioprodutobarra;
+        $this->bc->addItem($this->repository->model->codnotafiscalprodutobarra);
+        $this->bc->header = $this->repository->model->codnotafiscalprodutobarra;
         
         // retorna show
-        return view('negocio-produto-barra.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('nota-fiscal-produto-barra.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -215,12 +215,12 @@ class NegocioProdutoBarraController extends Controller
         $this->repository->authorize('update');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->codnegocioprodutobarra, url('negocio-produto-barra', $this->repository->model->codnegocioprodutobarra));
-        $this->bc->header = $this->repository->model->codnegocioprodutobarra;
+        $this->bc->addItem($this->repository->model->codnotafiscalprodutobarra, url('nota-fiscal-produto-barra', $this->repository->model->codnotafiscalprodutobarra));
+        $this->bc->header = $this->repository->model->codnotafiscalprodutobarra;
         $this->bc->addItem('Alterar');
         
         // retorna formulario edit
-        return view('negocio-produto-barra.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('nota-fiscal-produto-barra.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -236,10 +236,10 @@ class NegocioProdutoBarraController extends Controller
         parent::update($request, $id);
         
         // mensagem re registro criado
-        Session::flash('flash_update', 'Negocio Produto Barra alterado!');
+        Session::flash('flash_update', 'Nota Fiscal Produto Barra alterado!');
         
         // redireciona para view
-        return redirect("negocio-produto-barra/{$this->repository->model->codnegocioprodutobarra}"); 
+        return redirect("nota-fiscal-produto-barra/{$this->repository->model->codnotafiscalprodutobarra}"); 
     }
     
 }

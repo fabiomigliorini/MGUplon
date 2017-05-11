@@ -53,11 +53,10 @@ class AuthServiceProvider extends ServiceProvider
         \MGLara\Models\ProdutoBarra::class          => \MGLara\Policies\ProdutoBarraPolicy::class,
         \MGLara\Models\ProdutoVariacao::class       => \MGLara\Policies\ProdutoVariacaoPolicy::class,
         \MGLara\Models\EstoqueMovimento::class      => \MGLara\Policies\EstoqueMovimentoPolicy::class,
-
         \MGLara\Models\ChequeRepasse::class         => \MGLara\Policies\ChequeRepassePolicy::class,
         \MGLara\Models\Prancheta::class             => \MGLara\Policies\PranchetaPolicy::class,
         \MGLara\Models\PranchetaProduto::class      => \MGLara\Policies\PranchetaProdutoPolicy::class,
-
+        \MGLara\Models\NotaFiscalProdutoBarra::class => \MGLara\Policies\NotaFiscalProdutoBarraPolicy::class,
 
     ];
 

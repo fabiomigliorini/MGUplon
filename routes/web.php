@@ -233,4 +233,6 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('prancheta', 'PranchetaController');
     Route::resource('prancheta-produto', 'PranchetaProdutoController');
 
+    /* Nota Fiscal Produto Barra */
+    Route::resource('nota-fiscal-produto-barra', 'NotaFiscalProdutoBarraController');
 });
