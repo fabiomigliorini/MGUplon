@@ -1,117 +1,99 @@
 @extends('layouts.quiosque')
 @section('content')
 
-<div class='card'>
-    <div class='card-block'>
+<form class="form-inline pull-right">
+  <input type="text" id="busca" autofocus placeholder="Busca" class="form-control" />
+  <button type="button" class="btn btn-info" id="btnInicio">Início</button>
+  <button type="button" class="btn " id="btnFechar">Fechar</button>
+</form>
+
 <div class="portfolioFilter">
-  <a href="#" data-filter="*" class="current waves-effect waves-light">Todos</a>
+  <a href="#" data-filter="*" id="btnTodos" class="current waves-effect waves-light">Todos</a>
   @foreach ($itens['prancheta']->sortBy('prancheta') as $prancheta)
-    <a href="#" data-filter=".prancheta-{{ $prancheta->codprancheta }}" class="waves-effect waves-light">{{ $prancheta->prancheta }}</a>
+  <a href="#" data-filter=".prancheta-{{ $prancheta->codprancheta }}" class="waves-effect waves-light">{{ $prancheta->prancheta }}</a>
   @endforeach
+<br>
   @foreach ($itens['marca']->sortBy('marca') as $marca)
   <a href="#" data-filter=".marca-{{ $marca->codmarca }}" class="waves-effect waves-light">
     @if (!empty($marca->codimagem))
-      <img height="50" src='{{ asset("public/imagens/{$marca->Imagem->observacoes}") }}' alt='{{$marca->marca}}' title="{{$marca->marca}}">
+    <img height="50" src='{{ asset("public/imagens/{$marca->Imagem->observacoes}") }}' alt='{{$marca->marca}}' title="{{$marca->marca}}">
     @else
-      {{ $marca->marca }}
+    {{ $marca->marca }}
     @endif
   </a>
   @endforeach
 </div>
-</div>
-</div>
-            
 
-  <div class="row port m-b-20">
-    <div class="portfolioContainer">
-      @foreach ($itens['produto'] as $produto)
-        <div class="col-md-2 marca-{{ $produto->codmarca }} prancheta-{{ $produto->codprancheta }} ">
-          <div class="thumb">
-            <a href="{{ url("prancheta/quiosque/produto/{$produto->codpranchetaproduto}/{$codestoquelocal}") }}" class="image-popup" title="{{ $produto->produto }}">
-              @if ($itens['imagem'][$produto->codproduto]->count() > 0)
-                <div id="car{{ $produto->codproduto }}" class="carousel slide" data-ride="carousel" data-interval="1500" >
-                  <div class="carousel-caption d-none d-md-block" style="">
-                    <h4><small>R$</small> {{ formataNumero($produto->preco, 2) }}</h4>
-                    <i class="fa fa-cubes"></i> 
-                    @if (!empty($produto->saldoquantidade))
-                      {{ formataNumero($produto->saldoquantidade, 0) }}
-                    @else
-                      Sem Saldo
-                    @endif
-                  </div>
-                  <div class="carousel-inner" role="listbox">
-                      @foreach ($itens['imagem'][$produto->codproduto] as $imagem)
-                        <div class="carousel-item {{ ($loop->first)?'active':'' }} ">
-                          <img class="d-block img-fluid thumb-img" src="{{$imagem->url}}" alt="{{ $produto->produto }}">
-                        </div>
-                      @endforeach
-                  </div>
-                </div>
+
+<div class="row port m-b-20">
+  <div class="portfolioContainer">
+    @foreach ($itens['produto'] as $produto)
+    <div class="col-md-2 marca-{{ $produto->codmarca }} prancheta-{{ $produto->codprancheta }} ">
+      <div class="thumb">
+        <a href="{{ url("prancheta/quiosque/produto/{$produto->codpranchetaproduto}/{$codestoquelocal}") }}" class="image-popup" title="{{ $produto->produto }}">
+          @if ($itens['imagem'][$produto->codproduto]->count() > 0)
+          <div id="car{{ $produto->codproduto }}" class="carousel slide" data-ride="carousel" data-interval="1500" >
+            <div class="carousel-caption d-none d-md-block" style="">
+              <h4><small>R$</small> {{ formataNumero($produto->preco, 2) }}</h4>
+              {{ $produto->produto }}
+              <br>
+              <i class="fa fa-cubes"></i>
+              @if (!empty($produto->saldoquantidade))
+              {{ formataNumero($produto->saldoquantidade, 0) }}
               @else
-                <div class="gal-detail text-xs-center">
-                  <h4 class="m-t-10">{{ $produto->produto }}</h4>
-                  <h4><small>R$</small> {{ formataNumero($produto->preco, 2) }}</h4>
-                  <p class="text-muted">
-                    <i class="fa fa-cubes"></i>
-                    @if (!empty($produto->saldoquantidade))
-                      {{ formataNumero($produto->saldoquantidade, 0) }}
-                    @else
-                      Sem Saldo
-                    @endif
-                  </p>
-                </div>
-              @endif              
-            </a>
+              Sem Saldo
+              @endif
+            </div>
+            <div class="carousel-inner" role="listbox">
+              @foreach ($itens['imagem'][$produto->codproduto] as $imagem)
+              <div class="carousel-item {{ ($loop->first)?'active':'' }} ">
+                <img class="d-block img-fluid thumb-img" src="{{$imagem->url}}" alt="{{ $produto->produto }}">
+              </div>
+              @endforeach
+            </div>
           </div>
-        </div>
-      @endforeach
-    </div><!-- end portfoliocontainer-->
-  </div> <!-- End row -->
+          @else
+          <div class="gal-detail text-xs-center">
+            <h4 class="m-t-10">{{ $produto->produto }}</h4>
+            <h4><small>R$</small> {{ formataNumero($produto->preco, 2) }}</h4>
+            <p class="text-muted">
+              <i class="fa fa-cubes"></i>
+              @if (!empty($produto->saldoquantidade))
+              {{ formataNumero($produto->saldoquantidade, 0) }}
+              @else
+              Sem Saldo
+              @endif
+            </p>
+          </div>
+          @endif
+        </a>
+      </div>
+    </div>
+    @endforeach
+  </div><!-- end portfoliocontainer-->
+</div> <!-- End row -->
 
-@section('buttons')
-
-    <a class="btn btn-secondary btn-sm" href="{{ url("prancheta/$model->codprancheta/edit") }}"><i class="fa fa-pencil"></i></a>
-    @if(empty($model->inativo))
-        <a class="btn btn-secondary btn-sm" href="{{ url("prancheta/$model->codprancheta/inactivate") }}" data-activate data-question="Tem certeza que deseja inativar '{{ $model->prancheta }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-ban"></i></a>
-    @else
-        <a class="btn btn-secondary btn-sm" href="{{ url("prancheta/$model->codprancheta/activate") }}" data-activate data-question="Tem certeza que deseja ativar '{{ $model->prancheta }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-circle-o"></i></a>
-    @endif
-    <a class="btn btn-secondary btn-sm" href="{{ url("prancheta/$model->codprancheta") }}" data-delete data-question="Tem certeza que deseja excluir '{{ $model->prancheta }}'?" data-after="location.replace('{{ url('prancheta') }}');"><i class="fa fa-trash"></i></a>                
-    
-@endsection
-@section('inactive')
-
-    @include('layouts.includes.inactive', [$model])
-    
-@endsection
-@section('creation')
-
-    @include('layouts.includes.creation', [$model])
-    
-@endsection
 @section('inscript')
-<script src='http://localhost/MGUplon.original/Uplon/Admin/PHP/Vertical/assets/plugins/isotope/js/isotope.pkgd.min.js'></script>
-<script src='http://localhost/MGUplon.original/Uplon/Admin/PHP/Vertical/assets/plugins/magnific-popup/js/jquery.magnific-popup.min.js'></script>
+<script src="{{ asset('public/assets/plugins/isotope/js/isotope.pkgd.min.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
-$(document).ready(function() {
-    $("a.linkBarras").click(function (e) {
+
+$(document).ready(function () {
+
+    $("#btnInicio").click(function (e) {
         e.preventDefault();
-        var barras = $(this).data('barras');
-        console.log(barras);
+        location.href = "{{ url('prancheta/quiosque', $codestoquelocal) }}";
     });
-    
-    
+
+    $("#btnFechar").click(function (e) {
+        e.preventDefault();
+        window.parent.fechaPrancheta();
+    });
+
 });
 
 
-/**
-* Theme: Uplon Admin Template
-* Author: Coderthemes
-* Component: Peity Chart
-* 
-*/
+$(window).load(function () {
 
-$(window).load(function(){
     var $container = $('.portfolioContainer');
     $container.isotope({
         filter: '*',
@@ -122,7 +104,7 @@ $(window).load(function(){
         }
     });
 
-    $('.portfolioFilter a').click(function(){
+    $('.portfolioFilter a').click(function () {
         $('.portfolioFilter .current').removeClass('current');
         $(this).addClass('current');
 
@@ -135,8 +117,44 @@ $(window).load(function(){
                 queue: false
             }
         });
+
+        $('#busca').val('');
+
         return false;
     });
+
+    $('#busca').keyup(function (e) {
+
+        if (e.keyCode == 27) {
+            window.parent.fechaPrancheta();
+            return;
+        }
+
+        var busca = $('#busca').val();
+        busca = busca.split(' ');
+        
+        $('.portfolioFilter .current').removeClass('current');
+        $('#btnTodos').addClass('current');
+
+        $container.isotope({
+            animationOptions: {
+                duration: 750,
+                easing: 'linear',
+                queue: false
+            },
+            filter: function () {
+                var achou = true;
+                busca.forEach(function(termo) {
+                    if (! $(this).text().match(new RegExp(termo, 'gi'))) {
+                        achou = false;
+                    }
+                }, $(this));
+                return achou;
+            }
+        });
+    });
+
+
 });
 </script>
 

@@ -162,7 +162,7 @@ class PranchetaRepository extends MGRepository {
             inner join tblproduto pr on (pr.codproduto = pp.codproduto)
             where p.inativo is null
             and pp.inativo is null
-            order by p.prancheta, pr.produto
+            order by pr.produto
         ";
         
         $itens = DB::select($sql);
