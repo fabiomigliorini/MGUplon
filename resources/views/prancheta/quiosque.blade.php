@@ -12,6 +12,7 @@
   @foreach ($itens['prancheta']->sortBy('prancheta') as $prancheta)
   <a href="#" data-filter=".prancheta-{{ $prancheta->codprancheta }}" class="waves-effect waves-light">{{ $prancheta->prancheta }}</a>
   @endforeach
+<br>
   @foreach ($itens['marca']->sortBy('marca') as $marca)
   <a href="#" data-filter=".marca-{{ $marca->codmarca }}" class="waves-effect waves-light">
     @if (!empty($marca->codimagem))
