@@ -375,12 +375,12 @@ class ProdutoController extends Controller
     }
 
     public function populaSecaoProduto(Request $request) {
-        $model = Produto::find($request->get('id'));
+        $this->repository->findOrFail($request->get('id'));
         $retorno = [
-            'secaoproduto' => $model->SubGrupoProduto->GrupoProduto->FamiliaProduto->SecaoProduto->codsecaoproduto,
-            'familiaproduto' => $model->SubGrupoProduto->GrupoProduto->FamiliaProduto->codfamiliaproduto,
-            'grupoproduto' => $model->SubGrupoProduto->GrupoProduto->codgrupoproduto,
-            'subgrupoproduto' => $model->SubGrupoProduto->codsubgrupoproduto,
+            'secaoproduto'      => $this->repository->model->SubGrupoProduto->GrupoProduto->FamiliaProduto->SecaoProduto->codsecaoproduto,
+            'familiaproduto'    => $this->repository->model->SubGrupoProduto->GrupoProduto->FamiliaProduto->codfamiliaproduto,
+            'grupoproduto'      => $this->repository->model->SubGrupoProduto->GrupoProduto->codgrupoproduto,
+            'subgrupoproduto'   => $this->repository->model->SubGrupoProduto->codsubgrupoproduto,
         ];
         
         return response()->json($retorno);
@@ -526,14 +526,24 @@ class ProdutoController extends Controller
     
     public function transferirVariacao(Request $request, $id)
     {
-        $model = Produto::findOrFail($id);
-        return view('produto.transferir-variacao',  compact('model'));
+        // busca regstro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->codproduto, url('produto', $this->repository->model->codproduto));
+        $this->bc->header = $this->repository->model->produto;
+        $this->bc->addItem('Transferir Variação');
+        
+        return view('produto.transferir-variacao', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
         
     public function transferirVariacaoSalvar(Request $request, $id)
     {
         $form = $request->all();
-
+        
         $validator = Validator::make(
             $form, 
             [            
@@ -554,21 +564,20 @@ class ProdutoController extends Controller
         
         foreach($form['codprodutovariacao'] as $codprodutovariacao) {
 
-            $pv = ProdutoVariacao::findOrFail($codprodutovariacao);
+            $pv = $this->produtoVariacaoRepository->findOrFail($codprodutovariacao);
             $pv->codproduto = $form['codproduto'];
             $pv->save();
-
+            
             foreach($pv->ProdutoBarraS as $pb) {
 
                 $pb->codproduto = $form['codproduto'];
 
                 if (!empty($pb->codprodutoembalagem)) {
-
-                    $pe = ProdutoEmbalagem::where([
+                    $pe = $this->produtoEmbalagemRepository->model->where([
                         'codproduto' => $form['codproduto'],
                         'quantidade' => $pb->ProdutoEmbalagem->quantidade,
                     ])->first();
-
+                    
                     if (!$pe) {
                         $pe = new ProdutoEmbalagem;
                         $pe->codproduto = $form['codproduto'];
@@ -579,12 +588,10 @@ class ProdutoController extends Controller
                     }
 
                     $pb->codprodutoembalagem = $pe->codprodutoembalagem;
-
                 }
 
                 $pb->save();
             }
-
         }
         //DB::rollback();
         DB::commit();
