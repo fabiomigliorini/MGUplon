@@ -198,6 +198,7 @@ Route::group(['middleware' => 'auth'], function() {
 
     /* Produto */
     Route::get('produto/typeahead', 'ProdutoController@typeahead');
+    Route::get('produto/sincroniza-produto-open-cart', 'ProdutoController@sincronizaProdutoOpenCart');
     Route::resource('produto', 'ProdutoController');
     
     /* Negócio produto barra */

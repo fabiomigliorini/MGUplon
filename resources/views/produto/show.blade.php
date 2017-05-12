@@ -107,7 +107,6 @@
                             </botton>
 
                         </p>
-                        <br>
                         <strong>Divulgado no Site: {{ ($model->site)?'Sim':'Não' }}</strong>
                         <hr>
                         {!! nl2br($model->descricaosite) !!}
@@ -168,40 +167,40 @@
                         <div class="collapse" id="filtro-notasfiscais">
                             <div class='well well-sm'>
                                 {!! Form::model(Request::session()->get('MGLara.Http.Controllers.NotaFiscalProdutoBarraController.filtros'), ['route' => ['produto.show', 'produto'=> $model->codproduto], 'class' => 'form-horizontal', 'method' => 'GET', 'id' => 'produto-notasfiscais-search', 'role' => 'search', 'autocomplete' => 'off'])!!}
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        {!! Form::label('notasfiscais_lancamento_de', 'De') !!}
-                                        {!! Form::date('notasfiscais_lancamento_de', null, ['class' => 'form-control', 'id' => 'notasfiscais_lancamento_de', 'placeholder' => 'De']) !!}
-                                    </div>
-                                    <div class="form-group">
-                                        {!! Form::label('notasfiscais_codfilial', 'Filial') !!}
-                                        {!! Form::select2Filial('notasfiscais_codfilial', null, ['style'=>'width:100%', 'id'=>'notasfiscais_codfilial']) !!}
-                                    </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {!! Form::label('notasfiscais_lancamento_de', 'De') !!}
+                                            {!! Form::date('notasfiscais_lancamento_de', null, ['class' => 'form-control', 'id' => 'notasfiscais_lancamento_de', 'placeholder' => 'De']) !!}
+                                        </div>
+                                        <div class="form-group">
+                                            {!! Form::label('notasfiscais_codfilial', 'Filial') !!}
+                                            {!! Form::select2Filial('notasfiscais_codfilial', null, ['style'=>'width:100%', 'id'=>'notasfiscais_codfilial']) !!}
+                                        </div>
 
-                                    <div class="form-group">
-                                        {!! Form::label('notasfiscais_codnaturezaoperacao', 'Natureza de Operação') !!}
-                                        {!! Form::select2NaturezaOperacao('notasfiscais_codnaturezaoperacao', null, ['style'=>'width:100%', 'id' => 'notasfiscais_codnaturezaoperacao']) !!}
+                                        <div class="form-group">
+                                            {!! Form::label('notasfiscais_codnaturezaoperacao', 'Natureza de Operação') !!}
+                                            {!! Form::select2NaturezaOperacao('notasfiscais_codnaturezaoperacao', null, ['style'=>'width:100%', 'id' => 'notasfiscais_codnaturezaoperacao']) !!}
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        {!! Form::label('notasfiscais_lancamento_ate', 'Até') !!}
-                                        {!! Form::date('notasfiscais_lancamento_ate', null, ['class' => 'form-control', 'id' => 'notasfiscais_lancamento_ate', 'placeholder' => 'Até']) !!}
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {!! Form::label('notasfiscais_lancamento_ate', 'Até') !!}
+                                            {!! Form::date('notasfiscais_lancamento_ate', null, ['class' => 'form-control', 'id' => 'notasfiscais_lancamento_ate', 'placeholder' => 'Até']) !!}
+                                        </div>
+                                        <div class="form-group">
+                                            {!! Form::label('notasfiscais_codpessoa', 'Pessoa') !!}
+                                            {!! Form::select2Pessoa('notasfiscais_codpessoa', null, ['class' => 'form-control','id'=>'notasfiscais_codpessoa', 'style'=>'width:100%', 'placeholder' => 'Pessoa', 'ativo' => 9]) !!}
+                                        </div>
+                                        <div class="form-group">
+                                            {!! Form::label('notasfiscais_codnaturezaoperacao', 'Variação') !!}
+                                            {!! Form::select2ProdutoVariacao('notasfiscais_codprodutovariacao', null, ['style'=>'width:100%', 'id' => 'notasfiscais_codprodutovariacao', 'codproduto'=>'notasfiscais_codproduto']) !!}
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        {!! Form::label('notasfiscais_codpessoa', 'Pessoa') !!}
-                                        {!! Form::select2Pessoa('notasfiscais_codpessoa', null, ['class' => 'form-control','id'=>'notasfiscais_codpessoa', 'style'=>'width:100%', 'placeholder' => 'Pessoa', 'ativo' => 9]) !!}
-                                    </div>
-                                    <div class="form-group">
-                                        {!! Form::label('notasfiscais_codnaturezaoperacao', 'Variação') !!}
-                                        {!! Form::select2ProdutoVariacao('notasfiscais_codprodutovariacao', null, ['style'=>'width:100%', 'id' => 'notasfiscais_codprodutovariacao', 'codproduto'=>'notasfiscais_codproduto']) !!}
-                                    </div>
-
-                                </div>
                                     {!! Form::hidden('notasfiscais_codproduto', $model->codproduto, ['id'=>'notasfiscais_codproduto']) !!}
                                     {!! Form::hidden('_div', 'div-notasfiscais', ['id'=>'notasfiscais_page']) !!}
-
-                                {!! Form::close() !!}
+                                    {!! Form::close() !!}
+                                </div>
                             </div>
                         </div>
                         <br>
@@ -265,9 +264,9 @@ function mostraListagemNegocios()
         },
         processing: true,
         serverSide: true,
-        order: 
-        [
-                ],
+        order: [
+            [ 3, 'DESC'],
+        ],        
         ajax: {
             url: 'http://localhost/MGUplon/negocio-produto-barra/datatable',
             data: function ( d ) {
@@ -341,9 +340,9 @@ function mostraListagemNotasFiscais()
         },
         processing: true,
         serverSide: true,
-        order: 
-        [
-                ],
+        order: [
+            [ 3, 'DESC'],
+        ],        
         ajax: {
             url: 'http://localhost/MGUplon/nota-fiscal-produto-barra/datatable',
             data: function ( d ) {
@@ -428,45 +427,22 @@ $(document).ready(function() {
         listagemEstoqueAberta = true;
     });
     
-    
-    
-    //
-    //
-    //
-    ////////// LISTAGEM DE NEGOCIOS /////////
-    //
-    // Listagem de Negocios -- Troca ABA
-    
-/*
-    // Listagem de Negocios -- Alteração Formulário
-    $("#produto-negocio-search").on("change", function (event) {
-        mostraListagemNegocios();
-        event.preventDefault(); 
-    });
-    /////////////////////////////////////////
-*/
-    
-/*
-    ////////// LISTAGEM DE NOTAS FISCAIS /////////
-    //
-    // Listagem de Notas Fiscais -- Troca ABA
-    
-    // Listagem de Negocios -- Alteração Formulário
-    $("#produto-notasfiscais-search").on("change", function (event) {
-        mostraListagemNotasFiscais();
-        event.preventDefault(); 
-    });
-    /////////////////////////////////////////
-*/
-    
     $('#sincronizar').hide();
     $('#integracao-open-cart').click(function (e) {
         e.preventDefault();
-        bootbox.confirm("Tem certeza que deseja sincronizar esse produto", function(result) {
-            if (result) {
+        var currentForm = this;
+        swal({
+          title: "Tem certeza que deseja sincronizar esse produto?",
+          type: "warning",
+          showCancelButton: true,
+          closeOnConfirm: true,
+          closeOnCancel: true
+        },
+        function(isConfirm){
+            if (isConfirm) {
                 $.ajax({
                     type: 'GET',
-                    url: baseUrl + '/produto/sincroniza-produto-open-cart',
+                    url: "{{ url('produto/sincroniza-produto-open-cart') }}",
                     data: {
                         id:{{ $model->codproduto }}
                     },
@@ -481,23 +457,24 @@ $(document).ready(function() {
                         $('#integracao-open-cart').removeAttr('disabled');
                     });
                     if(data.resultado === true) {
-                        var mensagem = '<strong class="text-success">'+data.mensagem+'</strong>';
-                        bootbox.alert(mensagem);
-                        console.log(data.resultado);
+                        swal({
+                            title: 'Sucesso!',
+                            text: data.mensagem,
+                            type: 'success',
+                        });                        
                     } else {
-                        var mensagem = '<strong class="text-danger">'+data.mensagem+'</strong>';
-                        mensagem += '<hr><pre>';
-                        mensagem += JSON.stringify(data.exception, undefined, 2);
-                        mensagem += '</pre>';                        
-                        bootbox.alert(mensagem);
-                        console.log(data.resultado);
+                        swal({
+                            title: 'Sucesso!',
+                            text: data.mensagem,
+                            type: 'error',
+                        });                        
                     }
                 })
                 .fail(function (data) {
                     console.log('erro no POST');
-                });                 
-            }
-        }); 
+                });  
+            } 
+        });         
     }); 
     
     /*    

@@ -304,7 +304,7 @@ class ProdutoController extends Controller
         $this->repository->authorize('update');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->codproduto, url('produto', $this->repository->model->produto));
+        $this->bc->addItem($this->repository->model->codproduto, url('produto', $this->repository->model->codproduto));
         $this->bc->header = $this->repository->model->produto;
         $this->bc->addItem('Alterar');
         
@@ -386,171 +386,12 @@ class ProdutoController extends Controller
         return response()->json($retorno);
     }    
     
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        try{
-            Produto::find($id)->delete();
-            $ret = ['resultado' => true, 'mensagem' => 'Produto excluído com sucesso!'];
-        }
-        catch(\Exception $e){
-            $ret = ['resultado' => false, 'mensagem' => 'Erro ao excluir produto!', 'exception' => $e];
-        }
-        return json_encode($ret);
-    }    
-    
-    
     public function buscaPorBarras(Request $request)
     {
         $barra = ProdutoBarra::buscaPorBarras($request->get('barras'));
         return response()->json($barra);
     }
 
-    
-    public function listagemJson(Request $request)
-    //public function listagemJson($texto, $inativo = false, $limite = 20, $pagina = 1) 
-    {
-        $pagina = $request->get('page');
-        $limite = $request->get('per_page');
-        $inativo = $request->get('inativo');
-        // limpa texto
-        $ordem = (strstr($request->get('q'), '$'))?'preco ASC, descricao ASC':'descricao ASC, preco ASC';
-        $texto = str_replace('$', '', $request->get('q'));
-        $texto  = str_replace(' ', '%', trim($request->get('q')));
-
-        // corrige pagina se veio sujeira
-        if ($pagina < 1) $pagina = 1;
-
-        // calcula de onde continuar a consulta
-        $offset = ($pagina-1)*$limite;
-
-        // inicializa array com resultados
-        $resultados = array();
-
-        // se o texto foi preenchido
-        #if (strlen($texto)>=3)
-        #{
-            $sql = "SELECT codprodutobarra as id, codproduto, barras, descricao, sigla, preco, marca, referencia 
-                          FROM vwProdutoBarra 
-                         WHERE codProdutoBarra is not null ";
-
-            #if (!$inativo) {
-            #    $sql .= "AND Inativo is null ";
-            #}
-
-        $sql .= " AND (";
-
-            // Verifica se foi digitado um valor e procura pelo preco
-        #    If ((Yii::app()->format->formatNumber(Yii::app()->format->unformatNumber($texto)) == $texto)
-        #            && (strpos($texto, ",") != 0)
-        #            && ((strlen($texto) - strpos($texto, ",")) == 3)) 
-        #    {
-        #            $sql .= "preco = :preco";
-        #            $params = array(
-        #                    ':preco'=>Yii::app()->format->unformatNumber($texto),
-        #                    );
-        #}
-            
-            //senao procura por barras, descricao, marca e referencia
-            #else
-            #{
-                    $sql .= "barras ilike '%$texto%' ";
-                    $sql .= "OR descricao ilike '%$texto%' ";
-                    $sql .= "OR marca ilike '%$texto%' ";
-                    $sql .= "OR referencia ilike '%$texto%' ";
-                    
-                    /*$params = array(
-                        ':texto'=>'%'.$texto.'%',
-                    );*/
-            #}
-
-            //ordena
-            $sql .= ") ORDER BY $ordem LIMIT $limite OFFSET $offset";
-            
-            $resultados = DB::select($sql);
-            
-            for ($i=0; $i<sizeof($resultados);$i++)
-            {
-                    $resultados[$i]->codproduto = \formataCodigo($resultados[$i]->codproduto, 6);
-                    $resultados[$i]->preco = \formataNumero($resultados[$i]->preco);
-                    if (empty($resultados[$i]->referencia))
-                            $resultados[$i]->referencia = "-";
-            }
-
-            return response()->json($resultados);
-            
-    } 
-
-    public function listagemJsonProduto(Request $request) 
-    {
-        if($request->get('q')) {
-
-            $query = DB::table('tblproduto')
-                ->join('tblsubgrupoproduto', function($join) {
-                    $join->on('tblsubgrupoproduto.codsubgrupoproduto', '=', 'tblproduto.codsubgrupoproduto');
-                })
-                ->join('tblgrupoproduto', function($join) {
-                    $join->on('tblgrupoproduto.codgrupoproduto', '=', 'tblsubgrupoproduto.codgrupoproduto');
-                })
-                ->join('tblfamiliaproduto', function($join) {
-                    $join->on('tblfamiliaproduto.codfamiliaproduto', '=', 'tblgrupoproduto.codfamiliaproduto');
-                })
-                ->join('tblsecaoproduto', function($join) {
-                    $join->on('tblsecaoproduto.codsecaoproduto', '=', 'tblfamiliaproduto.codsecaoproduto');
-                })
-                ->join('tblmarca', function($join) {
-                    $join->on('tblmarca.codmarca', '=', 'tblproduto.codmarca');
-                });
-
-                $produto = $request->get('q');
-
-                if (strlen($produto) == 6 & is_numeric($produto)) {
-                    $query->where('codproduto', '=', $produto);
-                }
-                else {
-                    $produto = explode(' ', $produto);
-                    foreach ($produto as $str) {
-                        $query->where('produto', 'ILIKE', "%$str%");                    
-                    }
-                }
-                $query->select('codproduto as id', 'produto', 'preco', 'referencia', 'tblproduto.inativo', 'tblsecaoproduto.secaoproduto', 'tblfamiliaproduto.familiaproduto', 'tblgrupoproduto.grupoproduto', 'tblsubgrupoproduto.subgrupoproduto', 'tblmarca.marca')
-                    ->orderBy('produto', 'ASC')
-                    ->paginate(20);
-
-            $dados = $query->get();
-            $resultado = [];
-            foreach ($dados as $item => $value)
-            {
-                $resultado[$item]=[
-                    'id'        =>  $value->id,
-                    'codigo'    => formataCodigo($value->id, 6),
-                    'produto'   => $value->produto,
-                    'preco'     => formataNumero($value->preco),
-                    'referencia'=> $value->referencia,
-                    'inativo'   => $value->inativo,
-                    'secaoproduto'     => $value->secaoproduto,
-                    'familiaproduto'   => $value->familiaproduto,
-                    'grupoproduto'     => $value->grupoproduto,
-                    'subgrupoproduto'  => $value->subgrupoproduto,
-                    'marca'     => $value->marca
-                ];
-            }
-            return response()->json($resultado);
-        } elseif($request->get('id')) {
-            $query = DB::table('tblproduto')
-                    ->where('codproduto', '=', $request->get('id'))
-                    ->select('codproduto as id', 'produto', 'referencia', 'preco')
-                    ->first();
-
-            return response()->json($query);
-        }
-    }
-    
     public function select2(Request $request)
     {
         // Parametros que o Selec2 envia

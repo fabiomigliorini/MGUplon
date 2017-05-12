@@ -79,7 +79,7 @@ class NegocioProdutoBarraController extends Controller
         $columns[0] = 'codnegocio';
         $columns[1] = 'inativo';
         $columns[2] = 'codnegocio';
-        $columns[3] = 'lancamento';
+        $columns[3] = 'tblnegocio.lancamento';
         $columns[4] = 'codpessoa';
         $columns[5] = 'codoperacao';
         $columns[6] = 'codfilial';
