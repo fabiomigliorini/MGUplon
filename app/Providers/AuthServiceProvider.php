@@ -57,6 +57,7 @@ class AuthServiceProvider extends ServiceProvider
         \MGLara\Models\Prancheta::class             => \MGLara\Policies\PranchetaPolicy::class,
         \MGLara\Models\PranchetaProduto::class      => \MGLara\Policies\PranchetaProdutoPolicy::class,
         \MGLara\Models\NotaFiscalProdutoBarra::class => \MGLara\Policies\NotaFiscalProdutoBarraPolicy::class,
+        \MGLara\Models\ProdutoEmbalagem::class => \MGLara\Policies\ProdutoEmbalagemPolicy::class,
 
     ];
 

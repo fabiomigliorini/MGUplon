@@ -238,4 +238,7 @@ Route::group(['middleware' => 'auth'], function() {
 
     /* Nota Fiscal Produto Barra */
     Route::resource('nota-fiscal-produto-barra', 'NotaFiscalProdutoBarraController');
+    
+    /* Produto Embalagem */
+    Route::resource('produto-embalagem', 'ProdutoEmbalagemController');    
 });

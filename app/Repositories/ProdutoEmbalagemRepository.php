@@ -25,7 +25,7 @@ class ProdutoEmbalagemRepository extends MGRepository {
     public function validate($data = null, $id = null) {
         
         if (empty($data)) {
-            $data = $this->modell->getAttributes();
+            $data = $this->model->getAttributes();
         }
         
         if (empty($id)) {

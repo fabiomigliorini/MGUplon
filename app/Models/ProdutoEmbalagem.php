@@ -15,8 +15,8 @@ namespace MGLara\Models;
  * @property  bigint                         $codusuariocriacao                  
  *
  * Chaves Estrangeiras
- * @property  Produto                        $Produto                       
- * @property  UnidadeMedida                  $UnidadeMedida                 
+ * @property  Produto                        $Produto
+ * @property  UnidadeMedida                  $UnidadeMedida
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Usuario                        $UsuarioCriacao
  *
@@ -25,22 +25,21 @@ namespace MGLara\Models;
  * @property  ProdutoHistoricoPreco[]        $ProdutoHistoricoPrecoS
  */
 
-
 class ProdutoEmbalagem extends MGModel
 {
     protected $table = 'tblprodutoembalagem';
     protected $primaryKey = 'codprodutoembalagem';
     protected $fillable = [
-        'codproduto',
-        'codunidademedida',
-        'quantidade',
-        'preco',
-    ];
+          'codproduto',
+         'codunidademedida',
+         'quantidade',
+         'preco',
+        ];
     protected $dates = [
         'alteracao',
         'criacao',
     ];
-    
+
     public function getDescricaoAttribute()
     {
         if (floor($this->quantidade) == $this->quantidade)
@@ -58,38 +57,6 @@ class ProdutoEmbalagem extends MGModel
         
         return $preco_calculado;
     }
-    
-    public function validate() 
-    {
-
-        $preco = 'numeric|min:0.01';
-        
-        if (!empty($this->codproduto))
-        {
-            $preco .= "|min:" . ($this->Produto->preco * $this->quantidade * .5);
-            $preco .= "|max:" . $this->Produto->preco * $this->quantidade;
-        }
-        
-        $this->_regrasValidacao = [            
-            'codproduto'  => 'required|numeric',
-            'codunidademedida'  => 'required|numeric',
-            //'quantidade' => "required|numeric|validaQuantidade:$this->codproduto,$this->codprodutoembalagem",
-            'quantidade' => "required|numeric|uniqueMultiple:tblprodutoembalagem,codprodutoembalagem,$this->codprodutoembalagem,quantidade,codproduto,$this->codproduto",
-            'preco' => $preco,
-        ];
-    
-        $this->_mensagensErro = [
-            'codunidademedida.required'         => 'O campo Unidade Medida não pode ser vazio!',
-            'codunidademedida.numeric'          => 'O campo Unidade Medida deve ser um valor numérico!',
-            'quantidade.required'               => 'O campo Quantidade deve ser preenchido!',
-            'quantidade.numeric'                => 'O campo Quantidade deve conter um valor numérico!',
-            'quantidade.unique_multiple'        => 'Já existe uma embalagem cadastrada com esta mesma quantidade!',
-            'preco.max'                         => 'Preço maior que o custo unitário!',
-            'preco.min'                         => 'Preço inferior à 50% do custo unitário!',
-        ];
-        
-        return parent::validate();
-    }     
     
     // Chaves Estrangeiras
     public function Produto()
@@ -122,6 +89,7 @@ class ProdutoEmbalagem extends MGModel
     public function ProdutoHistoricoPrecoS()
     {
         return $this->hasMany(ProdutoHistoricoPreco::class, 'codprodutoembalagem', 'codprodutoembalagem');
-    }    
+    }
+
 
 }

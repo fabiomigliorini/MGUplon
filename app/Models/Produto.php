@@ -77,7 +77,10 @@ class Produto extends MGModel
         'criacao',
     ];
 
-
+    public function getPrecocAttribute()
+    {
+        return $this->preco;
+    }
     // Chaves Estrangeiras
     public function Cest()
     {

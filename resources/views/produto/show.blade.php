@@ -83,13 +83,11 @@
                                 @include('produto.show-embalagens')
                             </div>
                         </div>
-
-                        <a href="<?php echo url("produto-variacao/create?codproduto={$model->codproduto}");?>">Nova Variação <span class="fa fa-plus"></span></a>
-                        &nbsp;|&nbsp;
-                        <a href="<?php echo url("produto/$model->codproduto/transferir-variacao");?>">Transferir Variação <span class="fa fa-exchange"></span></a>
-                        &nbsp;|&nbsp;
-                        <a href="<?php echo url("produto-barra/create?codproduto={$model->codproduto}");?>">Novo Código de Barras <span class="fa fa-plus"></span></a>
-
+                        <div class="btn-group m-t-20">
+                            <a href="<?php echo url("produto-variacao/create?codproduto={$model->codproduto}");?>" class="btn btn-secondary waves-effect">Nova Variação <span class="fa fa-plus"></span></a>
+                            <a href="<?php echo url("produto/$model->codproduto/transferir-variacao");?>" class="btn btn-secondary waves-effect">Transferir Variação <span class="fa fa-exchange"></span></a>
+                            <a href="<?php echo url("produto-barra/create?codproduto={$model->codproduto}");?>" class="btn btn-secondary waves-effect">Novo Código de Barras <span class="fa fa-plus"></span></a>
+                        </div>
                         <br>
                         @include('produto.show-variacoes')
                         

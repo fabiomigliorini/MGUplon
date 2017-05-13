@@ -23,8 +23,6 @@ use MGLara\Models\TipoProduto;
 use MGLara\Repositories\ProdutoHistoricoPrecoRepository;
 use MGLara\Library\IntegracaoOpenCart\IntegracaoOpenCart;
 
-use MGLara\Models\Produto;
-
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
 
@@ -407,7 +405,7 @@ class ProdutoController extends Controller
             $params['page'] = $params['page']??1;
             
             // Monta Query
-            $qry = Produto::query();
+            $qry = $this->repository->model->query();
             $qry->join('tblsubgrupoproduto', 'tblsubgrupoproduto.codsubgrupoproduto', '=', 'tblproduto.codsubgrupoproduto')
                 ->join('tblgrupoproduto', 'tblgrupoproduto.codgrupoproduto', '=', 'tblsubgrupoproduto.codgrupoproduto')
                 ->join('tblfamiliaproduto','tblfamiliaproduto.codfamiliaproduto', '=', 'tblgrupoproduto.codfamiliaproduto')
@@ -467,13 +465,13 @@ class ProdutoController extends Controller
         } elseif($request->get('id')) {
             
             // Monta Retorno
-            $item = Produto::findOrFail($request->get('id'));
+            $this->repository->findOrFail($request->get('id'));            
             return [
-                'id' => $item->codproduto,
-                'produto' => $item->produto,
-                'referencia' => $item->referencia,
-                'preco' => $item->preco,
-                'inativo' => formataData($item->inativo, 'C')
+                'id'            => $this->repository->model->codproduto,
+                'produto'       => $this->repository->model->produto,
+                'referencia'    => $this->repository->model->referencia,
+                'preco'         => $this->repository->model->preco,
+                'inativo'       => formataData($this->repository->model->inativo, 'C')
             ];
         }
     }
@@ -533,7 +531,7 @@ class ProdutoController extends Controller
         $this->repository->authorize('update');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->codproduto, url('produto', $this->repository->model->codproduto));
+        $this->bc->addItem($this->repository->model->produto, url('produto', $this->repository->model->codproduto));
         $this->bc->header = $this->repository->model->produto;
         $this->bc->addItem('Transferir Variação');
         
@@ -546,10 +544,10 @@ class ProdutoController extends Controller
         
         $validator = Validator::make(
             $form, 
-            [            
+            [
                 'codproduto'           => "required",
                 'codprodutovariacao'   => 'required',
-            ], 
+            ],
             [
                 'codproduto.required'           => 'Selecione o produto de destino!',
                 'codprodutovariacao.required'   => 'Selecione uma variação!',
@@ -618,7 +616,7 @@ class ProdutoController extends Controller
         if (!$barras = ProdutoBarra::buscaPorBarras($barras)) {
             return [
                 'resultado' => false, 
-                'mensagem' => 'Nenhum produto localizado!', 
+                'mensagem' => 'Nenhum produto localizado!',
             ];
         }
         
