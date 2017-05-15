@@ -8,7 +8,7 @@
 </fieldset>
 <fieldset class="form-group">
     {!! Form::label('preco', 'Preco') !!}
-    {!! Form::number('preco', null, ['class'=> 'form-control', 'id'=>'preco', 'step'=>'0,01', 'min'=>'2']) !!}
+    {!! Form::number('preco', null, ['class'=> 'form-control', 'id'=>'preco', 'step'=>'0.01', 'min'=>'2']) !!}
 </fieldset>
 <fieldset class="form-group">
    {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}

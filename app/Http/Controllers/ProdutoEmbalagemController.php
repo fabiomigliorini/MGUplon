@@ -156,7 +156,7 @@ class ProdutoEmbalagemController extends Controller
         $this->repository->authorize('create');
         
         // breadcrumb
-        $this->bc->addItem($this->produtoRepository->model->produto, url('produto-embalagem', $this->produtoRepository->model->codproduto));
+        $this->bc->addItem($this->produtoRepository->model->produto, url('produto', $this->produtoRepository->model->codproduto));
         $this->bc->addItem('Nova Embalagem');
 
         
@@ -302,10 +302,10 @@ class ProdutoEmbalagemController extends Controller
 
             if($preco != $this->repository->model->preco) {
                 $this->produtoHistoricoPrecoRepository->new([
-                    'codproduto'            => $model->Produto->codproduto,
-                    'codprodutoembalagem'   => $model->codprodutoembalagem,
+                    'codproduto'            => $this->repository->model->Produto->codproduto,
+                    'codprodutoembalagem'   => $this->repository->model->codprodutoembalagem,
                     'precoantigo'           => $preco,
-                    'preconovo'             => $model->preco,
+                    'preconovo'             => $this->repository->model->preco,
                 ]);
                 
                 if (!$this->produtoHistoricoPrecoRepository->save()) {
