@@ -48,7 +48,7 @@
             <h4 class="card-header">Pesquisar Famílias</h4>
             <div class="card-block">
                 <div class="card-text">
-                    {!! Form::model($filtro['filtros'], ['id' => 'form-search', 'autocomplete' => 'on'])!!}
+                    {!! Form::model(Request::session()->get('MGLara.Http.Controllers.FamiliaProdutoController.filtros'), ['id' => 'form-search', 'autocomplete' => 'on'])!!}
                     {!! Form::hidden('codsecaoproduto', $model->codsecaoproduto, ['id'=>'codsecaoproduto']) !!}
                         <div class="col-md-2">
                             <div class="form-group">
@@ -62,7 +62,7 @@
                                 {!! Form::text('familiaproduto', null, ['class'=> 'form-control', 'id'=>'familiaproduto']) !!}
                             </div>
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="inativo" class="control-label">Ativos</label>
                                 {!! Form::select2Inativo('inativo', null, ['class'=> 'form-control', 'id'=>'inativo']) !!}
