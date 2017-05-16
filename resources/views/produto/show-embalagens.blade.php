@@ -9,7 +9,7 @@
         <span class="text-muted">
             {{ $model->UnidadeMedida->unidademedida }}
             <a href="<?php echo url("produto-embalagem/create?codproduto={$model->codproduto}");?>">
-                <i class="glyphicon glyphicon-plus"></i>
+                <i class="fa fa-plus"></i>
             </a>
         </span>
     </li>
@@ -30,13 +30,15 @@
                     {{ formataNumero($pe->preco) }}                            
                 @endif
             </b>
-            <small class="text-muted">
-                {{ $pe->UnidadeMedida->unidademedida }} com
-                {{ formataNumero($pe->quantidade, 0) }}
+            <span class="text-muted">
+                <small>
+                    {{ $pe->UnidadeMedida->unidademedida }} com
+                    {{ formataNumero($pe->quantidade, 0) }}
+                </small>
 
-                <a href="{{ url("produto-embalagem/$pe->codprodutoembalagem/edit") }}"><i class="glyphicon glyphicon-pencil"></i></a>
-                <a href="{{ url("produto-embalagem/$pe->codprodutoembalagem") }}" data-excluir data-pergunta="Tem certeza que deseja excluir a Embalagem '{{ $pe->UnidadeMedida->unidademedida }} com {{ formataNumero($pe->quantidade, 0) }}'?" data-after-delete="recarregaDiv('div-embalagens')"><i class="glyphicon glyphicon-trash"></i></a>
-            </small>
+                <a href="{{ url("produto-embalagem/$pe->codprodutoembalagem/edit") }}"><i class="fa fa-pencil"></i></a>
+                <a href="{{ url("produto-embalagem/$pe->codprodutoembalagem") }}" data-delete data-question="Tem certeza que deseja excluir a Embalagem '{{ $pe->UnidadeMedida->unidademedida }} com {{ formataNumero($pe->quantidade, 0) }}'?" data-after="recarregaDiv('div-embalagens')"><i class="fa fa-trash"></i></a>
+            </span>
         </li>
     @endforeach
 </ul>

@@ -5,23 +5,25 @@
     <ul class="list-group list-group-striped list-group-hover">
         @foreach ($pvs as $pv)
             <li class="list-group-item">
-                <strong>
-                    @if (!empty($pv->variacao))
-                        {{ $pv->variacao }}
-                    @else
-                        <i class='text-muted'>{ Sem Variação }</i>
-                    @endif
-                    @if (!empty($pv->codmarca))
-                        <a href="{{ url("marca/$pv->codmarca") }}">
-                            {{ $pv->Marca->marca }}
-                        </a>
-                    @endif
-                </strong>
-                <div class="pull-right">
-                    {{ $pv->referencia }}
-                    &nbsp;
-                    <a href="{{ url("produto-variacao/$pv->codprodutovariacao/edit") }}"><i class="fa fa-pencil"></i></a>
-                    <a href="{{ url("produto-variacao/$pv->codprodutovariacao") }}" data-delete data-question="Tem certeza que deseja excluir a variação '{{ $pv->variacao }}'?" data-after="recarregaDiv('div-variacoes');"><i class="fa fa-trash"></i></a>
+                <div>
+                    <strong>
+                        @if (!empty($pv->variacao))
+                            {{ $pv->variacao }}
+                        @else
+                            <i class='text-muted'>{ Sem Variação }</i>
+                        @endif
+                        @if (!empty($pv->codmarca))
+                            <a href="{{ url("marca/$pv->codmarca") }}">
+                                {{ $pv->Marca->marca }}
+                            </a>
+                        @endif
+                    </strong>
+                    <div class="pull-right">
+                        {{ $pv->referencia }}
+                        &nbsp;
+                        <a href="{{ url("produto-variacao/$pv->codprodutovariacao/edit") }}"><i class="fa fa-pencil"></i></a>
+                        <a href="{{ url("produto-variacao/$pv->codprodutovariacao") }}" data-delete data-question="Tem certeza que deseja excluir a variação '{{ $pv->variacao }}'?" data-after="recarregaDiv('div-variacoes');"><i class="fa fa-trash"></i></a>
+                    </div>
                 </div>
                     
                 <?php
@@ -29,14 +31,15 @@
                    ->orderBy(DB::raw('coalesce(pe.quantidade, 0)'), 'ASC')
                    ->with('ProdutoEmbalagem')->get();
                 ?>
-                @foreach ($pbs as $pb)
+                <div class="row">
+                    @foreach ($pbs as $pb)
                     <div class="col-md-6 small">
                         {{ $pb->barras }}
                         <span class='text-muted'>
                             {{ $pb->referencia }}
                             {{ $pb->variacao }}
                         </span>
-                        <small class="text-muted pull-right">
+                        <span class="text-muted pull-right">
                             @if (!empty($pb->codprodutoembalagem))
                                 {{ $pb->ProdutoEmbalagem->descricao }}
                             @else
@@ -45,9 +48,10 @@
                             &nbsp;
                             <a href="{{ url("produto-barra/{$pb->codprodutobarra}/edit") }}"><i class="fa fa-pencil"></i></a>
                             <a href="{{ url("produto-barra/{$pb->codprodutobarra}") }}" data-delete data-question="Tem certeza que deseja excluir o Código de Barras '{{ $pb->barras }}'?" data-after="recarregaDiv('div-variacoes');"><i class="fa fa-trash"></i></a>
-                        </small>
+                        </span>
                     </div>
-                @endforeach
+                    @endforeach
+                </div>
                 <div class="clearfix"></div>
             </li>
         @endforeach

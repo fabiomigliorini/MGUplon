@@ -19,7 +19,7 @@
                         {!! Form::text('secaoproduto', null, ['class'=> 'form-control', 'id'=>'secaoproduto']) !!}
                     </div>
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <div class="form-group">
                         <label for="inativo" class="control-label">Ativos</label>
                         {!! Form::select2Inativo('inativo', null, ['class'=> 'form-control', 'id'=>'inativo']) !!}

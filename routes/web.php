@@ -198,6 +198,9 @@ Route::group(['middleware' => 'auth'], function() {
 
     /* Produto */
     Route::get('produto/typeahead', 'ProdutoController@typeahead');
+    Route::get('produto/sincroniza-produto-open-cart', 'ProdutoController@sincronizaProdutoOpenCart');
+    Route::patch('produto/{id}/transferir-variacao-salvar', 'ProdutoController@transferirVariacaoSalvar');
+    Route::get('produto/{id}/transferir-variacao', 'ProdutoController@transferirVariacao');
     Route::resource('produto', 'ProdutoController');
     Route::get('produto/{id}/unificar-barras', 'ProdutoController@unificarBarras');
     Route::post('produto/{id}/unificar-barras', 'ProdutoController@unificarBarrasSalvar');
@@ -235,4 +238,9 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('prancheta', 'PranchetaController');
     Route::resource('prancheta-produto', 'PranchetaProdutoController');
 
+    /* Nota Fiscal Produto Barra */
+    Route::resource('nota-fiscal-produto-barra', 'NotaFiscalProdutoBarraController');
+    
+    /* Produto Embalagem */
+    Route::resource('produto-embalagem', 'ProdutoEmbalagemController');    
 });

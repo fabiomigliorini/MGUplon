@@ -247,165 +247,51 @@ class NotaFiscalProdutoBarraRepository extends MGRepository {
             $qry->where('codnotafiscalprodutobarra', '=', $filters['codnotafiscalprodutobarra']);
         }
 
-         if (!empty($filters['codnotafiscal'])) {
-            $qry->where('codnotafiscal', '=', $filters['codnotafiscal']);
-        }
-
-         if (!empty($filters['codprodutobarra'])) {
-            $qry->where('codprodutobarra', '=', $filters['codprodutobarra']);
-        }
-
-         if (!empty($filters['codcfop'])) {
-            $qry->where('codcfop', '=', $filters['codcfop']);
-        }
-
-         if (!empty($filters['descricaoalternativa'])) {
-            $qry->palavras('descricaoalternativa', $filters['descricaoalternativa']);
-        }
-
-         if (!empty($filters['quantidade'])) {
-            $qry->where('quantidade', '=', $filters['quantidade']);
-        }
-
-         if (!empty($filters['valorunitario'])) {
-            $qry->where('valorunitario', '=', $filters['valorunitario']);
-        }
-
-         if (!empty($filters['valortotal'])) {
-            $qry->where('valortotal', '=', $filters['valortotal']);
-        }
-
-         if (!empty($filters['icmsbase'])) {
-            $qry->where('icmsbase', '=', $filters['icmsbase']);
-        }
-
-         if (!empty($filters['icmspercentual'])) {
-            $qry->where('icmspercentual', '=', $filters['icmspercentual']);
-        }
-
-         if (!empty($filters['icmsvalor'])) {
-            $qry->where('icmsvalor', '=', $filters['icmsvalor']);
-        }
-
-         if (!empty($filters['ipibase'])) {
-            $qry->where('ipibase', '=', $filters['ipibase']);
-        }
-
-         if (!empty($filters['ipipercentual'])) {
-            $qry->where('ipipercentual', '=', $filters['ipipercentual']);
-        }
-
-         if (!empty($filters['ipivalor'])) {
-            $qry->where('ipivalor', '=', $filters['ipivalor']);
-        }
-
-         if (!empty($filters['icmsstbase'])) {
-            $qry->where('icmsstbase', '=', $filters['icmsstbase']);
-        }
-
-         if (!empty($filters['icmsstpercentual'])) {
-            $qry->where('icmsstpercentual', '=', $filters['icmsstpercentual']);
-        }
-
-         if (!empty($filters['icmsstvalor'])) {
-            $qry->where('icmsstvalor', '=', $filters['icmsstvalor']);
-        }
-
-         if (!empty($filters['csosn'])) {
-            $qry->palavras('csosn', $filters['csosn']);
-        }
-
-         if (!empty($filters['codnegocioprodutobarra'])) {
-            $qry->where('codnegocioprodutobarra', '=', $filters['codnegocioprodutobarra']);
-        }
-
-         if (!empty($filters['alteracao'])) {
-            $qry->where('alteracao', '=', $filters['alteracao']);
-        }
-
-         if (!empty($filters['codusuarioalteracao'])) {
-            $qry->where('codusuarioalteracao', '=', $filters['codusuarioalteracao']);
-        }
-
-         if (!empty($filters['criacao'])) {
-            $qry->where('criacao', '=', $filters['criacao']);
-        }
-
-         if (!empty($filters['codusuariocriacao'])) {
-            $qry->where('codusuariocriacao', '=', $filters['codusuariocriacao']);
-        }
-
-         if (!empty($filters['icmscst'])) {
-            $qry->where('icmscst', '=', $filters['icmscst']);
-        }
-
-         if (!empty($filters['ipicst'])) {
-            $qry->where('ipicst', '=', $filters['ipicst']);
-        }
-
-         if (!empty($filters['piscst'])) {
-            $qry->where('piscst', '=', $filters['piscst']);
-        }
-
-         if (!empty($filters['pisbase'])) {
-            $qry->where('pisbase', '=', $filters['pisbase']);
-        }
-
-         if (!empty($filters['pispercentual'])) {
-            $qry->where('pispercentual', '=', $filters['pispercentual']);
-        }
-
-         if (!empty($filters['pisvalor'])) {
-            $qry->where('pisvalor', '=', $filters['pisvalor']);
-        }
-
-         if (!empty($filters['cofinscst'])) {
-            $qry->where('cofinscst', '=', $filters['cofinscst']);
-        }
-
-         if (!empty($filters['cofinsbase'])) {
-            $qry->where('cofinsbase', '=', $filters['cofinsbase']);
-        }
-
-         if (!empty($filters['cofinsvalor'])) {
-            $qry->where('cofinsvalor', '=', $filters['cofinsvalor']);
-        }
-
-         if (!empty($filters['csllbase'])) {
-            $qry->where('csllbase', '=', $filters['csllbase']);
-        }
-
-         if (!empty($filters['csllpercentual'])) {
-            $qry->where('csllpercentual', '=', $filters['csllpercentual']);
-        }
-
-         if (!empty($filters['csllvalor'])) {
-            $qry->where('csllvalor', '=', $filters['csllvalor']);
-        }
-
-         if (!empty($filters['irpjbase'])) {
-            $qry->where('irpjbase', '=', $filters['irpjbase']);
-        }
-
-         if (!empty($filters['irpjpercentual'])) {
-            $qry->where('irpjpercentual', '=', $filters['irpjpercentual']);
-        }
-
-         if (!empty($filters['irpjvalor'])) {
-            $qry->where('irpjvalor', '=', $filters['irpjvalor']);
-        }
-
-         if (!empty($filters['cofinspercentual'])) {
-            $qry->where('cofinspercentual', '=', $filters['cofinspercentual']);
-        }
-
-         if (!empty($filters['codnotafiscalprodutobarraorigem'])) {
-            $qry->where('codnotafiscalprodutobarraorigem', '=', $filters['codnotafiscalprodutobarraorigem']);
-        }
-
+            $qry = $qry->join('tblnotafiscal', function($join) use ($filters) {
+            $join->on('tblnotafiscal.codnotafiscal', '=', 'tblnotafiscalprodutobarra.codnotafiscal');
+        });
         
+        if (!empty($filters['notasfiscais_codnaturezaoperacao'])) {
+            $qry = $qry->where('tblnotafiscal.codnaturezaoperacao', '=', $filters['notasfiscais_codnaturezaoperacao']);
+        }
+
+        if (!empty($filters['notasfiscais_codpessoa'])) {
+            $qry = $qry->where('tblnotafiscal.codpessoa', '=', $filters['notasfiscais_codpessoa']);
+        }
+
+        if (!empty($filters['notasfiscais_codfilial'])) {
+            $qry = $qry->where('tblnotafiscal.codfilial', '=', $filters['notasfiscais_codfilial']);
+        }
+
+        if (!empty($filters['notasfiscais_lancamento_de'])) {
+            $qry = $qry->where('tblnotafiscal.saida', '>=', $filters['notasfiscais_lancamento_de']);
+        }
+
+        if (!empty($filters['notasfiscais_lancamento_ate'])) {
+            $qry = $qry->where('tblnotafiscal.saida', '<=', $filters['notasfiscais_lancamento_ate']);
+        }
+
+        if (!empty($filters['notasfiscais_codproduto']))
+        {
+            $qry = $qry->join('tblprodutobarra', function($join) use ($filters) {
+                $join->on('tblprodutobarra.codprodutobarra', '=', 'tblnotafiscalprodutobarra.codprodutobarra');
+            });
+            
+            $qry = $qry->join('tblprodutovariacao', function($join) use ($filters) {
+                $join->on('tblprodutovariacao.codprodutovariacao', '=', 'tblprodutobarra.codprodutovariacao');
+            });
+            
+            $qry = $qry->where('tblprodutovariacao.codproduto', '=', $filters['notasfiscais_codproduto']);
+        }
+
+        if (!empty($filters['notasfiscais_codprodutovariacao'])) {
+            $qry->where('tblprodutovariacao.codprodutovariacao', '=', $filters['notasfiscais_codprodutovariacao']);
+        }
+
+
         $count = $qry->count();
-    
+ 
+        /*
         switch ($filters['inativo']) {
             case 2: //Inativos
                 $qry = $qry->inativo();
@@ -419,6 +305,7 @@ class NotaFiscalProdutoBarraRepository extends MGRepository {
                 $qry = $qry->ativo();
                 break;
         }
+        */
         
         // Paginacao
         if (!empty($start)) {
@@ -433,6 +320,8 @@ class NotaFiscalProdutoBarraRepository extends MGRepository {
             $qry->orderBy($s['column'], $s['dir']);
         }
         
+        //dd($qry->toSql());
+        
         // Registros
         return [
             'recordsFiltered' => $count
@@ -440,6 +329,102 @@ class NotaFiscalProdutoBarraRepository extends MGRepository {
             , 'data' => $qry->get()
         ];
         
+    }
+    
+    public function calculaTributacao()
+    {
+        
+        $trib = TributacaoNaturezaOperacao
+                ::where('codtributacao', $this->ProdutoBarra->Produto->codtributacao)
+                ->where('codtipoproduto', $this->ProdutoBarra->Produto->codtipoproduto)
+                ->where('codnaturezaoperacao', $this->NotaFiscal->codnaturezaoperacao)
+                ->whereRaw("('{$this->ProdutoBarra->Produto->Ncm->ncm}' ilike ncm || '%' or ncm is null)");
+                
+        if ($this->NotaFiscal->Pessoa->Cidade->codestado == $this->NotaFiscal->Filial->Pessoa->Cidade->codestado) {
+            $trib->where('codestado', $this->NotaFiscal->Pessoa->Cidade->codestado);
+            $filtroEstado = 'codestado = :codestado';
+        } else {
+            $trib->whereNull('codestado');
+        }
+        
+        if (!($trib = $trib->first())) {
+            echo '<h1>Erro Ao Calcular Tributacao</h1>';
+            dd($this);
+            return false;
+        }
+        
+        //Traz codigos de tributacao
+        $this->codcfop = $trib->codcfop;
+
+        if ($this->NotaFiscal->Filial->crt == Filial::CRT_REGIME_NORMAL)
+        {
+
+            //CST's
+            $this->icmscst = $trib->icmscst;
+            $this->ipicst = $trib->ipicst;
+            $this->piscst = $trib->piscst;
+            $this->cofinscst = $trib->cofinscst;
+
+            If (!empty($this->valortotal) && ($this->NotaFiscal->emitida))
+            {
+                    //Calcula ICMS				
+                    If (!empty($trib->icmslpbase))
+                        $this->icmsbase = round(($trib->icmslpbase * $this->valortotal)/100, 2);
+
+                    $this->icmspercentual = $trib->icmslppercentual;
+
+                    If ((!empty($this->icmsbase)) and (!empty($this->icmspercentual)))
+                        $this->icmsvalor = round(($this->icmsbase * $this->icmspercentual)/100, 2);
+
+                    //Calcula PIS
+                    If ($trib->pispercentual > 0)
+                    {
+                        $this->pisbase = $this->valortotal;
+                        $this->pispercentual = $trib->pispercentual;
+                        $this->pisvalor = round(($this->pisbase * $this->pispercentual)/100, 2);
+                    }
+
+                    //Calcula Cofins
+                    If ($trib->cofinspercentual > 0)
+                    {
+                        $this->cofinsbase = $this->valortotal;
+                        $this->cofinspercentual = $trib->cofinspercentual;
+                        $this->cofinsvalor = round(($this->cofinsbase * $this->cofinspercentual)/100, 2);
+                    }
+
+                    //Calcula CSLL
+                    If ($trib->csllpercentual > 0)
+                    {
+                        $this->csllbase = $this->valortotal;
+                        $this->csllpercentual = $trib->csllpercentual;
+                        $this->csllvalor = round(($this->csllbase * $this->csllpercentual)/100, 2);
+                    }
+
+                    //Calcula IRPJ
+                    If ($trib->irpjpercentual > 0)
+                    {
+                        $this->irpjbase = $this->valortotal;
+                        $this->irpjpercentual = $trib->irpjpercentual;
+                        $this->irpjvalor = round(($this->irpjbase * $this->irpjpercentual)/100, 2);
+                    }
+
+            }
+        }
+        else
+        {
+            $this->csosn = $trib->csosn;
+
+            //Calcula ICMSs
+            If (!empty($this->valortotal) && ($this->NotaFiscal->emitida)) {
+                If (!empty($trib->icmsbase))
+                    $this->icmsbase = round(($trib->icmsbase * $this->valortotal)/100, 2);
+
+                $this->icmspercentual = $trib->icmspercentual;
+
+                If ((!empty($this->icmsbase)) and (!empty($this->icmspercentual)))
+                    $this->icmsvalor = round(($this->icmsbase * $this->icmspercentual)/100, 2);
+            }
+        }        
     }
     
 }

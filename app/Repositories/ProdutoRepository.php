@@ -21,17 +21,12 @@ class ProdutoRepository extends MGRepository {
     public function boot() {
         $this->model = new Produto();
     }
-    
-    public function getPrecocAttribute()
-    {
-        return $this->preco;
-    }    
-    
+
     //put your code here
     public function validate($data = null, $id = null) {
         
         if (empty($data)) {
-            $data = $this->modell->getAttributes();
+            $data = $this->model->getAttributes();
         }
         
         if (empty($id)) {

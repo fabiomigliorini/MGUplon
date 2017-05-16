@@ -48,21 +48,21 @@
             <h4 class="card-header">Pesquisar Produtos</h4>
             <div class="card-block">
                 <div class="card-text">
-                    {!! Form::model($filtro['filtros'], ['id' => 'form-search', 'autocomplete' => 'on']) !!}
+                    {!! Form::model(Request::session()->get('MGLara.Http.Controllers.ProdutoController.filtros'), ['id' => 'form-search', 'autocomplete' => 'on']) !!}
                     {!! Form::hidden('codgrupoproduto', $model->codgrupoproduto, ['id'=>'codgrupoproduto']) !!}
                         <div class="col-md-2">
                             <div class="form-group">
-                                <label for="codsubsubgrupoproduto" class="control-label">#</label>
-                                {!! Form::number('codsubsubgrupoproduto', null, ['class'=> 'form-control', 'id'=>'codsubsubgrupoproduto', 'step'=>1, 'min'=>1]) !!}
+                                <label for="codproduto" class="control-label">#</label>
+                                {!! Form::number('codproduto', null, ['class'=> 'form-control', 'id'=>'codproduto', 'step'=>1, 'min'=>1]) !!}
                             </div>
                         </div>
                         <div class="col-md-5">
                             <div class="form-group">
-                                <label for="subsubgrupoproduto" class="control-label">Sub Grupo</label>
-                                {!! Form::text('subsubgrupoproduto', null, ['class'=> 'form-control', 'id'=>'subsubgrupoproduto']) !!}
+                                <label for="produto" class="control-label">Produto</label>
+                                {!! Form::text('produto', null, ['class'=> 'form-control', 'id'=>'produto']) !!}
                             </div>
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="inativo" class="control-label">Ativos</label>
                                 {!! Form::select2Inativo('inativo', null, ['class'=> 'form-control', 'id'=>'inativo']) !!}

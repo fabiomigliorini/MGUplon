@@ -23,8 +23,6 @@ use MGLara\Models\TipoProduto;
 use MGLara\Repositories\ProdutoHistoricoPrecoRepository;
 use MGLara\Library\IntegracaoOpenCart\IntegracaoOpenCart;
 
-use MGLara\Models\Produto;
-
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
 
@@ -264,8 +262,6 @@ class ProdutoController extends Controller
         $this->bc->header = $this->repository->model->produto;
         
         // retorna show
-        $nfpbs   = null;
-        $npbs    = null;
         $estoque = null;
         switch ($request->get('_div'))
         {
@@ -278,11 +274,6 @@ class ProdutoController extends Controller
             case 'div-embalagens':
                 $view = 'produto.show-embalagens';
                 break;
-            case 'div-notasfiscais':
-                $parametrosNfpb = self::filtroEstatico($request, 'produto.show.nfpb', [], ['notasfiscais_lancamento_de', 'notasfiscais_lancamento_ate']);
-                $nfpbs = NotaFiscalProdutoBarra::search($parametrosNfpb, 10);
-                $view = 'produto.show-notasfiscais';
-                break;
             case 'div-estoque':
                 $estoque = $this->repository->getArraySaldoEstoque();
                 $view = 'produto.show-estoque';
@@ -291,48 +282,9 @@ class ProdutoController extends Controller
                 $view = 'produto.show';
         }
         
-        $ret = view($view, ['bc' => $this->bc, 'model' => $this->repository->model, 'nfpbs' => $nfpbs, 'npbs' => $npbs, 'estoque' => $estoque]);
+        $ret = view($view, ['bc' => $this->bc, 'model' => $this->repository->model, 'estoque' => $estoque]);
         
         return $ret;        
-        
-        //return view('produto.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
-    }
-    
-    public function shows(Request $request, $id)
-    {
-        $model = Produto::findOrFail($id);
-        switch ($request->get('_div'))
-        {
-            case 'div-imagens':
-                $view = 'produto.show-imagens';
-                break;
-            case 'div-variacoes':
-                $view = 'produto.show-variacoes';
-                break;
-            case 'div-embalagens':
-                $view = 'produto.show-embalagens';
-                break;
-            case 'div-negocios':
-                $parametrosNpb = self::filtroEstatico($request, 'produto.show.npb', [], ['negocio_lancamento_de', 'negocio_lancamento_ate']);
-                $npbs = NegocioProdutoBarra::search($parametrosNpb, 10);
-                $view = 'produto.show-negocios';
-                break;
-            case 'div-notasfiscais':
-                $parametrosNfpb = self::filtroEstatico($request, 'produto.show.nfpb', [], ['notasfiscais_lancamento_de', 'notasfiscais_lancamento_ate']);
-                $nfpbs = NotaFiscalProdutoBarra::search($parametrosNfpb, 10);
-                $view = 'produto.show-notasfiscais';
-                break;
-            case 'div-estoque':
-                $estoque = $model->getArraySaldoEstoque();
-                $view = 'produto.show-estoque';
-                break;
-            default:
-                $view = 'produto.show';
-        }
-        
-        $ret = view($view, compact('model', 'nfpbs', 'npbs', 'parametros', 'estoque'));
-        
-        return $ret;
     }
 
     /**
@@ -350,7 +302,7 @@ class ProdutoController extends Controller
         $this->repository->authorize('update');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->codproduto, url('produto', $this->repository->model->produto));
+        $this->bc->addItem($this->repository->model->codproduto, url('produto', $this->repository->model->codproduto));
         $this->bc->header = $this->repository->model->produto;
         $this->bc->addItem('Alterar');
         
@@ -421,35 +373,16 @@ class ProdutoController extends Controller
     }
 
     public function populaSecaoProduto(Request $request) {
-        $model = Produto::find($request->get('id'));
+        $this->repository->findOrFail($request->get('id'));
         $retorno = [
-            'secaoproduto' => $model->SubGrupoProduto->GrupoProduto->FamiliaProduto->SecaoProduto->codsecaoproduto,
-            'familiaproduto' => $model->SubGrupoProduto->GrupoProduto->FamiliaProduto->codfamiliaproduto,
-            'grupoproduto' => $model->SubGrupoProduto->GrupoProduto->codgrupoproduto,
-            'subgrupoproduto' => $model->SubGrupoProduto->codsubgrupoproduto,
+            'secaoproduto'      => $this->repository->model->SubGrupoProduto->GrupoProduto->FamiliaProduto->SecaoProduto->codsecaoproduto,
+            'familiaproduto'    => $this->repository->model->SubGrupoProduto->GrupoProduto->FamiliaProduto->codfamiliaproduto,
+            'grupoproduto'      => $this->repository->model->SubGrupoProduto->GrupoProduto->codgrupoproduto,
+            'subgrupoproduto'   => $this->repository->model->SubGrupoProduto->codsubgrupoproduto,
         ];
         
         return response()->json($retorno);
     }    
-    
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        try{
-            Produto::find($id)->delete();
-            $ret = ['resultado' => true, 'mensagem' => 'Produto excluído com sucesso!'];
-        }
-        catch(\Exception $e){
-            $ret = ['resultado' => false, 'mensagem' => 'Erro ao excluir produto!', 'exception' => $e];
-        }
-        return json_encode($ret);
-    }    
-    
     
     public function buscaPorBarras(Request $request)
     {
@@ -457,146 +390,6 @@ class ProdutoController extends Controller
         return response()->json($barra);
     }
 
-    
-    public function listagemJson(Request $request)
-    //public function listagemJson($texto, $inativo = false, $limite = 20, $pagina = 1) 
-    {
-        $pagina = $request->get('page');
-        $limite = $request->get('per_page');
-        $inativo = $request->get('inativo');
-        // limpa texto
-        $ordem = (strstr($request->get('q'), '$'))?'preco ASC, descricao ASC':'descricao ASC, preco ASC';
-        $texto = str_replace('$', '', $request->get('q'));
-        $texto  = str_replace(' ', '%', trim($request->get('q')));
-
-        // corrige pagina se veio sujeira
-        if ($pagina < 1) $pagina = 1;
-
-        // calcula de onde continuar a consulta
-        $offset = ($pagina-1)*$limite;
-
-        // inicializa array com resultados
-        $resultados = array();
-
-        // se o texto foi preenchido
-        #if (strlen($texto)>=3)
-        #{
-            $sql = "SELECT codprodutobarra as id, codproduto, barras, descricao, sigla, preco, marca, referencia 
-                          FROM vwProdutoBarra 
-                         WHERE codProdutoBarra is not null ";
-
-            #if (!$inativo) {
-            #    $sql .= "AND Inativo is null ";
-            #}
-
-        $sql .= " AND (";
-
-            // Verifica se foi digitado um valor e procura pelo preco
-        #    If ((Yii::app()->format->formatNumber(Yii::app()->format->unformatNumber($texto)) == $texto)
-        #            && (strpos($texto, ",") != 0)
-        #            && ((strlen($texto) - strpos($texto, ",")) == 3)) 
-        #    {
-        #            $sql .= "preco = :preco";
-        #            $params = array(
-        #                    ':preco'=>Yii::app()->format->unformatNumber($texto),
-        #                    );
-        #}
-            
-            //senao procura por barras, descricao, marca e referencia
-            #else
-            #{
-                    $sql .= "barras ilike '%$texto%' ";
-                    $sql .= "OR descricao ilike '%$texto%' ";
-                    $sql .= "OR marca ilike '%$texto%' ";
-                    $sql .= "OR referencia ilike '%$texto%' ";
-                    
-                    /*$params = array(
-                        ':texto'=>'%'.$texto.'%',
-                    );*/
-            #}
-
-            //ordena
-            $sql .= ") ORDER BY $ordem LIMIT $limite OFFSET $offset";
-            
-            $resultados = DB::select($sql);
-            
-            for ($i=0; $i<sizeof($resultados);$i++)
-            {
-                    $resultados[$i]->codproduto = \formataCodigo($resultados[$i]->codproduto, 6);
-                    $resultados[$i]->preco = \formataNumero($resultados[$i]->preco);
-                    if (empty($resultados[$i]->referencia))
-                            $resultados[$i]->referencia = "-";
-            }
-
-            return response()->json($resultados);
-            
-    } 
-
-    public function listagemJsonProduto(Request $request) 
-    {
-        if($request->get('q')) {
-
-            $query = DB::table('tblproduto')
-                ->join('tblsubgrupoproduto', function($join) {
-                    $join->on('tblsubgrupoproduto.codsubgrupoproduto', '=', 'tblproduto.codsubgrupoproduto');
-                })
-                ->join('tblgrupoproduto', function($join) {
-                    $join->on('tblgrupoproduto.codgrupoproduto', '=', 'tblsubgrupoproduto.codgrupoproduto');
-                })
-                ->join('tblfamiliaproduto', function($join) {
-                    $join->on('tblfamiliaproduto.codfamiliaproduto', '=', 'tblgrupoproduto.codfamiliaproduto');
-                })
-                ->join('tblsecaoproduto', function($join) {
-                    $join->on('tblsecaoproduto.codsecaoproduto', '=', 'tblfamiliaproduto.codsecaoproduto');
-                })
-                ->join('tblmarca', function($join) {
-                    $join->on('tblmarca.codmarca', '=', 'tblproduto.codmarca');
-                });
-
-                $produto = $request->get('q');
-
-                if (strlen($produto) == 6 & is_numeric($produto)) {
-                    $query->where('codproduto', '=', $produto);
-                }
-                else {
-                    $produto = explode(' ', $produto);
-                    foreach ($produto as $str) {
-                        $query->where('produto', 'ILIKE', "%$str%");                    
-                    }
-                }
-                $query->select('codproduto as id', 'produto', 'preco', 'referencia', 'tblproduto.inativo', 'tblsecaoproduto.secaoproduto', 'tblfamiliaproduto.familiaproduto', 'tblgrupoproduto.grupoproduto', 'tblsubgrupoproduto.subgrupoproduto', 'tblmarca.marca')
-                    ->orderBy('produto', 'ASC')
-                    ->paginate(20);
-
-            $dados = $query->get();
-            $resultado = [];
-            foreach ($dados as $item => $value)
-            {
-                $resultado[$item]=[
-                    'id'        =>  $value->id,
-                    'codigo'    => formataCodigo($value->id, 6),
-                    'produto'   => $value->produto,
-                    'preco'     => formataNumero($value->preco),
-                    'referencia'=> $value->referencia,
-                    'inativo'   => $value->inativo,
-                    'secaoproduto'     => $value->secaoproduto,
-                    'familiaproduto'   => $value->familiaproduto,
-                    'grupoproduto'     => $value->grupoproduto,
-                    'subgrupoproduto'  => $value->subgrupoproduto,
-                    'marca'     => $value->marca
-                ];
-            }
-            return response()->json($resultado);
-        } elseif($request->get('id')) {
-            $query = DB::table('tblproduto')
-                    ->where('codproduto', '=', $request->get('id'))
-                    ->select('codproduto as id', 'produto', 'referencia', 'preco')
-                    ->first();
-
-            return response()->json($query);
-        }
-    }
-    
     public function select2(Request $request)
     {
         // Parametros que o Selec2 envia
@@ -612,7 +405,7 @@ class ProdutoController extends Controller
             $params['page'] = $params['page']??1;
             
             // Monta Query
-            $qry = Produto::query();
+            $qry = $this->repository->model->query();
             $qry->join('tblsubgrupoproduto', 'tblsubgrupoproduto.codsubgrupoproduto', '=', 'tblproduto.codsubgrupoproduto')
                 ->join('tblgrupoproduto', 'tblgrupoproduto.codgrupoproduto', '=', 'tblsubgrupoproduto.codgrupoproduto')
                 ->join('tblfamiliaproduto','tblfamiliaproduto.codfamiliaproduto', '=', 'tblgrupoproduto.codfamiliaproduto')
@@ -672,13 +465,13 @@ class ProdutoController extends Controller
         } elseif($request->get('id')) {
             
             // Monta Retorno
-            $item = Produto::findOrFail($request->get('id'));
+            $this->repository->findOrFail($request->get('id'));            
             return [
-                'id' => $item->codproduto,
-                'produto' => $item->produto,
-                'referencia' => $item->referencia,
-                'preco' => $item->preco,
-                'inativo' => formataData($item->inativo, 'C')
+                'id'            => $this->repository->model->codproduto,
+                'produto'       => $this->repository->model->produto,
+                'referencia'    => $this->repository->model->referencia,
+                'preco'         => $this->repository->model->preco,
+                'inativo'       => formataData($this->repository->model->inativo, 'C')
             ];
         }
     }
@@ -731,20 +524,30 @@ class ProdutoController extends Controller
     
     public function transferirVariacao(Request $request, $id)
     {
-        $model = Produto::findOrFail($id);
-        return view('produto.transferir-variacao',  compact('model'));
+        // busca regstro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->produto, url('produto', $this->repository->model->codproduto));
+        $this->bc->header = $this->repository->model->produto;
+        $this->bc->addItem('Transferir Variação');
+        
+        return view('produto.transferir-variacao', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
         
     public function transferirVariacaoSalvar(Request $request, $id)
     {
         $form = $request->all();
-
+        
         $validator = Validator::make(
             $form, 
-            [            
+            [
                 'codproduto'           => "required",
                 'codprodutovariacao'   => 'required',
-            ], 
+            ],
             [
                 'codproduto.required'           => 'Selecione o produto de destino!',
                 'codprodutovariacao.required'   => 'Selecione uma variação!',
@@ -759,21 +562,20 @@ class ProdutoController extends Controller
         
         foreach($form['codprodutovariacao'] as $codprodutovariacao) {
 
-            $pv = ProdutoVariacao::findOrFail($codprodutovariacao);
+            $pv = $this->produtoVariacaoRepository->findOrFail($codprodutovariacao);
             $pv->codproduto = $form['codproduto'];
             $pv->save();
-
+            
             foreach($pv->ProdutoBarraS as $pb) {
 
                 $pb->codproduto = $form['codproduto'];
 
                 if (!empty($pb->codprodutoembalagem)) {
-
-                    $pe = ProdutoEmbalagem::where([
+                    $pe = $this->produtoEmbalagemRepository->model->where([
                         'codproduto' => $form['codproduto'],
                         'quantidade' => $pb->ProdutoEmbalagem->quantidade,
                     ])->first();
-
+                    
                     if (!$pe) {
                         $pe = new ProdutoEmbalagem;
                         $pe->codproduto = $form['codproduto'];
@@ -784,12 +586,10 @@ class ProdutoController extends Controller
                     }
 
                     $pb->codprodutoembalagem = $pe->codprodutoembalagem;
-
                 }
 
                 $pb->save();
             }
-
         }
         //DB::rollback();
         DB::commit();
@@ -834,19 +634,23 @@ class ProdutoController extends Controller
         return response()->json($retorno);
     }
     
-    public function consulta (Request $request, $barras) 
+    public function consulta(Request $request, $barras) 
     {
-        
-        if (!$barras = ProdutoBarra::buscaPorBarras($barras)) {
+        //dd($barras);
+        //dd($this->produtoBarraRepository->buscaPorBarras($barras));
+        if (!$barras = $this->produtoBarraRepository->buscaPorBarras($barras)) {
+        //if (!$barras = ProdutoBarra::buscaPorBarras($barras)) {
             return [
                 'resultado' => false, 
-                'mensagem' => 'Nenhum produto localizado!', 
+                'mensagem' => 'Nenhum produto localizado!',
             ];
         }
         
         // Imagens
         $imagens = [];
-        foreach ($barras->Produto->ImagemS as $imagem) {
+        //dd($barras->Produto->ProdutoImagemS);
+        
+        foreach ($barras->Produto->ProdutoImagemS as $imagem) {
             $imagens[] = [
                 'codimagem' => $imagem->codimagem,
                 'url' => URL::asset('public/imagens/'.$imagem->observacoes),
@@ -930,11 +734,11 @@ class ProdutoController extends Controller
             'url' => url("produto/{$barras->codproduto}"),
             'codprodutobarra' => $barras->codprodutobarra,
             'barras' => $barras->barras,
-            'produto' => $barras->descricao(),
+            'produto' => $barras->descricao,
             'inativo' => $barras->Produto->inativo,
             'unidademedida' => $barras->UnidadeMedida->unidademedida,
             'slglaunidademedida' => $barras->UnidadeMedida->sigla,
-            'referencia' => $barras->referencia(),
+            'referencia' => $barras->referencia,
             'marca' => [
                 'codmarca' => $barras->Marca->codmarca,
                 'marca' => $barras->Marca->marca,
@@ -965,7 +769,7 @@ class ProdutoController extends Controller
                 'urlimagem' => (!empty($barras->Produto->SubGrupoProduto->GrupoProduto->FamiliaProduto->SecaoProduto->codimagem)?URL::asset('public/imagens/'.$barras->Produto->SubGrupoProduto->GrupoProduto->FamiliaProduto->SecaoProduto->Imagem->observacoes):null),
                 'url' => url("secao-produto/{$barras->Produto->SubGrupoProduto->GrupoProduto->FamiliaProduto->codsecaoproduto}"),
             ],
-            'preco' => $barras->preco(),
+            'preco' => $barras->preco,
             'imagens' => $imagens,
             'variacoes' => $variacoes,
             'embalagens' => $embalagens,

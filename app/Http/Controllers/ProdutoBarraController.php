@@ -16,7 +16,7 @@ use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
 
 use Carbon\Carbon;
-
+use DB;
 /**
  * @property  ProdutoBarraRepository $repository 
  * @property  ProdutoRepository $produtoRepository 
@@ -269,4 +269,103 @@ class ProdutoBarraController extends Controller
         return redirect("produto/{$this->repository->model->codproduto}"); 
     }
     
+    public function select2(Request $request) 
+    {
+        // Parametros que o Selec2 envia
+        $params = $request->get('params');
+        
+        // Quantidade de registros por pagina
+        $registros_por_pagina = 100;
+        
+        if(!empty($request->get('id'))) {    
+            // Monta Retorno
+            $item = $this->repository->findOrFail($request->get('id'));
+            return [
+                'id'                => $item->codprodutobarra,
+                'codprodutobarra'   => $item->codprodutobarra,
+                'produto'           => $item->descricao,
+                'barras'            => $item->barras,
+                'referencia'        => $item->referencia,
+                'preco'             => $item->preco,
+            ];
+            
+        } else {        
+                        // Numero da Pagina
+            $params['page'] = $params['page']??1;
+
+            $qry = DB::table('vwprodutobarra');
+            
+            $tokens = $params['term'];
+
+            // Decide Ordem
+            $ordem = (strstr($tokens, '$'))?
+                    'vwprodutobarra.preco ASC, vwprodutobarra.produto ASC, vwprodutobarra.quantidade ASC nulls first, vwprodutobarra.descricao asc':
+                    'vwprodutobarra.produto ASC, vwprodutobarra.quantidade ASC nulls first, vwprodutobarra.descricao asc';
+
+            // Limpa string
+            $tokens = str_replace('$', ' ', $tokens);
+            $tokens = trim(preg_replace('/(\s\s+|\t|\n)/', ' ', $tokens));
+            $tokens = explode(' ', $tokens);
+
+            // Percorre todas strings
+            foreach ($tokens as $str) {
+                $qry->where(function ($q2) use ($str) {
+
+                    $q2->where('descricao', 'ILIKE', "%$str%");
+
+                    if ($str == formataNumero((float) str_replace(',', '.', $str), 2)) {
+                        $q2->orWhere('preco', '=', (float) str_replace(',', '.', $str));
+                    } else {
+                        if (strlen($str) == 6 & is_numeric($str)) {
+                            $q2->orWhere('codproduto', '=', $str);
+                        }
+                        if (is_numeric($str)) {
+                            $q2->orWhere('barras', 'ilike', "%$str%");
+                        }
+                    }
+                });
+            }
+
+            if ($request->get('somenteAtivos') == 'true') {
+                $qry->whereNull('inativo');
+            }
+            
+            // Total de registros
+            $total = $qry->count();
+            
+            $qry->select('codprodutobarra', 'descricao', 'sigla', 'codproduto', 'barras', 'preco', 'referencia', 'inativo', 'secaoproduto', 'familiaproduto', 'grupoproduto', 'subgrupoproduto', 'marca');
+            $qry->orderByRaw($ordem);
+            $qry->limit($registros_por_pagina);
+            $qry->offSet($registros_por_pagina * ($params['page']-1));
+            
+            // Percorre registros
+            $results = [];
+            foreach ($qry->get() as $item) {
+                $results[] = [
+                    'id'               => $item->codprodutobarra,
+                    'barras'           => $item->barras,
+                    'codproduto'       => formataCodigo($item->codproduto, 6),
+                    'produto'          => $item->descricao,
+                    'preco'            => formataNumero($item->preco),
+                    'referencia'       => $item->referencia,
+                    'inativo'          => $item->inativo,
+                    'secaoproduto'     => $item->secaoproduto,
+                    'familiaproduto'   => $item->familiaproduto,
+                    'grupoproduto'     => $item->grupoproduto,
+                    'subgrupoproduto'  => $item->subgrupoproduto,
+                    'marca'            => $item->marca,
+                    'unidademedida'    => $item->sigla,
+                ];
+            }     
+            
+            // Monta Retorno
+            return [
+                'results' => $results,
+                'params' => $params,
+                'pagination' =>  [
+                    'more' => ($total > $params['page'] * $registros_por_pagina)?true:false,
+                ]
+            ];    
+        }
+    }
 }

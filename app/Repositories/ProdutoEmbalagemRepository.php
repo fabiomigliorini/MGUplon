@@ -25,35 +25,70 @@ class ProdutoEmbalagemRepository extends MGRepository {
     public function validate($data = null, $id = null) {
         
         if (empty($data)) {
-            $data = $this->modell->getAttributes();
+            $data = $this->model->getAttributes();
         }
         
         if (empty($id)) {
             $id = $this->model->codprodutoembalagem;
         }
+
+        Validator::extend('precomin', function ($attribute, $value, $parameters) use($data) {
+            if(!empty($value)){
+                if($value < ($this->model->Produto->preco * $data['quantidade'] * .5)) {
+                    return false;
+                }
+            }
+            return true;
+        });         
+
+        Validator::extend('precomax', function ($attribute, $value, $parameters) use($data) {
+            if(!empty($value)){
+                if($value > ($this->model->Produto->preco * $data['quantidade'])) {
+                    return false;
+                }
+            }
+            return true;
+        });         
+        
         
         $this->validator = Validator::make($data, [
-            'codproduto' => [
-                'numeric',
-                'nullable',
-            ],
+//            'codproduto' => [
+//                'numeric',
+//                'required',
+//            ],
             'codunidademedida' => [
                 'numeric',
-                'nullable',
+                'required',
             ],
             'quantidade' => [
                 'numeric',
-                'nullable',
+                'required',
+                Rule::unique('tblprodutoembalagem')->ignore($id, 'codprodutoembalagem')->where(function ($query) use ($data) {
+                    if(!isset($data['codproduto'])){
+                        return true;
+                    }
+                    
+                    $query->where('codproduto', $data['codproduto']);
+                })
+                
             ],
             'preco' => [
-                'numeric',
-                'nullable',
+                'precomin',
+                'precomax',
+                
             ],
-        ], [
-            'codproduto.numeric' => 'O campo "codproduto" deve ser um número!',
-            'codunidademedida.numeric' => 'O campo "codunidademedida" deve ser um número!',
-            'quantidade.numeric' => 'O campo "quantidade" deve ser um número!',
-            'preco.numeric' => 'O campo "preco" deve ser um número!',
+        ], [      
+            
+            'codunidademedida.required'         => 'O campo "Unidade de medida" deve ser preenchido!',
+            'codunidademedida.numeric'          => 'O campo "codunidademedida" deve ser um número!',
+            
+            'quantidade.required'               => 'O campo "Quantidade" deve ser preenchido!',
+            'quantidade.numeric'                => 'O campo "Quantidade" deve ser um número!',
+            'quantidade.unique'                 => 'Já existe uma embalagem cadastrada com esta mesma quantidade!',
+            
+            'preco.precomax'                    => 'Preço maior que o custo unitário!',
+            'preco.precomin'                    => 'Preço inferior à 50% do custo unitário!',
+            'preco.numeric'                     => 'O campo "preco" deve ser um número!',
         ]);
 
         return $this->validator->passes();

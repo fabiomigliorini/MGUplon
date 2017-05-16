@@ -98,7 +98,7 @@
             </div>
             <a href='{{ url('produto', $vcmpb->ProdutoBarra->codproduto) }}' class='item_link_produto'>
               <span class='item_produto'>
-                {{ $vcmpb->ProdutoBarra->descricao() }}
+                {{ $vcmpb->ProdutoBarra->descricao}}
               </span>
             </a>
 
@@ -398,8 +398,8 @@ $(document).ready(function() {
         return false;
     });
     
-    $("#codprodutobarra_pesquisa").on("select2-selecting", function(e) { 
-        var barras = e.object.barras;
+    $("#codprodutobarra_pesquisa").on("select2:select", function(e) { 
+        var barras = e.params.data.barras;
         if (barras != '') {
             consultaBarras(barras);
         }
