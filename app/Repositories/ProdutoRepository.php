@@ -689,8 +689,8 @@ class ProdutoRepository extends MGRepository {
         $produto = $model;
         
         //Embalagem
-        $embalagem = collect();
-        $embalagem[0] = (object)[
+        $embalagens = collect();
+        $embalagens[0] = (object)[
             'codprodutoembalagem' => null,
             'codembalagem' => null,
             'sigla' => $model->UnidadeMedida->sigla,
@@ -706,7 +706,7 @@ class ProdutoRepository extends MGRepository {
                 $preco = $model->preco * $pe->quantidade;
                 $precocalculado = true;
             }
-            $embalagem[$pe->codprodutoembalagem] = (object)[
+            $embalagens[$pe->codprodutoembalagem] = (object)[
                 'codprodutoembalagem' => $pe->codprodutoembalagem,
                 'codembalagem' => $pe->codembalagem,
                 'sigla' => $pe->UnidadeMedida->sigla,
@@ -739,9 +739,9 @@ class ProdutoRepository extends MGRepository {
                     $codprodutoembalagem = 0;
                 }
 
-                if (!isset($embalagem[$codprodutoembalagem]->variacao[$pv->codprodutovariacao])) {
+                if (!isset($embalagens[$codprodutoembalagem]->variacao[$pv->codprodutovariacao])) {
                     $saldo = !empty($saldos[$pv->codprodutovariacao])?$saldos[$pv->codprodutovariacao]->saldoquantidade:null;
-                    $saldo = floor($saldo / $embalagem[$codprodutoembalagem]->quantidade);
+                    $saldo = floor($saldo / $embalagens[$codprodutoembalagem]->quantidade);
                     $variacao = (object)[
                         'codprodutovariacao' => $pv->codprodutovariacao,
                         'variacao' => $pv->variacao,
@@ -749,7 +749,7 @@ class ProdutoRepository extends MGRepository {
                         'saldoquantidade' => $saldo,
                         'barras' => collect(),
                     ];
-                    $embalagem[$codprodutoembalagem]->variacao[$pv->codprodutovariacao] = $variacao;
+                    $embalagens[$codprodutoembalagem]->variacao[$pv->codprodutovariacao] = $variacao;
                 }
 
                 $barras = (object)[
@@ -757,7 +757,7 @@ class ProdutoRepository extends MGRepository {
                     'barras' => $pb->barras,
                 ];
 
-                $embalagem[$codprodutoembalagem]->variacao[$pv->codprodutovariacao]->barras[$pb->codprodutobarra] = $barras;
+                $embalagens[$codprodutoembalagem]->variacao[$pv->codprodutovariacao]->barras[$pb->codprodutobarra] = $barras;
 
             }
         }
@@ -765,9 +765,9 @@ class ProdutoRepository extends MGRepository {
         $repo_imagem = new ProdutoImagemRepository();
         $imagem = $repo_imagem->buscaPorProdutos($model->codproduto);
         
-        $produto->imagem = $imagem[$model->codproduto];
-        $produto->embalagem = $embalagem;
-        $produto->variacao = $variacao;
+        $produto->imagens = $imagem[$model->codproduto];
+        $produto->embalagens = $embalagens;
+        $produto->variacoes = $variacao;
         
         return $produto;
     }

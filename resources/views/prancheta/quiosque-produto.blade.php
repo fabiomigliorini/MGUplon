@@ -19,7 +19,7 @@
 
         <div id="car{{ $produto->codproduto }}lg" data-ride="carousel" class="carousel slide" data-interval="1500">
           <div role="listbox" class="carousel-inner">
-            @foreach ($produto->imagem as $imagem)
+            @foreach ($produto->imagens as $imagem)
             <div class="carousel-item {{ ($loop->first)?'active':'' }} ">
               <img class="d-block img-fluid" src="{{$imagem->url}}">
             </div>
@@ -36,7 +36,7 @@
     <div class="card">
       <div class="card-block">
         <ul class="nav nav-pills nav-stacked" role="tablist">
-          @foreach ($produto->embalagem as $embalagem)
+          @foreach ($produto->embalagens as $embalagem)
           <li class="nav-item">
             <a class="nav-link {{ ($loop->first)?'active':'' }}" data-toggle="tab" href="#variacoes{{ $produto->codproduto }}_{{ $embalagem->codprodutoembalagem }}" role="tab">
               {{ $embalagem->sigla }} C/{{ formataNumero($embalagem->quantidade, 0) }}
@@ -68,7 +68,7 @@
       <div class="card-block">
 
         <div class="tab-content">
-          @foreach ($produto->embalagem as $embalagem)
+          @foreach ($produto->embalagens as $embalagem)
           <div class="tab-pane {{ ($loop->first)?'active':'' }}" id="variacoes{{ $produto->codproduto }}_{{ $embalagem->codprodutoembalagem }}" role="tabpanel">
             <table class="table table-hover table-sm ">
               @foreach ($embalagem->variacao as $variacao)

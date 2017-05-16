@@ -795,10 +795,34 @@ class ProdutoController extends Controller
         DB::commit();
 
         return redirect("produto/{$form['codproduto']}");
-        
-        dd($validator);
     }
     
+    public function unificarBarras(Request $request, $id)
+    {
+        // busca registro
+        $this->repository->findOrFail($id);
+        
+        //autorizacao
+        $this->repository->authorize('unificarBarras');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->produto, url('produto', $this->repository->model->codproduto));
+        $this->bc->addItem('Unificar Códigos de Barra');
+        $this->bc->header = $this->repository->model->produto;
+        
+        $produto = $this->repository->detalhes();
+        
+        dd($produto->variacao);
+        
+        dd('aqui');
+    }
+    
+    public function unificarBarrasSalvar(Request $request, $id)
+    {
+        dd('aqui');
+    }
+
+
     public function sincronizaProdutoOpenCart(Request $request)
     {
         try {

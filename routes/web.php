@@ -199,6 +199,8 @@ Route::group(['middleware' => 'auth'], function() {
     /* Produto */
     Route::get('produto/typeahead', 'ProdutoController@typeahead');
     Route::resource('produto', 'ProdutoController');
+    Route::get('produto/{id}/unificar-barras', 'ProdutoController@unificarBarras');
+    Route::post('produto/{id}/unificar-barras', 'ProdutoController@unificarBarrasSalvar');
     
     /* Negócio produto barra */
     Route::resource('negocio-produto-barra', 'NegocioProdutoBarraController');
