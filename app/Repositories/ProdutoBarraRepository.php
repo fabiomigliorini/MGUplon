@@ -294,17 +294,7 @@ class ProdutoBarraRepository extends MGRepository {
         }
         return parent::save();
     }
-    
-    public function descricao()
-    {
-        $descr = "{$this->model->Produto->produto} {$this->model->ProdutoVariacao->variacao}";
-        if ($this->model->codprodutoembalagem) {
-            $quant = formataNumero($this->model->ProdutoEmbalagem->quantidade, 0);
-            $descr = "{$descr} C/{$quant}";
-        }
-        return trim($descr);
-    }
-    
+
     public function UnidadeMedida()
     {
         if ($this->model->codprodutoembalagem) {

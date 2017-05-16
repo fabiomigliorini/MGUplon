@@ -331,4 +331,100 @@ class NotaFiscalProdutoBarraRepository extends MGRepository {
         
     }
     
+    public function calculaTributacao()
+    {
+        
+        $trib = TributacaoNaturezaOperacao
+                ::where('codtributacao', $this->ProdutoBarra->Produto->codtributacao)
+                ->where('codtipoproduto', $this->ProdutoBarra->Produto->codtipoproduto)
+                ->where('codnaturezaoperacao', $this->NotaFiscal->codnaturezaoperacao)
+                ->whereRaw("('{$this->ProdutoBarra->Produto->Ncm->ncm}' ilike ncm || '%' or ncm is null)");
+                
+        if ($this->NotaFiscal->Pessoa->Cidade->codestado == $this->NotaFiscal->Filial->Pessoa->Cidade->codestado) {
+            $trib->where('codestado', $this->NotaFiscal->Pessoa->Cidade->codestado);
+            $filtroEstado = 'codestado = :codestado';
+        } else {
+            $trib->whereNull('codestado');
+        }
+        
+        if (!($trib = $trib->first())) {
+            echo '<h1>Erro Ao Calcular Tributacao</h1>';
+            dd($this);
+            return false;
+        }
+        
+        //Traz codigos de tributacao
+        $this->codcfop = $trib->codcfop;
+
+        if ($this->NotaFiscal->Filial->crt == Filial::CRT_REGIME_NORMAL)
+        {
+
+            //CST's
+            $this->icmscst = $trib->icmscst;
+            $this->ipicst = $trib->ipicst;
+            $this->piscst = $trib->piscst;
+            $this->cofinscst = $trib->cofinscst;
+
+            If (!empty($this->valortotal) && ($this->NotaFiscal->emitida))
+            {
+                    //Calcula ICMS				
+                    If (!empty($trib->icmslpbase))
+                        $this->icmsbase = round(($trib->icmslpbase * $this->valortotal)/100, 2);
+
+                    $this->icmspercentual = $trib->icmslppercentual;
+
+                    If ((!empty($this->icmsbase)) and (!empty($this->icmspercentual)))
+                        $this->icmsvalor = round(($this->icmsbase * $this->icmspercentual)/100, 2);
+
+                    //Calcula PIS
+                    If ($trib->pispercentual > 0)
+                    {
+                        $this->pisbase = $this->valortotal;
+                        $this->pispercentual = $trib->pispercentual;
+                        $this->pisvalor = round(($this->pisbase * $this->pispercentual)/100, 2);
+                    }
+
+                    //Calcula Cofins
+                    If ($trib->cofinspercentual > 0)
+                    {
+                        $this->cofinsbase = $this->valortotal;
+                        $this->cofinspercentual = $trib->cofinspercentual;
+                        $this->cofinsvalor = round(($this->cofinsbase * $this->cofinspercentual)/100, 2);
+                    }
+
+                    //Calcula CSLL
+                    If ($trib->csllpercentual > 0)
+                    {
+                        $this->csllbase = $this->valortotal;
+                        $this->csllpercentual = $trib->csllpercentual;
+                        $this->csllvalor = round(($this->csllbase * $this->csllpercentual)/100, 2);
+                    }
+
+                    //Calcula IRPJ
+                    If ($trib->irpjpercentual > 0)
+                    {
+                        $this->irpjbase = $this->valortotal;
+                        $this->irpjpercentual = $trib->irpjpercentual;
+                        $this->irpjvalor = round(($this->irpjbase * $this->irpjpercentual)/100, 2);
+                    }
+
+            }
+        }
+        else
+        {
+            $this->csosn = $trib->csosn;
+
+            //Calcula ICMSs
+            If (!empty($this->valortotal) && ($this->NotaFiscal->emitida)) {
+                If (!empty($trib->icmsbase))
+                    $this->icmsbase = round(($trib->icmsbase * $this->valortotal)/100, 2);
+
+                $this->icmspercentual = $trib->icmspercentual;
+
+                If ((!empty($this->icmsbase)) and (!empty($this->icmspercentual)))
+                    $this->icmsvalor = round(($this->icmsbase * $this->icmspercentual)/100, 2);
+            }
+        }        
+    }
+    
 }

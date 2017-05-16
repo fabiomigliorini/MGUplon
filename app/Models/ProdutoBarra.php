@@ -52,17 +52,51 @@ class ProdutoBarra extends MGModel
         'criacao',
     ];
 
+    // Atributo descricao
+    public function getDescricaoAttribute()
+    {
+        $descr = "{$this->Produto->produto} {$this->ProdutoVariacao->variacao}";
+        if ($this->codprodutoembalagem) {
+            $quant = formataNumero($this->ProdutoEmbalagem->quantidade, 0);
+            $descr = "{$descr} C/{$quant}";
+        }
+        return trim($descr);
+    }
+    
+    // Atributo referencia
+    public function getReferenciaAttribute()
+    {
+        if (!empty($this->referencia)) {
+            return $this->referencia;
+        }
+        if (!empty($this->ProdutoVariacao->referencia)) {
+            return $this->ProdutoVariacao->referencia;
+        } 
+        return $this->Produto->referencia;
+    }
 
+    // Atributo preco
+    public function getPrecoAttribute()
+    {
+        if (!empty($this->codprodutoembalagem)) {
+            if (empty($this->ProdutoEmbalagem->preco)) {
+                return $this->ProdutoEmbalagem->quantidade * $this->produto->preco;
+            }
+            return (float) $this->ProdutoEmbalagem->preco;
+        }
+        return (float) $this->Produto->preco;
+    }    
+    
     // Chaves Estrangeiras
     public function ProdutoVariacao()
     {
         return $this->belongsTo(ProdutoVariacao::class, 'codprodutovariacao', 'codprodutovariacao');
     }
 
-    public function Marca()
-    {
-        return $this->belongsTo(Marca::class, 'codmarca', 'codmarca');
-    }
+//    public function Marca()
+//    {
+//        return $this->belongsTo(Marca::class, 'codmarca', 'codmarca');
+//    }
 
     public function Produto()
     {
@@ -115,4 +149,21 @@ class ProdutoBarra extends MGModel
     {
         return $this->hasMany(NotaFiscalProdutoBarra::class, 'codprodutobarra', 'codprodutobarra');
     }
+    
+    public function UnidadeMedida()
+    {
+        if (!empty($this->codprodutoembalagem)) {
+            return $this->ProdutoEmbalagem->UnidadeMedida();
+        } 
+        return $this->Produto->UnidadeMedida();
+    }
+    
+    public function Marca()
+    {
+        if (!empty($this->ProdutoVariacao->codmarca)) {
+            return $this->ProdutoVariacao->Marca();
+        } 
+        return $this->Produto->Marca();
+    }
+    
 }

@@ -610,10 +610,12 @@ class ProdutoController extends Controller
         return response()->json($retorno);
     }
     
-    public function consulta (Request $request, $barras) 
+    public function consulta(Request $request, $barras) 
     {
-        
-        if (!$barras = ProdutoBarra::buscaPorBarras($barras)) {
+        //dd($barras);
+        //dd($this->produtoBarraRepository->buscaPorBarras($barras));
+        if (!$barras = $this->produtoBarraRepository->buscaPorBarras($barras)) {
+        //if (!$barras = ProdutoBarra::buscaPorBarras($barras)) {
             return [
                 'resultado' => false, 
                 'mensagem' => 'Nenhum produto localizado!',
@@ -622,7 +624,9 @@ class ProdutoController extends Controller
         
         // Imagens
         $imagens = [];
-        foreach ($barras->Produto->ImagemS as $imagem) {
+        //dd($barras->Produto->ProdutoImagemS);
+        
+        foreach ($barras->Produto->ProdutoImagemS as $imagem) {
             $imagens[] = [
                 'codimagem' => $imagem->codimagem,
                 'url' => URL::asset('public/imagens/'.$imagem->observacoes),
@@ -706,11 +710,11 @@ class ProdutoController extends Controller
             'url' => url("produto/{$barras->codproduto}"),
             'codprodutobarra' => $barras->codprodutobarra,
             'barras' => $barras->barras,
-            'produto' => $barras->descricao(),
+            'produto' => $barras->descricao,
             'inativo' => $barras->Produto->inativo,
             'unidademedida' => $barras->UnidadeMedida->unidademedida,
             'slglaunidademedida' => $barras->UnidadeMedida->sigla,
-            'referencia' => $barras->referencia(),
+            'referencia' => $barras->referencia,
             'marca' => [
                 'codmarca' => $barras->Marca->codmarca,
                 'marca' => $barras->Marca->marca,
@@ -741,7 +745,7 @@ class ProdutoController extends Controller
                 'urlimagem' => (!empty($barras->Produto->SubGrupoProduto->GrupoProduto->FamiliaProduto->SecaoProduto->codimagem)?URL::asset('public/imagens/'.$barras->Produto->SubGrupoProduto->GrupoProduto->FamiliaProduto->SecaoProduto->Imagem->observacoes):null),
                 'url' => url("secao-produto/{$barras->Produto->SubGrupoProduto->GrupoProduto->FamiliaProduto->codsecaoproduto}"),
             ],
-            'preco' => $barras->preco(),
+            'preco' => $barras->preco,
             'imagens' => $imagens,
             'variacoes' => $variacoes,
             'embalagens' => $embalagens,

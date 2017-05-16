@@ -9,18 +9,19 @@
                 <table class="table table-bordered table-striped table-hover table-sm">
                     <tbody>
                     @foreach ($model->ValeCompraModeloProdutoBarraS as $vcmpb)
+                    
                         <tr> 
                             <td>{{ $vcmpb->ProdutoBarra->barras }}</td> 
                             <td>
                                 <?php $inativo = $vcmpb->ProdutoBarra->Produto->inativo; ?>
                                 @if (!empty($inativo))
-                                  <s><a href='{{ url('produto', $vcmpb->ProdutoBarra->codproduto) }}'>{{ $vcmpb->ProdutoBarra->descricao() }}</a></s>
+                                  <s><a href='{{ url('produto', $vcmpb->ProdutoBarra->codproduto) }}'>{{ $vcmpb->ProdutoBarra->descricao }}</a></s>
                                   <span class='text-danger'>
                                       inativo desde {{ formataData($vcmpb->ProdutoBarra->Produto->inativo) }}
                                   </span>
                                 @else
                                   <a href='{{ url('produto', $vcmpb->ProdutoBarra->codproduto) }}'>
-                                    {{ $vcmpb->ProdutoBarra->descricao() }}
+                                    {{ $vcmpb->ProdutoBarra->descricao }}
                                   </a>
                                 @endif                                
                             </td>
