@@ -62,7 +62,7 @@
             </div>
             <a href='{{ url('produto', $vcmpb->ProdutoBarra->codproduto) }}' class='item_link_produto'>
               <span class='item_produto'>
-                {{ $vcmpb->ProdutoBarra->descricao() }}
+                {{ $vcmpb->ProdutoBarra->descricao }}
               </span>
             </a>
 

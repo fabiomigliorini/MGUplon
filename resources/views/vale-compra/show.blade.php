@@ -20,7 +20,7 @@
                                   </span>
                                 @else
                                   <a href='{{ url('produto', $vcmpb->ProdutoBarra->codproduto) }}'>
-                                    {{ $vcmpb->ProdutoBarra->descricao() }}
+                                    {{ $vcmpb->ProdutoBarra->descricao }}
                                   </a>
                                 @endif                               
                             </td>
