@@ -1,7 +1,7 @@
 @extends('layouts.default')
 @section('content')
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-3">
         <div class="card">
             <h4 class="card-header">
                 Novo

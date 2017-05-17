@@ -29,7 +29,19 @@
                 <?php
                 $pbs = $pv->ProdutoBarraS()->leftJoin('tblprodutoembalagem as pe', 'pe.codprodutoembalagem', '=', 'tblprodutobarra.codprodutoembalagem')
                    ->orderBy(DB::raw('coalesce(pe.quantidade, 0)'), 'ASC')
+                   ->select([
+                       'tblprodutobarra.codproduto',
+                       'tblprodutobarra.codprodutobarra',
+                       'tblprodutobarra.barras',
+                       'tblprodutobarra.referencia',
+                       'tblprodutobarra.codmarca',
+                       'tblprodutobarra.codprodutoembalagem',
+                       'tblprodutobarra.variacao',
+                       'pe.quantidade',
+                       'pe.codunidademedida',
+                   ])
                    ->with('ProdutoEmbalagem')->get();
+                //dd($pbs);
                 ?>
                 <div class="row">
                     @foreach ($pbs as $pb)

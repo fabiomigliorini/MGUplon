@@ -2,12 +2,13 @@
 
     use MGLara\Models\ProdutoEmbalagem;
     
-    $embalagens[0] = $produto->UnidadeMedida->sigla;
+    $embalagens[0] = $model->Produto->UnidadeMedida->sigla;
     
-    foreach ($produto->ProdutoEmbalagemS as $pe)
+    foreach ($model->Produto->ProdutoEmbalagemS as $pe) {
         $embalagens[$pe->codprodutoembalagem] = $pe->descricao;
+    }
     
-    $variacoes = $produto->ProdutoVariacaoS()->orderBy('variacao', 'ASC NULLS FIRST')->pluck('variacao', 'codprodutovariacao')->all();
+    $variacoes = $model->Produto->ProdutoVariacaoS()->orderBy('variacao', 'ASC NULLS FIRST')->pluck('variacao', 'codprodutovariacao')->all();
 
     foreach($variacoes as $cod => $descr)
         if (empty($descr))
@@ -18,7 +19,7 @@
 ?>
 {!! Form::hidden('codproduto', Request::get('codproduto')) !!}
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <fieldset class="form-group">
             {!! Form::label('codprodutovariacao', 'Variação') !!}
             {!! Form::select('codprodutovariacao', $variacoes, null, ['class'=> 'form-control', 'required'=>true, 'id' => 'codprodutovariacao', 'style'=>'width:100%']) !!}
@@ -114,15 +115,10 @@
         //inicializa var
         var codigo = $('#barras').val();
 
-        if (validaGtin(codigo))
+        if (validaGtin(codigo)) {
             return true;
-        /*
-        if (codigo.substring(0, 7) == '{!! str_pad($produto->codproduto, 6, '0', STR_PAD_LEFT)  !!}-')
-            return true;
-
-        if (codigo.substring(0, 6) == '{!! str_pad($produto->codproduto, 6, '0', STR_PAD_LEFT)  !!}' && codigo.length == 6)
-            return true;
-        */
+        }
+        
         return false;
     }
 

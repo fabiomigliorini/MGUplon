@@ -39,13 +39,13 @@ class ProdutoBarra extends MGModel
     protected $table = 'tblprodutobarra';
     protected $primaryKey = 'codprodutobarra';
     protected $fillable = [
-          'codproduto',
-         'variacao',
-         'barras',
-         'referencia',
-         'codmarca',
-         'codprodutoembalagem',
-             'codprodutovariacao',
+        'codproduto',
+        'variacao',
+        'barras',
+        'referencia',
+        'codmarca',
+        'codprodutoembalagem',
+        'codprodutovariacao',
     ];
     protected $dates = [
         'alteracao',
@@ -72,6 +72,7 @@ class ProdutoBarra extends MGModel
         if (!empty($this->ProdutoVariacao->referencia)) {
             return $this->ProdutoVariacao->referencia;
         } 
+        
         return $this->Produto->referencia;
     }
 

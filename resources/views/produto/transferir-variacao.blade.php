@@ -13,8 +13,8 @@
                         <div class="input-group">
                             @foreach($model->ProdutoVariacaoS()->orderByRaw('variacao ASC NULLS FIRST')->get() as $pv)
                                 <div class="checkbox checkbox-primary">
-                                    {!! Form::checkbox("codprodutovariacao[]", $pv->codprodutovariacao, false, []); !!}
-                                    {!! Form::label('codprodutovariacao[]', empty($pv->variacao)?'{ Sem Variação }':$pv->variacao) !!}
+                                    {!! Form::checkbox("codprodutovariacao[]", $pv->codprodutovariacao, false, ['id'=>'codprodutovariacao_' . $loop->index]); !!}
+                                    <label for="codprodutovariacao_{{ $loop->index }}"> {{ empty($pv->variacao)?'{ Sem Variação }':$pv->variacao }} </label>
                                 </div>
                             @endforeach 
                         </div>

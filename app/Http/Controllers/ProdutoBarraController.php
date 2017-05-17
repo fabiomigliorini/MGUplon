@@ -143,20 +143,18 @@ class ProdutoBarraController extends Controller
     {
         // cria um registro em branco
         $this->repository->new();
+        $this->repository->fill($request->all());
         
         // autoriza
         $this->repository->authorize('create');
         
-        // instancia produto
-        $this->produtoRepository->findOrFail($request->get('codproduto'));
-        
         // breadcrumb
         $this->bc->addItem('Produto', url('produto'));
-        $this->bc->addItem($this->produtoRepository->model->produto, url('produto', $this->produtoRepository->model->codproduto));
+        $this->bc->addItem($this->repository->model->Produto->produto, url('produto', $this->repository->model->codproduto));
         $this->bc->addItem('Novo Código de Barras');
         
         // retorna view
-        return view('produto-barra.create', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'produto'=>$this->produtoRepository->model]);
+        return view('produto-barra.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
 
     /**
@@ -191,8 +189,10 @@ class ProdutoBarraController extends Controller
         $this->repository->authorize('view');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->variacao);
-        $this->bc->header = $this->repository->model->variacao;
+        $this->bc->addItem('Produto', url('produto'));
+        $this->bc->addItem($this->repository->model->Produto->produto, url('produto', $this->repository->model->codproduto));
+        $this->bc->addItem($this->repository->model->barras);
+        $this->bc->header = $this->repository->model->barras;
         
         // retorna show
         return view('produto-barra.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
