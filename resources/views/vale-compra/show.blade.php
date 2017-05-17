@@ -14,7 +14,7 @@
                             <td>
                                 <?php $inativo = $vcmpb->ProdutoBarra->Produto->inativo; ?>
                                 @if (!empty($inativo))
-                                  <s><a href='{{ url('produto', $vcmpb->ProdutoBarra->codproduto) }}'>{{ $vcmpb->ProdutoBarra->descricao() }}</a></s>
+                                  <s><a href='{{ url('produto', $vcmpb->ProdutoBarra->codproduto) }}'>{{ $vcmpb->ProdutoBarra->descricao }}</a></s>
                                   <span class='text-danger'>
                                       inativo desde {{ formataData($vcmpb->ProdutoBarra->Produto->inativo) }}
                                   </span>

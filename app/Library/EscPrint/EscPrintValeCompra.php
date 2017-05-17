@@ -160,7 +160,7 @@ class EscPrintValeCompra extends EscPrint
 		foreach ($vale->ValeCompraProdutoBarraS as $prod)
 		{
 			$this->adicionaTexto($prod->ProdutoBarra->barras, "documento", 20);
-			$this->adicionaTexto($prod->ProdutoBarra->descricao(), "documento", 65);
+			$this->adicionaTexto($prod->ProdutoBarra->descricao, "documento", 65);
 			$this->adicionaTexto($prod->ProdutoBarra->UnidadeMedida->sigla, "documento", 7, STR_PAD_LEFT);
 			$this->adicionaTexto(formataNumero($prod->quantidade), "documento", 15, STR_PAD_LEFT);
 			$this->adicionaTexto(formataNumero($prod->preco), "documento", 15, STR_PAD_LEFT);

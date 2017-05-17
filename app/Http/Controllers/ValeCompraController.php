@@ -60,8 +60,8 @@ class ValeCompraController extends Controller
                     'inativo' => 1,
                 ],
                 'order' => [[
-                    'column' => 3, 
-                    'dir' => 'ASC'
+                    'column' => 9, 
+                    'dir' => 'DESC'
                 ]],
             ];
         }
@@ -164,11 +164,11 @@ class ValeCompraController extends Controller
         if (!empty($request->get('codvalecompramodelo'))) {
             
             $modelo = $this->valeCompraModeloRepository->findOrFail($request->get('codvalecompramodelo'));
-            //dd($modelo->ValeCompraModeloProdutoBarraS);
             
             $model = $this->repository->new($modelo->getAttributes());
-            $model->codpessoa = $this->pessoaRepository->model->consumidor; //\MGLara\Models\Pessoa::CONSUMIDOR;
+            $model->codpessoa = $this->pessoaRepository->model::CONSUMIDOR;
             $model->codvalecompramodelo = $request->get('codvalecompramodelo');
+            
             foreach ($modelo->ValeCompraModeloProdutoBarraS as $m_prod) {
                 $prods[] = $this->valeCompraProdutoBarraRepository->new($m_prod->getAttributes());
             }
@@ -194,9 +194,6 @@ class ValeCompraController extends Controller
      */
     public function store(Request $request)
     {
-        // Inicia Transação
-        DB::beginTransaction();
-        
         // busca dados do formulario
         $data = $request->all();
         
@@ -204,53 +201,58 @@ class ValeCompraController extends Controller
         $model->totalprodutos = array_sum($data['item_total']);
         $model->total = $model->totalprodutos - $model->desconto;
         
+/*        
         // valida dados
         if (!$this->repository->validate($data)) {
             $this->throwValidationException($request, $this->repository->validator);
         }
+*/
         
-        if ($model->create()) {
-            dd('aqui chega!');
-            foreach ($dados['item_codprodutobarra'] as $key => $codprodutobarra) {
+        // Inicia Transação
+        DB::beginTransaction();
+        
+        if ($model->save()) {
+            
+            foreach ($data['item_codprodutobarra'] as $key => $codprodutobarra) {
                 if (empty($codprodutobarra)) {
                     continue;
                 }
                 
-                $prod = $this->valeCompraModeloRepository->new([
-                    'codvalecompra' => $model->codvalecompra,
-                    'codprodutobarra' => $codprodutobarra,
-                    'quantidade' => $dados['item_quantidade'][$key],
-                    'preco' => $dados['item_preco'][$key],
-                    'total' => $dados['item_total'][$key],
+                $prod = $this->valeCompraProdutoBarraRepository->new([
+                    'codvalecompra'     => $model->codvalecompra,
+                    'codprodutobarra'   => $codprodutobarra,
+                    'quantidade'        => $data['item_quantidade'][$key],
+                    'preco'             => $data['item_preco'][$key],
+                    'total'             => $data['item_total'][$key],
                 ]);
                 
                 $prod->save();
             }
             
             $pag = $this->valeCompraFormaPagamentoRepository->new([
-                'codvalecompra' => $model->codvalecompra,
-                'codformapagamento' => $dados['codformapagamento'],
-                'valorpagamento' => $model->model->total,
+                'codvalecompra'     => $model->codvalecompra,
+                'codformapagamento' => $data['codformapagamento'],
+                'valorpagamento'    => $model->total,
             ]);
             
             $pag->save();
             
             // Gera Contas a Receber
-            if (!$pag->model->FormaPagamento->avista) {
+            if (!$pag->FormaPagamento->avista) {
                 $acumulado = 0;
-                for ($i=1; $i<=$pag->model->FormaPagamento->parcelas; $i++) {
-                    if ($i == $pag->model->FormaPagamento->parcelas) {
-                        $valor = $pag->model->valorpagamento - $acumulado;
+                for ($i=1; $i<=$pag->FormaPagamento->parcelas; $i++) {
+                    if ($i == $pag->FormaPagamento->parcelas) {
+                        $valor = $pag->valorpagamento - $acumulado;
                     } else {
-                        $valor = floor($pag->model->valorpagamento / $pag->model->FormaPagamento->parcelas);
+                        $valor = floor($pag->valorpagamento / $pag->FormaPagamento->parcelas);
                         if ($valor == 0) {
-                            $valor = round($pag->model->valorpagamento / $pag->model->FormaPagamento->parcelas, 2);
+                            $valor = round($pag->valorpagamento / $pag->FormaPagamento->parcelas, 2);
                         }
                     }
-                    $vencimento = ($i==1)?$model->model->criacao->addDays($pag->model->FormaPagamento->diasentreparcelas):$vencimento->addDays($pag->model->FormaPagamento->diasentreparcelas);
+                    $vencimento = ($i==1)?$model->criacao->addDays($pag->FormaPagamento->diasentreparcelas):$vencimento->addDays($pag->FormaPagamento->diasentreparcelas);
                     $acumulado += $valor;
-                    $numero = str_pad($model->model->codvalecompra, 8, '0', STR_PAD_LEFT);
-                    $numero = "V{$numero}-{$i}/{$pag->model->FormaPagamento->parcelas}";
+                    $numero = str_pad($model->codvalecompra, 8, '0', STR_PAD_LEFT);
+                    $numero = "V{$numero}-{$i}/{$pag->FormaPagamento->parcelas}";
                     
                     $titulo = $this->tituloRepository->new();
                     $titulo->numero = $numero;
@@ -270,7 +272,7 @@ class ValeCompraController extends Controller
             }
             
             // Gera Titulo de Credito
-            $numero = str_pad($model->model->codvalecompra, 8, '0', STR_PAD_LEFT);
+            $numero = str_pad($model->codvalecompra, 8, '0', STR_PAD_LEFT);
             $numero = "V{$numero}-CR";
 
             $titulo = $this->tituloRepository->new();
@@ -290,14 +292,6 @@ class ValeCompraController extends Controller
             $model->codtitulo = $titulo->codtitulo;
             $model->save();
             
-        }
-
-        // autoriza
-        $this->repository->authorize('create');
-        
-        // cria
-        if (!$this->repository->create()) {
-            abort(500);
         }
         
         // Mensagem de registro criado

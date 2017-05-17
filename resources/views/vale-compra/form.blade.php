@@ -100,7 +100,7 @@
   @endforeach
   
     <!-- Linha de modelo que o Jquery vai utilizar -->
-    <li class='list-group-item linha_produto hidden'>
+    <li class='list-group-item linha_produto invisible'>
         <div class="row">
           {!! Form::hidden('item_codprodutobarra[]', null, ['class'=> 'form-control item_codprodutobarra']) !!}
           <div class='col-md-6'>
@@ -187,6 +187,7 @@
 </fieldset>
 
 @section('inscript')
+<style>.invisible {display: none !important}</style>
 <script src="{{ URL::asset('public/assets/js/setcase.js') }}"></script>
 <script type="text/javascript">
     
@@ -364,8 +365,8 @@ $(document).ready(function() {
         return false;
     });
     
-    $("#codprodutobarra_pesquisa").on("select2-selecting", function(e) { 
-        var barras = e.object.barras;
+    $("#codprodutobarra_pesquisa").on("select2:select", function(e) { 
+        var barras = e.params.data.barras;
         if (barras != '') {
             consultaBarras(barras);
         }
