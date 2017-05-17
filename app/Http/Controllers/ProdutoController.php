@@ -214,24 +214,24 @@ class ProdutoController extends Controller
                 throw new Exception('Erro ao Cria Produto!');
             }        
             
-            $pv = $this->produtoVariacaoRepository->new([
+            $this->produtoVariacaoRepository->new([
                 'codproduto' => $this->repository->model->codproduto
             ]);
             
-            if (!$pv->save()){
+            if (!$this->produtoVariacaoRepository->save()){
                 throw new Exception('Erro ao Criar Variação!');
             }
 
-            $pb = $this->produtoBarraRepository->new([
+            $this->produtoBarraRepository->new([
                 'codproduto' => $this->repository->model->codproduto,
-                'codprodutovariacao' => $pv->codprodutovariacao
+                'codprodutovariacao' => $this->produtoVariacaoRepository->model->codprodutovariacao
             ]);
 
-            if (!$pb->save()){
+            if (!$this->produtoBarraRepository->save()){
                 throw new Exception ('Erro ao Criar Barras!');
             }
 
-            DB::commit();            
+            DB::commit();
 
             Session::flash('flash_create', 'Produto criado!');
         } catch (Exception $ex) {

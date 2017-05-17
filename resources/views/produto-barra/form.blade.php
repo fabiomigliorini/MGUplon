@@ -161,6 +161,7 @@
     
 $(document).ready(function() {
     $('#form-principal').on("submit", function(e) {
+        console.log('ola mundo');
         e.preventDefault();
         var currentForm = this;
         if(!validaBarrasDigitado()){
@@ -173,7 +174,7 @@ $(document).ready(function() {
             },
             function(isConfirm){
               if (isConfirm) {
-                currentForm.submit();
+                bootboxSalvar(currentForm);
               }
             });            
         } else {

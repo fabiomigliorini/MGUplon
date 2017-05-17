@@ -284,6 +284,7 @@ class ProdutoBarraRepository extends MGRepository {
     
     public function save(array $options = [])
     {
+        
         if (!$this->model->barras) {
             if (!$this->model->codprodutobarra) {
                 $codprodutobarra = \DB::select("select nextval('tblprodutobarra_codprodutobarra_seq') codprodutobarra");

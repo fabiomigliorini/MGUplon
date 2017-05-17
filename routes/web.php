@@ -242,5 +242,8 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('nota-fiscal-produto-barra', 'NotaFiscalProdutoBarraController');
     
     /* Produto Embalagem */
-    Route::resource('produto-embalagem', 'ProdutoEmbalagemController');    
+    Route::resource('produto-embalagem', 'ProdutoEmbalagemController');
+    
+    /* Caixa */
+    Route::resource('caixa', 'CaixaController');    
 });

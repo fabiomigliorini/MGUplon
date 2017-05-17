@@ -2,7 +2,7 @@
 @section('content')
 
 <div class='row'>
-    <div class='col-md-6'>
+    <div class='col-md-4'>
         <div class='card'>
             <h4 class="card-header">Imagens</h4>
             <div class='card-block'>
@@ -10,7 +10,7 @@
             </div>
         </div>
     </div>
-    <div class='col-md-6'>
+    <div class='col-md-8'>
         <div class='card'>
             <h4 class="card-header">Detalhes</h4>
             <div class='card-block'>
@@ -32,7 +32,7 @@
                         <a class="nav-link" data-toggle="tab" href="#tab-negocio" role="tab">Negócios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#tab-notasfiscais" role="tab">NFE's</a>
+                        <a class="nav-link" data-toggle="tab" href="#tab-notasfiscais" role="tab">Notas</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#observacoes" role="tab">Observações</a>
@@ -90,7 +90,6 @@
                         </div>
                         <br>
                         @include('produto.show-variacoes')
-                        
                     </div>
                     <div class="tab-pane" id="tab-estoque" role="tabpanel">
                         <div id="div-estoque">
@@ -118,36 +117,45 @@
                             <div class='well well-sm'>
                                 {!! Form::model(Request::session()->get('MGLara.Http.Controllers.NegocioProdutoBarraController.filtros'), ['route' => ['produto.show', 'produto'=> $model->codproduto], 'class' => 'form-horizontal', 'method' => 'GET', 'id' => 'produto-negocio-search', 'role' => 'search', 'autocomplete' => 'off'])!!}
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             {!! Form::label('negocio_lancamento_de', 'De') !!}
                                             {!! Form::date('negocio_lancamento_de', null, ['class' => 'form-control', 'id' => 'negocio_lancamento_de', 'placeholder' => 'De']) !!}
                                         </div> 
-
-                                        <div class="form-group">
-                                            {!! Form::label('negocio_codfilial', 'Filial') !!}
-                                            {!! Form::select2Filial('negocio_codfilial', null, ['style'=>'width:100%', 'id'=>'negocio_codfilial']) !!}
-                                        </div>                                    
-                                        <div class="form-group">
-                                            {!! Form::label('negocio_codnaturezaoperacao', 'Natureza de Operação') !!}
-                                            {!! Form::select2NaturezaOperacao('negocio_codnaturezaoperacao', null, ['style'=>'width:100%', 'id' => 'negocio_codnaturezaoperacao']) !!}
-                                        </div>
-
-                                    </div>
-                                    <div class="col-md-6">
+                                    </div> 
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             {!! Form::label('negocio_lancamento_ate', 'Até') !!}
                                             {!! Form::date('negocio_lancamento_ate', null, ['class' => 'form-control', 'id' => 'negocio_lancamento_ate', 'placeholder' => 'Até']) !!}
-                                        </div>
+                                        </div> 
+                                    </div> 
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            {!! Form::label('negocio_codfilial', 'Filial') !!}
+                                            {!! Form::select2Filial('negocio_codfilial', null, ['style'=>'width:100%', 'id'=>'negocio_codfilial']) !!}
+                                        </div> 
+                                    </div> 
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             {!! Form::label('negocio_codpessoa', 'Pessoa') !!}
                                             {!! Form::select2Pessoa('negocio_codpessoa', null, ['class' => 'form-control', 'id'=>'negocio_codpessoa', 'style'=>'width:100%', 'placeholder' => 'Pessoa', 'ativo' => 9]) !!}
                                         </div>                            
+                                    </div>                            
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {!! Form::label('negocio_codnaturezaoperacao', 'Natureza de Operação') !!}
+                                            {!! Form::select2NaturezaOperacao('negocio_codnaturezaoperacao', null, ['style'=>'width:100%', 'id' => 'negocio_codnaturezaoperacao']) !!}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             {!! Form::label('negocio_codprodutovariacao', 'Variação') !!}
                                             {!! Form::select2ProdutoVariacao('negocio_codprodutovariacao', null, ['style'=>'width:100%', 'id' => 'negocio_codprodutovariacao', 'codproduto'=>'negocio_codproduto']) !!}
                                         </div>
-
                                     </div>
                                 </div>
                                 {!! Form::hidden('negocio_codproduto', $model->codproduto, ['id'=>'negocio_codproduto']) !!}
@@ -156,8 +164,8 @@
                         </div>
                         <br>
                         <div id="div-negocios" class="table-responsive">
-                            <a class='btn btn-secondary btn-sm' href='#collapseNegocios' data-toggle='collapse' aria-expanded='false' aria-controls='collapseNegocios'><i class='fa fa-search'></i></a>
-                            @include('layouts.includes.datatable.html', ['id' => 'negocios', 'colunas' => ['URL', 'Negócio', 'Lançamento', 'Pessoa', 'Operação', 'Filial', 'Variação', 'Barras', 'Valor', 'UND', 'QTD']])
+                            <a class='btn btn-secondary' href='#collapseNegocios' data-toggle='collapse' aria-expanded='false' aria-controls='collapseNegocios'><i class='fa fa-search'></i></a>
+                            @include('layouts.includes.datatable.html', ['id' => 'negocios', 'colunas' => ['URL', 'Negócio', 'Lançamento', 'Pessoa', 'Operação', 'Filial', 'Variação', 'Valor', 'QTD']])
                             <div class="clearfix"></div>
                         </div>
                     </div>
@@ -166,30 +174,41 @@
                             <div class='well well-sm'>
                                 {!! Form::model(Request::session()->get('MGLara.Http.Controllers.NotaFiscalProdutoBarraController.filtros'), ['route' => ['produto.show', 'produto'=> $model->codproduto], 'class' => 'form-horizontal', 'method' => 'GET', 'id' => 'produto-notasfiscais-search', 'role' => 'search', 'autocomplete' => 'off'])!!}
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             {!! Form::label('notasfiscais_lancamento_de', 'De') !!}
                                             {!! Form::date('notasfiscais_lancamento_de', null, ['class' => 'form-control', 'id' => 'notasfiscais_lancamento_de', 'placeholder' => 'De']) !!}
                                         </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            {!! Form::label('notasfiscais_lancamento_ate', 'Até') !!}
+                                            {!! Form::date('notasfiscais_lancamento_ate', null, ['class' => 'form-control', 'id' => 'notasfiscais_lancamento_ate', 'placeholder' => 'Até']) !!}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             {!! Form::label('notasfiscais_codfilial', 'Filial') !!}
                                             {!! Form::select2Filial('notasfiscais_codfilial', null, ['style'=>'width:100%', 'id'=>'notasfiscais_codfilial']) !!}
                                         </div>
-
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            {!! Form::label('notasfiscais_codpessoa', 'Pessoa') !!}
+                                            {!! Form::select2Pessoa('notasfiscais_codpessoa', null, ['class' => 'form-control','id'=>'notasfiscais_codpessoa', 'style'=>'width:100%', 'placeholder' => 'Pessoa', 'ativo' => 9]) !!}
+                                        </div>
+                                    </div>                                    
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             {!! Form::label('notasfiscais_codnaturezaoperacao', 'Natureza de Operação') !!}
                                             {!! Form::select2NaturezaOperacao('notasfiscais_codnaturezaoperacao', null, ['style'=>'width:100%', 'id' => 'notasfiscais_codnaturezaoperacao']) !!}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="form-group">
-                                            {!! Form::label('notasfiscais_lancamento_ate', 'Até') !!}
-                                            {!! Form::date('notasfiscais_lancamento_ate', null, ['class' => 'form-control', 'id' => 'notasfiscais_lancamento_ate', 'placeholder' => 'Até']) !!}
-                                        </div>
-                                        <div class="form-group">
-                                            {!! Form::label('notasfiscais_codpessoa', 'Pessoa') !!}
-                                            {!! Form::select2Pessoa('notasfiscais_codpessoa', null, ['class' => 'form-control','id'=>'notasfiscais_codpessoa', 'style'=>'width:100%', 'placeholder' => 'Pessoa', 'ativo' => 9]) !!}
-                                        </div>
                                         <div class="form-group">
                                             {!! Form::label('notasfiscais_codnaturezaoperacao', 'Variação') !!}
                                             {!! Form::select2ProdutoVariacao('notasfiscais_codprodutovariacao', null, ['style'=>'width:100%', 'id' => 'notasfiscais_codprodutovariacao', 'codproduto'=>'notasfiscais_codproduto']) !!}
@@ -203,8 +222,8 @@
                         </div>
                         <br>
                         <div id="div-notasfiscais" class="table-responsive">
-                            <a class='btn btn-secondary btn-sm' href='#filtro-notasfiscais' data-toggle='collapse' aria-expanded='false' aria-controls='filtro-notasfiscais'><i class='fa fa-search'></i></a>
-                            @include('layouts.includes.datatable.html', ['id' => 'nfes', 'colunas' => ['URL', 'Nota', 'Lançamento', 'Pessoa', 'Operação', 'Filial', 'Variação', 'Barras', 'Valor', 'UND', 'QTD']])
+                            <a class='btn btn-secondary' href='#filtro-notasfiscais' data-toggle='collapse' aria-expanded='false' aria-controls='filtro-notasfiscais'><i class='fa fa-search'></i></a>
+                            @include('layouts.includes.datatable.html', ['id' => 'notas', 'colunas' => ['URL', 'Nota', 'Lançamento', 'Pessoa', 'Operação', 'Filial', 'Variação', 'Valor', 'QTD']])
                             <div class="clearfix"></div>                    
                         </div>
                     </div>
@@ -325,7 +344,7 @@ function mostraListagemNegocios()
 
 function mostraListagemNotasFiscais()
 {
-    var datable_nfes = $('#nfes').DataTable({
+    var datable_notas = $('#notas').DataTable({
         dom: 'rtpi',
         pageLength: 10,
         language: {
@@ -363,34 +382,34 @@ function mostraListagemNotasFiscais()
             }
         ],
         initComplete: function(settings, json) {
-            datable_nfes.buttons().container().appendTo('#nfes_wrapper .col-md-12:eq(0)');
-            $('#nfes_paginate, #nfes_info').addClass('col-md-12');
+            datable_notas.buttons().container().appendTo('#notas_wrapper .col-md-12:eq(0)');
+            $('#notas_paginate, #notas_info').addClass('col-md-12');
             $('ul.pagination').addClass('pull-left');
         }
     });
 
     $('#notasfiscais_lancamento_de').change(function() {
-        datable_nfes.ajax.reload();
+        datable_notas.ajax.reload();
     });
     
     $('#notasfiscais_lancamento_ate').change(function() {
-        datable_nfes.ajax.reload();
+        datable_notas.ajax.reload();
     });
     
     $('#notasfiscais_codfilial').change(function() {
-        datable_nfes.ajax.reload();
+        datable_notas.ajax.reload();
     });
     
     $('#notasfiscais_codnaturezaoperacao').change(function() {
-        datable_nfes.ajax.reload();
+        datable_notas.ajax.reload();
     });
     
     $('#notasfiscais_codprodutovariacao').change(function() {
-        datable_nfes.ajax.reload();
+        datable_notas.ajax.reload();
     });
     
     $('#notasfiscais_codpessoa').change(function() {
-        datable_nfes.ajax.reload();
+        datable_notas.ajax.reload();
     });
 }
 

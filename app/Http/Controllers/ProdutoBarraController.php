@@ -165,13 +165,33 @@ class ProdutoBarraController extends Controller
      */
     public function store(Request $request)
     {
-        parent::store($request);
+        // busca dados do formulario
+        $data = $request->all();
+        
+        // valida dados
+        if (!$this->repository->validate($data)) {
+            $this->throwValidationException($request, $this->repository->validator);
+        }
+
+        // preenche dados 
+        $this->repository->new($data);
+        if ($this->repository->model->codprodutoembalagem == 0) {
+            $this->repository->model->codprodutoembalagem = null;
+        }
+        
+        // autoriza
+        $this->repository->authorize('create');
+        
+        // cria
+        if (!$this->repository->create()) {
+            abort(500);
+        }        
         
         // Mensagem de registro criado
-        Session::flash('flash_create', 'Produto Barra criado!');
+        Session::flash('flash_create', 'Código de Barras criado!');
         
         // redireciona para o view
-        return redirect("produto-barra/{$this->repository->model->codprodutobarra}");
+        return redirect("produto/{$this->repository->model->produto->codproduto}");
     }
 
     /**

@@ -133,10 +133,16 @@ class FamiliaProdutoController extends Controller
         $this->bc->addItem($this->repository->model->SecaoProduto->secaoproduto, url('secao-produto', $this->repository->model->codsecaoproduto));
         $this->bc->addItem($this->repository->model->familiaproduto);
         $this->bc->header = $this->repository->model->familiaproduto;
-        
+
         if (!$filtro = $this->getFiltro()) {
             $filtro = [
-                'inativo' => 1,
+                'filtros' => [
+                    'inativo' => 1,
+                ],
+                'order' => [[
+                    'column' => 3, 
+                    'dir' => 'ASC'
+                ]],
             ];
         }
         

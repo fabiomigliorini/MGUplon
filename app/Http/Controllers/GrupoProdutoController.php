@@ -140,7 +140,13 @@ class GrupoProdutoController extends Controller
         
         if (!$filtro = $this->getFiltro()) {
             $filtro = [
-                'inativo' => 1,
+                'filtros' => [
+                    'inativo' => 1,
+                ],
+                'order' => [[
+                    'column' => 3, 
+                    'dir' => 'ASC'
+                ]],
             ];
         }
 

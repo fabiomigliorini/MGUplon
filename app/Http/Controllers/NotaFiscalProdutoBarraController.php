@@ -122,9 +122,9 @@ class NotaFiscalProdutoBarraController extends Controller
                 $reg->NotaFiscal->NaturezaOperacao->naturezaoperacao,
                 $reg->NotaFiscal->Filial->filial,
                 $reg->ProdutoBarra->ProdutoVariacao->variacao,
-                $reg->ProdutoBarra->barras,
+                //$reg->ProdutoBarra->barras,
                 formataNumero($valor, 2),
-                $reg->ProdutoBarra->Produto->UnidadeMedida->sigla,
+                //$reg->ProdutoBarra->Produto->UnidadeMedida->sigla,
                 formataNumero($quantidade, 3)
             ];
         }
