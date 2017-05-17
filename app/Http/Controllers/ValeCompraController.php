@@ -209,7 +209,8 @@ class ValeCompraController extends Controller
             $this->throwValidationException($request, $this->repository->validator);
         }
         
-        if ($model->save()) {
+        if ($model->create()) {
+            dd('aqui chega!');
             foreach ($dados['item_codprodutobarra'] as $key => $codprodutobarra) {
                 if (empty($codprodutobarra)) {
                     continue;

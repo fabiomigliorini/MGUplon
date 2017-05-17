@@ -5,50 +5,66 @@ $favorecidos = $modelos->unique(function ($item) {
     return $item['codpessoafavorecido'].$item['fantasia'];
 });
 ?>
-<div class='row'>
-  <div class='col-md-3'>
-    <ul class="nav nav-pills nav-stacked">
-      @foreach ($favorecidos as $i => $fav)
-        <li class='{{ $i==0?'active':'' }}'><a data-toggle="tab" href="#menu{{$fav->codpessoafavorecido}}">{{ $fav->fantasia }}</a></li>
-      @endforeach
-    </ul>
-  </div>
-  <div class='col-md-9'>
-    <div class="tab-content">
-      @foreach ($favorecidos as $i => $fav)
-        <div id="menu{{$fav->codpessoafavorecido}}" class="tab-pane fade {{ $i==0?'active in':'' }}">
-          <ul class='list-group list-group-hover list-group-striped'>
-            @foreach ($modelos->where('codpessoafavorecido', $fav->codpessoafavorecido) as $row)
-              <li class='list-group-item clearfix'>
-                <a href='{{ url("vale-compra/create?codvalecompramodelo=$row->codvalecompramodelo") }}'>
-                    <div class="col-md-1 small text-muted">
-                        {{ formataCodigo($row->codvalecompramodelo) }}
-                    </div>                            
-                    <div class="col-md-6">
-                        {{ $row->modelo }}
-                      <div class="pull-right">
-                        {{ formataNumero($row->total) }}
-                      </div>                            
-                    </div>                            
-                    <div class="col-md-2">
-                        {{ $row->ano }} / {{ $row->turma }}
-                    </div>                            
-                    <div class="col-md-3 small text-muted">
-                      {!! nl2br($row->observacoes) !!}
-                    </div>                            
-                  </a>
-              </li>
-            @endforeach
-          </ul>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card ">
+            <h4 class="card-header">Modelos</h4>
+            <div class="card-block">
+                <div class="col-md-4">
+                    <ul class="nav nav-tabs nav-pills tabs-left" role="tablist">
+                        @foreach ($favorecidos as $i => $fav)
+                        <li class="nav-item">
+                            <a class="nav-link {{ $i==0?'active':'' }}" data-toggle="tab" href="#menu{{ $fav->codpessoafavorecido }}" role="tab">{{ $fav->fantasia }}</a>
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+                <div class="col-md-8">
+                    <div class="tab-content">
+                        @foreach ($favorecidos as $i => $fav)
+                        <div class="tab-pane {{ $i==0?'active':'' }}" id="menu{{ $fav->codpessoafavorecido }}" role="tabpanel">
+                            <table class="table table-striped table-hover table-sm">
+                                <thead>
+                                    <tr>
+                                      <th>#</th>
+                                      <th>Modelo</th>
+                                      <th>Total</th>
+                                      <th>Ano/Turma</th>
+                                      <th>Observações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>  
+                                    @foreach ($modelos->where('codpessoafavorecido', $fav->codpessoafavorecido) as $row)
+                                    <tr> 
+                                        <td><a href='{{ url("vale-compra/create?codvalecompramodelo=$row->codvalecompramodelo") }}'>{{ formataCodigo($row->codvalecompramodelo) }}</a></td> 
+                                        <td><a href='{{ url("vale-compra/create?codvalecompramodelo=$row->codvalecompramodelo") }}'>{{ $row->modelo }}</a></td> 
+                                        <td>{{ formataNumero($row->total) }}</td> 
+                                        <td>{{ $row->ano }} / {{ $row->turma }}</td> 
+                                        <td>{!! nl2br($row->observacoes) !!}</td> 
+                                    </tr>
+                                    @endforeach
+                                </tbody> 
+                            </table>                            
+                        </div>
+                        @endforeach  
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
         </div>
-      @endforeach
     </div>
-  </div>
 </div>
 
-
-
 @section('inscript')
+<link href="{{ URL::asset('public/assets/plugins/bootstrap-vertical-tabs/tabs.css') }}" rel="stylesheet">
+<style type="text/css">
+    .tabs-left {
+        border-right: 0;
+    }
+    .tabs-left>li>a {
+        border-radius:4px !important;
+    }    
+</style>
 <script type="text/javascript">
 $(document).ready(function() {
 });
