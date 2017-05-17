@@ -157,7 +157,7 @@
                         <br>
                         <div id="div-negocios" class="table-responsive">
                             <a class='btn btn-secondary btn-sm' href='#collapseNegocios' data-toggle='collapse' aria-expanded='false' aria-controls='collapseNegocios'><i class='fa fa-search'></i></a>
-                            @include('layouts.includes.datatable.html', ['id' => 'negocios', 'colunas' => ['URL', 'Inativo Desde', 'Negócio', 'Lançamento', 'Pessoa', 'Operação', 'Filial', 'Variação', 'Barras', 'Valor', 'UND', 'QTD']])
+                            @include('layouts.includes.datatable.html', ['id' => 'negocios', 'colunas' => ['URL', 'Negócio', 'Lançamento', 'Pessoa', 'Operação', 'Filial', 'Variação', 'Barras', 'Valor', 'UND', 'QTD']])
                             <div class="clearfix"></div>
                         </div>
                     </div>
@@ -204,7 +204,7 @@
                         <br>
                         <div id="div-notasfiscais" class="table-responsive">
                             <a class='btn btn-secondary btn-sm' href='#filtro-notasfiscais' data-toggle='collapse' aria-expanded='false' aria-controls='filtro-notasfiscais'><i class='fa fa-search'></i></a>
-                            @include('layouts.includes.datatable.html', ['id' => 'nfes', 'colunas' => ['URL', 'Inativo Desde', 'Nota', 'Lançamento', 'Pessoa', 'Operação', 'Filial', 'Variação', 'Barras', 'Valor', 'UND', 'QTD']])
+                            @include('layouts.includes.datatable.html', ['id' => 'nfes', 'colunas' => ['URL', 'Nota', 'Lançamento', 'Pessoa', 'Operação', 'Filial', 'Variação', 'Barras', 'Valor', 'UND', 'QTD']])
                             <div class="clearfix"></div>                    
                         </div>
                     </div>
@@ -247,7 +247,7 @@
     .nav-tabs {
         margin-bottom: 1rem !important;
     }
-        
+
 </style>
 <link href="{{ URL::asset('public/assets/css/bootstrap-alpha6-carousel.css') }}" rel="stylesheet" type="text/css"/>
 @include('layouts.includes.datatable.assets')
@@ -263,7 +263,7 @@ function mostraListagemNegocios()
         processing: true,
         serverSide: true,
         order: [
-            [ 3, 'DESC'],
+            [ 2, 'DESC'],
         ],        
         ajax: {
             url: 'http://localhost/MGUplon/negocio-produto-barra/datatable',
@@ -280,26 +280,21 @@ function mostraListagemNegocios()
         },
         lengthChange: false,
         columnDefs: [
-                        {
-                targets: [0, 1],
+            {
+                targets: [0],
                 visible: false,
             },
             {
                 render: function ( data, type, row ) {
                     return '<a href="' + row[0] + '">' + data +'</a>';
                 },
-                targets: 2
+                targets: 1
             }
         ],
         initComplete: function(settings, json) {
             datable_negocios.buttons().container().appendTo('#negocios_wrapper .col-md-12:eq(0)');
             $('#negocios_paginate, #negocios_info').addClass('col-md-12');
             $('ul.pagination').addClass('pull-left');
-        },
-        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            if (aData[1] != null) {
-                $(nRow).addClass('table-danger');
-            }
         }
     });
 
@@ -339,7 +334,7 @@ function mostraListagemNotasFiscais()
         processing: true,
         serverSide: true,
         order: [
-            [ 3, 'DESC'],
+            [ 2, 'DESC'],
         ],        
         ajax: {
             url: 'http://localhost/MGUplon/nota-fiscal-produto-barra/datatable',
@@ -356,26 +351,21 @@ function mostraListagemNotasFiscais()
         },
         lengthChange: false,
         columnDefs: [
-                        {
-                targets: [0, 1],
+            {
+                targets: [0],
                 visible: false,
             },
             {
                 render: function ( data, type, row ) {
                     return '<a href="' + row[0] + '">' + data +'</a>';
                 },
-                targets: 2
+                targets: 1
             }
         ],
         initComplete: function(settings, json) {
             datable_nfes.buttons().container().appendTo('#nfes_wrapper .col-md-12:eq(0)');
             $('#nfes_paginate, #nfes_info').addClass('col-md-12');
             $('ul.pagination').addClass('pull-left');
-        },
-        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-            if (aData[1] != null) {
-                $(nRow).addClass('table-danger');
-            }
         }
     });
 

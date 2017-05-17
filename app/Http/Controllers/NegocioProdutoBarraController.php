@@ -76,18 +76,13 @@ class NegocioProdutoBarraController extends Controller
         ]);
         
         // Ordenacao
-        $columns[0] = 'codnegocio';
-        $columns[1] = 'inativo';
-        $columns[2] = 'codnegocio';
-        $columns[3] = 'tblnegocio.lancamento';
-        $columns[4] = 'codpessoa';
-        $columns[5] = 'codoperacao';
-        $columns[6] = 'codfilial';
-        $columns[7] = 'variacao';
-        $columns[8] = 'barras';
-        $columns[9] = 'valor';
-        $columns[10] = 'unidademedida';
-        $columns[11] = 'quantidade';
+        $columns[0] = 'tblnegocio.codnegocio';
+        $columns[1] = 'tblnegocio.codnegocio';
+        $columns[2] = 'tblnegocio.lancamento';
+        $columns[3] = 'codpessoa';
+        $columns[4] = 'codoperacao';
+        $columns[5] = 'codfilial';
+        $columns[6] = 'tblprodutovariacao.codprodutovariacao';
 
         $sort = [];
         if (!empty($request['order'])) {
@@ -119,7 +114,6 @@ class NegocioProdutoBarraController extends Controller
             
             $data[] = [
                 url('negocio', $reg->codnegocio),
-                formataData($reg->inativo, 'C'),
                 formataCodigo($reg->codnegocio),
                 formataData($reg->Negocio->lancamento),
                 $reg->Negocio->Pessoa->fantasia,

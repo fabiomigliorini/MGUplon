@@ -290,22 +290,7 @@ class NotaFiscalProdutoBarraRepository extends MGRepository {
 
 
         $count = $qry->count();
- 
-        /*
-        switch ($filters['inativo']) {
-            case 2: //Inativos
-                $qry = $qry->inativo();
-                break;
 
-            case 9: //Todos
-                break;
-
-            case 1: //Ativos
-            default:
-                $qry = $qry->ativo();
-                break;
-        }
-        */
         
         // Paginacao
         if (!empty($start)) {

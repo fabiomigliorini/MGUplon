@@ -44,10 +44,10 @@ class NotaFiscalProdutoBarraController extends Controller
         if (!$filtro = $this->getFiltro()) {
             $filtro = [
                 'filtros' => [
-                    'inativo' => 1,
+                    //'inativo' => 1,
                 ],
                 'order' => [[
-                    'column' => 3,
+                    'column' => 1,
                     'dir' => 'DESC',
                 ]],
             ];
@@ -76,18 +76,16 @@ class NotaFiscalProdutoBarraController extends Controller
         ]);
         
         // Ordenacao
-        $columns[0] = 'codnotafiscalprodutobarra';
-        $columns[1] = 'inativo';
-        $columns[2] = 'codnotafiscalprodutobarra';
-        $columns[3] = 'tblnotafiscal.saida';
-        $columns[4] = 'codnotafiscal';
-        $columns[5] = 'codprodutobarra';
-        $columns[6] = 'codcfop';
-        $columns[7] = 'descricaoalternativa';
-        $columns[8] = 'quantidade';
-        $columns[9] = 'valorunitario';
-        $columns[10] = 'valortotal';
-
+        $columns[0] = 'tblnotafiscalcodnotafiscal';
+        $columns[1] = 'tblnotafiscal.codnotafiscal';
+        $columns[2] = 'tblnotafiscal.saida';
+        $columns[3] = 'codpessoa';
+        $columns[4] = 'codcfop';
+        $columns[5] = 'codfilial';
+        $columns[6] = 'tblprodutovariacao.codprodutovariacao';
+        
+        //$columns[7] = 'valorunitario';
+        //$columns[8] = 'valortotal';
 
         $sort = [];
         if (!empty($request['order'])) {
@@ -118,7 +116,6 @@ class NotaFiscalProdutoBarraController extends Controller
             }            
             $data[] = [
                 url('nota-fiscal', $reg->codnotafiscal),
-                formataData($reg->inativo, 'C'),
                 formataNumeroNota($reg->NotaFiscal->emitida, $reg->NotaFiscal->serie, $reg->NotaFiscal->numero, $reg->NotaFiscal->modelo),
                 formataData($reg->NotaFiscal->saida),
                 $reg->NotaFiscal->Pessoa->fantasia,
