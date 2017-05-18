@@ -371,6 +371,94 @@ class ProdutoController extends Controller
         }        
 
     }
+    
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param    int  $id
+     * @return  \Illuminate\Http\Response
+     */
+    public function site($id)
+    {
+        // busca regstro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('site');
+        
+        // breadcrumb
+        $this->bc->addItem($this->repository->model->codproduto, url('produto', $this->repository->model->codproduto));
+        $this->bc->header = $this->repository->model->produto;
+        $this->bc->addItem('Site');
+        $this->bc->addItem('Alterar');
+        
+        // retorna formulario edit
+        return view('produto.site', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+    }
+
+    
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function siteUpdate(Request $request, $id)
+    {
+        // Busca registro para autorizar
+        $this->repository->findOrFail($id);
+
+        // Valida dados
+        $data = $request->all();
+        
+        if(!isset($data['importado'])) {
+            $data['importado'] = FALSE;
+        }
+        
+        if(!isset($data['site'])) {
+            $data['site'] = FALSE;
+        }
+        
+        // autorizacao
+        $this->repository->fill($data);
+        $this->repository->authorize('site');
+
+        DB::beginTransaction();
+        
+        if (!$this->repository->validate($data, $id)) {
+            $this->throwValidationException($request, $this->repository->validator);
+        }
+        
+        try {
+            $preco = $this->repository->model['original']['preco'];
+            
+            if (!$this->repository->save()){
+                throw new Exception ('Erro ao alterar Produto!');
+            }
+            
+            if($preco != $this->repository->model->preco) {
+                $this->produtoHistoricoPrecoRepository->new([
+                    'codproduto'  => $this->repository->model->codproduto,
+                    'precoantigo' => $preco,
+                    'preconovo'   => $this->repository->model->preco
+                ]);
+                
+                if (!$this->produtoHistoricoPrecoRepository->create()){
+                    throw new Exception ('Erro ao gravar Historico!');
+                }
+            }
+            
+            DB::commit();
+            Session::flash('flash_update', 'Produto alterado!');
+            return redirect("produto/{$this->repository->model->codproduto}"); 
+        } catch (Exception $ex) {
+            DB::rollBack();
+            $this->throwValidationException($request, $this->repository->validator);
+        }        
+
+    }
+    
 
     public function populaSecaoProduto(Request $request) {
         $this->repository->findOrFail($request->get('id'));

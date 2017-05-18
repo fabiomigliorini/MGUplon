@@ -17,4 +17,7 @@ class ProdutoPolicy extends MGPolicy
         return $user->can('ProdutoPolicy.unificarBarras');
     }
 
+    public function site(Usuario $user) {
+        return $user->can('ProdutoPolicy.site');
+    }
 }

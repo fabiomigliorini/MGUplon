@@ -197,10 +197,14 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('meta', 'MetaController');
 
     /* Produto */
+    Route::patch('produto/{id}/site', 'ProdutoController@siteUpdate');
+    Route::get('produto/{id}/site', 'ProdutoController@site');
+    
     Route::get('produto/typeahead', 'ProdutoController@typeahead');
     Route::get('produto/sincroniza-produto-open-cart', 'ProdutoController@sincronizaProdutoOpenCart');
-    Route::patch('produto/{id}/transferir-variacao-salvar', 'ProdutoController@transferirVariacaoSalvar');
+    Route::patch('produto/{id}/transferir-variacao', 'ProdutoController@transferirVariacaoStore');
     Route::get('produto/{id}/transferir-variacao', 'ProdutoController@transferirVariacao');
+    
     Route::resource('produto', 'ProdutoController');
     Route::get('produto/{id}/unificar-barras', 'ProdutoController@unificarBarras');
     Route::post('produto/{id}/unificar-barras', 'ProdutoController@unificarBarrasSalvar');
