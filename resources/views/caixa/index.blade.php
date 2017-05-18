@@ -38,7 +38,7 @@
     </div>
 </div>
 
-<div class="card">
+<div class="card" id="items">
   <h4 class="card-header">Totais</h4>
     <div class="card-block">
         <table class='table table-bordered table-hover table-striped table-condensed' id="items">
@@ -173,8 +173,7 @@
 <script type="text/javascript">
 function atualizaFiltro()
 {
-    scroll();
-    var frmValues = $('#caixa-search').serialize();
+    var frmValues = $('#form-search').serialize();
     $.ajax({
         type: 'GET',
         url: baseUrl + '/caixa',
@@ -182,49 +181,21 @@ function atualizaFiltro()
         dataType: 'html'
     })
     .done(function (data) {
-        console.log('Entrou2');
         $('#items').html(jQuery(data).find('#items').html());
     })
     .fail(function () {
         console.log('Erro no filtro');
     });
-
-    $('#items').infinitescroll('update', {
-        state: {
-            currPage: 1,
-            isDestroyed: false,
-            isDone: false
-        },
-        path: ['?page=', '&'+frmValues]
-    });
-}
-
-function scroll()
-{
-    var loading_options = {
-        finishedMsg: "<div class='end-msg'>Fim dos registros</div>",
-        msgText: "<div class='center'>Carregando mais itens...</div>",
-        img: baseUrl + '/public/img/ajax-loader.gif'
-    };
-
-    $('#items').infinitescroll({
-        loading : loading_options,
-        navSelector : "#registros .pagination",
-        nextSelector : "#registros .pagination li.active + li a",
-        itemSelector : "#items div.list-group-item",
-    });
 }
 
 $(document).ready(function() {
-    scroll();
-    $("#caixa-search").on("change", function (event) {
-        $('#items').infinitescroll('destroy');
+    $("#form-search").on("change", function (event) {
         atualizaFiltro();
     }).on('submit', function (event){
         event.preventDefault();
-        $('#items').infinitescroll('destroy');
         atualizaFiltro();
     });
+    //...
 });
 </script>
 @endsection
