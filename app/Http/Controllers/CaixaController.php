@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use MGLara\Http\Controllers\Controller;
 use MGLara\Library\Breadcrumb\Breadcrumb;
 
-
 class CaixaController extends Controller
 {
     public function __construct() {
@@ -30,16 +29,24 @@ class CaixaController extends Controller
         $finalpadrao->hour = 23;
         $finalpadrao->minute = 59;
         $finalpadrao->second = 59;
-
-        // Filtro da listagem
-        if (!$filtro = $this->getFiltro()) {
-            $filtro = [
+        $key = str_replace('\\', ".", get_class($this));
+        
+        if (!$request->session()->has($key)) {
+            $filtros = [
                 'ativo' => 1,
                 'codusuario' => Auth::user()->codusuario,
-                'datainicial' => $inicialpadrao,
-                'datafinal' => $finalpadrao,
+                'datainicial' => $inicialpadrao->format('Y-m-d\TH:i:s'),
+                'datafinal' => $finalpadrao->format('Y-m-d\TH:i:s'),
             ];
-        }        
+            
+            $request->session()->put($key, $filtros);
+        } 
+        
+        if(!empty($request->all())){
+            $request->session()->put($key, $request->all());
+        }
+        
+        $filtro = $request->session()->get($key);
         
         
         if (empty($filtro['codusuario'])) {
@@ -85,7 +92,7 @@ class CaixaController extends Controller
             left join tblnaturezaoperacao no on (no.codnaturezaoperacao = n.codnaturezaoperacao)
             left join tbloperacao o on (o.codoperacao = n.codoperacao)
             where n.codusuario  = {$filtro['codusuario']}
-            and n.lancamento between '{$filtro['datainicial']->toDateTimeString()}' and '{$filtro['datafinal']->toDateTimeString()}'
+            and n.lancamento between '{$filtro['datainicial']}' and '{$filtro['datafinal']}'
             $ativo
             group by
               ns.negociostatus
@@ -131,7 +138,7 @@ class CaixaController extends Controller
                 group by vcfp.codvalecompra            
             ) prazo on (prazo.codvalecompra = vc.codvalecompra)
             where vc.codusuariocriacao = {$filtro['codusuario']}
-            and vc.criacao between '{$filtro['datainicial']->toDateTimeString()}' and '{$filtro['datafinal']->toDateTimeString()}'
+            and vc.criacao between '{$filtro['datainicial']}' and '{$filtro['datafinal']}'
             $ativo
             group by case when inativo is null then 'Ativo' else 'Inativo' end
             order by case when inativo is null then 'Ativo' else 'Inativo' end ASC
@@ -161,17 +168,13 @@ class CaixaController extends Controller
                 , count(codliquidacaotitulo) as quantidade
             from tblliquidacaotitulo lt
             where lt.codusuariocriacao = {$filtro['codusuario']}
-            and lt.criacao between '{$filtro['datainicial']->toDateTimeString()}' and '{$filtro['datafinal']->toDateTimeString()}'
+            and lt.criacao between '{$filtro['datainicial']}' and '{$filtro['datafinal']}'
             $ativo
             group by case when estornado is null then 'Ativa' else 'Estornada' end
             ";
 
         $dados['liquidacoes'] = DB::select($sql);
-
-        $filtro['datainicial'] = $filtro['datainicial']->format('Y-m-d\TH:i:s');
-        $filtro['datafinal'] = $filtro['datafinal']->format('Y-m-d\TH:i:s');
-
+        
         return view('caixa.index', ['bc'=>$this->bc, 'dados'=>$dados, 'filtro'=>$filtro]);
     }
-
 }
