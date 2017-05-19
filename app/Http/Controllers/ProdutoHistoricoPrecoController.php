@@ -37,11 +37,9 @@ class ProdutoHistoricoPrecoController extends Controller
         // Filtro da listagem
         if (!$filtro = $this->getFiltro()) {
             $filtro = [
-                'filtros' => [
-                    'inativo' => 1,
-                ],
+                'filtros' => [],
                 'order' => [[
-                    'column' => 3,
+                    'column' => 11,
                     'dir' => 'DESC'
                 ]],
             ];
@@ -70,18 +68,17 @@ class ProdutoHistoricoPrecoController extends Controller
 
         // Ordenacao
         $columns[0] = 'codprodutohistoricopreco';
-        $columns[1] = 'inativo';
-        $columns[2] = 'codprodutohistoricopreco';
-        $columns[3] = 'codproduto';
-        $columns[4] = 'codunidademedida';
+        $columns[1] = 'codprodutohistoricopreco';
+        $columns[2] = 'codproduto';
+        $columns[3] = 'produto';
+        $columns[4] = 'codprodutoembalagem';
         $columns[5] = 'referencia';
         $columns[6] = 'codmarca';
-        $columns[7] = 'codprodutoembalagem';
-        $columns[8] = 'preco';
+        $columns[7] = 'tblproduto.preco';
+        $columns[8] = 'precoantigo';
         $columns[9] = 'preconovo';
-        $columns[10] = 'precoantigo';
-        $columns[11] = 'codusuariocriacao';
-        $columns[12] = 'criacao';
+        $columns[10] = 'codusuariocriacao';
+        $columns[11] = 'tblprodutohistoricopreco.criacao'; // ok
 
         $sort = [];
         if (!empty($request['order'])) {
@@ -106,12 +103,12 @@ class ProdutoHistoricoPrecoController extends Controller
             if(isset($row->codprodutoembalagem)){
                 $embalagem = $reg->ProdutoEmbalagem->UnidadeMedida->sigla  .'/'. formataNumero($row->ProdutoEmbalagem->quantidade, 0);
             }else{
-                $embalagem = '';//$reg->Produto->UnidadeMedida->sigla;
+                $embalagem = $reg->Produto->UnidadeMedida->sigla;
             }
             $data[] = [
-                url('produto-historico-preco', $reg->codprodutohistoricopreco),
-                formataData($reg->inativo, 'C'),
+                url('produto', $reg->Produto->codproduto),
                 formataCodigo($reg->codprodutohistoricopreco),
+                formataCodigo($reg->Produto->codproduto),
                 $reg->Produto->produto,
                 $embalagem,
                 $reg->Produto->referencia,

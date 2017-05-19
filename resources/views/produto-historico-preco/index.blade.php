@@ -69,7 +69,7 @@
 
 <div class='card'>
     <div class='card-block table-responsive'>
-        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Produto', 'Embalagem', 'Ref', 'Marca', 'Preço','Antigo', 'Novo', 'Usuário', 'Data' ]])
+        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL','',  '#', 'Produto', 'Embalagem', 'Ref', 'Marca', 'Preço','Antigo', 'Novo', 'Usuário', 'Data' ]])
         <div class='clearfix'></div>
     </div>
 </div>
@@ -83,8 +83,12 @@
 
     @include('layouts.includes.datatable.assets')
 
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('produto-historico-preco/datatable'), 'order' => $filtro['order'], 'filtros' => ['codproduto'=>'codproduto', 'produto', 'referencia', 'codmarca', 'codusuario', 'inativo', 'alteracao_de', 'alteracao_ate', ] ])
-
+    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('produto-historico-preco/datatable'), 'order' => $filtro['order'], 'filtros' => ['codproduto'=>'codproduto', 'produto', 'referencia', 'codmarca', 'codusuario', 'alteracao_de', 'alteracao_ate', ] ])
+    <style type="text/css">
+        .table-danger, .table-danger > th, .table-danger > td {
+            background-color: #fff !important;
+        }
+    </style>
     <script type="text/javascript">
         $(document).ready(function () {
         });

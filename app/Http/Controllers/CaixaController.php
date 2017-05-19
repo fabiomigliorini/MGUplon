@@ -32,6 +32,7 @@ class CaixaController extends Controller
         $key = str_replace('\\', ".", get_class($this));
         
         if (!$request->session()->has($key)) {
+            
             $filtros = [
                 'ativo' => 1,
                 'codusuario' => Auth::user()->codusuario,
@@ -47,7 +48,6 @@ class CaixaController extends Controller
         }
         
         $filtro = $request->session()->get($key);
-        
         
         if (empty($filtro['codusuario'])) {
             abort(500, 'Usuário não informado!');

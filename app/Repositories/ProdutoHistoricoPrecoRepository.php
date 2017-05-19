@@ -114,6 +114,7 @@ class ProdutoHistoricoPrecoRepository extends MGRepository {
          
         $count = $qry->count();
     
+        /*
         switch ($filters['inativo']) {
             case 2: //Inativos
                 $qry = $qry->inativo();
@@ -127,6 +128,7 @@ class ProdutoHistoricoPrecoRepository extends MGRepository {
                 $qry = $qry->ativo();
                 break;
         }
+        */
         
         // Paginacao
         if (!empty($start)) {
