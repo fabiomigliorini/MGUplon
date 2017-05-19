@@ -26,6 +26,13 @@ namespace MGLara\Models;
  * @property  varchar(255)                   $observacoes                        
  * @property  bigint                         $codopencart                        
  * @property  bigint                         $codopencartvariacao                
+ * @property  numeric(7,4)                   $peso                               
+ * @property  numeric(8,2)                   $altura                             
+ * @property  numeric(8,2)                   $largura                            
+ * @property  numeric(8,2)                   $profundidade                       
+ * @property  boolean                        $vendesite                          NOT NULL DEFAULT false
+ * @property  varchar(200)                   $metakeywordsite                    
+ * @property  text                           $metadescriptionsite                
  *
  * Chaves Estrangeiras
  * @property  Cest                           $Cest
@@ -35,16 +42,14 @@ namespace MGLara\Models;
  * @property  TipoProduto                    $TipoProduto
  * @property  Tributacao                     $Tributacao
  * @property  UnidadeMedida                  $UnidadeMedida
- * @property  UsuarioAlteracao               $UsuarioAlteracao
- * @property  UsuarioCriacao                 $UsuarioCriacao
+ * @property  Usuario                        $UsuarioAlteracao
+ * @property  Usuario                        $UsuarioCriacao
  *
  * Tabelas Filhas
- * 
- * @property  EstoqueLocalProdutoVariacao[]  $EstoqueLocalProdutoVariacaoS
+ * @property  PranchetaProduto[]             $PranchetaProdutoS
  * @property  ProdutoImagem[]                $ProdutoImagemS
  * @property  ProdutoVariacao[]              $ProdutoVariacaoS
  * @property  ProdutoBarra[]                 $ProdutoBarraS
- * @property  ProdutoVariacao                $ProdutoVariacaoS
  * @property  ProdutoEmbalagem[]             $ProdutoEmbalagemS
  * @property  ProdutoHistoricoPreco[]        $ProdutoHistoricoPrecoS
  */
@@ -62,7 +67,7 @@ class Produto extends MGModel
         'preco',
         'importado',
         'codtributacao',
-         'codtipoproduto',
+        'codtipoproduto',
         'site',
         'descricaosite',
         'codncm',
@@ -70,6 +75,13 @@ class Produto extends MGModel
         'observacoes',
         'codopencart',
         'codopencartvariacao',
+        'peso',
+        'altura',
+        'largura',
+        'profundidade',
+        'vendesite',
+        'metakeywordsite',
+        'metadescriptionsite',
     ];
     protected $dates = [
         'inativo',
@@ -77,10 +89,7 @@ class Produto extends MGModel
         'criacao',
     ];
 
-    public function getPrecocAttribute()
-    {
-        return $this->preco;
-    }
+
     // Chaves Estrangeiras
     public function Cest()
     {
@@ -129,10 +138,15 @@ class Produto extends MGModel
 
 
     // Tabelas Filhas
+    public function PranchetaProdutoS()
+    {
+        return $this->hasMany(PranchetaProduto::class, 'codproduto', 'codproduto');
+    }
+
     public function ProdutoImagemS()
     {
         return $this->belongsToMany(Imagem::class, 'tblprodutoimagem', 'codproduto', 'codimagem');
-    }    
+    }
 
     public function ProdutoVariacaoS()
     {
@@ -153,4 +167,6 @@ class Produto extends MGModel
     {
         return $this->hasMany(ProdutoHistoricoPreco::class, 'codproduto', 'codproduto');
     }
+
+
 }

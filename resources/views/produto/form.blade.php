@@ -6,17 +6,6 @@ if(!empty($model->codsubgrupoproduto)){
 ?>
 <div class="row">
     <div class='col-md-5'>
-        <div class="row">
-            <fieldset class="form-group col-md-6">
-                {!! Form::label('codtipoproduto', 'Tipo') !!}
-                {!! Form::select2TipoProduto('codtipoproduto', null, ['required' => true,  'class'=> 'form-control', 'id' => 'codtipoproduto', 'style'=>'width:100%', 'placeholder'=>'Tipo']) !!}
-            </fieldset>
-            
-            <fieldset class="form-group col-md-6">
-                {!! Form::label('codmarca', 'Marca') !!}
-                {!! Form::select2Marca('codmarca', null, ['class' => 'form-control','id'=>'codmarca', 'style'=>'width:100%', 'required'=>true]) !!}    
-            </fieldset>
-        </div>
         <div class="row">  
             <fieldset class="form-group col-md-6">
                 {!! Form::label('codsecaoproduto', 'Seção') !!}
@@ -57,6 +46,17 @@ if(!empty($model->codsubgrupoproduto)){
     </div>
 
     <div class='col-md-7'>
+        <div class="row">
+            <fieldset class="form-group col-md-6">
+                {!! Form::label('codtipoproduto', 'Tipo') !!}
+                {!! Form::select2TipoProduto('codtipoproduto', null, ['required' => true,  'class'=> 'form-control', 'id' => 'codtipoproduto', 'style'=>'width:100%', 'placeholder'=>'Tipo']) !!}
+            </fieldset>
+            
+            <fieldset class="form-group col-md-6">
+                {!! Form::label('codmarca', 'Marca') !!}
+                {!! Form::select2Marca('codmarca', null, ['class' => 'form-control','id'=>'codmarca', 'style'=>'width:100%', 'required'=>true]) !!}    
+            </fieldset>
+        </div>
         <fieldset class="form-group">
             {!! Form::label('produto', 'Descrição') !!}
             <div id="produto-descricao">{!! Form::text('produto', null, ['class'=> 'typeahead form-control', 'id'=>'produto', 'data-provide'=>'typeahead', 'required'=>'true', 'autocomplete'=>'off']) !!}</div>
@@ -91,24 +91,11 @@ if(!empty($model->codsubgrupoproduto)){
             </div>
         </fieldset>
         
-        <fieldset class="form-group">
-            <div class="checkbox checkbox-primary">
-            {!! Form::checkbox('site', true, null, ['class'=> 'form-control', 'id'=>'site']) !!}
-            {!! Form::label('site', 'Disponível no Site') !!}
-            </div>
-        </fieldset>
-
-        <fieldset class="form-group">
-            {!! Form::label('descricaosite', 'Descrição Site') !!}
-            {!! Form::textarea('descricaosite', null, ['class'=> 'form-control', 'id'=>'descricaosite', 'rows'=>'4']) !!}
-        </fieldset>
     </div>
 </div>
-<hr>
 <fieldset class="form-group">
    {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
 </fieldset>
-<div class="clearfix"></div>
 
 
 @section('inscript')

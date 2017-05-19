@@ -13,13 +13,6 @@ namespace MGLara\Models;
  * @property  bigint                         $codusuarioalteracao                
  * @property  timestamp                      $criacao                            
  * @property  bigint                         $codusuariocriacao                  
- * @property  numeric(7,4)                   $peso                               
- * @property  numeric(8,2)                   $altura                             
- * @property  numeric(8,2)                   $largura                            
- * @property  numeric(8,2)                   $profundidade                       
- * @property  boolean                        $vendesite                          NOT NULL DEFAULT false
- * @property  varchar(1024)                  $descricaosite                      
- * @property  bigint                         $codopencart                        
  *
  * Chaves Estrangeiras
  * @property  Produto                        $Produto
@@ -37,18 +30,11 @@ class ProdutoEmbalagem extends MGModel
     protected $table = 'tblprodutoembalagem';
     protected $primaryKey = 'codprodutoembalagem';
     protected $fillable = [
-        'codproduto',
-        'codunidademedida',
-        'quantidade',
-        'preco',
-        'peso',
-        'altura',
-        'largura',
-        'profundidade',
-        'vendesite',
-        'descricaosite',
-        'codopencart',
-    ];
+          'codproduto',
+         'codunidademedida',
+         'quantidade',
+         'preco',
+        ];
     protected $dates = [
         'alteracao',
         'criacao',
@@ -60,7 +46,7 @@ class ProdutoEmbalagem extends MGModel
             $digitos = 0;
         else
             $digitos = 5;
-
+        
         return $this->UnidadeMedida->sigla . ' C/' . formataNumero($this->quantidade, $digitos);
     }
     
