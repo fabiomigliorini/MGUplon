@@ -6,7 +6,8 @@ use MGLara\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
-    
+use Illuminate\Support\Facades\Validator;
+
 use MGLara\Repositories\UsuarioRepository;
 use MGLara\Repositories\GrupoUsuarioRepository;
 use MGLara\Repositories\FilialRepository;
@@ -234,6 +235,9 @@ class UsuarioController extends Controller
         
         $this->repository->findOrFail($id);
         
+        // autorizacao
+        $this->repository->authorize('gruposCreate');
+        
         // Associa a permissao com o grupo de usuario
         if (!$grupo_usuario = $this->repository->model->GrupoUsuarioUsuarioS()->where('codgrupousuario', $request->codgrupousuario)->where('codfilial', $request->codfilial)->first()) {
             $grupo_usuario = $this->grupoUsuarioUsuarioRepository->model->create(['codusuario' => $id, 'codgrupousuario' => $request->codgrupousuario, 'codfilial'=>$request->codfilial]);
@@ -251,6 +255,9 @@ class UsuarioController extends Controller
     public function gruposDestroy(Request $request, $id) {
         
         $usuario = $this->repository->findOrFail($id);
+
+        // autorizacao
+        $this->repository->authorize('gruposDestroy');
         
         // Exclui registros
         $excluidos = $usuario->GrupoUsuarioUsuarioS()->where('codgrupousuario', $request->codgrupousuario)->where('codfilial', $request->codfilial)->delete();
@@ -294,7 +301,14 @@ class UsuarioController extends Controller
 
         // Valida dados
         $data = $request->all();
+        
+        Validator::make($request->all(), [
+            'senhaantiga' => 'not_in:'.$this->repository->model->senha,
+            'senha' => 'different|repetir_senha',
+        ])->validate();        
+        
         $data['senha'] = bcrypt($data['senha']);
+
         // autorizacao
         $this->repository->fill($data);
         $this->repository->authorize('update');
@@ -304,7 +318,9 @@ class UsuarioController extends Controller
             abort(500);
         }        
         
-        Session::flash('flash_update', 'Registro alterado!');
-        return ['OK' => 'Senha alterada com sucesso!'];       
+        Session::flash('flash_update', 'Senha alterada!');
+
+        // redireciona para view
+        return redirect("usuario/{$this->repository->model->codusuario}"); 
     }
 }

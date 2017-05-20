@@ -7,8 +7,15 @@
                 Trocar senha
             </h4>
             <div class="card-block">
-            <form>
+                <form action="{{ url('usuario/mudar-senha-update') }}" method="post">
+                    {!! csrf_field() !!}
+
                 @include('errors.form_error')
+                <fieldset class="form-group">
+                    {!! Form::label('senhaantiga', 'Senha Antiga') !!}
+                    {!! Form::password('senhaantiga', ['id'=>'senhaantiga', 'required'=>'required', 'class'=>'form-control', 'minlength'=>'4']) !!}
+                </fieldset>
+
                 <fieldset class="form-group">
                     {!! Form::label('senha', 'Nova senha') !!}
                     {!! Form::password('senha', ['id'=>'senha', 'required'=>'required', 'class'=>'form-control', 'minlength'=>'4']) !!}
@@ -23,7 +30,7 @@
                 <fieldset class="form-group">
                    {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
                 </fieldset>    
-            </form>
+            {!! Form::close() !!}
             </div>
         </div>
     </div>
@@ -81,12 +88,12 @@ $(document).ready(function() {
         }); 
         
     });
-    
+    /*
     $('form').on('submit', function(e){
         e.preventDefault();
         mudarSenha();
     });
-    
+    */
     function mudarSenha() {
         var data = $('form').serialize();
         $.ajax({

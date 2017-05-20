@@ -74,7 +74,11 @@
             },
             error: function(XHR) {
                 element.prop('checked', false);
-                toastr['error'](XHR.status + ' ' + XHR.statusText);
+                if(XHR.status === 403){
+                    toastr['error']('<strong>Acesso negado!</strong> Você não tem permissão para essa ação');
+                } else {
+                    toastr['error'](XHR.status + ' ' + XHR.statusText);
+                }
             },
         });
     }
