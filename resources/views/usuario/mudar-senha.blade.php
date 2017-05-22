@@ -7,30 +7,29 @@
                 Trocar senha
             </h4>
             <div class="card-block">
-                <form action="{{ url('usuario/mudar-senha-update') }}" method="post">
-                    {!! csrf_field() !!}
-
                 @include('errors.form_error')
-                <fieldset class="form-group">
-                    {!! Form::label('senhaantiga', 'Senha Antiga') !!}
-                    {!! Form::password('senhaantiga', ['id'=>'senhaantiga', 'required'=>'required', 'class'=>'form-control', 'minlength'=>'4']) !!}
-                </fieldset>
+                <form action="{{ url('usuario/mudar-senha-update') }}" method="post" id="form-usuario">
+                    {!! csrf_field() !!}
+                    <fieldset class="form-group">
+                        {!! Form::label('senhaantiga', 'Senha Antiga') !!}
+                        {!! Form::password('senhaantiga', ['id'=>'senhaantiga', 'required'=>'required', 'class'=>'form-control', 'minlength'=>'4']) !!}
+                    </fieldset>
 
-                <fieldset class="form-group">
-                    {!! Form::label('senha', 'Nova senha') !!}
-                    {!! Form::password('senha', ['id'=>'senha', 'required'=>'required', 'class'=>'form-control', 'minlength'=>'4']) !!}
-                </fieldset>
-            
-                <fieldset class="form-group">
-                    {!! Form::label('repetir_senha', 'Confirmação') !!}
-                    {!! Form::password('repetir_senha', ['id'=>'repetir_senha', 'required'=>'required', 'class'=>'form-control', 'minlength'=>'4']) !!}
-                    <span id="error-rpt"></span>
-                </fieldset>
-            
-                <fieldset class="form-group">
-                   {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
-                </fieldset>    
-            {!! Form::close() !!}
+                    <fieldset class="form-group">
+                        {!! Form::label('senha', 'Nova senha') !!}
+                        {!! Form::password('senha', ['id'=>'senha', 'required'=>'required', 'class'=>'form-control', 'minlength'=>'4']) !!}
+                    </fieldset>
+
+                    <fieldset class="form-group">
+                        {!! Form::label('repetir_senha', 'Confirmação') !!}
+                        {!! Form::password('repetir_senha', ['id'=>'repetir_senha', 'required'=>'required', 'class'=>'form-control', 'minlength'=>'4']) !!}
+                        <span id="error-rpt"></span>
+                    </fieldset>
+
+                    <fieldset class="form-group">
+                       {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
+                    </fieldset>    
+                </form>
             </div>
         </div>
     </div>
@@ -49,14 +48,20 @@ $(document).ready(function() {
         senha = $('#senha').val();
         senhaRepetida = $('#repetir_senha').val();
         if (senha != senhaRepetida){
-            var aviso = '<span id="rpt">Confirmação deve ser exatamente repetido</span>';
-            var destino = $('#error-rpt');
-            destino.append(aviso);
-            setTimeout(function(){
-                $('#rpt').empty();
-            },13000);            
-            $('repetir_senha').focus();
-            return false;
+        swal({
+          title: "Confirmação de senha é diferente da senha!",
+          type: "error",
+          showCancelButton: true,
+          showConfirmButton: false,
+          closeOnConfirm: false,
+          closeOnCancel: true
+        },
+        function(isConfirm){
+          if (isConfirm) {
+            currentForm.submit();
+          } 
+        });  
+
         } else {
             $("#rpt").empty();
         }
@@ -88,32 +93,6 @@ $(document).ready(function() {
         }); 
         
     });
-    /*
-    $('form').on('submit', function(e){
-        e.preventDefault();
-        mudarSenha();
-    });
-    */
-    function mudarSenha() {
-        var data = $('form').serialize();
-        $.ajax({
-            type: 'POST',
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            url: '{{ url("usuario/mudar-senha") }}',
-            dataType: 'json',
-            data: data,
-            success: function(data) {
-                toastr['success']('Senha alterada com sucesso!');
-            },
-            error: function(XHR) {
-                toastr['error'](XHR.status + ' ' + XHR.statusText);
-            },
-        });
-    }    
-
 });
 </script>
 @endsection

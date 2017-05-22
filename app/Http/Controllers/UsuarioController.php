@@ -298,14 +298,34 @@ class UsuarioController extends Controller
     {
         // Busca registro para autorizar
         $this->repository->findOrFail(Auth::user()->codusuario);
-
-        // Valida dados
         $data = $request->all();
         
-        Validator::make($request->all(), [
-            'senhaantiga' => 'not_in:'.$this->repository->model->senha,
-            'senha' => 'different|repetir_senha',
-        ])->validate();        
+        Validator::extend('igual', function ($attribute, $value, $parameters) {
+            if ($value == $parameters[0]) {
+                return true;
+            } else {
+                return false;
+            }
+        });         
+        
+        Validator::extend('senhaAntiga', function ($attribute, $value, $parameters) {
+            if (password_verify($value, $this->repository->model->senha)) {
+                return true;
+            } else {
+                return false;
+            }
+        });         
+        
+        $mensagens = [
+            'senha.igual' => 'A confirmação de senha é diferente da senha',
+            'senhaantiga.senha_antiga' => 'Senha antiga incorreta'
+        ];
+        
+        // Valida dados
+        Validator::make($data, [
+            'senhaantiga' => 'required|senhaAntiga',
+            'senha' => 'required|igual:'. $data['repetir_senha']
+        ], $mensagens)->validate();        
         
         $data['senha'] = bcrypt($data['senha']);
 
