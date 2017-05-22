@@ -62,7 +62,7 @@ class ImagemRepository extends MGRepository {
             return 'Imagem sendo utilizada em "Marca"!';
         }
         
-        if ($this->model->ProdutoimagemS->count() > 0) {
+        if ($this->model->ProdutoImagemS->count() > 0) {
             return 'Imagem sendo utilizada em "Produtoimagem"!';
         }
         

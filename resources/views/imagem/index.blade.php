@@ -66,6 +66,12 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+            datable_datatable.columnDefs {
+                render: function ( data, type, row ) {
+                        return '<strong>' + data +'</strong>';
+                },
+                targets: 3
+            };
         });
     </script>
 

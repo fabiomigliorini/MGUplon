@@ -329,52 +329,6 @@ class ImagemController extends Controller
         // retorna show
         return view('imagem.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param    int  $id
-     * @return  \Illuminate\Http\Response
-     */
-    /*
-    public function edit($id)
-    {
-        // busca regstro
-        $this->repository->findOrFail($id);
-        
-        // autorizacao
-        $this->repository->authorize('update');
-        
-        // breadcrumb
-        $this->bc->addItem($this->repository->model->codimagem, url('imagem', $this->repository->model->codimagem));
-        $this->bc->header = $this->repository->model->codimagem;
-        $this->bc->addItem('Alterar');
-        
-        // retorna formulario edit
-        return view('imagem.edit', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
-    }
-    */
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param    \Illuminate\Http\Request  $request
-     * @param    int  $id
-     * @return  \Illuminate\Http\Response
-     */
-    /*
-    public function update(Request $request, $id)
-    {
-        
-        parent::update($request, $id);
-        
-        // mensagem re registro criado
-        Session::flash('flash_update', 'Imagem alterado!');
-        
-        // redireciona para view
-        return redirect("imagem/{$this->repository->model->codimagem}"); 
-    }
-    */
     
     public function delete(Request $request)
     {
@@ -436,63 +390,51 @@ class ImagemController extends Controller
         // autorizacao
         $this->repository->authorize('update');
         
-        $sql = "
-            SELECT
-                  tc.table_name AS foreign_table_name
-                , kcu.column_name AS foreign_column_name 
-                , ccu.column_name 
-            FROM 
-                information_schema.table_constraints AS tc 
-                JOIN information_schema.key_column_usage AS kcu
-                  ON tc.constraint_name = kcu.constraint_name
-                JOIN information_schema.constraint_column_usage AS ccu
-                  ON ccu.constraint_name = tc.constraint_name
-            WHERE constraint_type = 'FOREIGN KEY' 
-            AND ccu.table_name='tblimagem';
-        ";
+        if ($this->repository->model->FamiliaProdutoS->count() > 0) {
+            $repoFamiliaProduto = $this->familiaProdutoRepository->findOrFail($this->repository->model->FamiliaProdutoS->first()->codfamiliaproduto);
+            $repoFamiliaProduto->codimagem = null;
+            $repoFamiliaProduto->save();
             
-        $filhas = DB::select($sql);
-        
-        foreach ($filhas as $filha){
-            $sql_filha = DB::select("select codimagem from $filha->foreign_table_name where codimagem = $id");
-            
-            if(!empty($sql_filha)){
-                dd($sql_filha);
-            }
+            return ['OK' => $this->repository->inactivate()];
         }
         
-        dd($filhas);
+        if ($this->repository->model->GrupoProdutoS->count() > 0) {
+            $repoGrupoProduto = $this->grupoProdutoRepository->findOrFail($this->repository->model->GrupoProdutoS->first()->codgrupoproduto);
+            $repoGrupoProduto->codimagem = null;
+            $repoGrupoProduto->save();
+
+            return ['OK' => $this->repository->inactivate()];
+        }
         
-        // ativa
-        return ['OK' => $this->repository->inactivate()];
+        if ($this->repository->model->MarcaS->count() > 0) {
+            $repoMarcaProduto = $this->marcaRepository->findOrFail($this->repository->model->MarcaS->first()->codmarcaproduto);
+            $repoMarcaProduto->codimagem = null;
+            $repoMarcaProduto->save();
+
+            return ['OK' => $this->repository->inactivate()];
+        }
         
+        if ($this->repository->model->SecaoProdutoS->count() > 0) {
+            $repoSecaoProduto = $this->secaoRepository->findOrFail($this->repository->model->SecaoS->first()->codsecaoproduto);
+            $repoSecaoProduto->codimagem = null;
+            $repoSecaoProduto->save();
+
+            return ['OK' => $this->repository->inactivate()];
+        }
+        
+        if ($this->repository->model->SubGrupoProdutoS->count() > 0) {
+            $repoSubGrupoProduto = $this->secaoRepository->findOrFail($this->repository->model->SubGrupoProdutoS->first()->codsubgrupoproduto);
+            $repoSubGrupoProduto->codimagem = null;
+            $repoSubGrupoProduto->save();
+
+            return ['OK' => $this->repository->inactivate()];
+        }        
+        
+        if ($this->repository->model->ProdutoImagemS->count() > 0) {
+            $repoProduto = $this->produtoRepository->findOrFail($this->repository->model->ProdutoImagemS->first()->codproduto);
+            $repoProduto->ProdutoImagemS()->detach($id);
+            
+            return ['OK' => $this->repository->inactivate()];
+        }
     }
-    
-    public function inativar(Request $request)
-    {
-        if(empty($request->get('produto'))) {
-            $imagem = Imagem::find($request->get('codimagem'));
-            $Model = Imagem::relacionamentos($request->get('codimagem'));
-            $model = $Model::where('codimagem', $request->get('codimagem'))->first();            
-            
-            $model->codimagem = null;
-            $imagem->inativo = Carbon::now();
-            $msg = "Imagem '{$imagem->codimagem}' Inativada!";
-
-            $model->save();
-            $imagem->save();
-            
-        } else {
-            $model = Produto::find($request->get('produto'));
-            $model->ImagemS()->detach($request->get('codimagem'));
-            
-            $imagem = Imagem::find($request->get('codimagem'));
-            $imagem->inativo = Carbon::now();
-            $msg = "Imagem '{$imagem->codimagem}' Inativada!";
-
-            $imagem->save();            
-        }
-        
-        Session::flash('flash_success', $msg);
-    }    
 }
