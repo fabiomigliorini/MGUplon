@@ -378,10 +378,56 @@ class ProdutoController extends Controller
      * @param    int  $id
      * @return  \Illuminate\Http\Response
      */
-    public function site($id)
+    public function site(Request $request, $id)
     {
         // busca regstro
         $this->repository->findOrFail($id);
+        
+        // Recupera dados form antigo caso erro de validacao
+        if (!$data = $request->old()) {
+            $data = [
+                'site' => $this->repository->model->site,
+                'metakeywordsite' => $this->repository->model->metakeywordsite,
+                'metadescriptionsite' => $this->repository->model->metadescriptionsite,
+                'codprodutoembalagem' => [
+                    0 => 0,
+                ],
+                'vendesite' => [
+                    0 => $this->repository->model->vendesite,
+                ],
+                'descricaosite' => [
+                    0 => $this->repository->model->descricaosite,
+                ],
+                'peso' => [
+                    0 => $this->repository->model->peso,
+                ],
+                'altura' => [
+                    0 => $this->repository->model->altura,
+                ],
+                'largura' => [
+                    0 => $this->repository->model->largura,
+                ],
+                'profundidade' => [
+                    0 => $this->repository->model->profundidade,
+                ],
+            ];
+            
+            foreach ($this->repository->model->ProdutoEmbalagemS()->orderBy('quantidade')->get() as $pe) {
+                $data['codprodutoembalagem'][$pe->codprodutoembalagem] = $pe->codprodutoembalagem;
+                $data['vendesite'][$pe->codprodutoembalagem] = $pe->vendesite;
+                $data['descricaosite'][$pe->codprodutoembalagem] = $pe->descricaosite;
+                $data['peso'][$pe->codprodutoembalagem] = $pe->peso;
+                $data['altura'][$pe->codprodutoembalagem] = $pe->altura;
+                $data['largura'][$pe->codprodutoembalagem] = $pe->largura;
+                $data['profundidade'][$pe->codprodutoembalagem] = $pe->profundidade;
+            }
+        }
+        $data['codproduto'] = $id;
+        $data['unidademedida'][0] = $this->repository->model->UnidadeMedida->unidademedida;
+        foreach ($this->repository->model->ProdutoEmbalagemS as $pe) {
+            $data['unidademedida'][$pe->codprodutoembalagem] = $pe->UnidadeMedida->unidademedida;
+            $data['quantidade'][$pe->codprodutoembalagem] = $pe->quantidade;
+        }
         
         // autorizacao
         $this->repository->authorize('site');
@@ -393,7 +439,7 @@ class ProdutoController extends Controller
         $this->bc->addItem('Alterar');
         
         // retorna formulario edit
-        return view('produto.site', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('produto.site', ['bc'=>$this->bc, 'data'=>$data]);
     }
 
     
@@ -412,51 +458,80 @@ class ProdutoController extends Controller
         // Valida dados
         $data = $request->all();
         
-        if(!isset($data['importado'])) {
-            $data['importado'] = FALSE;
-        }
-        
-        if(!isset($data['site'])) {
-            $data['site'] = FALSE;
-        }
-        
         // autorizacao
-        $this->repository->fill($data);
         $this->repository->authorize('site');
 
         DB::beginTransaction();
         
-        if (!$this->repository->validate($data, $id)) {
+        if (!$this->repository->validateSite($data, $id)) {
+            $this->data = $data;
             $this->throwValidationException($request, $this->repository->validator);
         }
         
-        try {
-            $preco = $this->repository->model['original']['preco'];
-            
-            if (!$this->repository->save()){
-                throw new Exception ('Erro ao alterar Produto!');
-            }
-            
-            if($preco != $this->repository->model->preco) {
-                $this->produtoHistoricoPrecoRepository->new([
-                    'codproduto'  => $this->repository->model->codproduto,
-                    'precoantigo' => $preco,
-                    'preconovo'   => $this->repository->model->preco
-                ]);
-                
-                if (!$this->produtoHistoricoPrecoRepository->create()){
-                    throw new Exception ('Erro ao gravar Historico!');
-                }
-            }
-            
-            DB::commit();
-            Session::flash('flash_update', 'Produto alterado!');
-            return redirect("produto/{$this->repository->model->codproduto}"); 
-        } catch (Exception $ex) {
-            DB::rollBack();
-            $this->throwValidationException($request, $this->repository->validator);
-        }        
+        $this->repository->fill([
+            'vendesite' => $data['vendesite'][0]??false,
+            'descricaosite' => $data['descricaosite'][0],
+            'peso' => $data['peso'][0],
+            'altura' => $data['altura'][0],
+            'largura' => $data['largura'][0],
+            'profundidade' => $data['profundidade'][0],
+            'site' => $data['site']??false,
+            'metakeywordsite' => $data['metakeywordsite'],
+            'metadescriptionsite' => $data['metadescriptionsite'],
+        ]);
+        
+        /*
+        dd([
+            'vendesite' => $data['vendesite'][0]??false,
+            'descricaosite' => $data['descricaosite'][0],
+            'peso' => $data['peso'][0],
+            'altura' => $data['altura'][0],
+            'largura' => $data['largura'][0],
+            'profundidade' => $data['profundidade'][0],
+            'site' => $data['site']??false,
+            'metakeywordsite' => $data['metakeywordsite'],
+            'metadescriptionsite' => $data['metadescriptionsite'],
+        ]);
+        */
+        
+        //DB::enableQueryLog();
+        
+        if (!$this->repository->save()){
+            throw new Exception ('Erro ao alterar Produto!');
+        }
+        
+        //$log = DB::getQueryLog();
+        
+        //dd($log);
 
+        foreach ($data['codprodutoembalagem'] as $produtoembalagem) {
+            
+            if ($produtoembalagem == 0) {
+                continue;
+            }
+            
+            $this->produtoEmbalagemRepository->findOrFail($produtoembalagem);
+            $this->produtoEmbalagemRepository->fill([
+                'vendesite' => $data['vendesite'][$produtoembalagem]??false,
+                'descricaosite' => $data['descricaosite'][$produtoembalagem],
+                'peso' => $data['peso'][$produtoembalagem],
+                'altura' => $data['altura'][$produtoembalagem],
+                'largura' => $data['largura'][$produtoembalagem],
+                'profundidade' => $data['profundidade'][$produtoembalagem],
+            ]);
+            
+            if (!$this->produtoEmbalagemRepository->save()){
+                throw new Exception ('Erro ao alterar Embalagem!');
+            }
+            
+        }
+        
+        DB::commit();
+        
+        Session::flash('flash_update', 'Dados de integração com site alterado!');
+        
+        return redirect("produto/{$this->repository->model->codproduto}"); 
+        
     }
     
 
