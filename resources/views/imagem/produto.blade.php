@@ -15,7 +15,7 @@
                     'method' => 'POST', 
                     'class' => 'form-horizontal', 
                     'id' => 'form-principal', 
-                    'route' => ['imagem.store', 'model' => Request::get('model'), 'id' => Request::get('id'), 'imagem'=>Request::get('imagem')],
+                    'route' => ['imagem.store', 'model' => Request::get('model'), 'id' => Request::get('id'), 'codimagem'=>Request::get('codimagem')],
                     'files'=>true
                 ]) !!}
 

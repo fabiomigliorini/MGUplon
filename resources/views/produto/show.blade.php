@@ -477,7 +477,22 @@ $(document).ready(function() {
     
     });
     */    
-    
+   
+    $( "#delete-imagem" ).click(function() {
+        var codimagem = $(this).data("codimagem");
+        swal({
+            title: "Tem certeza que deseja excluir essa imagem?",
+            type: "warning",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            closeOnCancel: true
+        },
+        function(isConfirm){
+            if (isConfirm) {
+                location.replace(baseUrl + "/imagem/delete/?model=produto&id={{$model->codproduto}}&codimagem=" + codimagem);
+            } 
+        });
+    });    
 });
 
 </script>
