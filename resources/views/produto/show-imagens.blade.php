@@ -26,8 +26,8 @@
                 <div class="carousel-caption">
                     <p>{{ $imagem->arquivo }}</p>
                     <p>
-                        <a href='{{ url("imagem/produto/$model->codproduto?imagem={$imagem->codimagem}") }}'><i class="text-white fa fa-pencil"></i></a>
-                        <a href="{{ url("imagem/produto/{$model->codproduto}/delete?imagem={$imagem->codimagem}") }}" data-excluir data-pergunta="Tem certeza que deseja excluir a imagem '{{ $imagem->arquivo }}'?" data-after-delete="recarregaDiv('div-imagens');"><i class="text-white fa fa-trash"></i></a>
+                        <a href="{{ url("/imagem/create?model=produto&id=$model->codproduto&codimagem=$imagem->codimagem") }}"><i class="text-white fa fa-pencil"></i></a>
+                        <a data-codimagem="{{ $imagem->codimagem }}"  id="delete-imagem"><i class="fa fa-trash"></i></a>
                     </p>
                 </div>                
             </div>

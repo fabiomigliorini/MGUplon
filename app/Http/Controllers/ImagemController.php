@@ -182,8 +182,6 @@ class ImagemController extends Controller
         } else {
             return view('imagem.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
         }        
-        
-        
     }
 
     /**
@@ -243,7 +241,7 @@ class ImagemController extends Controller
 
             // Salva para ganhar o ID
             $this->repository->new();
-            $this->repository->create();
+            $this->repository->save();
 
             // Grava nome do arquivo nas observacoes
             $arquivo = "{$this->repository->model->codimagem}.jpg";
@@ -257,13 +255,12 @@ class ImagemController extends Controller
             Slim::saveFile($image['output']['data'], $arquivo, './public/imagens', false);
 
             // Se havia alguma imagem para inativar
-            if(isset($data['imagem'])) {
-                //$imagem_inativa = $this->repository->model->find($data['imagem']);
-                //$imagem_inativa->inativo = Carbon::now();
-                //$imagem_inativa->save();
-                $this->repository->model->inativo = Carbon::now();
-                $this->repository->save();                
-                $repo->ProdutoImagemS()->detach($data['imagem']);
+            if(isset($data['codimagem'])) {
+                $imagem_inativa = $this->repository->findOrFail($data['codimagem']);
+                $imagem_inativa->inativo = Carbon::now();
+                $imagem_inativa->save();
+                
+                $repo->ProdutoImagemS()->detach($data['codimagem']);
             }
             
             Session::flash('flash_update', 'Imagem inserida.');
@@ -274,26 +271,30 @@ class ImagemController extends Controller
             $codimagem = Input::file('codimagem');
             $extensao = $codimagem->getClientOriginalExtension();
 
-            $this->repository->new();
-            $this->repository->create();
-
-            $arquivo = $this->repository->model->codimagem . '.' . $extensao;
+            $imagem = $this->repository->new();
+            $imagem->save();
         
             if(!is_null($repo->codimagem)) {
-                $this->repository->model->inativo = Carbon::now();
-                $this->repository->save();
+                $imagem_inativa = $this->repository->findOrFail($repo->codimagem);
+                $imagem_inativa->inativo = Carbon::now();
+                $imagem_inativa->save();
+                
+                $repo->codimagem = null;
+                $repo->save();
             }
-
-            $this->repository->model->arquivo = $arquivo;
-            $this->repository->save();
+            
+            $arquivo = $imagem->codimagem . '.' . $extensao;
+            
+            $imagem->arquivo = $arquivo;
+            $imagem->save();
 
             $diretorio = './public/imagens';
 
             try {
-
                 $codimagem->move($diretorio, $arquivo);
-                $repo->codimagem = $this->repository->model->codimagem;
+                $repo->codimagem = $imagem->codimagem;
                 $repo->save();
+                
                 Session::flash('flash_create', 'Imagem cadastrada!');
                 return redirect(modelUrl($request->get('model')).'/'. $data['id']);  
 
@@ -360,19 +361,24 @@ class ImagemController extends Controller
                     break;
             }            
             
-            $this->repository->findOrFail($repo->codimagem);
-            $this->repository->inativo = Carbon::now();
-            $this->repository->save();              
+            if(isset($data['codimagem'])){
+                $imagem = $this->repository->findOrFail($data['codimagem']);
+                $repo->ProdutoImagemS()->detach($data['codimagem']);
+            } else {
+                $imagem = $this->repository->findOrFail($repo->codimagem);
+                $repo->codimagem = null;
+                $repo->save();
+            }
             
-            $repo->codimagem = null;
-            $repo->save();
+            $imagem->inativo = Carbon::now();
+            $imagem->save();
             
             Session::flash('flash_delete', 'Imagem deletada!');
             return Redirect::back();
         }
         catch(\Exception $e){
-            dd($e);
-            Session::flash('flash_error', "Erro ao excluir imagem! {$e}");
+            //dd($e);
+            Session::flash('flash_error', "Erro ao excluir imagem! $e");
             return Redirect::back();
         }         
     }
