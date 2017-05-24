@@ -278,6 +278,9 @@ class ProdutoController extends Controller
                 $estoque = $this->repository->getArraySaldoEstoque();
                 $view = 'produto.show-estoque';
                 break;
+            case 'div-site':
+                $view = 'produto.show-site';
+                break;
             default:
                 $view = 'produto.show';
         }
@@ -302,7 +305,7 @@ class ProdutoController extends Controller
         $this->repository->authorize('update');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->codproduto, url('produto', $this->repository->model->codproduto));
+        $this->bc->addItem($this->repository->model->produto, url('produto', $this->repository->model->codproduto));
         $this->bc->header = $this->repository->model->produto;
         $this->bc->addItem('Alterar');
         
@@ -433,7 +436,7 @@ class ProdutoController extends Controller
         $this->repository->authorize('site');
         
         // breadcrumb
-        $this->bc->addItem($this->repository->model->codproduto, url('produto', $this->repository->model->codproduto));
+        $this->bc->addItem($this->repository->model->produto, url('produto', $this->repository->model->codproduto));
         $this->bc->header = $this->repository->model->produto;
         $this->bc->addItem('Site');
         $this->bc->addItem('Alterar');

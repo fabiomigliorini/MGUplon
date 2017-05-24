@@ -9,32 +9,31 @@
 
 <div class="card">
   <h4 class="card-header">
+    Principal
+  </h4>
+  <div class="card-block">
+    <fieldset class="form-group">
       <div class="checkbox checkbox-primary pull-left">
         {!! Form::checkbox('site', true, null, ['class'=> 'form-control', 'id'=>'site']) !!}
         {!! Form::label('site', 'Disponível no Site') !!}
       </div>
-    &nbsp
-  </h4>
-  <div class="card-block">
-    <div class="row">
-      <fieldset class="form-group col-md-6">
-        {!! Form::label('metakeywordsite', 'Meta Keywords') !!}
-        {!! Form::textarea('metakeywordsite', null, ['class'=> 'form-control', 'id'=>'metakeywordsite', 'rows'=>'3']) !!}
-      </fieldset>
-      <fieldset class="form-group col-md-6">
-        {!! Form::label('metadescriptionsite', 'Meta Description') !!}
-        {!! Form::textarea('metadescriptionsite', null, ['class'=> 'form-control', 'id'=>'metadescriptionsite', 'rows'=>'3']) !!}
-      </fieldset>
-    </div>
+    </fieldset> 
+    <fieldset class="form-group">
+      {!! Form::label('metakeywordsite', 'Meta Keywords') !!}
+      {!! Form::text('metakeywordsite', null, ['class'=> 'form-control', 'id'=>'metakeywordsite', 'rows'=>'3']) !!}
+    </fieldset>
+    <fieldset class="form-group">
+      {!! Form::label('metadescriptionsite', 'Meta Description') !!}
+      {!! Form::text('metadescriptionsite', null, ['class'=> 'form-control', 'id'=>'metadescriptionsite', 'rows'=>'3']) !!}
+    </fieldset>
     <fieldset class="form-group">
     </fieldset>
     <fieldset class="form-group">
       {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
     </fieldset>
-
   </div>
 </div>
-  
+
 
 {!! Form::close() !!}
 @section('inactive')
@@ -48,6 +47,12 @@
 
 @endsection
 @section('inscript')
+
+<!-- include summernote css/js-->
+<link href="{{ asset('public/assets/plugins/summernote/summernote.css') }}" rel="stylesheet">
+<script src="{{ asset('public/assets/plugins/summernote/summernote.js') }}"></script>
+<script src="{{ asset('public/assets/plugins/summernote/lang/summernote-pt-BR.js') }}"></script>
+
 <script type="text/javascript">
     
 var canvas = {};
@@ -175,7 +180,7 @@ function desenha(codprodutoembalagem) {
     if (cubos[codprodutoembalagem][iProduto].largura == 0 || 
         cubos[codprodutoembalagem][iProduto].profundidade == 0 ||
         cubos[codprodutoembalagem][iProduto].altura == 0) {
-        $("#div-canvas-" + codprodutoembalagem).fadeOut();
+        $("#canvas-" + codprodutoembalagem).fadeOut();
         return;
     }
 
@@ -235,7 +240,7 @@ function desenha(codprodutoembalagem) {
                 cubos[codprodutoembalagem][i].descricao
                 );
     }
-    $("#div-canvas-" + codprodutoembalagem).fadeIn();
+    $("#canvas-" + codprodutoembalagem).fadeIn();
 }
 
 // Colour adjustment function
@@ -360,6 +365,13 @@ function mostraPeso(codprodutoembalagem) {
 }
 
 $(document).ready(function () {
+    
+    $('.descricaosite').summernote({ 
+        lang: 'pt-BR',
+        airMode: false,  // Add fade effect on dialogs
+        popover: false,  // Add fade effect on dialogs
+        dialogsFade: true,  // Add fade effect on dialogs
+    });
 
     inicializaCanvas(0);
     calculaPeso(0);

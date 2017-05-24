@@ -321,12 +321,6 @@ class ProdutoRepository extends MGRepository {
         });
         
         $rules = [
-            'metakeywordsite' => [
-                'required',
-            ],
-            'metadescriptionsite' => [
-                'required',
-            ],
             'peso' => [
                 'pesoObrigatorio',
                 'pesoCoerente',
@@ -353,8 +347,6 @@ class ProdutoRepository extends MGRepository {
         ];
         
         $messages = [
-            'metakeywordsite.required' => 'O campo "Meta Keyword" deve ser preenchido!',
-            'metadescriptionsite.required' => 'O campo "Meta Description" deve ser preenchido!',
             'peso.peso_obrigatorio' => 'Preencha o peso de todos as embalagens vendidas via site, e também da unidade mínima!',
             'peso.peso_coerente' => 'O peso das embalagens não está coerente com o peso da unidade mínima!',
             'peso.minimo' => 'O peso deve ser superior à 0,0001 Kilograma!',
