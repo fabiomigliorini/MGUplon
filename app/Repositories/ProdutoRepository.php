@@ -187,6 +187,197 @@ class ProdutoRepository extends MGRepository {
         
     }
     
+    public function validateSite($data, $id = null) {
+        
+        if (empty($id)) {
+            $id = $this->model->codproduto;
+        }
+        
+        foreach ($this->model->ProdutoEmbalagemS()->orderBy('quantidade')->get() as $pe) {
+            $quantidade[$pe->codprodutoembalagem] = $pe->quantidade;
+        }
+        
+        // Valida se peso é obrigatório
+        Validator::extend('pesoObrigatorio', function ($attribute, $value, $parameters) use ($quantidade, $data) {
+            foreach ($value as $codprodutoembalagem => $peso) {
+                // se nao vende via site passa para proximo
+                if (!($data['vendesite'][$codprodutoembalagem]??false)) {
+                    continue;
+                }
+                // se peso da unidade nao esta preenchido
+                if (empty($data['peso'][0])) {
+                    return false;
+                }
+                // se peso da embalagem nao esta preenchido
+                if (empty($peso)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        
+        // Valida se medidas são obrigatórias
+        Validator::extend('medidaObrigatoria', function ($attribute, $value, $parameters) use ($quantidade, $data) {
+            foreach ($value as $codprodutoembalagem => $altura) {
+                // se nao vende via site passa para proximo
+                if (!($data['vendesite'][$codprodutoembalagem]??false)) {
+                    continue;
+                }
+                // as medidas da unidade nao estao preenchidas
+                if (empty($data['altura'][0]) || empty($data['largura'][0]) || empty($data['profundidade'][0])) {
+                    return false;
+                }
+                // se medidas da embalagem nao estao preenchidas
+                if (empty($data['altura'][$codprodutoembalagem]) || empty($data['largura'][$codprodutoembalagem]) || empty($data['profundidade'][$codprodutoembalagem])) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        
+        // Valida peso da unidade X peso da embalagem
+        Validator::extend('pesoCoerente', function ($attribute, $value, $parameters) use ($quantidade, $data) {
+            $unitario = (double) $value[0]??0;
+            //percorre array de pesos
+            foreach ($value as $codprodutoembalagem => $peso) {
+                if ($codprodutoembalagem == 0) {
+                    continue;
+                }
+                // se nao vende via site passa para proximo
+                if (!($data['vendesite'][$codprodutoembalagem]??false)) {
+                    continue;
+                }
+                if ($peso < ($unitario * (double) $quantidade[$codprodutoembalagem]) * 0.9) {
+                    return false;
+                }
+                if ($peso > ($unitario * (double) $quantidade[$codprodutoembalagem]) * 1.2) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        
+        // Valida medidas da unidade X medidas da embalagem
+        Validator::extend('medidaCoerente', function ($attribute, $value, $parameters) use ($quantidade, $data) {
+            $unitario = ((double) $data['largura'][0]??0) * ((double) $data['altura'][0]??0) * ((double) $data['profundidade'][0]??0);
+            foreach ($value as $codprodutoembalagem => $altura) {
+                if ($codprodutoembalagem == 0) {
+                    continue;
+                }
+                // se nao vende via site passa para proximo
+                if (!($data['vendesite'][$codprodutoembalagem]??false)) {
+                    continue;
+                }
+                $embalagem = ((double) $data['largura'][$codprodutoembalagem]??0) * ((double) $data['altura'][$codprodutoembalagem]??0) * ((double) $data['profundidade'][$codprodutoembalagem]??0);
+                if ($embalagem < ($unitario * $quantidade[$codprodutoembalagem]) * 0.5) {
+                    return false;
+                }
+                if ($embalagem > ($unitario * $quantidade[$codprodutoembalagem]) * 1.5) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        
+        // Valida peso da unidade * quantidade da embalagem
+        Validator::extend('minimo', function ($attribute, $value, $parameters) {
+            $minimo = (double) $parameters[0];
+            foreach ($value as $codprodutoembalagem => $peso) {
+                if ($peso == '') {
+                    continue;
+                }
+                if ($peso < $minimo) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        
+        // Valida peso da unidade * quantidade da embalagem
+        Validator::extend('maximo', function ($attribute, $value, $parameters) {
+            $maximo = (double) $parameters[0];
+            foreach ($value as $codprodutoembalagem => $peso) {
+                if ($peso == '') {
+                    continue;
+                }
+                if ($peso > $maximo) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        
+        // Valida peso da unidade * quantidade da embalagem
+        Validator::extend('vendeSite', function ($attribute, $value, $parameters) use ($data) {
+            foreach ($value as $codprodutoembalagem => $vendesite) {
+                if (empty($vendesite)) {
+                    continue;
+                }
+                if (!($data['site']??false)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        
+        $rules = [
+            'metakeywordsite' => [
+                'required',
+            ],
+            'metadescriptionsite' => [
+                'required',
+            ],
+            'peso' => [
+                'pesoObrigatorio',
+                'pesoCoerente',
+                'minimo:0.0001',
+                'maximo:999.9999',
+            ],
+            'altura' => [
+                'medidaObrigatoria',
+                'medidaCoerente',
+                'minimo:0.01',
+                'maximo:999999.99',
+            ],
+            'largura' => [
+                'minimo:0.01',
+                'maximo:999999.99',
+            ],
+            'profundidade' => [
+                'minimo:0.01',
+                'maximo:999999.99',
+            ],
+            'vendesite' => [
+                'vendeSite'
+            ],
+        ];
+        
+        $messages = [
+            'metakeywordsite.required' => 'O campo "Meta Keyword" deve ser preenchido!',
+            'metadescriptionsite.required' => 'O campo "Meta Description" deve ser preenchido!',
+            'peso.peso_obrigatorio' => 'Preencha o peso de todos as embalagens vendidas via site, e também da unidade mínima!',
+            'peso.peso_coerente' => 'O peso das embalagens não está coerente com o peso da unidade mínima!',
+            'peso.minimo' => 'O peso deve ser superior à 0,0001 Kilograma!',
+            'peso.maximo' => 'O peso deve ser inferior à 999,9999 Kilograma!',
+            'altura.medida_obrigatoria' => 'Preencha as medidas de todas as embalagens vendidas via site, e também da unidade mínima!',
+            'altura.medida_coerente' => 'As medidas das embalagens não estão coerentes com as medidas da unidade mínima!',
+            'altura.minimo' => 'A altura deve ser superior à 0,01 Centímetros!',
+            'altura.maximo' => 'A altura deve ser inferior à 999999,99 Centímetros!',
+            'largura.minimo' => 'A largura deve ser superior à 0,0001 Centímetros!',
+            'largura.maximo' => 'A largura deve ser inferior à 999999,99 Centímetros!',
+            'profundidade.minimo' => 'A profundidade deve ser superior à 0,0001 Centímetros!',
+            'profundidade.maximo' => 'A profundidade deve ser inferior à 999999,99 Centímetros!',
+            'vendesite.vende_site' => 'Para habilitar vendas pelo site, deve-se marcar como disponível no site!',
+        ];
+        
+
+        $this->validator = Validator::make($data, $rules, $messages);
+
+        return $this->validator->passes();
+        
+        return true;
+    }
+    
     public function used($id = null) {
         if (!empty($id)) {
             $this->findOrFail($id);

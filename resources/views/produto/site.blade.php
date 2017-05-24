@@ -1,59 +1,50 @@
 @extends('layouts.default')
 @section('content')
-{!! Form::model($model, ['method' => 'PATCH', 'id' => 'form-principal', 'action' => ['ProdutoController@site', $model->codproduto] ]) !!}
+{!! Form::model($data, ['method' => 'PATCH', 'id' => 'form-principal', 'action' => ['ProdutoController@site', $data['codproduto']] ]) !!}
 @include('errors.form_error')
-<div class='row'>
-  <div class="col-md-4">
-    <div class="card">
-      <h4 class="card-header">Principal</h4>
-      <div class="card-block">
 
-        <fieldset class="form-group">
-            <div class="checkbox checkbox-primary">
-            {!! Form::checkbox('site', true, null, ['class'=> 'form-control', 'id'=>'site']) !!}
-            {!! Form::label('site', 'Disponível no Site') !!}
-            </div>
-        </fieldset>
-
-        <fieldset class="form-group">
-            {!! Form::label('metakeywordsite', 'Meta Keywords') !!}
-            {!! Form::textarea('metakeywordsite', null, ['class'=> 'form-control', 'id'=>'metakeywordsite', 'rows'=>'3']) !!}
-        </fieldset>
-
-        <fieldset class="form-group">
-            {!! Form::label('metadescriptionsite', 'Meta Description') !!}
-            {!! Form::textarea('metadescriptionsite', null, ['class'=> 'form-control', 'id'=>'metadescriptionsite', 'rows'=>'3']) !!}
-        </fieldset>
-
-
-        <fieldset class="form-group">
-           {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
-        </fieldset>
-        
-        
-      </div>
-    </div>
-  </div>
-  
-  
-  
-</div>
-
-@include('produto.site-dimensoes', ['codprodutoembalagem'=>0, 'model'=>$model])
-
-@foreach ($model->ProdutoEmbalagemS as $pe)
-  @include('produto.site-dimensoes', ['codprodutoembalagem'=>$pe->codprodutoembalagem, 'model'=>$pe])
+@foreach ($data['codprodutoembalagem'] as $codprodutoembalagem)
+  @include('produto.site-dimensoes', ['codprodutoembalagem'=>$codprodutoembalagem])
 @endforeach
+
+<div class="card">
+  <h4 class="card-header">
+      <div class="checkbox checkbox-primary pull-left">
+        {!! Form::checkbox('site', true, null, ['class'=> 'form-control', 'id'=>'site']) !!}
+        {!! Form::label('site', 'Disponível no Site') !!}
+      </div>
+    &nbsp
+  </h4>
+  <div class="card-block">
+    <div class="row">
+      <fieldset class="form-group col-md-6">
+        {!! Form::label('metakeywordsite', 'Meta Keywords') !!}
+        {!! Form::textarea('metakeywordsite', null, ['class'=> 'form-control', 'id'=>'metakeywordsite', 'rows'=>'3']) !!}
+      </fieldset>
+      <fieldset class="form-group col-md-6">
+        {!! Form::label('metadescriptionsite', 'Meta Description') !!}
+        {!! Form::textarea('metadescriptionsite', null, ['class'=> 'form-control', 'id'=>'metadescriptionsite', 'rows'=>'3']) !!}
+      </fieldset>
+    </div>
+    <fieldset class="form-group">
+    </fieldset>
+    <fieldset class="form-group">
+      {!! Form::submit('Salvar', array('class' => 'btn btn-primary')) !!}
+    </fieldset>
+
+  </div>
+</div>
+  
 
 {!! Form::close() !!}
 @section('inactive')
 
-@include('layouts.includes.inactive', [$model])
+@include('layouts.includes.inactive', [$data])
 
 @endsection
 @section('creation')
 
-@include('layouts.includes.creation', [$model])
+@include('layouts.includes.creation', [$data])
 
 @endsection
 @section('inscript')
@@ -372,9 +363,9 @@ $(document).ready(function () {
 
     inicializaCanvas(0);
     calculaPeso(0);
-    @foreach ($model->ProdutoEmbalagemS as $pe)
-      inicializaCanvas({{$pe->codprodutoembalagem}});
-      calculaPeso({{$pe->codprodutoembalagem}});
+    @foreach ($data['codprodutoembalagem'] as $codprodutoembalagem)
+      inicializaCanvas({{$codprodutoembalagem}});
+      calculaPeso({{$codprodutoembalagem}});
     @endforeach
 
     // Redimensiona proporcoes
