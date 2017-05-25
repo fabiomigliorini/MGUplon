@@ -5,27 +5,20 @@
     @if (!empty($data['quantidade'][$codprodutoembalagem]))
     C/{{ formataNumero($data['quantidade'][$codprodutoembalagem], 0) }}
     @endif
-    <div class="checkbox checkbox-primary pull-left">
-      {!! Form::checkbox("vendesite[$codprodutoembalagem]", true, $data['vendesite'][$codprodutoembalagem]??0, ['class'=> 'form-control', 'id'=>'site-$codprodutoembalagem']) !!}
-      {!! Form::label("vendesite-$codprodutoembalagem", 'Vendas via Site') !!}
-      &nbsp;
-    </div>
-
   </h4>
   <div class="card-block">
     <div class='row'>
 
-      <!-- descricao -->
-      <div class='col-md-5'>
-        <fieldset class="form-group">
-          {!! Form::label("descricaosite-$codprodutoembalagem", 'Descrição Completa') !!}
-          {!! Form::textarea("descricaosite[$codprodutoembalagem]", $data['descricaosite'][$codprodutoembalagem]??null, ['class'=> 'form-control', 'id'=>"descricaosite-$codprodutoembalagem", 'rows'=>'10']) !!}
-        </fieldset>
-      </div>
-
-
       <!-- peso -->
       <div class='col-md-2'>
+        <fieldset>
+          <div class="checkbox checkbox-primary pull-left">
+            {!! Form::checkbox("vendesite[$codprodutoembalagem]", true, $data['vendesite'][$codprodutoembalagem]??0, ['class'=> 'form-control', 'id'=>'site-$codprodutoembalagem']) !!}
+            {!! Form::label("vendesite-$codprodutoembalagem", 'Vendas via Site') !!}
+            &nbsp;
+          </div>
+        </fieldset>
+        <fieldset>
           <label id="descricao-peso-{{ $codprodutoembalagem }}" for='peso-{{ $codprodutoembalagem }}'>
               Peso
           </label>
@@ -35,6 +28,7 @@
           </div>
         
         <img id="imagem-peso-{{ $codprodutoembalagem }}" class="img-fluid" style="">
+        </fieldset>
       </div>
       
       <!-- dimensoes -->
@@ -70,6 +64,14 @@
         <canvas id='canvas-{{ $codprodutoembalagem }}' style='min-height: 250px'></canvas>
       </div>
 
+      <!-- descricao -->
+      <div class='col-md-5'>
+        <fieldset class="form-group">
+          {!! Form::label("descricaosite-$codprodutoembalagem", 'Descrição Completa') !!}
+          {!! Form::textarea("descricaosite[$codprodutoembalagem]", $data['descricaosite'][$codprodutoembalagem]??null, ['class'=> 'form-control descricaosite', 'id'=>"descricaosite-$codprodutoembalagem", 'rows'=>'10']) !!}
+        </fieldset>
+      </div>
+      
     </div>
     <div class='clearfix'></div>
   </div>

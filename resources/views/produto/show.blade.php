@@ -23,9 +23,6 @@
                         <a class="nav-link" data-toggle="tab" href="#tab-estoque" role="tab">Estoque</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#tab-site" role="tab">Site</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" href="#tab-fiscal" role="tab">NCM</a>
                     </li>
                     <li class="nav-item">
@@ -95,19 +92,6 @@
                         <div id="div-estoque">
                             <b>Aguarde...</b>
                         </div>                        
-                    </div>
-                    <div class="tab-pane" id="tab-site" role="tabpanel">
-                        <p>
-                            <botton class="btn btn-secondary" id="integracao-open-cart"><i class="fa fa-shopping-cart"></i> 
-                                Sincronizar &nbsp;&nbsp;
-                                <img width="20px" id="sincronizar" src="{{ URL::asset('public/img/carregando.gif') }}">
-                            </botton>
-
-                        </p>
-                        <strong>Divulgado no Site: {{ ($model->site)?'Sim':'Não' }}</strong>
-                        <hr>
-                        {!! nl2br($model->descricaosite) !!}
-                        
                     </div>
                     <div class="tab-pane" id="tab-fiscal" role="tabpanel">
                         @include('produto.show-ncm')
@@ -235,6 +219,8 @@
         </div>
     </div>
 </div>
+
+@include('produto.show-site')
 
 @section('buttons')
 
