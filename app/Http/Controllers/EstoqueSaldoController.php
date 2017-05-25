@@ -163,8 +163,15 @@ class EstoqueSaldoController extends Controller
     public function relatorioAnaliseFiltro(Request $request)
     {
 
-        $filtro = self::filtroEstatico($request, 'estoque-saldo.relatorio-analise', ['ativo' => 1]);
+        //$filtro = self::filtroEstatico($request, 'estoque-saldo.relatorio-analise', ['ativo' => 1]); // <-- setFiltro()
 
+        if (!$filtro = $this->getFiltro()) {
+            $filtro = [
+                'inativo' => 1,
+            ];
+        }        
+        
+        
         $arr_saldos = [
             '' => '',
             -1=>'Negativo',
@@ -189,21 +196,23 @@ class EstoqueSaldoController extends Controller
             '2' => 'Inativos',
             '9' => 'Todos',
         ];
+        
+        $this->bc->addItem('Relatório Análise Saldos de Estoque');
 
-        return view('estoque-saldo.relatorio-analise-filtro', compact('arr_ativo', 'arr_valor', 'arr_saldos', 'arr_minimo', 'arr_maximo', 'filtro'));
+        return view('estoque-saldo.relatorio-analise-filtro', ['arr_ativo' => $arr_ativo, 'arr_valor' => '', 'arr_saldos' => $arr_saldos, 'arr_minimo' => $arr_minimo, 'arr_maximo' => $arr_maximo, 'filtro' => $filtro, 'bc'=> $this->bc]);
     }
 
     public function relatorioAnalise(Request $request)
     {
-        $filtro = self::filtroEstatico($request, 'estoque-saldo.relatorio-analise');
-
+        $filtro = $request->all();
+        $this->setFiltro($filtro);
         $dados = $this->repository->relatorioAnalise($filtro);
 
         if (!empty($filtro['debug'])) {
             return $dados;
         }
 
-        return view('estoque-saldo.relatorio-analise', compact('dados'));
+        return view('estoque-saldo.relatorio-analise', ['dados' => $dados]);
     }
 
     public function relatorioComparativoVendasFiltro(Request $request)
