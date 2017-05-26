@@ -1138,7 +1138,7 @@ class EstoqueSaldoRepository extends MGRepository {
                 left join tblprodutoembalagem iq_pe on (iq_pe.codprodutoembalagem = iq_pb.codprodutoembalagem)
                 where iq_n.codnegociostatus = 2
                 and iq_n.codestoquelocal = {$filtro['codestoquelocalfilial']}
-                and iq_n.lancamento between '{$filtro['datainicial']->format('Y-m-d H:i')}' and '{$filtro['datafinal']->format('Y-m-d H:i')}'
+                and iq_n.lancamento between '{$filtro['datainicial']}' and '{$filtro['datafinal']}'
                 and iq_no.venda = true
                 and iq_no.estoque = true
                 and iq_tp.estoque = true

@@ -162,15 +162,11 @@ class EstoqueSaldoController extends Controller
 
     public function relatorioAnaliseFiltro(Request $request)
     {
-
-        //$filtro = self::filtroEstatico($request, 'estoque-saldo.relatorio-analise', ['ativo' => 1]); // <-- setFiltro()
-
         if (!$filtro = $this->getFiltro()) {
             $filtro = [
                 'inativo' => 1,
             ];
         }        
-        
         
         $arr_saldos = [
             '' => '',
@@ -242,24 +238,19 @@ class EstoqueSaldoController extends Controller
 
         $final->hour = 23;
         $final->minute = 59;
-
-        $filtro = self::filtroEstatico(
-            $request,
-            'estoque-saldo.relatorio-comparativo-vendas',
-            [
+        
+        if (!$filtro = $this->getFiltro()) {
+            $filtro = [
                 'codestoquelocaldeposito' => 101001,
                 'datainicial' => $inicial,
                 'datafinal' => $final,
                 'saldo_deposito' => 1,
                 'saldo_filial' => -1,
                 'dias_previsao' => 15,
-            ],
-            [
-                'datainicial',
-                'datafinal'
-            ]
-        );
-
+            ];
+        }        
+        
+        
         $arr_saldo_filial = [
             '' => '',
             1=>'Saldo da Filial maior que previsão vendas',
@@ -283,14 +274,17 @@ class EstoqueSaldoController extends Controller
             -1=>'Abaixo Máximo',
             1=>'Acima Máximo'
         ];
+        
+        $this->bc->addItem('Relatório Vendas Filial X Saldo Depósito');
 
-        return view('estoque-saldo.relatorio-comparativo-vendas-filtro', compact('arr_saldo_deposito', 'arr_saldo_filial', 'arr_minimo', 'arr_maximo', 'filtro'));
+        return view('estoque-saldo.relatorio-comparativo-vendas-filtro', ['arr_saldo_deposito' => $arr_saldo_deposito, 'arr_saldo_filial' => $arr_saldo_filial, 'arr_minimo' => $arr_minimo, 'arr_maximo' => $arr_maximo, 'filtro'=>$filtro, 'bc' => $this->bc]);
     }
 
     public function relatorioComparativoVendas(Request $request)
     {
-        $filtro = self::filtroEstatico($request, 'estoque-saldo.relatorio-comparativo-vendas', [], ['datainicial', 'datafinal']);
-
+        $filtro = $request->all();
+        $this->setFiltro($filtro);
+        
         $dados = $this->repository->relatorioComparativoVendas($filtro);
 
         if (!empty($filtro['debug'])) {
@@ -302,24 +296,23 @@ class EstoqueSaldoController extends Controller
 
     public function relatorioFisicoFiscalFiltro(Request $request)
     {
-        
-        $filtro = self::filtroEstatico(
-            $request,
-            'estoque-saldo.relatorio-fisico-fiscal',
-            [
+        if (!$filtro = $this->getFiltro()) {
+            $filtro = [
                 'mes' => date('m'),
                 'ano' => date('Y'),
-            ],
-            [
-            ]
-        );
+            ];
+        }      
         
-        return view('estoque-saldo.relatorio-fisico-fiscal-filtro', compact('arr_saldo_deposito', 'arr_saldo_filial', 'arr_minimo', 'arr_maximo', 'filtro'));
+        $this->bc->addItem('Relatório Saldo Físico x Fiscal');
+
+        
+        return view('estoque-saldo.relatorio-fisico-fiscal-filtro', ['arr_saldo_deposito' => '', 'arr_saldo_filial' => '', 'arr_minimo' => '', 'arr_maximo' => '', 'filtro' => $filtro,'bc' => $this->bc]);
     }
 
     public function relatorioFisicoFiscal(Request $request)
     {
-        $filtro = self::filtroEstatico($request, 'estoque-saldo.relatorio-fisico-fiscal', [], []);
+        $filtro = $request->all();
+        $this->setFiltro($filtro);
 
         $dados = $this->repository->relatorioFisicoFiscal($filtro);
 
