@@ -22,6 +22,10 @@ namespace MGLara\Models;
  * @property  ProdutoImagem[]                $ProdutoImagemS
  * @property  SecaoProduto[]                 $SecaoProdutoS
  * @property  SubGrupoProduto[]              $SubGrupoProdutoS
+ * 
+ * Relacionamentos N x N
+ * @property  Produto[]                       $ProdutoS
+ * 
  */
 
 class Imagem extends MGModel
@@ -29,8 +33,8 @@ class Imagem extends MGModel
     protected $table = 'tblimagem';
     protected $primaryKey = 'codimagem';
     protected $fillable = [
-          'observacoes',
-              'arquivo',
+        'observacoes',
+        'arquivo',
     ];
     protected $dates = [
         'inativo',
@@ -59,7 +63,7 @@ class Imagem extends MGModel
 
     public function ProdutoImagemS()
     {
-        return $this->belongsToMany(Produto::class, 'tblprodutoimagem', 'codimagem', 'codproduto');
+        return $this->hasMany(ProdutoImagem::class, 'codimagem', 'codimagem');
     }
 
     public function SecaoProdutoS()
@@ -72,5 +76,10 @@ class Imagem extends MGModel
         return $this->hasMany(SubGrupoProduto::class, 'codimagem', 'codimagem');
     }
 
+    // Relacionamento N x N
+    public function ProdutoS()
+    {
+        return $this->belongsToMany(Produto::class, 'tblprodutoimagem', 'codimagem', 'codproduto');        
+    }
 
 }

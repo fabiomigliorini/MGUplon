@@ -375,7 +375,7 @@ class ProdutoRepository extends MGRepository {
             $this->findOrFail($id);
         }
         
-        if ($this->model->ProdutoimagemS->count() > 0) {
+        if ($this->model->ImagemS->count() > 0) {
             return 'Produto sendo utilizada em "Produtoimagem"!';
         }
         

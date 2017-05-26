@@ -590,7 +590,7 @@ class IntegracaoOpenCart extends IntegracaoOpenCartBase {
             $product_related = $product_related;
             
             $other_images = [];
-            foreach ($produto->ProdutoImagemS()->orderBy('codimagem')->get() as $pi) {
+            foreach ($produto->ImagemS()->orderBy('ordem')->get() as $pi) {
                 $other_images[] = 'imagens/'.$pi->observacoes;
             }
             $image = array_shift($other_images);

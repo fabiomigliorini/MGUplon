@@ -18,14 +18,16 @@ namespace MGLara\Models;
  * @property  numeric(8,2)                   $largura                            
  * @property  numeric(8,2)                   $profundidade                       
  * @property  boolean                        $vendesite                          NOT NULL DEFAULT false
- * @property  varchar(1024)                  $descricaosite                      
+ * @property  text                           $descricaosite                      
  * @property  bigint                         $codopencart                        
+ * @property  bigint                         $codprodutoimagem                   
  *
  * Chaves Estrangeiras
  * @property  Produto                        $Produto
  * @property  UnidadeMedida                  $UnidadeMedida
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Usuario                        $UsuarioCriacao
+ * @property  ProdutoImagem                  $ProdutoImagem
  *
  * Tabelas Filhas
  * @property  ProdutoBarra[]                 $ProdutoBarraS
@@ -48,6 +50,7 @@ class ProdutoEmbalagem extends MGModel
         'vendesite',
         'descricaosite',
         'codopencart',
+        'codprodutoimagem',
     ];
     protected $dates = [
         'alteracao',
@@ -91,6 +94,11 @@ class ProdutoEmbalagem extends MGModel
     public function UsuarioCriacao()
     {
         return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
+    }
+
+    public function ProdutoImagem()
+    {
+        return $this->belongsTo(ProdutoImagem::class, 'codprodutoimagem', 'codprodutoimagem');
     }
 
 

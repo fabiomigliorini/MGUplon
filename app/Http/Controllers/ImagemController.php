@@ -11,10 +11,10 @@ use MGLara\Http\Controllers\Controller;
 use MGLara\Repositories\ImagemRepository;
 use MGLara\Repositories\MarcaRepository;
 use MGLara\Repositories\ProdutoRepository;
- use MGLara\Repositories\SecaoProdutoRepository;
- use MGLara\Repositories\FamiliaProdutoRepository;
- use MGLara\Repositories\GrupoProdutoRepository;
- use MGLara\Repositories\SubGrupoProdutoRepository;
+use MGLara\Repositories\SecaoProdutoRepository;
+use MGLara\Repositories\FamiliaProdutoRepository;
+use MGLara\Repositories\GrupoProdutoRepository;
+use MGLara\Repositories\SubGrupoProdutoRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
@@ -249,7 +249,7 @@ class ImagemController extends Controller
             $this->repository->save();      
             
             // Anexa imagem ao produto
-            $repo->ProdutoImagemS()->attach($this->repository->model->codimagem);
+            $repo->ImagemS()->attach($this->repository->model->codimagem);
 
             // Salva o arquivo
             Slim::saveFile($image['output']['data'], $arquivo, './public/imagens', false);
@@ -260,7 +260,7 @@ class ImagemController extends Controller
                 $imagem_inativa->inativo = Carbon::now();
                 $imagem_inativa->save();
                 
-                $repo->ProdutoImagemS()->detach($data['codimagem']);
+                $repo->ImagemS()->detach($data['codimagem']);
             }
             
             Session::flash('flash_update', 'Imagem inserida.');
@@ -363,7 +363,7 @@ class ImagemController extends Controller
             
             if(isset($data['codimagem'])){
                 $imagem = $this->repository->findOrFail($data['codimagem']);
-                $repo->ProdutoImagemS()->detach($data['codimagem']);
+                $repo->ImagemS()->detach($data['codimagem']);
             } else {
                 $imagem = $this->repository->findOrFail($repo->codimagem);
                 $repo->codimagem = null;
@@ -436,9 +436,9 @@ class ImagemController extends Controller
             return ['OK' => $this->repository->inactivate()];
         }        
         
-        if ($this->repository->model->ProdutoImagemS->count() > 0) {
-            $repoProduto = $this->produtoRepository->findOrFail($this->repository->model->ProdutoImagemS->first()->codproduto);
-            $repoProduto->ProdutoImagemS()->detach($id);
+        if ($this->repository->model->ImagemS->count() > 0) {
+            $repoProduto = $this->produtoRepository->findOrFail($this->repository->model->ImagemS->first()->codproduto);
+            $repoProduto->ImagemS()->detach($id);
             
             return ['OK' => $this->repository->inactivate()];
         }

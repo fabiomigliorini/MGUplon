@@ -11,12 +11,16 @@ namespace MGLara\Models;
  * @property  bigint                         $codusuariocriacao                  
  * @property  timestamp                      $alteracao                          
  * @property  bigint                         $codusuarioalteracao                
+ * @property  integer                        $ordem                              NOT NULL DEFAULT 1
  *
  * Chaves Estrangeiras
  * @property  Produto                        $Produto
  * @property  Imagem                         $Imagem
  *
  * Tabelas Filhas
+ * @property  ProdutoEmbalagem[]             $ProdutoEmbalagemS
+ * @property  Produto[]                      $ProdutoS
+ * @property  ProdutoVariacao[]              $ProdutoVariacaoS
  */
 
 class ProdutoImagem extends MGModel
@@ -24,9 +28,10 @@ class ProdutoImagem extends MGModel
     protected $table = 'tblprodutoimagem';
     protected $primaryKey = 'codprodutoimagem';
     protected $fillable = [
-          'codproduto',
-         'codimagem',
-        ];
+        'codproduto',
+        'codimagem',
+        'ordem',
+    ];
     protected $dates = [
         'criacao',
         'alteracao',
@@ -46,5 +51,19 @@ class ProdutoImagem extends MGModel
 
 
     // Tabelas Filhas
+    public function ProdutoEmbalagemS()
+    {
+        return $this->hasMany(ProdutoEmbalagem::class, 'codprodutoimagem', 'codprodutoimagem');
+    }
+
+    public function ProdutoS()
+    {
+        return $this->hasMany(Produto::class, 'codprodutoimagem', 'codprodutoimagem');
+    }
+
+    public function ProdutoVariacaoS()
+    {
+        return $this->hasMany(ProdutoVariacao::class, 'codprodutoimagem', 'codprodutoimagem');
+    }
 
 }
