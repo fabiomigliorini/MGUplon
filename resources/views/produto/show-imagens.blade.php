@@ -1,5 +1,5 @@
 <div id="div-imagens">
-    <?php $imagens = $model->ProdutoImagemS()->orderBy('codimagem')->get(); ?>
+    <?php $imagens = $model->ImagemS()->orderBy('codimagem')->get(); ?>
     <p>
         <a href="{{ url("/imagem/create?model=produto&id=$model->codproduto") }}" title="Cadastrar imagem">
             Nova Imagem

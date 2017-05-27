@@ -814,9 +814,8 @@ class ProdutoController extends Controller
         
         // Imagens
         $imagens = [];
-        //dd($barras->Produto->ProdutoImagemS);
         
-        foreach ($barras->Produto->ProdutoImagemS as $imagem) {
+        foreach ($barras->Produto->ImagemS as $imagem) {
             $imagens[] = [
                 'codimagem' => $imagem->codimagem,
                 'url' => URL::asset('public/imagens/'.$imagem->observacoes),

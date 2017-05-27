@@ -62,7 +62,7 @@
                 </p>
                 @endforeach
                
-                @foreach($model->ProdutoImagemS as $produto)
+                @foreach($model->ProdutoS as $produto)
                 <p>
                     <strong>Produto:</strong>  <a href="{{ url("produto/{$produto->codproduto}") }}">{{ $produto->produto }}</a>
                 </p>

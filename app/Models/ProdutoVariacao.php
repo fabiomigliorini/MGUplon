@@ -18,12 +18,14 @@ namespace MGLara\Models;
  * @property  numeric(14,6)                  $custoultimacompra                  
  * @property  numeric(14,3)                  $quantidadeultimacompra             
  * @property  timestamp                      $inativo                            
+ * @property  bigint                         $codprodutoimagem                   
  *
  * Chaves Estrangeiras
  * @property  Marca                          $Marca
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Usuario                        $UsuarioCriacao
  * @property  Produto                        $Produto
+ * @property  ProdutoImagem                  $ProdutoImagem
  *
  * Tabelas Filhas
  * @property  EstoqueLocalProdutoVariacao[]  $EstoqueLocalProdutoVariacaoS
@@ -35,15 +37,16 @@ class ProdutoVariacao extends MGModel
     protected $table = 'tblprodutovariacao';
     protected $primaryKey = 'codprodutovariacao';
     protected $fillable = [
-          'codproduto',
-         'variacao',
-         'referencia',
-         'codmarca',
-             'codopencart',
-         'dataultimacompra',
-         'custoultimacompra',
-         'quantidadeultimacompra',
-     ];
+        'codproduto',
+        'variacao',
+        'referencia',
+        'codmarca',
+        'codopencart',
+        'dataultimacompra',
+        'custoultimacompra',
+        'quantidadeultimacompra',
+        'codprodutoimagem',
+    ];
     protected $dates = [
         'alteracao',
         'criacao',
@@ -71,6 +74,11 @@ class ProdutoVariacao extends MGModel
     public function Produto()
     {
         return $this->belongsTo(Produto::class, 'codproduto', 'codproduto');
+    }
+
+    public function ProdutoImagem()
+    {
+        return $this->belongsTo(ProdutoImagem::class, 'codprodutoimagem', 'codprodutoimagem');
     }
 
 

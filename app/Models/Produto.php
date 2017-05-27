@@ -16,7 +16,7 @@ namespace MGLara\Models;
  * @property  date                           $inativo                            
  * @property  bigint                         $codtipoproduto                     NOT NULL
  * @property  boolean                        $site                               NOT NULL DEFAULT false
- * @property  varchar(1024)                  $descricaosite                      
+ * @property  text                           $descricaosite                      
  * @property  timestamp                      $alteracao                          
  * @property  bigint                         $codusuarioalteracao                
  * @property  timestamp                      $criacao                            
@@ -33,6 +33,7 @@ namespace MGLara\Models;
  * @property  boolean                        $vendesite                          NOT NULL DEFAULT false
  * @property  varchar(200)                   $metakeywordsite                    
  * @property  text                           $metadescriptionsite                
+ * @property  bigint                         $codprodutoimagem                   
  *
  * Chaves Estrangeiras
  * @property  Cest                           $Cest
@@ -44,6 +45,7 @@ namespace MGLara\Models;
  * @property  UnidadeMedida                  $UnidadeMedida
  * @property  Usuario                        $UsuarioAlteracao
  * @property  Usuario                        $UsuarioCriacao
+ * @property  ProdutoImagem                  $ProdutoImagem
  *
  * Tabelas Filhas
  * @property  PranchetaProduto[]             $PranchetaProdutoS
@@ -52,6 +54,9 @@ namespace MGLara\Models;
  * @property  ProdutoBarra[]                 $ProdutoBarraS
  * @property  ProdutoEmbalagem[]             $ProdutoEmbalagemS
  * @property  ProdutoHistoricoPreco[]        $ProdutoHistoricoPrecoS
+ * 
+ * Relacionamentos N x N
+ * @property  Imagem[]                       $ImagemS
  */
 
 class Produto extends MGModel
@@ -82,6 +87,7 @@ class Produto extends MGModel
         'vendesite',
         'metakeywordsite',
         'metadescriptionsite',
+        'codprodutoimagem',
     ];
     protected $dates = [
         'inativo',
@@ -136,6 +142,11 @@ class Produto extends MGModel
         return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
     }
 
+    public function ProdutoImagem()
+    {
+        return $this->belongsTo(ProdutoImagem::class, 'codprodutoimagem', 'codprodutoimagem');
+    }
+
 
     // Tabelas Filhas
     public function PranchetaProdutoS()
@@ -145,7 +156,7 @@ class Produto extends MGModel
 
     public function ProdutoImagemS()
     {
-        return $this->belongsToMany(Imagem::class, 'tblprodutoimagem', 'codproduto', 'codimagem');
+        return $this->hasMany(ProdutoImagem::class, 'codproduto', 'codproduto');
     }
 
     public function ProdutoVariacaoS()
@@ -166,6 +177,13 @@ class Produto extends MGModel
     public function ProdutoHistoricoPrecoS()
     {
         return $this->hasMany(ProdutoHistoricoPreco::class, 'codproduto', 'codproduto');
+    }
+    
+    
+    // Relacionamento N x N
+    public function ImagemS()
+    {
+        return $this->belongsToMany(Imagem::class, 'tblprodutoimagem', 'codproduto', 'codimagem');        
     }
 
 
