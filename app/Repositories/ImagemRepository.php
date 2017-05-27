@@ -123,7 +123,9 @@ class ImagemRepository extends MGRepository {
                 break;
         }
         
-        $qry->orderBy('', $s['dir']);
+        $qry->orderBy('criacao', 'DESC');
+        //$qry->paginate(50);
+        return $qry;
         
         // Paginacao
         /*
