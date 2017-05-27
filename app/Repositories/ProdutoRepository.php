@@ -950,4 +950,25 @@ class ProdutoRepository extends MGRepository {
         return $produto;
     }
     
+    public function alterarImagemPadrao ($codimagem, $codprodutoembalagem, $codprodutovariacao) {
+        
+        if (!$pi = $this->model->ProdutoImagemS()->where('codimagem', $codimagem)->first()) {
+            return false;
+        }
+        
+        if (!empty($codprodutoembalagem)) {
+            $repo = new ProdutoEmbalagemRepository();
+            $repo->findOrFail($codprodutoembalagem);
+            return $repo->update(null, ['codprodutoimagem' => $pi->codprodutoimagem]);
+        }
+        
+        if (!empty($codprodutovariacao)) {
+            $repo = new ProdutoVariacaoRepository();
+            $repo->findOrFail($codprodutovariacao);
+            return $repo->update(null, ['codprodutoimagem' => $pi->codprodutoimagem]);
+        }
+        
+        return $this->update(null, ['codprodutoimagem' => $pi->codprodutoimagem]);
+    }
+    
 }

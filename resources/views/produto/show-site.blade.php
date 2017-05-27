@@ -114,9 +114,6 @@
     <!-- titulo -->
     <h3 class='card-header'>
       {{ $pe->UnidadeMedida->unidademedida }} C/{{ formataNumero($pe->quantidade, 0) }}
-      <small>
-        <a class='btn btn-secondary btn-sm' href="{{ url("produto/{$pe->codproduto}/site") }}"><i class="fa fa-pencil"></i></a>      
-      </small>
     </h3>
 
     <!-- dados da unidade -->

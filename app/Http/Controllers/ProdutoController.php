@@ -954,4 +954,21 @@ class ProdutoController extends Controller
         return view('produto.quiosque-legado');
     }
     
+    public function alterarImagemPadrao(Request $request, $id) 
+    {
+        // busca registro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // altera imagem
+        if (!$this->repository->alterarImagemPadrao($request->codimagem, $request->codprodutoembalagem, $request->codprodutovariacao)) {
+            abort (500, 'Erro ao alterar imagem padrao');
+        }
+        
+        //retorna sucesso
+        return ['OK' => true];
+    }
+    
 }
