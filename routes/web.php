@@ -219,13 +219,13 @@ Route::group(['middleware' => 'auth'], function() {
     //Route::resource('imagem/produto-imagens','ImagemController@produtoImagens');
     Route::resource('imagem/produto', 'ImagemController@produto');
     
-    Route::resource('imagem/lixeira', 'ImagemController@lixeira');
-    Route::get('imagem/esvaziar-lixeira', 'ImagemController@esvaziarLixeira');
     Route::post('imagem/inativar', 'ImagemController@inativar');
     */
     
     Route::get('imagem/delete', 'ImagemController@delete');
     Route::resource('imagem/edit', 'ImagemController@edit');
+    Route::get('imagem/lixeira', 'ImagemController@lixeira');
+    Route::get('imagem/esvaziar-lixeira', 'ImagemController@esvaziarLixeira');
     Route::resource('imagem', 'ImagemController');
     
     /* Produto Barra */
