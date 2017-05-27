@@ -77,7 +77,7 @@ class ImagemRepository extends MGRepository {
         return false;
     }
     
-    public function listing($filters = [], $sort = [], $start = null, $length = null) {
+    public function listing($filters) {
         
         // Query da Entidade
         $qry = Imagem::query();
@@ -123,13 +123,17 @@ class ImagemRepository extends MGRepository {
                 break;
         }
         
+        $qry->orderBy('', $s['dir']);
+        
         // Paginacao
+        /*
         if (!empty($start)) {
             $qry->offset($start);
         }
         if (!empty($length)) {
             $qry->limit($length);
         }
+        
         
         // Ordenacao
         foreach ($sort as $s) {
@@ -142,7 +146,7 @@ class ImagemRepository extends MGRepository {
             , 'recordsTotal' => Imagem::count()
             , 'data' => $qry->get()
         ];
-        
+        */
     }
     
     public function url ($model = null) {

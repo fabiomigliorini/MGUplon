@@ -91,9 +91,10 @@ class ImagemController extends Controller
             ];
         }
         
+        $model = $this->repository->listing($filtro, $filtro['order'], $request['start'], $request['length']);
         
         // retorna View
-        return view('imagem.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
+        return view('imagem.index', ['bc'=>$this->bc, 'filtro'=>$filtro, 'model' => $model]);
     }
 
     /**

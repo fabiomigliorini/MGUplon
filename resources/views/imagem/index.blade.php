@@ -47,7 +47,28 @@
 
 <div class='card'>
     <div class='card-block table-responsive'>
-        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Imagem', 'Observacoes', 'Arquivo', ]])
+        <div class="row m-b-20">
+            @foreach($model as $row)
+            <div class="col-xs-6 col-md-2">
+                <div class="thumb">
+                    <a href="{{ URL::asset("public/imagens/$row->arquivo$row->observacoes") }}" class="image-popup" title="{{ $row->arquivo }}">
+                        <img src="{{ URL::asset("public/imagens/$row->arquivo$row->observacoes") }}" class="thumb-img" alt="{{ $row->arquivo }}">
+                    </a>
+                    
+                    <div class="gal-detail text-xs-center">
+                        <p class="text-muted">
+                            {{ $row->arquivo }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+            {!! $model->appends($filtro)->render() !!}
+        </div>
+
+
+
+
         <div class='clearfix'></div>
     </div>
 </div>
@@ -60,18 +81,9 @@
 @endsection
 @section('inscript')
 
-    @include('layouts.includes.datatable.assets')
-
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('imagem/datatable'), 'order' => $filtro['order'], 'filtros' => ['codimagem', 'codimagem', 'inativo', 'observacoes', 'arquivo', ] ])
-
     <script type="text/javascript">
         $(document).ready(function () {
-            datable_datatable.columnDefs {
-                render: function ( data, type, row ) {
-                        return '<strong>' + data +'</strong>';
-                },
-                targets: 3
-            };
+            // ...
         });
     </script>
 
