@@ -79,22 +79,23 @@ class ImagemController extends Controller
         $this->bc->addItem('Listagem');
         
         // Filtro da listagem
-        if (!$filtro = $this->getFiltro()) {
-            $filtro = [
-                'filtros' => [
-                    'inativo' => 1,
-                ],
-                'order' => [[
-                    'column' => 0,
-                    'dir' => 'DESC',
-                ]],
+        $key = str_replace('\\', ".", get_class($this));
+        if (!$request->session()->has($key)) {
+            $filtros = [
+                'ativo' => 1,
             ];
+            $request->session()->put($key, $filtros);
+        } 
+        
+        if(!empty($request->all())){
+            $request->session()->put($key, $request->all());
         }
         
-        $model = $this->repository->listing($filtro, $filtro['order'], $request['start'], $request['length']);
+        $filtro = $request->session()->get($key);        
+        $model = $this->repository->listing($filtro)->orderBy('criacao', 'DESC')->paginate(50);
         
         // retorna View
-        return view('imagem.index', ['bc'=>$this->bc, 'filtro'=>$filtro, 'model' => $model]);
+        return view('imagem.index', ['bc'=> $this->bc, 'filtro'=> $this->getFiltro(), 'model' => $model]);
     }
 
     /**
@@ -185,6 +186,37 @@ class ImagemController extends Controller
         }        
     }
 
+    public function lixeira()
+    {
+        $model = $this->repository->model->inativo()->orderBy('criacao', 'DESC')->paginate(50);
+        $this->bc->addItem('Lixeira');
+        $this->bc->header = 'Lixeira';
+
+        return view('imagem.lixeira', ['model' => $model, 'bc' => $this->bc]);
+    }
+
+    public function esvaziarLixeira()
+    {
+        try{
+            $imagens = $this->repository->model->whereNotNull('inativo')->get();
+            $this->repository->model->whereNotNull('inativo')->delete();
+            
+            foreach ($imagens as $imagem)
+            {
+                unlink('./public/imagens/'.$imagem->arquivo);
+            }
+            return ['OK' => 'Lixeira esvaziada!'];
+        }
+        catch(\Exception $e){
+            //$ret = ['resultado' => false, 'mensagem' => 'Erro ao esvaziar lixeira!', 'exception' => $e];
+            //return redirect('imagem/lixeira');
+            dd($e);
+            return ['mensagem' => $e];
+        }
+        //return json_encode($ret);        
+    }
+    
+    
     /**
      * Store a newly created resource in storage.
      *
@@ -437,8 +469,8 @@ class ImagemController extends Controller
             return ['OK' => $this->repository->inactivate()];
         }        
         
-        if ($this->repository->model->ImagemS->count() > 0) {
-            $repoProduto = $this->produtoRepository->findOrFail($this->repository->model->ImagemS->first()->codproduto);
+        if ($this->repository->model->ProdutoS->count() > 0) {
+            $repoProduto = $this->produtoRepository->findOrFail($this->repository->model->ProdutoS->first()->codproduto);
             $repoProduto->ImagemS()->detach($id);
             
             return ['OK' => $this->repository->inactivate()];

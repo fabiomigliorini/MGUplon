@@ -85,8 +85,6 @@
     <a class="btn btn-secondary btn-sm" href="{{ url("imagem/$model->codimagem/edit") }}"><i class="fa fa-pencil"></i></a>
     @if(empty($model->inativo))
         <a class="btn btn-secondary btn-sm" href="{{ url("imagem/$model->codimagem/inactivate") }}" data-activate data-question="Tem certeza que deseja inativar '{{ $model->codimagem }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-ban"></i></a>
-    @else
-        <a class="btn btn-secondary btn-sm" href="{{ url("imagem/$model->codimagem/activate") }}" data-activate data-question="Tem certeza que deseja ativar '{{ $model->codimagem }}'?" data-after="recarregaDiv('content-page')"><i class="fa fa-circle-o"></i></a>
     @endif
     <a class="btn btn-secondary btn-sm" href="{{ url("imagem/$model->codimagem") }}" data-delete data-question="Tem certeza que deseja excluir '{{ $model->codimagem }}'?" data-after="location.replace('{{ url('imagem') }}');"><i class="fa fa-trash"></i></a>                
     

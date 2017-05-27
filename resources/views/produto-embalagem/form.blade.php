@@ -1,3 +1,4 @@
+{!! Form::hidden('codproduto', Request::get('codproduto')) !!} 
 <fieldset class="form-group">
     {!! Form::label('codunidademedida', 'Unidade de Medida') !!}
     {!! Form::select2UnidadeMedida('codunidademedida', null, ['required' => true,  'class'=> 'form-control', 'campo' => 'unidademedida', 'id' => 'codunidademedida']) !!}

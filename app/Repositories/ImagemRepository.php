@@ -108,8 +108,9 @@ class ImagemRepository extends MGRepository {
         }
         
         $count = $qry->count();
-    
+        
         switch ($filters['inativo']) {
+        
             case 2: //Inativos
                 $qry = $qry->inativo();
                 break;
@@ -123,7 +124,9 @@ class ImagemRepository extends MGRepository {
                 break;
         }
         
-        $qry->orderBy('', $s['dir']);
+        $qry->orderBy('criacao', 'DESC');
+        //$qry->paginate(50);
+        return $qry;
         
         // Paginacao
         /*
