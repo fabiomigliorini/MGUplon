@@ -261,6 +261,10 @@ class ProdutoController extends Controller
         $this->bc->addItem($this->repository->model->produto);
         $this->bc->header = $this->repository->model->produto;
         
+        if(count($this->repository->model->ImagemS) > 0){
+            $this->repository->setarImagemPadrao();
+        }
+        
         // retorna show
         $estoque = null;
         switch ($request->get('_div'))

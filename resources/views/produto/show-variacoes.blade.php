@@ -38,7 +38,7 @@
             <!-- Referencia e marca -->
             <div class="card-subtitle text-truncate">
               <span class="text-muted">
-                {{ $pv->referencia }}asd
+                {{ $pv->referencia }}
               </span>
               @if (!empty($pv->codmarca))
               <br>

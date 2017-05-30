@@ -62,7 +62,7 @@
           <div role="tabpanel" class="tab-pane fade" id="tab-negocio">
             <div class="collapse" id="collapseNegocios">
               <div class='well well-sm'>
-                {!! Form::model(Request::session()->get('MGLara.Http.Controllers.NegocioProdutoBarraController.filtros'), ['route' => ['produto.show', 'produto'=> $model->codproduto], 'class' => 'form-horizontal', 'method' => 'GET', 'id' => 'produto-negocio-search', 'role' => 'search', 'autocomplete' => 'off'])!!}
+                {!! Form::model(Request::session()->get('MGLara.Http.Controllers.NegocioProdutoBarraController.filtros'), ['route' => ['produto.show', 'produto'=> $model->codproduto], 'class' => 'form-horizontal','id' => 'produto-negocio-search', 'role' => 'search', 'autocomplete' => 'off'])!!}
                 <div class="row">
                   <div class="col-md-4">
                     <div class="form-group">
@@ -274,7 +274,7 @@
           @endforeach 
         </div>
       </div>
-    </div><!-- /.modal-content -->
+    </div>
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
@@ -309,9 +309,7 @@
   </div>
 </div>
 
-
-
-
+<!-- /.modal-content -->
 
 @section('buttons')
 
@@ -359,7 +357,7 @@ function mostraListagemNegocios()
         dom: 'rtpi',
         pageLength: 10,
         language: {
-            url: "http://localhost/MGUplon/public/assets/plugins/datatables/Portuguese-Brasil.lang"
+            url: "{{ URL::asset('public/assets/plugins/datatables/Portuguese-Brasil.lang') }}"
         },
         processing: true,
         serverSide: true,
@@ -367,7 +365,7 @@ function mostraListagemNegocios()
             [ 2, 'DESC'],
         ],        
         ajax: {
-            url: 'http://localhost/MGUplon/negocio-produto-barra/datatable',
+            url: "{{ url('negocio-produto-barra/datatable') }}",
             data: function ( d ) {
                 d.filtros = new Object;
                     d.filtros.negocio_lancamento_de         = $('#negocio_lancamento_de').val();
@@ -430,7 +428,7 @@ function mostraListagemNotasFiscais()
         dom: 'rtpi',
         pageLength: 10,
         language: {
-            url: "http://localhost/MGUplon/public/assets/plugins/datatables/Portuguese-Brasil.lang"
+            url: "{{ URL::asset('public/assets/plugins/datatables/Portuguese-Brasil.lang') }}"
         },
         processing: true,
         serverSide: true,
@@ -438,7 +436,7 @@ function mostraListagemNotasFiscais()
             [ 2, 'DESC'],
         ],        
         ajax: {
-            url: 'http://localhost/MGUplon/nota-fiscal-produto-barra/datatable',
+            url: "{{ url('nota-fiscal-produto-barra/datatable') }}",
             data: function ( d ) {
                 d.filtros = new Object;
                     d.filtros.notasfiscais_lancamento_de         = $('#notasfiscais_lancamento_de').val();

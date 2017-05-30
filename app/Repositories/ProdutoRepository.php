@@ -982,5 +982,8 @@ class ProdutoRepository extends MGRepository {
         }
         return true;
         
+    public function setarImagemPadrao() {
+        $codimagem = $this->model->ImagemS->first()->codimagem;
+        $this->alterarImagemPadrao($codimagem, null, null);
     }
 }
