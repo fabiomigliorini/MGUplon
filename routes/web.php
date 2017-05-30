@@ -197,6 +197,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::patch('produto/{id}/site', 'ProdutoController@siteUpdate');
     Route::get('produto/{id}/site', 'ProdutoController@site');
     Route::patch('produto/{id}/alterar-imagem-padrao', 'ProdutoController@alterarImagemPadrao');
+    Route::patch('produto/{id}/alterar-imagem-ordem', 'ProdutoController@alterarImagemOrdem');
     
     Route::get('produto/typeahead', 'ProdutoController@typeahead');
     Route::get('produto/sincroniza-produto-open-cart', 'ProdutoController@sincronizaProdutoOpenCart');

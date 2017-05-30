@@ -968,7 +968,24 @@ class ProdutoController extends Controller
         
         // altera imagem
         if (!$this->repository->alterarImagemPadrao($request->codimagem, $request->codprodutoembalagem, $request->codprodutovariacao)) {
-            abort (500, 'Erro ao alterar imagem padrao');
+            abort (500, 'Erro ao alterar imagem padrão!');
+        }
+        
+        //retorna sucesso
+        return ['OK' => true];
+    }
+    
+    public function alterarImagemOrdem(Request $request, $id) 
+    {
+        // busca registro
+        $this->repository->findOrFail($id);
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // altera imagem
+        if (!$this->repository->alterarImagemOrdem($request->codimagem)) {
+            abort (500, 'Erro ao alterar ordem das imagens!');
         }
         
         //retorna sucesso
