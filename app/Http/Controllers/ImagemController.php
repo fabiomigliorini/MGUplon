@@ -62,7 +62,7 @@ class ImagemController extends Controller
         $this->subGrupoProdutoRepository    = $subGrupoProdutoRepository;
         
         $this->bc = new Breadcrumb('Imagem');
-        $this->bc->addItem('Imagem', url('imagem'));
+        //$this->bc->addItem('Imagem', url('imagem'));
     }
     
     /**
@@ -169,18 +169,28 @@ class ImagemController extends Controller
      */
     public function create(Request $request)
     {
-        // cria um registro em branco
-        $this->repository->new();
-        
+        if($request->codimagem){
+            $this->repository->findOrFail($request->codimagem);
+            
+        } else {
+            $this->repository->new();
+        }
         // autoriza
         $this->repository->authorize('create');
         
-        // breadcrumb
-        $this->bc->addItem('Novo');
-        
         // retorna view
         if($request->get('model') == 'produto') {
+            
+            $this->bc->addItem('Produto', url('produto'));
+            if(!$request->codimagem){
+                $produto = $this->produtoRepository->findOrFail($request->id);
+                $this->bc->addItem($produto->produto, url('produto', $produto->codproduto));
+            } else {
+                $this->bc->addItem($this->repository->model->ProdutoImagemS->first()->Produto->produto, url('produto', $this->repository->model->ProdutoImagemS->first()->Produto->codproduto));
+            }
+            $this->bc->addItem('Imagem');
             return view('imagem.produto', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+            
         } else {
             return view('imagem.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
         }        

@@ -73,7 +73,7 @@
 
               @foreach ($pbs as $pb)
               <div class="col-md-4 small text-truncate">
-                <div class="pull-right">
+                <div class="pull-right btn-group">
                   <a class="btn btn-sm btn-secondary waves-effect" href="{{ url("produto-barra/{$pb->codprodutobarra}/edit") }}"><i class="fa fa-pencil"></i></a>
                   <a class="btn btn-sm btn-secondary waves-effect" href="{{ url("produto-barra/{$pb->codprodutobarra}") }}" data-delete data-question="Tem certeza que deseja excluir o Código de Barras '{{ $pb->barras }}'?" data-after="recarregaDiv('div-variacoes');"><i class="fa fa-trash"></i></a>
                 </div>

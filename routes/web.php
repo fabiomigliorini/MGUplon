@@ -200,7 +200,7 @@ Route::group(['middleware' => 'auth'], function() {
     
     Route::get('produto/typeahead', 'ProdutoController@typeahead');
     Route::get('produto/sincroniza-produto-open-cart', 'ProdutoController@sincronizaProdutoOpenCart');
-    Route::patch('produto/{id}/transferir-variacao', 'ProdutoController@transferirVariacaoStore');
+    Route::patch('produto/{id}/transferir-variacao', 'ProdutoController@transferirVariacaoSalvar');
     Route::get('produto/{id}/transferir-variacao', 'ProdutoController@transferirVariacao');
     
     Route::resource('produto', 'ProdutoController');

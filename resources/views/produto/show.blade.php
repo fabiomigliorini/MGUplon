@@ -603,7 +603,7 @@ $(document).ready(function() {
     });
     */    
    
-    $( "#delete-imagem" ).click(function() {
+    $( ".delete-imagem" ).click(function() {
         var codimagem = $(this).data("codimagem");
         swal({
             title: "Tem certeza que deseja excluir essa imagem?",
