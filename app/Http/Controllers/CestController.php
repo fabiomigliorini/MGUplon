@@ -251,7 +251,7 @@ class CestController extends Controller
             $params['page'] = $params['page']??1;
             
             // Monta Query
-            $ncm = $this->ncmRepository->findOrFail($request->get('id'));
+            $ncm = $this->ncmRepository->findOrFail($request->get('codncm'));
             $cests = $ncm->cestsDisponiveis();            
             $results = [];
             foreach($cests as $cest)

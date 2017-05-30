@@ -390,7 +390,6 @@ END;
 });
 
 
-
 /* GRUPO DE PRODUTO */
 Form::macro('select2GrupoProduto', function($name, $value = null, $options = [])
 {
@@ -775,19 +774,30 @@ Form::macro('select2NaturezaOperacao', function($name, $selected = null, $option
 });
 
 /* CEST */
+
 Form::macro('select2Cest', function($name, $value = null, $options = [])
 {
     $options['id'] = $options['id']??$name;
     $id = $options['id'];
-    $placeholder = $options['placeholder']??'Família';
+    
+    $placeholder = $options['placeholder']??'Cest';
+    
     $minimumInputLength = $options['minimumInputLength']??0;
+    
     $allowClear = ($options['allowClear']??true)?'true':'false';
+    
     $closeOnSelect = ($options['closeOnSelect']??true)?'true':'false';
+    
     $cache = ($options['cache']??true)?'true':'false';
+    
     $somenteAtivos = ($options['somenteAtivos']??true)?'true':'false';
+
     $script = <<< END
+
     <script type="text/javascript">
+        
     $(document).ready(function() {
+        
         $('#{$id}').select2({
         
             placeholder: '{$placeholder}',
@@ -799,7 +809,7 @@ Form::macro('select2Cest', function($name, $value = null, $options = [])
             escapeMarkup: function (markup) { return markup; },
             
             ajax:{
-                url:baseUrl+'/cest/select2',
+                url:baseUrl + '/cest/select2',
                 delay: 300,
                 dataType:'json',
                 data: function (params) {
@@ -827,18 +837,10 @@ Form::macro('select2Cest', function($name, $value = null, $options = [])
 
                 if (repo.loading) return repo.text;
 
-                var css_titulo = "";
-                var css_detalhes = "text-muted";
-                if (repo.inativo) {
-                    css_titulo = "text-danger";
-                    css_detalhes = "text-danger";
-                }
-
                 var markup = "";
                 markup += "<b>" + repo.ncm + "</b>/";
                 markup += "<b>" + repo.cest + "</b>&nbsp;";
                 markup += "<span>" + repo.descricao + "</span>";
-
                 return markup; 
             },
                     
@@ -847,9 +849,7 @@ Form::macro('select2Cest', function($name, $value = null, $options = [])
             },
                     
         });
-        $('#{$options['codncm']}').change(function () {
-            $('#{$options['id']}').select2('val', '');
-        });                    
+                    
     });
 
     </script>
@@ -861,7 +861,6 @@ END;
 
     return $campo . $script;
 });
-
 
 
 /* PESSOA */

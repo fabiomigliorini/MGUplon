@@ -302,6 +302,21 @@
         margin-bottom: 1rem !important;
     }
 
+    body.modal-open,
+    .modal-open .navbar-fixed-top,
+    .modal-open .navbar-fixed-bottom {
+/*        margin-right: 15px;*/
+    }
+    .modal{
+        position: fixed;
+        top:0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1040;
+        display: none;
+    }
+    
 </style>
 <link href="{{ URL::asset('public/assets/css/bootstrap-alpha6-carousel.css') }}" rel="stylesheet" type="text/css"/>
 @include('layouts.includes.datatable.assets')

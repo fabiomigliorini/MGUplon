@@ -1,6 +1,10 @@
 html {
   overflow-y: scroll;
 }  
+body {
+    position: relative;
+    padding-right: 0 !important;      
+}
 table.dataTable.table-sm thead th.sorting:after, 
 table.dataTable.table-sm thead th.sorting_asc:after, 
 table.dataTable.table-sm thead th.sorting_desc:after {
