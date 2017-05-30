@@ -971,4 +971,16 @@ class ProdutoRepository extends MGRepository {
         return $this->update(null, ['codprodutoimagem' => $pi->codprodutoimagem]);
     }
     
+    public function alterarImagemOrdem($codimagemS) {
+
+        $i = 0;
+        foreach ($codimagemS as $codimagem) {
+            if (!$this->model->ProdutoImagemS()->where('codimagem', $codimagem)->update(['ordem' => $i])) {
+                return false;
+            }
+            $i++;
+        }
+        return true;
+        
+    }
 }

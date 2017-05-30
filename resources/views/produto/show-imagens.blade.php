@@ -1,11 +1,4 @@
 <div id="div-imagens">
-    <?php $imagens = $model->ImagemS()->orderBy('ordem')->get(); ?>
-    <p>
-        <a href="{{ url("/imagem/create?model=produto&id=$model->codproduto") }}" title="Cadastrar imagem">
-            Nova Imagem
-            <i class="fa fa-plus"></i> 
-        </a>
-    </p>
     <div id="carouselImagens" class="carousel slide" data-ride="carousel">
         <ol class="carousel-indicators">
         @for ($i = 0; $i < sizeof($imagens); $i++)

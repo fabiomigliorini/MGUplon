@@ -1,5 +1,6 @@
 @extends('layouts.default')
 @section('content')
+<?php $imagens = $model->ImagemS()->orderBy('ordem')->get(); ?>
 
 <div class="col-md-2 pull-right" >
   <div class="row">
@@ -122,7 +123,7 @@
                 <div class="row">
                   <div class="col-md-4">
                     <div class="form-group">
-                      {!! Form::label('notasfiscais_lancamento_de', 'De') !!}
+                      {!! Form::label('notasfiscais_lancamento_de', 'De') !!}ProdutoImagemS
                       {!! Form::date('notasfiscais_lancamento_de', null, ['class' => 'form-control', 'id' => 'notasfiscais_lancamento_de', 'placeholder' => 'De']) !!}
                     </div>
                   </div>
@@ -170,44 +171,30 @@
             <div id="div-notasfiscais" class="table-responsive">
               <a class='btn btn-sm btn-secondary waves-effect' href='#filtro-notasfiscais' data-toggle='collapse' aria-expanded='false' aria-controls='filtro-notasfiscais'><i class='fa fa-search'></i></a>
               @include('layouts.includes.datatable.html', ['id' => 'notas', 'colunas' => ['URL', 'Nota', 'Lançamento', 'Pessoa', 'Operação', 'Filial', 'Variação', 'Valor', 'QTD']])
-              <div class="clearfix"></div>                    
+              <div class="clearfix"></div>                    ProdutoImagemS
             </div>
           </div>
         </div>
     </div>    
 </div>
 
-<!--  Modal content for the above example -->
-<div class="modal fade modal-alterar-imagem-padrao" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> × </button>
-        <h4 class="modal-title" id="myLargeModalLabel">Alterar Imagem Padrão</h4>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          @foreach ($model->ImagemS()->orderBy('ordem')->get() as $imagem)
-          <div class="col-md-3">
-            <div class=" thumb">
-              <a href="#" class="btn-alterar-imagem-padrao-salvar" data-codimagem="{{ $imagem->codimagem }}" data-dismiss="modal" >
-                <img src="{{ asset("public/imagens/$imagem->arquivo") }}" class="thumb-img">
-              </a>
-            </div>
-          </div>
-          @endforeach 
-        </div>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
 
 <div class="row" id="secao-imagens">
   
   <div class="col-md-6">
     <div class='card'>
-      <h4 class="card-header">Imagens</h4>
+      <h4 class="card-header">
+        Imagens
+        <div class="btn-group">
+          <a class="btn btn-sm btn-secondary waves-effect" href="{{ url("/imagem/create?model=produto&id=$model->codproduto") }}" title="Cadastrar imagem">
+            <i class="fa fa-plus"></i> 
+          </a>
+          <button class="btn btn-sm btn-secondary waves-effect" data-toggle="modal" data-target=".modal-alterar-imagem-ordem"><i class="fa fa-retweet"></i></button>
+
+        </div>
+
+
+      </h4>
       <div class='card-block'>
         @include('produto.show-imagens')
       </div>
@@ -265,6 +252,67 @@
   @include('produto.show-site')
 </div>
 
+
+<!--  Modal content for the above example -->
+<div class="modal fade modal-alterar-imagem-padrao" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> × </button>
+        <h4 class="modal-title" id="myLargeModalLabel">Alterar Imagem Padrão</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          @foreach ($imagens as $imagem)
+          <div class="col-md-3">
+            <div class=" thumb">
+              <a href="#" class="btn-alterar-imagem-padrao-salvar" data-codimagem="{{ $imagem->codimagem }}" data-dismiss="modal" >
+                <img src="{{ asset("public/imagens/$imagem->arquivo") }}" class="thumb-img">
+              </a>
+            </div>
+          </div>
+          @endforeach 
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<!--  Modal content for the above example -->
+<div class="modal fade modal-alterar-imagem-ordem" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> × </button>
+        <h4 class="modal-title" id="myLargeModalLabel">Alterar Imagem Padrão</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row" id="sortable">
+          @foreach ($imagens as $imagem)
+          <div class="col-md-2" id="codimagem-{{ $imagem->codimagem }}">
+            <div class="thumb">
+              <a href="#" data-codimagem="{{ $imagem->codimagem }}">
+                <img src="{{ asset("public/imagens/$imagem->arquivo") }}" class="thumb-img">
+              </a>
+            </div>
+          </div>
+          @endforeach 
+        </div>
+      </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" id="btn-modal-alterar-imagem-ordem-salvar">Salvar</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
 @section('buttons')
 
     <a class="btn btn-secondary btn-sm waves-effect" href="{{ url("produto/$model->codproduto/edit") }}" data-toggle="tooltip" title="Editar"><i class="fa fa-pencil"></i></a>
@@ -301,7 +349,6 @@
     .nav-tabs {
         margin-bottom: 1rem !important;
     }
-
 </style>
 <link href="{{ URL::asset('public/assets/css/bootstrap-alpha6-carousel.css') }}" rel="stylesheet" type="text/css"/>
 @include('layouts.includes.datatable.assets')
@@ -495,6 +542,25 @@ function alterarImagemPadrao(link) {
     });  
 }
 
+function alterarImagemOrdem(ordem) {
+    $.ajax({
+        type: 'PATCH',
+        url: "{{ url("produto/{$model->codproduto}/alterar-imagem-ordem") }}",
+        dataType: 'json',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        data: ordem,
+    })
+    .done(function (data) {
+        toastr['success']('Ordem de exibição das imagens alterada!');
+    })
+    .fail(function (XHR) {
+        toastr['error'](XHR.status + ' ' + XHR.statusText);
+    });    
+}
+
+
 var codprodutoembalagem = null;
 var codprodutovariacao = null;
 
@@ -580,14 +646,6 @@ $(document).ready(function() {
         });         
     }); 
     
-    /*    
-    $('#codproduto').change(function (){
-        window.location.href = '{{ url("produto/") }}' + $('#codproduto').val();
-    });
-    
-    });
-    */    
-   
     $( "#delete-imagem" ).click(function() {
         var codimagem = $(this).data("codimagem");
         swal({
@@ -603,9 +661,17 @@ $(document).ready(function() {
             } 
         });
     });    
+
+    $('#sortable').sortable();
+
+    $('#btn-modal-alterar-imagem-ordem-salvar').on('click', function(e){ // trigger function on save button click
+        var sortable_data = $('#sortable').sortable('serialize'); // serialize data from ul#sortable
+        alterarImagemOrdem(sortable_data);
+    });
+
 });
 
 </script>
-
+<script src="{{ URL::asset('public/assets/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
 @endsection
 @stop
