@@ -35,7 +35,7 @@ class NotaFiscalProdutoBarraController extends Controller
     public function index(Request $request) {
         
         // Permissao
-        $this->repository->authorize('listing');
+        //$this->repository->authorize('listing');
         
         // Breadcrumb
         $this->bc->addItem('Listagem');
@@ -67,7 +67,7 @@ class NotaFiscalProdutoBarraController extends Controller
     public function datatable(Request $request) {
         
         // Autorizacao
-        $this->repository->authorize('listing');
+        //$this->repository->authorize('listing');
 
         // Grava Filtro para montar o formulario da proxima vez que o index for carregado
         $this->setFiltro([
