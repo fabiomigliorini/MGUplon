@@ -14,7 +14,9 @@
           </span>
         </h5>
         <div class="btn-group pull-right">
-          <button class="btn btn-sm btn-secondary waves-effect btn-alterar-imagem-padrao" data-toggle="modal" data-target=".modal-alterar-imagem-padrao"><i class="fa fa-image"></i></button>
+            <div data-toggle="modal" data-target=".modal-alterar-imagem-padrao">
+                <button class="btn btn-sm btn-secondary waves-effect btn-alterar-imagem-padrao" title="Alterar Imagem Padrão" data-toggle="tooltip"><i class="fa fa-image"></i></button>
+            </div>
         </div>
         <div class="clearfix"></div>
       </div>
@@ -42,9 +44,11 @@
           </span>
         </h5>
         <div class="btn-group pull-right">
-          <a class="btn btn-sm btn-secondary waves-effect" href="{{ url("produto-embalagem/$pe->codprodutoembalagem/edit") }}"><i class="fa fa-pencil"></i></a>
-          <a class="btn btn-sm btn-secondary waves-effect" href="{{ url("produto-embalagem/$pe->codprodutoembalagem") }}" data-delete data-question="Tem certeza que deseja excluir a Embalagem '{{ $pe->UnidadeMedida->unidademedida }} com {{ formataNumero($pe->quantidade, 0) }}'?" data-after="recarregaDiv('div-embalagens')"><i class="fa fa-trash"></i></a>
-          <button class="btn btn-sm btn-secondary waves-effect btn-alterar-imagem-padrao" data-codprodutoembalagem="{{ $pe->codprodutoembalagem }}" data-toggle="modal" data-target=".modal-alterar-imagem-padrao"><i class="fa fa-image"></i></button>
+            <a class="btn btn-sm btn-secondary waves-effect" title="Editar Embalagem" data-toggle="tooltip" href="{{ url("produto-embalagem/$pe->codprodutoembalagem/edit") }}"><i class="fa fa-pencil"></i></a>
+            <a class="btn btn-sm btn-secondary waves-effect" title="Excluir Embalagem" data-toggle="tooltip" href="{{ url("produto-embalagem/$pe->codprodutoembalagem") }}" data-delete data-question="Tem certeza que deseja excluir a Embalagem '{{ $pe->UnidadeMedida->unidademedida }} com {{ formataNumero($pe->quantidade, 0) }}'?" data-after="recarregaDiv('div-embalagens')"><i class="fa fa-trash"></i></a>
+            <div class="btn btn-sm btn-secondary waves-effect " data-toggle="modal" data-target=".modal-alterar-imagem-padrao">
+                <a class="btn-alterar-imagem-padrao" title="Alterar Imagem Padrão" data-toggle="tooltip" data-codprodutoembalagem="{{ $pe->codprodutoembalagem }}"><i class="fa fa-image"></i></a>
+            </div>
         </div>
         <div class="clearfix"></div>
       </div>

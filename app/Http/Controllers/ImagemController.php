@@ -82,7 +82,7 @@ class ImagemController extends Controller
         $key = str_replace('\\', ".", get_class($this));
         if (!$request->session()->has($key)) {
             $filtros = [
-                'ativo' => 1,
+                'inativo' => 1,
             ];
             $request->session()->put($key, $filtros);
         } 
@@ -91,7 +91,8 @@ class ImagemController extends Controller
             $request->session()->put($key, $request->all());
         }
         
-        $filtro = $request->session()->get($key);        
+        $filtro = $request->session()->get($key);
+        
         $model = $this->repository->listing($filtro)->orderBy('criacao', 'DESC')->paginate(50);
         
         // retorna View

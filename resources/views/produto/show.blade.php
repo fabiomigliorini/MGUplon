@@ -186,11 +186,12 @@
       <h4 class="card-header">
         Imagens
         <div class="btn-group">
-          <a class="btn btn-sm btn-secondary waves-effect" href="{{ url("/imagem/create?model=produto&id=$model->codproduto") }}" title="Cadastrar imagem">
-            <i class="fa fa-plus"></i> 
-          </a>
-          <button class="btn btn-sm btn-secondary waves-effect" data-toggle="modal" data-target=".modal-alterar-imagem-ordem"><i class="fa fa-retweet"></i></button>
-
+            <a class="btn btn-sm btn-secondary waves-effect" data-toggle="tooltip" href="{{ url("/imagem/create?model=produto&id=$model->codproduto") }}" title="Cadastrar imagem">
+              <i class="fa fa-plus"></i> 
+            </a>
+            <div class="btn btn-sm btn-secondary waves-effect" data-toggle="modal"  data-target=".modal-alterar-imagem-ordem">
+                <a title="Alterar ordem"data-toggle="tooltip"><i class="fa fa-retweet"></i></a>
+            </div>
         </div>
 
 

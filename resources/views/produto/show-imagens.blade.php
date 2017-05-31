@@ -19,8 +19,8 @@
                 <div class="carousel-caption">
                     <p>{{ $imagem->arquivo }}</p>
                     <p>
-                        <a class="btn btn-secondary" href="{{ url("/imagem/create?model=produto&id=$model->codproduto&codimagem=$imagem->codimagem") }}"><i class="fa fa-pencil"></i></a>
-                        <a class="btn btn-secondary delete-imagem" data-codimagem="{{ $imagem->codimagem }}"><i class="fa fa-trash"></i></a>
+                        <a class="btn btn-secondary btn-sm" data-toggle="tooltip" title="Editar" href="{{ url("/imagem/create?model=produto&id=$model->codproduto&codimagem=$imagem->codimagem") }}"><i class="fa fa-pencil"></i></a>
+                        <a class="btn btn-secondary btn-sm delete-imagem" data-toggle="tooltip" title="Excluir" data-codimagem="{{ $imagem->codimagem }}"><i class="fa fa-trash"></i></a>
                     </p>
                 </div>                
             </div>

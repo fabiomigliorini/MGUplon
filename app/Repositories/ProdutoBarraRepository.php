@@ -43,7 +43,6 @@ class ProdutoBarraRepository extends MGRepository {
             ],
             'barras' => [
                 'max:50',
-                'required',
                 Rule::unique('tblprodutobarra')->ignore($id, 'codprodutobarra'),
 
             ],
@@ -68,7 +67,6 @@ class ProdutoBarraRepository extends MGRepository {
             'codproduto.required' => 'O campo "codproduto" deve ser preenchido!',
             'variacao.max' => 'O campo "variacao" não pode conter mais que 100 caracteres!',
             'barras.max' => 'O campo "barras" não pode conter mais que 50 caracteres!',
-            'barras.required' => 'O campo "barras" deve ser preenchido!',
             'barras.unique'        => 'Este Código de Barras já existe!',
             'referencia.max' => 'O campo "referencia" não pode conter mais que 50 caracteres!',
             'codmarca.numeric' => 'O campo "codmarca" deve ser um número!',
@@ -284,8 +282,7 @@ class ProdutoBarraRepository extends MGRepository {
     
     public function save(array $options = [])
     {
-        
-        if (!$this->model->barras) {
+        if (is_null($this->model->barras)) {
             if (!$this->model->codprodutobarra) {
                 $codprodutobarra = \DB::select("select nextval('tblprodutobarra_codprodutobarra_seq') codprodutobarra");
                 $codprodutobarra = intval($codprodutobarra['0']->codprodutobarra);

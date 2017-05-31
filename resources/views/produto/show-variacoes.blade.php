@@ -19,9 +19,11 @@
 
             <!-- botoes -->
             <div class="pull-right btn-group">
-              <a class="btn btn-sm btn-secondary waves-effect" href="{{ url("produto-variacao/$pv->codprodutovariacao/edit") }}"><i class="fa fa-pencil"></i></a>
-              <a class="btn btn-sm btn-secondary waves-effect" href="{{ url("produto-variacao/$pv->codprodutovariacao") }}" data-delete data-question="Tem certeza que deseja excluir a variação '{{ $pv->variacao }}'?" data-after="recarregaDiv('div-variacoes');"><i class="fa fa-trash"></i></a>
-              <button class="btn btn-sm btn-secondary waves-effect btn-alterar-imagem-padrao" data-codprodutovariacao="{{ $pv->codprodutovariacao }}" data-toggle="modal" data-target=".modal-alterar-imagem-padrao"><i class="fa fa-image"></i></button>
+              <a class="btn btn-sm btn-secondary waves-effect" title="Editar Variação" data-toggle="tooltip" href="{{ url("produto-variacao/$pv->codprodutovariacao/edit") }}"><i class="fa fa-pencil"></i></a>
+              <a class="btn btn-sm btn-secondary waves-effect" title="Excluir Variação" data-toggle="tooltip" href="{{ url("produto-variacao/$pv->codprodutovariacao") }}" data-delete data-question="Tem certeza que deseja excluir a variação '{{ $pv->variacao }}'?" data-after="recarregaDiv('div-variacoes');"><i class="fa fa-trash"></i></a>
+              <div class="btn btn-sm btn-secondary waves-effect" data-toggle="modal" data-target=".modal-alterar-imagem-padrao">
+                  <a class="btn-alterar-imagem-padrao"  title="Alterar Imagem Padrão" data-toggle="tooltip" data-codprodutovariacao="{{ $pv->codprodutovariacao }}"><i class="fa fa-image"></i></a>
+              </div>
             </div>
 
             <!-- variacao --> 
@@ -74,8 +76,8 @@
               @foreach ($pbs as $pb)
               <div class="col-md-4 small text-truncate">
                 <div class="pull-right btn-group">
-                  <a class="btn btn-sm btn-secondary waves-effect" href="{{ url("produto-barra/{$pb->codprodutobarra}/edit") }}"><i class="fa fa-pencil"></i></a>
-                  <a class="btn btn-sm btn-secondary waves-effect" href="{{ url("produto-barra/{$pb->codprodutobarra}") }}" data-delete data-question="Tem certeza que deseja excluir o Código de Barras '{{ $pb->barras }}'?" data-after="recarregaDiv('div-variacoes');"><i class="fa fa-trash"></i></a>
+                  <a class="btn btn-sm btn-secondary waves-effect" title="Editar Código de Barras" data-toggle="tooltip" href="{{ url("produto-barra/{$pb->codprodutobarra}/edit") }}"><i class="fa fa-pencil"></i></a>
+                  <a class="btn btn-sm btn-secondary waves-effect" title="Excluir Código de Barras" data-toggle="tooltip" href="{{ url("produto-barra/{$pb->codprodutobarra}") }}" data-delete data-question="Tem certeza que deseja excluir o Código de Barras '{{ $pb->barras }}'?" data-after="recarregaDiv('div-variacoes');"><i class="fa fa-trash"></i></a>
                 </div>
                 {{ $pb->barras }}
                 <br>

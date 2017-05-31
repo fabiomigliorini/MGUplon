@@ -53,3 +53,7 @@ input[type="month"].form-control {
   margin-top: 10px;
   /*margin-top: 73px; */
 }
+
+.btn-secondary a, .btn-secondary a:hover {
+    color: #373a3c;
+}

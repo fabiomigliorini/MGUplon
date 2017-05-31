@@ -7,7 +7,7 @@
     <h3 class='card-header'>
       {{ $model->UnidadeMedida->unidademedida }}
       <small>
-        <a class='btn btn-secondary btn-sm' href="{{ url("produto/{$model->codproduto}/site") }}"><i class="fa fa-pencil"></i></a>      
+        <a class='btn btn-secondary btn-sm' href="{{ url("produto/{$model->codproduto}/site") }}" title="Informações p/ Site" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>      
       </small>
     </h3>
 

@@ -8,7 +8,7 @@
         $embalagens[$pe->codprodutoembalagem] = $pe->descricao;
     }
     
-    $variacoes = $model->Produto->ProdutoVariacaoS()->orderBy('variacao', 'ASC NULLS FIRST')->pluck('variacao', 'codprodutovariacao')->all();
+    $variacoes = $model->Produto->ProdutoVariacaoS()->orderBy('variacao', 'ASC')->orderByRaw('variacao nulls first')->pluck('variacao', 'codprodutovariacao')->all();
 
     foreach($variacoes as $cod => $descr)
         if (empty($descr))
@@ -31,7 +31,7 @@
     
         <fieldset class="form-group">
             {!! Form::label('barras', 'Barras') !!}
-            <div id="barrasDiv">{!! Form::text('barras', null, ['class'=> 'form-control', 'id'=>'barras', 'maxlength'=>'50', 'required'=>'required']) !!}</div>
+            <div id="barrasDiv">{!! Form::text('barras', null, ['class'=> 'form-control', 'id'=>'barras', 'maxlength'=>'50']) !!}</div>
         </fieldset>
         <fieldset class="form-group">
             {!! Form::label('variacao', 'Detalhes') !!}

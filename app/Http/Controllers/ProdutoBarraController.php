@@ -183,7 +183,7 @@ class ProdutoBarraController extends Controller
         $this->repository->authorize('create');
         
         // cria
-        if (!$this->repository->create()) {
+        if (!$this->repository->save()) {
             abort(500);
         }        
         

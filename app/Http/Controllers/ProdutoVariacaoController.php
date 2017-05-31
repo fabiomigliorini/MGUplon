@@ -342,7 +342,7 @@ class ProdutoVariacaoController extends Controller
             
             // Ordenacao e dados para retornar
             $qry->select('variacao', 'codprodutovariacao');
-            $qry->orderByRaw('variacao nulls first');
+            $qry->orderBy('variacao', 'ASC')->orderByRaw('variacao nulls first');
             $qry->limit($registros_por_pagina);
             $qry->offSet($registros_por_pagina * ($params['page']-1));
             
