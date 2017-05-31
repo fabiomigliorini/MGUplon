@@ -348,8 +348,12 @@
         margin-bottom: 1rem !important;
     }
 </style>
-<link href="{{ URL::asset('public/assets/css/bootstrap-alpha6-carousel.css') }}" rel="stylesheet" type="text/css"/>
 @include('layouts.includes.datatable.assets')
+<link href="{{ URL::asset('public/assets/css/bootstrap-alpha6-carousel.css') }}" rel="stylesheet" type="text/css"/>
+<script src="{{ URL::asset('public/assets/plugins/jquery-ui/ui/core.js') }}"></script>
+<script src="{{ URL::asset('public/assets/plugins/jquery-ui/ui/widget.js') }}"></script>
+<script src="{{ URL::asset('public/assets/plugins/jquery-ui/ui/mouse.js') }}"></script>
+<script src="{{ URL::asset('public/assets/plugins/jquery-ui/ui/sortable.js') }}"></script>
 <script type="text/javascript">
 function mostraListagemNegocios()
 {
@@ -563,7 +567,6 @@ var codprodutoembalagem = null;
 var codprodutovariacao = null;
 
 $(document).ready(function() {
-    
     $('.btn-alterar-imagem-padrao').click(function (e) {
         codprodutoembalagem = $(this).data('codprodutoembalagem');
         codprodutovariacao = $(this).data('codprodutovariacao');
@@ -670,6 +673,6 @@ $(document).ready(function() {
 });
 
 </script>
-<script src="{{ URL::asset('public/assets/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
 @endsection
+
 @stop
