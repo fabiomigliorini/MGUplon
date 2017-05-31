@@ -2,7 +2,7 @@
 
 
   <!-- Unidade -->
-  <div class="col-md-3">
+  <div class="col-md-2">
     <div class="card">
       <img class="card-img-top img-fluid" src="{{ empty($model->codprodutoimagem)?URL::asset('public/imagens/semimagem.jpg'):URL::asset("public/imagens/{$model->ProdutoImagem->Imagem->arquivo}") }}" id="imagem-principal">
       <div class="card-block">
@@ -23,7 +23,7 @@
 
   @foreach($model->ProdutoEmbalagemS()->orderBy('quantidade')->get() as $pe)
   <!-- Embalagem {{ $pe->codprodutoembalagem }} -->
-  <div class="col-md-3">
+  <div class="col-md-2">
     <div class="card">
       <img class="card-img-top img-fluid" src="{{ empty($pe->codprodutoimagem)?URL::asset('public/imagens/semimagem.jpg'):URL::asset("public/imagens/{$pe->ProdutoImagem->Imagem->arquivo}") }}" id="imagem-embalagem-{{ $pe->codprodutoembalagem}}">
       <div class="card-block">
