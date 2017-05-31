@@ -192,7 +192,7 @@ class ProdutoRepository extends MGRepository {
         if (empty($id)) {
             $id = $this->model->codproduto;
         }
-        
+        $quantidade=[];
         foreach ($this->model->ProdutoEmbalagemS()->orderBy('quantidade')->get() as $pe) {
             $quantidade[$pe->codprodutoembalagem] = $pe->quantidade;
         }
