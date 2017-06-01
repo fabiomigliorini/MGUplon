@@ -282,7 +282,13 @@ class ImagemController extends Controller
             if ($image['input']['type'] != 'image/jpeg') {
                 abort(500, 'Imagem deve ser um JPEG!');
             }
-
+            
+            $ordem = 0;
+            
+            if(count($repo->ImagemS()->get()) > 0){
+                $ordem = $repo->ImagemS()->orderBy('ordem', 'DESC')->first()->ProdutoImagemS->first()->ordem;
+            }
+            
             // Salva para ganhar o ID
             $this->repository->new();
             $this->repository->save();
@@ -293,7 +299,7 @@ class ImagemController extends Controller
             $this->repository->save();      
             
             // Anexa imagem ao produto
-            $repo->ImagemS()->attach($this->repository->model->codimagem);
+            $repo->ImagemS()->attach($this->repository->model->codimagem, ['ordem' => $ordem + 1]);
 
             // Salva o arquivo
             Slim::saveFile($image['output']['data'], $arquivo, './public/imagens', false);
