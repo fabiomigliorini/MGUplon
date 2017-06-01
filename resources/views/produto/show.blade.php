@@ -3,28 +3,28 @@
 <?php $imagens = $model->ImagemS()->orderBy('ordem')->get(); ?>
 
 <div class="col-md-2 pull-right" >
-  <div class="row">
-    <div class="card" style="position: sticky">
-        <div class="card-block">
-    <ul class="nav nav-pills nav-stacked">
-      <li class="nav-item">
-        <a class="nav-link" href="#secao-embalagens">Embalagens</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#secao-variacoes">Variações</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#secao-movimentacao">Movimentação</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#secao-imagens">Imagens</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#secao-site">Site</a>
-      </li>
-    </ul>
-      </div>
-  </div>
+    <div class="row">
+        <div class="card" style="position: sticky">
+            <div class="card-block">
+                <ul class="nav nav-pills nav-stacked">
+                  <li class="nav-item">
+                    <a class="nav-link" href="#secao-embalagens">Embalagens</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#secao-variacoes">Variações</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#secao-movimentacao">Movimentação</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#secao-imagens">Imagens</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#secao-site">Site</a>
+                  </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -171,7 +171,7 @@
             <div id="div-notasfiscais" class="table-responsive">
               <a class='btn btn-sm btn-secondary waves-effect' href='#filtro-notasfiscais' data-toggle='collapse' aria-expanded='false' aria-controls='filtro-notasfiscais'><i class='fa fa-search'></i></a>
               @include('layouts.includes.datatable.html', ['id' => 'notas', 'colunas' => ['URL', 'Nota', 'Lançamento', 'Pessoa', 'Operação', 'Filial', 'Variação', 'Valor', 'QTD']])
-              <div class="clearfix"></div>                    ProdutoImagemS
+              <div class="clearfix"></div>
             </div>
           </div>
         </div>

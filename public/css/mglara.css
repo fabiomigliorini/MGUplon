@@ -29,6 +29,13 @@ table.dataTable.table-sm thead .sorting_desc_disabled::after {
 .select2 { 
     width: 100% !important; 
 }
+/*
+.select2-container--focus, .select2-dropdown--below, .select2-container--open {
+    border: 1px solid red !important;;
+    border-bottom: none !important;	 
+	
+}
+/*
 input[type="number"].form-control {
     text-align: right;
 }

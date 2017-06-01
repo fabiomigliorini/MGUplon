@@ -105,126 +105,6 @@
                     </div>
                 </div>
             </div>
-
-            <!--
-                <div class="col-md-2">
-                    <div class="form-group">
-                        <label for="codproduto" class="control-label">#</label>
-                        {!! Form::number('codproduto', null, ['class'=> 'form-control', 'id'=>'codproduto', 'step'=>1, 'min'=>1]) !!}
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="codproduto" class="control-label">Produto</label>
-                        {!! Form::text('codproduto', null, ['class'=> 'form-control', 'id'=>'codproduto']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="produto" class="control-label">Produto</label>
-                        {!! Form::text('produto', null, ['class'=> 'form-control', 'id'=>'produto']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="referencia" class="control-label">Referencia</label>
-                        {!! Form::text('referencia', null, ['class'=> 'form-control', 'id'=>'referencia']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codunidademedida" class="control-label">Codunidademedida</label>
-                        {!! Form::text('codunidademedida', null, ['class'=> 'form-control', 'id'=>'codunidademedida']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codsubgrupoproduto" class="control-label">Codsubgrupoproduto</label>
-                        {!! Form::text('codsubgrupoproduto', null, ['class'=> 'form-control', 'id'=>'codsubgrupoproduto']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codmarca" class="control-label">Codmarca</label>
-                        {!! Form::text('codmarca', null, ['class'=> 'form-control', 'id'=>'codmarca']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="preco" class="control-label">Preco</label>
-                        {!! Form::text('preco', null, ['class'=> 'form-control', 'id'=>'preco']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="importado" class="control-label">Importado</label>
-                        {!! Form::text('importado', null, ['class'=> 'form-control', 'id'=>'importado']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codtributacao" class="control-label">Codtributacao</label>
-                        {!! Form::text('codtributacao', null, ['class'=> 'form-control', 'id'=>'codtributacao']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codtipoproduto" class="control-label">Codtipoproduto</label>
-                        {!! Form::text('codtipoproduto', null, ['class'=> 'form-control', 'id'=>'codtipoproduto']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="site" class="control-label">Site</label>
-                        {!! Form::text('site', null, ['class'=> 'form-control', 'id'=>'site']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="descricaosite" class="control-label">Descricaosite</label>
-                        {!! Form::text('descricaosite', null, ['class'=> 'form-control', 'id'=>'descricaosite']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codncm" class="control-label">Codncm</label>
-                        {!! Form::text('codncm', null, ['class'=> 'form-control', 'id'=>'codncm']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codcest" class="control-label">Codcest</label>
-                        {!! Form::text('codcest', null, ['class'=> 'form-control', 'id'=>'codcest']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="observacoes" class="control-label">Observacoes</label>
-                        {!! Form::text('observacoes', null, ['class'=> 'form-control', 'id'=>'observacoes']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codopencart" class="control-label">Codopencart</label>
-                        {!! Form::text('codopencart', null, ['class'=> 'form-control', 'id'=>'codopencart']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="codopencartvariacao" class="control-label">Codopencartvariacao</label>
-                        {!! Form::text('codopencartvariacao', null, ['class'=> 'form-control', 'id'=>'codopencartvariacao']) !!}
-                    </div>
-                </div>
-                <div class="col-md-1">
-                    <div class="form-group">
-                        <label for="inativo" class="control-label">Ativos</label>
-                        {!! Form::select2Inativo('inativo', null, ['class'=> 'form-control', 'id'=>'inativo']) !!}
-                    </div>
-                </div>
-                <div class="clearfix"></div>
-                -->
-
-
             {!! Form::close() !!}
             <div class='clearfix'></div>
         </div>
@@ -234,7 +114,7 @@
 
 <div class='card'>
     <div class='card-block table-responsive'>
-        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Produto', 'SubGrupo', 'Marca', 'UND', 'Referencia', 'Preco' ]])
+        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Produto', 'Imagem', 'Grupos', 'Marca', 'UND', 'Referencia', 'Preço' ]])
         <div class='clearfix'></div>
     </div>
 </div>
@@ -249,163 +129,276 @@
 
     @include('layouts.includes.datatable.assets')
 
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('produto/datatable'), 'order' => $filtro['order'], 
-            'filtros' => [
-                'codproduto', 
-                'barras', 
-                'inativo', 
-                'produto', 
-                'referencia', 
-                'preco_de', 
-                'preco_ate',
-                'codmarca',
-                'codsecaoproduto',
-                'codfamiliaproduto',
-                'codgrupoproduto',
-                'codsubgrupoproduto',
-                'codtributacao',
-                'codncm', 
-                'criacao_de', 
-                'criacao_ate', 
-                'alteracao_de', 
-                'alteracao_ate', 
-                'site', 
-                'inativo', 
-            ] 
-        ])
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('#site').select2({
-                placeholder: 'Site',
-                allowClear:true,
-                closeOnSelect:true
-            });
-
-            $('#form-search input').blur(function(e) {
-                var controlgroup = $(e.target.parentNode);
-                if (!e.target.checkValidity()) {
-                    controlgroup.addClass('has-danger');
-                    e.target.reportValidity();
-                } else {
-                    controlgroup.removeClass('has-danger');
-                }
-            }); 
-
-            $("#form-search").on("change", function (e) {
-                if($('#form-search')[0].checkValidity()){
-                    $("#form-search").submit();
-                }
-                return false;
-
-            });
-
-            var alteracao_de = $('#alteracao_de').val();
-            if(alteracao_de.length > 0 ){
-                $('#alteracao_ate').attr('min', alteracao_de);
+<script type="text/javascript">
+$(document).ready(function () {
+    var datable_datatable = $('#datatable').DataTable({
+        dom: 'Brtip',
+        pageLength: 100,
+        language: {
+            url: "{{ url('public/assets/plugins/datatables/Portuguese-Brasil.lang') }}"
+        },
+        processing: true,
+        serverSide: true,
+        order: 
+        [
+            [ 3, 'ASC'],
+        ],
+        ajax: {
+            url: "{{ url('produto/datatable') }}",
+            data: function ( d ) {
+                d.filtros = new Object;
+                d.filtros.codproduto = $('#codproduto').val();
+                d.filtros.barras = $('#barras').val();
+                d.filtros.inativo = $('#inativo').val();
+                d.filtros.produto = $('#produto').val();
+                d.filtros.referencia = $('#referencia').val();
+                d.filtros.preco_de = $('#preco_de').val();
+                d.filtros.preco_ate = $('#preco_ate').val();
+                d.filtros.codmarca = $('#codmarca').val();
+                d.filtros.codsecaoproduto = $('#codsecaoproduto').val();
+                d.filtros.codfamiliaproduto = $('#codfamiliaproduto').val();
+                d.filtros.codgrupoproduto = $('#codgrupoproduto').val();
+                d.filtros.codsubgrupoproduto = $('#codsubgrupoproduto').val();
+                d.filtros.codtributacao = $('#codtributacao').val();
+                d.filtros.codncm = $('#codncm').val();
+                d.filtros.criacao_de = $('#criacao_de').val();
+                d.filtros.criacao_ate = $('#criacao_ate').val();
+                d.filtros.alteracao_de = $('#alteracao_de').val();
+                d.filtros.alteracao_ate = $('#alteracao_ate').val();
+                d.filtros.site = $('#site').val();
+                d.filtros.inativo = $('#inativo').val();
             }
-            $('#alteracao_de').on('change', function(e) {
-                e.preventDefault();
-                var valor = $(this).val();
-                if(valor.length === 0 ) {
-                    $('#alteracao_ate').empty();
-                    $('#alteracao_ate').attr('min', '');
-                } else {
-                    $('#alteracao_ate').attr('min', valor);
-                }
-
-            });
-
-            var alteracao_ate = $('#alteracao_ate').val();
-            if(alteracao_ate.length > 0){
-                $('#alteracao_de').attr('max', alteracao_ate);
+        },
+        lengthChange: false,
+        buttons: [
+            { extend: 'copy', text: '<i class="fa fa-clipboard" aria-hidden="true"></i>', exportOptions: { columns: ':visible' } },
+            { extend: 'excel', text: '<i class="fa fa-file-excel-o" aria-hidden="true"></i>', exportOptions: { columns: ':visible' } },
+            { extend: 'pdf', text: '<i class="fa fa-file-pdf-o" aria-hidden="true"></i>', exportOptions: { columns: ':visible' } },
+            { extend: 'print', text: '<i class="fa fa-print" aria-hidden="true"></i>', exportOptions: { columns: ':visible' } },
+            { extend: 'colvis', text: '<i class="fa fa-columns" aria-hidden="true"></i>', exportOptions: { columns: ':visible' } },
+        ],
+        columnDefs: [
+            {
+                targets: [0, 1],
+                visible: false,
+            },
+            {
+                render: function ( data, type, row ) {
+                    return '<a href="' + row[0] + '">' + data +'</a>';
+                },
+                targets: 2
+            },
+            {
+                render: function ( data, type, row ) {
+                    return '<img width="100" src=' + row[4] + '>';
+                },
+                targets: 4
+            },
+            { className: "text-right", "targets": 8 },
+        ],
+        initComplete: function(settings, json) {
+            datable_datatable.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
+            $('#datatable_paginate, #datatable_info').addClass('col-md-6');
+            
+        },
+        fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+            if (aData[1] != null) {
+                $(nRow).addClass('table-danger');
             }
-            $('#alteracao_ate').on('change', function(e) {        
-                e.preventDefault();
-                var valor = $(this).val();
-                if(valor.length === 0 ) {
-                    $('#alteracao_de').empty();
-                    $('#alteracao_de').attr('max', '');
-                } else {
-                    $('#alteracao_de').attr('max', valor);
-                }
-            });
+        }
+    });
 
-            var criacao_de = $('#criacao_de').val();
-            if(criacao_de.length > 0 ){
-                $('#criacao_ate').attr('min', criacao_de);
-            }
-            $('#criacao_de').on('change', function(e) {
-                e.preventDefault();
-                var valor = $(this).val();
-                if(valor.length === 0 ) {
-                    $('#criacao_ate').empty();
-                    $('#criacao_ate').attr('min', '');
-                } else {
-                    $('#criacao_ate').attr('min', valor);
-                }
+    $('#codproduto').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#barras').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#inativo').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#produto').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#referencia').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#preco_de').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#preco_ate').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#codmarca').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#codsecaoproduto').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#codfamiliaproduto').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#codgrupoproduto').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#codsubgrupoproduto').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#codtributacao').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#codncm').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#criacao_de').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#criacao_ate').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#alteracao_de').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#alteracao_ate').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#site').change(function() {
+        datable_datatable.ajax.reload();
+    });
+        $('#inativo').change(function() {
+        datable_datatable.ajax.reload();
+    });
+    
+    $('#site').select2({
+        placeholder: 'Site',
+        allowClear:true,
+        closeOnSelect:true
+    });
 
-            });
+    $('#form-search input').blur(function(e) {
+        var controlgroup = $(e.target.parentNode);
+        if (!e.target.checkValidity()) {
+            controlgroup.addClass('has-danger');
+            e.target.reportValidity();
+        } else {
+            controlgroup.removeClass('has-danger');
+        }
+    }); 
 
-            var criacao_ate = $('#criacao_ate').val();
-            if(criacao_ate.length > 0){
-                $('#criacao_de').attr('max', criacao_ate);
-            }
-            $('#criacao_ate').on('change', function(e) {        
-                e.preventDefault();
-                var valor = $(this).val();
-                if(valor.length === 0 ) {
-                    $('#criacao_de').empty();
-                    $('#criacao_de').attr('max', '');
-                } else {
-                    $('#criacao_de').attr('max', valor);
-                }
-            });
+    $("#form-search").on("change", function (e) {
+        if($('#form-search')[0].checkValidity()){
+            $("#form-search").submit();
+        }
+        return false;
 
-            function setPrecoMin() {
-                var valor = $('#preco_de').val();
-                if(valor.length === 0 ) {
-                    $('#preco_ate').empty();
-                    $('#preco_ate').attr('min', '');
-                } else {
-                    $('#preco_ate').attr('min', valor);
-                }
-            };
+    });
 
-            function setPrecoMax() {
-                var preco_de = $('#preco_de').val();
-                var preco_ate = $('#preco_ate').val();
-                if(preco_de.length === 0 ) {
-                    $('#preco_de').attr('max', preco_ate);
-                }
-            };
+    var alteracao_de = $('#alteracao_de').val();
+    if(alteracao_de.length > 0 ){
+        $('#alteracao_ate').attr('min', alteracao_de);
+    }
+    $('#alteracao_de').on('change', function(e) {
+        e.preventDefault();
+        var valor = $(this).val();
+        if(valor.length === 0 ) {
+            $('#alteracao_ate').empty();
+            $('#alteracao_ate').attr('min', '');
+        } else {
+            $('#alteracao_ate').attr('min', valor);
+        }
 
-            var preco_de = $('#preco_de').val();
-            if(preco_de.length > 0 ){
-                $('#preco_ate').attr('min', preco_de);
-            }
+    });
 
-            var preco_ate = $('#preco_ate').val();
-            if(preco_de.length > 0 ){
-                $('#preco_de').attr('min', preco_ate);
-            }
+    var alteracao_ate = $('#alteracao_ate').val();
+    if(alteracao_ate.length > 0){
+        $('#alteracao_de').attr('max', alteracao_ate);
+    }
+    $('#alteracao_ate').on('change', function(e) {        
+        e.preventDefault();
+        var valor = $(this).val();
+        if(valor.length === 0 ) {
+            $('#alteracao_de').empty();
+            $('#alteracao_de').attr('max', '');
+        } else {
+            $('#alteracao_de').attr('max', valor);
+        }
+    });
 
-            $('#preco_de').on('change', function(e) {
-                e.preventDefault();
-                setPrecoMin();
-            }).blur(function () {
-                setPrecoMin();
-            });
+    var criacao_de = $('#criacao_de').val();
+    if(criacao_de.length > 0 ){
+        $('#criacao_ate').attr('min', criacao_de);
+    }
+    $('#criacao_de').on('change', function(e) {
+        e.preventDefault();
+        var valor = $(this).val();
+        if(valor.length === 0 ) {
+            $('#criacao_ate').empty();
+            $('#criacao_ate').attr('min', '');
+        } else {
+            $('#criacao_ate').attr('min', valor);
+        }
 
-            $('#preco_ate').on('change', function(e) {
-                e.preventDefault();
-                setPrecoMax();
-            }).blur(function () {
-                setPrecoMax();
-            });
+    });
 
-        });
-    </script>
+    var criacao_ate = $('#criacao_ate').val();
+    if(criacao_ate.length > 0){
+        $('#criacao_de').attr('max', criacao_ate);
+    }
+    $('#criacao_ate').on('change', function(e) {        
+        e.preventDefault();
+        var valor = $(this).val();
+        if(valor.length === 0 ) {
+            $('#criacao_de').empty();
+            $('#criacao_de').attr('max', '');
+        } else {
+            $('#criacao_de').attr('max', valor);
+        }
+    });
+
+    function setPrecoMin() {
+        var valor = $('#preco_de').val();
+        if(valor.length === 0 ) {
+            $('#preco_ate').empty();
+            $('#preco_ate').attr('min', '');
+        } else {
+            $('#preco_ate').attr('min', valor);
+        }
+    };
+
+    function setPrecoMax() {
+        var preco_de = $('#preco_de').val();
+        var preco_ate = $('#preco_ate').val();
+        if(preco_de.length === 0 ) {
+            $('#preco_de').attr('max', preco_ate);
+        }
+    };
+
+    var preco_de = $('#preco_de').val();
+    if(preco_de.length > 0 ){
+        $('#preco_ate').attr('min', preco_de);
+    }
+
+    var preco_ate = $('#preco_ate').val();
+    if(preco_de.length > 0 ){
+        $('#preco_de').attr('min', preco_ate);
+    }
+
+    $('#preco_de').on('change', function(e) {
+        e.preventDefault();
+        setPrecoMin();
+    }).blur(function () {
+        setPrecoMin();
+    });
+
+    $('#preco_ate').on('change', function(e) {
+        e.preventDefault();
+        setPrecoMax();
+    }).blur(function () {
+        setPrecoMax();
+    });
+
+});
+</script>
 
 @endsection
 @stop

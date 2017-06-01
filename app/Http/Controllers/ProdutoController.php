@@ -143,11 +143,12 @@ class ProdutoController extends Controller
                 formataData($reg->inativo, 'C'),
                 formataCodigo($reg->codproduto),
                 $reg->produto,
-                $reg->SubGrupoProduto->subgrupoproduto,
+                empty($reg->codprodutoimagem)?URL::asset('public/imagens/semimagem.jpg'):URL::asset("public/imagens/{$reg->ProdutoImagem->Imagem->arquivo}"),
+                $reg->SubGrupoProduto->GrupoProduto->FamiliaProduto->SecaoProduto->secaoproduto .' » '. $reg->SubGrupoProduto->GrupoProduto->FamiliaProduto->familiaproduto .' » '. $reg->SubGrupoProduto->GrupoProduto->grupoproduto .' » '.$reg->SubGrupoProduto->subgrupoproduto,
                 $reg->Marca->marca,
                 $reg->UnidadeMedida->sigla,
                 $reg->referencia,
-                $reg->preco,
+                formataNumero($reg->preco),
             ];
         }
         
