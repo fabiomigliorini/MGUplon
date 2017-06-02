@@ -22549,8 +22549,8 @@ label {
   border: 1px solid rgba(43, 61, 81, 0.3);
   outline: none !important; }
   .select2-container .select2-selection--single .select2-selection__rendered {
-    line-height: 32px !important;
-    padding-left: 12px; }
+    /*line-height: 32px !important;
+    padding-left: 12px; */}
   .select2-container .select2-selection--single .select2-selection__arrow {
     height: 32px;
     width: 30px; }

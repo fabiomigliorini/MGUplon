@@ -29,13 +29,12 @@ table.dataTable.table-sm thead .sorting_desc_disabled::after {
 .select2 { 
     width: 100% !important; 
 }
-/*
-.select2-container--focus, .select2-dropdown--below, .select2-container--open {
-    border: 1px solid red !important;;
-    border-bottom: none !important;	 
-	
+.select2-container .select2-selection--single .select2-selection__arrow {
+    width: auto !important;
 }
-/*
+.select2-container .select2-selection--single .select2-selection__rendered {
+    line-height: inherit !important;
+}
 input[type="number"].form-control {
     text-align: right;
 }
