@@ -575,8 +575,6 @@ class ProdutoRepository extends MGRepository {
             $qry->where('codopencartvariacao', '=', $filters['codopencartvariacao']);
         }
         */
-        
-        $count = $qry->count();
     
         switch ($filters['inativo']) {
             case 2: //Inativos
@@ -591,6 +589,8 @@ class ProdutoRepository extends MGRepository {
                 $qry = $qry->ativo();
                 break;
         }
+        
+        $count = $qry->count();
         
         // Paginacao
         if (!empty($start)) {
@@ -973,7 +973,7 @@ class ProdutoRepository extends MGRepository {
     
     public function alterarImagemOrdem($codimagemS) {
 
-        $i = 0;
+        $i = 1;
         foreach ($codimagemS as $codimagem) {
             if (!$this->model->ProdutoImagemS()->where('codimagem', $codimagem)->update(['ordem' => $i])) {
                 return false;

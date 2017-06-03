@@ -63,6 +63,7 @@ class ProdutoBarra extends MGModel
         return trim($descr);
     }
     
+    /*
     // Atributo referencia
     public function getReferenciaAttribute()
     {
@@ -87,6 +88,7 @@ class ProdutoBarra extends MGModel
         }
         return (float) $this->Produto->preco;
     }    
+    */
     
     // Chaves Estrangeiras
     public function ProdutoVariacao()
