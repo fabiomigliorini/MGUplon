@@ -9,15 +9,15 @@ use MGLara\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
 
 use MGLara\Repositories\SubGrupoProdutoRepository;
-use MGLara\Models\SubSubGrupoProduto;
-use MGLara\Models\Produto;
+use MGLara\Repositories\ProdutoRepository;
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
-
+use URL;
 class SubGrupoProdutoController extends Controller
 {
-    public function __construct(SubGrupoProdutoRepository $repository) {
+    public function __construct(SubGrupoProdutoRepository $repository, ProdutoRepository $produtoRepository) {
         $this->repository = $repository;
+        $this->produtoRepository = $produtoRepository;
         $this->bc = new Breadcrumb('Sub Grupos de Produto');
         $this->bc->addItem('Seções', url('grupo-produto'));
     }
@@ -140,10 +140,17 @@ class SubGrupoProdutoController extends Controller
         
         if (!$filtro = $this->getFiltro()) {
             $filtro = [
-                'inativo' => 1,
+                'filtros' => [
+                    'inativo' => 1,
+                ],
+                'order' => [[
+                    'column' => 3, 
+                    'dir' => 'ASC'
+                ]],
             ];
         }
-
+        
+        //dd($filtro);
         // retorna show
         return view('sub-grupo-produto.show', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'filtro'=>$filtro]);
     }
@@ -194,6 +201,69 @@ class SubGrupoProdutoController extends Controller
         return redirect("sub-grupo-produto/{$this->repository->model->codsubgrupoproduto}"); 
     }
 
+    public function datatableProduto(Request $request) {
+
+        // Autorizacao
+        $this->repository->authorize('listing');
+
+        // Grava Filtro para montar o formulario da proxima vez que o index for carregado
+        $this->setFiltro([
+            'filtros' => $request['filtros'],
+            'order' => $request['order'],
+        ]);
+        
+        // Ordenacao
+        $columns[0] = 'codproduto';
+        $columns[1] = 'inativo';
+        $columns[2] = 'codproduto';
+        $columns[3] = 'produto';
+        $columns[4] = 'codsubgrupoproduto';
+        $columns[5] = 'codmarca';
+        $columns[6] = 'codunidademedida';
+        $columns[7] = 'referencia';
+        $columns[8] = 'preco';
+
+        $sort = [];
+        if (!empty($request['order'])) {
+            foreach ($request['order'] as $order) {
+                $sort[] = [
+                    'column' => $columns[$order['column']],
+                    'dir' => $order['dir'],
+                ];
+            }
+        }
+        //dd($request['filtros']);
+        // Pega listagem dos registros
+        $regs = $this->produtoRepository->listing($request['filtros'], $sort, $request['start'], $request['length']);
+        
+        // Monta Totais
+        $recordsTotal = $regs['recordsTotal'];
+        $recordsFiltered = $regs['recordsFiltered'];
+        
+        // Formata registros para exibir no data table
+        $data = [];
+        foreach ($regs['data'] as $reg) {
+            $data[] = [
+                url('produto', $reg->codproduto),
+                formataData($reg->inativo, 'C'),
+                formataCodigo($reg->codproduto),
+                $reg->produto,
+                empty($reg->codprodutoimagem)?URL::asset('public/imagens/semimagem.jpg'):URL::asset("public/imagens/{$reg->ProdutoImagem->Imagem->arquivo}"),
+                $reg->SubGrupoProduto->GrupoProduto->FamiliaProduto->SecaoProduto->secaoproduto .' » '. $reg->SubGrupoProduto->GrupoProduto->FamiliaProduto->familiaproduto .' » '. $reg->SubGrupoProduto->GrupoProduto->grupoproduto .' » '.$reg->SubGrupoProduto->subgrupoproduto,
+                $reg->Marca->marca,
+                $reg->UnidadeMedida->sigla,
+                $reg->referencia,
+                formataNumero($reg->preco),
+            ];
+        }
+        
+        // Envelopa os dados no formato do data table
+        $ret = new Datatable($request['draw'], $recordsTotal, $recordsFiltered, $data);
+        
+        // Retorna o JSON
+        return collect($ret);
+    }    
+    
     public function select2(Request $request)
     {
         // Parametros que o Selec2 envia

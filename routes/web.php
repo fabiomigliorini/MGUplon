@@ -62,7 +62,7 @@ Route::group(['middleware' => 'auth'], function() {
     
     /* SubGrupoProduto */
     Route::resource('sub-grupo-produto/{id}/busca-codproduto', 'SubGrupoProdutoController@buscaCodproduto');
-    Route::post('sub-grupo-produto/inativar', 'SubGrupoProdutoController@inativar');
+    Route::get('sub-grupo-produto/datatable-produto', 'SubGrupoProdutoController@datatableProduto');  
     Route::resource('sub-grupo-produto', 'SubGrupoProdutoController');  
     
     /* Tipos de produto */

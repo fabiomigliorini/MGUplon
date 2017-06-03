@@ -194,12 +194,12 @@ $(document).ready(function () {
                 },
                 targets: 4
             },
-            { className: "text-right", "targets": 8 },
+            { className: "text-right", "targets": 9 },
         ],
         initComplete: function(settings, json) {
             datable_datatable.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
             $('#datatable_paginate, #datatable_info').addClass('col-md-6');
-            
+            $('#datatable thead tr:first-child th:last-child').css({ 'min-width': "100px" });
         },
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             if (aData[1] != null) {

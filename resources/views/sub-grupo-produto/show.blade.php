@@ -48,8 +48,8 @@
             <h4 class="card-header">Pesquisar Produtos</h4>
             <div class="card-block">
                 <div class="card-text">
-                    {!! Form::model(Request::session()->get('MGLara.Http.Controllers.ProdutoController.filtros'), ['id' => 'form-search', 'autocomplete' => 'on']) !!}
-                    {!! Form::hidden('codgrupoproduto', $model->codgrupoproduto, ['id'=>'codgrupoproduto']) !!}
+                    {!! Form::model($filtro, ['id' => 'form-search', 'autocomplete' => 'on']) !!}
+                    {!! Form::hidden('codsubgrupoproduto', $model->codsubgrupoproduto, ['id'=>'codsubgrupoproduto']) !!}
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label for="codproduto" class="control-label">#</label>
@@ -136,6 +136,6 @@
     </script>
     @include('layouts.includes.datatable.assets')
 
-    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('produto/datatable'), 'order' => $filtro['order'], 'filtros' => ['codsubgrupoproduto', 'codproduto' => 'codproduto', 'produto', 'inativo'] ])
+    @include('layouts.includes.datatable.js', ['id' => 'datatable', 'url' => url('sub-grupo-produto/datatable-produto'), 'order' => $filtro['order'], 'filtros' => ['codsubgrupoproduto', 'codproduto' => 'codproduto', 'produto', 'inativo'] ])
 @endsection
 @stop

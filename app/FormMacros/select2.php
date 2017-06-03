@@ -26,7 +26,8 @@ Form::macro('select2', function($name, $list = [], $selected = null, $options = 
                 $('#{$options['id']}').select2({
                     placeholder: '{$options['placeholder']}',
                     allowClear: {$options['allowClear']},
-                    closeOnSelect: {$options['closeOnSelect']}
+                    closeOnSelect: {$options['closeOnSelect']},
+                    language:'pt-BR',
                 });
             });
         </script>
@@ -70,7 +71,7 @@ Form::macro('select2Marca', function($name, $value = null, $options = [])
             allowClear: {$allowClear},
             closeOnSelect: {$closeOnSelect},
             cache: {$cache},
-            
+            language:'pt-BR',
             escapeMarkup: function (markup) { return markup; },
             
             ajax:{
@@ -211,7 +212,7 @@ Form::macro('select2ProdutoVariacao', function($name, $value = null, $options = 
             allowClear: {$allowClear},
             closeOnSelect: {$closeOnSelect},
             cache: {$cache},
-            
+            language:'pt-BR',
             escapeMarkup: function (markup) { return markup; },
             
             ajax:{
@@ -312,7 +313,7 @@ Form::macro('select2FamiliaProduto', function($name, $value = null, $options = [
             allowClear: {$allowClear},
             closeOnSelect: {$closeOnSelect},
             cache: {$cache},
-            
+            language:'pt-BR',
             escapeMarkup: function (markup) { return markup; },
             
             ajax:{
@@ -421,7 +422,7 @@ Form::macro('select2GrupoProduto', function($name, $value = null, $options = [])
             allowClear: {$allowClear},
             closeOnSelect: {$closeOnSelect},
             cache: {$cache},
-            
+            language:'pt-BR',
             escapeMarkup: function (markup) { return markup; },
             
             ajax:{
@@ -530,7 +531,7 @@ Form::macro('select2SubGrupoProduto', function($name, $value = null, $options = 
             allowClear: {$allowClear},
             closeOnSelect: {$closeOnSelect},
             cache: {$cache},
-            
+            language:'pt-BR',
             escapeMarkup: function (markup) { return markup; },
             
             ajax:{
@@ -630,7 +631,7 @@ Form::macro('select2Ncm', function($name, $value = null, $options = [])
             allowClear: {$allowClear},
             closeOnSelect: {$closeOnSelect},
             cache: {$cache},
-            
+            language:'pt-BR',
             escapeMarkup: function (markup) { return markup; },
             
             ajax:{
@@ -805,7 +806,7 @@ Form::macro('select2Cest', function($name, $value = null, $options = [])
             allowClear: {$allowClear},
             closeOnSelect: {$closeOnSelect},
             cache: {$cache},
-            
+            language:'pt-BR',
             escapeMarkup: function (markup) { return markup; },
             
             ajax:{
@@ -895,7 +896,7 @@ Form::macro('select2Pessoa', function($name, $value = null, $options = [])
             allowClear: {$allowClear},
             closeOnSelect: {$closeOnSelect},
             cache: {$cache},
-            
+            language:'pt-BR',
             escapeMarkup: function (markup) { return markup; },
             
             ajax:{
@@ -988,7 +989,7 @@ Form::macro('select2Cidade', function($name, $value = null, $options = [])
             allowClear: {$allowClear},
             closeOnSelect: {$closeOnSelect},
             cache: {$cache},
-            
+            language:'pt-BR',
             escapeMarkup: function (markup) { return markup; },
             
             ajax:{
@@ -1070,7 +1071,7 @@ Form::macro('select2Produto', function($name, $value = null, $options = [])
             allowClear: {$allowClear},
             closeOnSelect: {$closeOnSelect},
             cache: {$cache},
-            
+            language:'pt-BR',
             escapeMarkup: function (markup) { return markup; },
             
             ajax:{
@@ -1163,7 +1164,7 @@ Form::macro('select2ProdutoBarra', function($name, $value = null, $options = [])
             allowClear: {$allowClear},
             closeOnSelect: {$closeOnSelect},
             cache: {$cache},
-            
+            language:'pt-BR',
             escapeMarkup: function (markup) { return markup; },
             
             ajax:{

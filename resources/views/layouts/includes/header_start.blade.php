@@ -40,7 +40,7 @@
     <link href="{{ URL::asset('public/assets/plugins/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css"/>
     <link href="{{ URL::asset('public/assets/plugins/select2/theme/select2-bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
     <script src="{{ URL::asset('public/assets/plugins/select2/js/select2.full.min.js') }}" type="text/javascript"></script>
-
+    <script src="{{ URL::asset('public/assets/plugins/select2/js/i18n/pt-BR.js') }}" type="text/javascript"></script>
     <!-- MG -->
     <link href="{{ URL::asset('public/css/mglara.css') }}" rel="stylesheet" />
     <script src="{{ URL::asset('public/js/mglara.js') }}"></script>
