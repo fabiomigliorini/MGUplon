@@ -987,4 +987,26 @@ class ProdutoRepository extends MGRepository {
         $codimagem = $this->model->ImagemS->first()->codimagem;
         $this->alterarImagemPadrao($codimagem, null, null);
     }
+    
+    public function precoEmbalagens($produtoembalagens, $preco, $unidademedida) {
+        $embalagens = [[
+            'preco' => formataNumero($preco),
+            'embalagem' => $unidademedida
+    ]];
+        foreach($produtoembalagens as $pe){
+            if(empty($pe->preco)) {
+                $precoembalagens = formataNumero($preco * $pe->quantidade);
+            } else {
+                $precoembalagens = formataNumero($pe->preco);
+            }
+            
+        $embalagens[] = ['preco'=> $precoembalagens,'embalagem' => $pe->descricao];
+            
+            //array_push($embalagens, ['preco' => $precoembalagem, 'embalagem' => $embalagem]);
+        }
+        
+        return $embalagens;
+        
+    }
+            
 }
