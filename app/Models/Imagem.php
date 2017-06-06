@@ -33,8 +33,8 @@ class Imagem extends MGModel
     protected $table = 'tblimagem';
     protected $primaryKey = 'codimagem';
     protected $fillable = [
-        'observacoes',
-        'arquivo',
+          'observacoes',
+              'arquivo',
     ];
     protected $dates = [
         'inativo',

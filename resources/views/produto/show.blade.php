@@ -571,6 +571,8 @@ $(document).ready(function() {
     $('.btn-alterar-imagem-padrao').click(function (e) {
         codprodutoembalagem = $(this).data('codprodutoembalagem');
         codprodutovariacao = $(this).data('codprodutovariacao');
+        console.log('codprodutoembalagem = ' + codprodutoembalagem);
+        console.log('codprodutovariacao = ' + codprodutovariacao);
     });
     
     $('.btn-alterar-imagem-padrao-salvar').click(function (e) {
@@ -659,7 +661,7 @@ $(document).ready(function() {
         },
         function(isConfirm){
             if (isConfirm) {
-                location.replace(baseUrl + "/imagem/delete/?model=produto&id={{$model->codproduto}}&codimagem=" + codimagem);
+                location.replace(baseUrl + "/imagem/delete/" + codimagem);
             } 
         });
     });    

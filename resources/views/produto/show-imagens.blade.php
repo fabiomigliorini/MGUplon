@@ -20,7 +20,7 @@
                     <p>{{ $imagem->arquivo }}</p>
                     <p>
                         <a class="btn btn-secondary btn-sm" data-toggle="tooltip" title="Editar" href="{{ url("/imagem/create?model=produto&id=$model->codproduto&codimagem=$imagem->codimagem") }}"><i class="fa fa-pencil"></i></a>
-                        <a class="btn btn-secondary btn-sm delete-imagem" data-toggle="tooltip" title="Excluir" data-codimagem="{{ $imagem->codimagem }}"><i class="fa fa-trash"></i></a>
+                        <a class="btn btn-secondary btn-sm waves-effect" href="{{ url("imagem/$imagem->codimagem") }}" data-delete data-question="Tem certeza que deseja esta imagem?" data-after="location.reload();" data-toggle="tooltip" title="Excluir"><i class="fa fa-trash"></i></a>
                     </p>
                 </div>                
             </div>

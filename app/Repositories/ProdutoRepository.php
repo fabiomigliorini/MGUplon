@@ -950,10 +950,16 @@ class ProdutoRepository extends MGRepository {
         return $produto;
     }
     
-    public function alterarImagemPadrao ($codimagem, $codprodutoembalagem, $codprodutovariacao) {
+    public function alterarImagemPadrao ($codimagem = null, $codprodutoembalagem = null, $codprodutovariacao = null) {
         
-        if (!$pi = $this->model->ProdutoImagemS()->where('codimagem', $codimagem)->first()) {
-            return false;
+        if (!empty($codimagem)) {
+            if (!$pi = $this->model->ProdutoImagemS()->where('codimagem', $codimagem)->first()) {
+                return false;
+            }
+        } else {
+            if (!$pi = $this->model->ProdutoImagemS()->orderBy('ordem')->first()) {
+                return false;
+            }            
         }
         
         if (!empty($codprodutoembalagem)) {

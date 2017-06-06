@@ -162,4 +162,54 @@ class ProdutoImagemRepository extends MGRepository {
         
     }
     
+    public function create($data = null) {
+        if (empty($data['ordem'])) {
+            $ordem = ProdutoImagem::where('codproduto', $data['codproduto'])->max('ordem');
+            $data['ordem'] = $ordem + 1;
+        }
+        if (!$ret = parent::create($data)) {
+            return false;
+        }
+        $this->defineImagemPadrao();
+        return $ret;
+    }
+    
+    public function delete($id = null) {
+        if (!$ret = parent::delete($id)) {
+            return false;
+        }
+        $this->defineImagemPadrao();
+        return $ret;
+    }
+    
+    public function activate($id = null) {
+        if (!$ret = parent::activate($id)) {
+            return false;
+        }
+        $this->defineImagemPadrao();
+        return $ret;
+    }
+    
+    public function inactivate($id = null) {
+        if (!$ret = parent::inactivate($id)) {
+            return false;
+        }
+        $this->defineImagemPadrao();
+        return $ret;
+    }
+    
+    
+    public function defineImagemPadrao() {
+        if (!empty($this->model->Produto->codprodutoimagem)) {
+            return;
+        }
+        $repo_prod = new ProdutoRepository();
+        $repo_prod->findOrFail($this->model->codproduto);
+        return $repo_prod->alterarImagemPadrao();
+    }
+
+   public function findByCodprodutoCodimagem($codproduto, $codimagem) {
+       return $this->model = ProdutoImagem::where('codproduto', $codproduto)->where('codimagem', $codimagem)->fist();
+   }
+    
 }

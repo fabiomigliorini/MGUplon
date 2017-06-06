@@ -15,6 +15,7 @@ use MGLara\Repositories\SecaoProdutoRepository;
 use MGLara\Repositories\FamiliaProdutoRepository;
 use MGLara\Repositories\GrupoProdutoRepository;
 use MGLara\Repositories\SubGrupoProdutoRepository;
+use MGLara\Repositories\ProdutoImagemRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
 use MGLara\Library\JsonEnvelope\Datatable;
@@ -246,26 +247,26 @@ class ImagemController extends Controller
         
         switch ($data['model']) {
             case 'marca': 
-                $repo = $this->marcaRepository->findOrFail($data['id']);
+                $model = $this->marcaRepository->findOrFail($data['id']);
                 break;
 
-            case 'secao-produto': $repo = $this->secaoProdutoRepository->findOrFail($data['id']);
+            case 'secao-produto': $model = $this->secaoProdutoRepository->findOrFail($data['id']);
                 break;
 
             case 'familia-produto': 
-                $repo = $this->familiaProdutoRepository->findOrFail($data['id']);
+                $model = $this->familiaProdutoRepository->findOrFail($data['id']);
                 break;
 
             case 'grupo-produto': 
-                $repo = $this->grupoProdutoRepository->findOrFail($data['id']);
+                $model = $this->grupoProdutoRepository->findOrFail($data['id']);
                 break;
 
             case 'sub-grupo-produto': 
-                $repo = $this->subGrupoProdutoRepository->findOrFail($data['id']);
+                $model = $this->subGrupoProdutoRepository->findOrFail($data['id']);
                 break;
 
             case 'produto': 
-                $repo = $this->produtoRepository->findOrFail($data['id']);
+                $model = $this->produtoRepository->findOrFail($data['id']);
                 break;
         }
         
@@ -283,11 +284,6 @@ class ImagemController extends Controller
                 abort(500, 'Imagem deve ser um JPEG!');
             }
             
-            $ordem = 0;
-            
-            if(count($repo->ImagemS()->get()) > 0){
-                $ordem = $repo->ImagemS()->orderBy('ordem', 'DESC')->first()->ProdutoImagemS->first()->ordem;
-            }
             
             // Salva para ganhar o ID
             $this->repository->new();
@@ -299,7 +295,11 @@ class ImagemController extends Controller
             $this->repository->save();      
             
             // Anexa imagem ao produto
-            $repo->ImagemS()->attach($this->repository->model->codimagem, ['ordem' => $ordem + 1]);
+            $model_pi = new ProdutoImagemRepository();
+            $model_pi->create([
+                'codimagem' => $this->repository->model->codimagem,
+                'codproduto' => $model->codproduto,
+            ]);
 
             // Salva o arquivo
             Slim::saveFile($image['output']['data'], $arquivo, './public/imagens', false);
@@ -310,7 +310,7 @@ class ImagemController extends Controller
                 $imagem_inativa->inativo = Carbon::now();
                 $imagem_inativa->save();
                 
-                $repo->ImagemS()->detach($data['codimagem']);
+                $model->ImagemS()->detach($data['codimagem']);
             }
             
             Session::flash('flash_update', 'Imagem inserida.');
@@ -324,13 +324,13 @@ class ImagemController extends Controller
             $imagem = $this->repository->new();
             $imagem->save();
         
-            if(!is_null($repo->codimagem)) {
-                $imagem_inativa = $this->repository->findOrFail($repo->codimagem);
+            if(!is_null($model->codimagem)) {
+                $imagem_inativa = $this->repository->findOrFail($model->codimagem);
                 $imagem_inativa->inativo = Carbon::now();
                 $imagem_inativa->save();
                 
-                $repo->codimagem = null;
-                $repo->save();
+                $model->codimagem = null;
+                $model->save();
             }
             
             $arquivo = $imagem->codimagem . '.' . $extensao;
@@ -342,8 +342,8 @@ class ImagemController extends Controller
 
             try {
                 $codimagem->move($diretorio, $arquivo);
-                $repo->codimagem = $imagem->codimagem;
-                $repo->save();
+                $model->codimagem = $imagem->codimagem;
+                $model->save();
                 
                 Session::flash('flash_create', 'Imagem cadastrada!');
                 return redirect(modelUrl($request->get('model')).'/'. $data['id']);  
@@ -381,57 +381,6 @@ class ImagemController extends Controller
         return view('imagem.show', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
     }
     
-    public function delete(Request $request)
-    {
-        $data = $request->all();
-        try {
-            
-            switch ($data['model']) {
-                case 'marca': 
-                    $repo = $this->marcaRepository->findOrFail($data['id']);
-                    break;
-
-                case 'secao-produto': $repo = $this->secaoProdutoRepository->findOrFail($data['id']);
-                    break;
-
-                case 'familia-produto': 
-                    $repo = $this->familiaProdutoRepository->findOrFail($data['id']);
-                    break;
-
-                case 'grupo-produto': 
-                    $repo = $this->grupoProdutoRepository->findOrFail($data['id']);
-                    break;
-
-                case 'sub-grupo-produto': 
-                    $repo = $this->subGrupoProdutoRepository->findOrFail($data['id']);
-                    break;
-
-                case 'produto': 
-                    $repo = $this->produtoRepository->findOrFail($data['id']);
-                    break;
-            }            
-            
-            if(isset($data['codimagem'])){
-                $imagem = $this->repository->findOrFail($data['codimagem']);
-                $repo->ImagemS()->detach($data['codimagem']);
-            } else {
-                $imagem = $this->repository->findOrFail($repo->codimagem);
-                $repo->codimagem = null;
-                $repo->save();
-            }
-            
-            $imagem->inativo = Carbon::now();
-            $imagem->save();
-            
-            Session::flash('flash_delete', 'Imagem deletada!');
-            return Redirect::back();
-        }
-        catch(\Exception $e){
-            //dd($e);
-            Session::flash('flash_error', "Erro ao excluir imagem! $e");
-            return Redirect::back();
-        }         
-    }
     /**
      * Inativa um registro
      * 
