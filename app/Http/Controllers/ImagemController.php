@@ -202,8 +202,10 @@ class ImagemController extends Controller
         // Mensagem de registro criado
         Session::flash('flash_create', 'Imagem criado!');
         
+        
+        
         // redireciona para o view
-        return redirect("imagem/{$this->repository->model->codimagem}");
+        return $this->redirecionaPeloRelacionamento();
     }
 
     /**
@@ -286,7 +288,7 @@ class ImagemController extends Controller
         Session::flash('flash_update', 'Imagem alterado!');
         
         // redireciona para view
-        return redirect("imagem/{$this->repository->model->codimagem}"); 
+        return $this->redirecionaPeloRelacionamento();
     }
     
     public function esvaziarLixeira()
@@ -296,5 +298,45 @@ class ImagemController extends Controller
         
         // apaga
         return ['OK' => $this->repository->esvaziarLixeira()];
+    }
+    
+    public function redirecionaPeloRelacionamento()
+    {
+        foreach ($this->repository->model->ProdutoImagemS as $model) {
+            return redirect("produto/{$model->codproduto}"); 
+        }
+        
+        foreach ($this->repository->model->MarcaS as $model) {
+            return redirect("marca/{$model->codmarca}"); 
+        }
+
+        foreach ($this->repository->model->SecaoProdutoS as $model) {
+            return redirect("secao-produto/{$model->codsecaoproduto}"); 
+        }
+
+        foreach ($this->repository->model->FamiliaProdutoS as $model) {
+            $repo = new FamiliaProdutoRepository();
+            $model->codimagem = null;
+            $repo->model = $model;
+            $repo->update();
+        }
+        
+        foreach ($this->repository->model->GrupoProdutoS as $model) {
+            $repo = new GrupoProdutoRepository();
+            $model->codimagem = null;
+            $repo->model = $model;
+            $repo->update();
+        }
+        
+        foreach ($this->repository->model->SubGrupoProdutoS as $model) {
+            $repo = new SubGrupoProdutoRepository();
+            $model->codimagem = null;
+            $repo->model = $model;
+            $repo->update();
+        }
+            return redirect("imagem/{$this->repository->model->codimagem}"); 
+    
+        
+             
     }
 }
