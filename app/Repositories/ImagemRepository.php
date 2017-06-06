@@ -165,7 +165,6 @@ class ImagemRepository extends MGRepository {
         }
         
         if ($this->model->exists) {
-            dd($data);
             return false;
         }
 
@@ -176,9 +175,54 @@ class ImagemRepository extends MGRepository {
         
         // Salva o arquivo
         Slim::saveFile($data['imagem'], $this->model->arquivo, $this->model->directory, false);
+        if (!$this->model->save()){
+            return false;
+        }
         
-        return $this->model->save();
+        if (!empty($data['codproduto'])) {
+            $repo = new ProdutoImagemRepository();
+            $repo->create([
+                'codproduto' => $data['codproduto'],
+                'codimagem' => $this->model->codimagem
+            ]);
+        }
         
+        if (!empty($data['codsecaoproduto'])) {
+            $repo = new SecaoProdutoRepository();
+            $repo->update($data['codsecaoproduto'], [
+                'codimagem' => $this->model->codimagem
+            ]);
+        }
+        
+        if (!empty($data['codfamiliaproduto'])) {
+            $repo = new FamiliaProdutoRepository();
+            $repo->update($data['codfamiliaproduto'], [
+                'codimagem' => $this->model->codimagem
+            ]);
+        }
+        
+        if (!empty($data['codgrupoproduto'])) {
+            $repo = new GrupoProdutoRepository();
+            $repo->update($data['codgrupoproduto'], [
+                'codimagem' => $this->model->codimagem
+            ]);
+        }
+        
+        if (!empty($data['codsubgrupoproduto'])) {
+            $repo = new SubGrupoProdutoRepository();
+            $repo->update($data['codsubgrupoproduto'], [
+                'codimagem' => $this->model->codimagem
+            ]);
+        }
+        
+        if (!empty($data['codmarca'])) {
+            $repo = new MarcaRepository();
+            $repo->update($data['codmarca'], [
+                'codimagem' => $this->model->codimagem
+            ]);
+        }
+        
+        return true;
     }
 
     public function delete($id = null) {
@@ -186,8 +230,9 @@ class ImagemRepository extends MGRepository {
         if (!empty($id)) {
             $this->findOrFail($id);
         }
-
-        
+        if (file_exists($this->model->path)) {
+            unlink($this->model->path);
+        }
         return $this->model->delete();
         
     }
@@ -201,7 +246,7 @@ class ImagemRepository extends MGRepository {
         }
 
         // Limpa relacionamento com SecaoProduto
-        foreach ($model->SecaoProdutoS as $model) {
+        foreach ($this->model->SecaoProdutoS as $model) {
             $repo = new SecaoProdutoRepository();
             $model->codimagem = null;
             $repo->model = $model;
@@ -209,7 +254,7 @@ class ImagemRepository extends MGRepository {
         }
 
         // Limpa relacionamento com FamiliaProduto
-        foreach ($model->FamiliaProdutoS as $model) {
+        foreach ($this->model->FamiliaProdutoS as $model) {
             $repo = new FamiliaProdutoRepository();
             $model->codimagem = null;
             $repo->model = $model;
@@ -217,7 +262,7 @@ class ImagemRepository extends MGRepository {
         }
         
         // Limpa relacionamento com GrupoProduto
-        foreach ($model->GrupoProdutoS as $model) {
+        foreach ($this->model->GrupoProdutoS as $model) {
             $repo = new GrupoProdutoRepository();
             $model->codimagem = null;
             $repo->model = $model;
@@ -225,7 +270,7 @@ class ImagemRepository extends MGRepository {
         }
         
         // Limpa relacionamento com SubGrupoProduto 
-        foreach ($model->SubGrupoProdutoS as $model) {
+        foreach ($this->model->SubGrupoProdutoS as $model) {
             $repo = new SubGrupoProdutoRepository();
             $model->codimagem = null;
             $repo->model = $model;
@@ -233,7 +278,7 @@ class ImagemRepository extends MGRepository {
         }
         
         // Limpa relacionamento com Marca
-        foreach ($model->MarcaS as $model) {
+        foreach ($this->model->MarcaS as $model) {
             $repo = new MarcaRepository();
             $model->codimagem = null;
             $repo->model = $model;
@@ -241,7 +286,7 @@ class ImagemRepository extends MGRepository {
         }
         
         // Limpa relacionamento com ProdutoImagem
-        foreach ($model->ProdutoImagemS as $model) {
+        foreach ($this->model->ProdutoImagemS as $model) {
             $repo = new ProdutoImagemRepository();
             $repo->model = $model;
             $repo->delete();
@@ -257,12 +302,47 @@ class ImagemRepository extends MGRepository {
             $this->findOrFail($id);
         }
         
+        // Limpa relacionamento com SecaoProduto
+        foreach ($this->model->SecaoProdutoS as $model) {
+            $data['codsecaoproduto'] = $model->codsecaoproduto;
+        }
+
+        // Limpa relacionamento com FamiliaProduto
+        foreach ($this->model->FamiliaProdutoS as $model) {
+            $data['codfamiliaproduto'] = $model->codfamiliaproduto;
+        }
+        
+        // Limpa relacionamento com GrupoProduto
+        foreach ($this->model->GrupoProdutoS as $model) {
+            $data['codgrupoproduto'] = $model->codgrupoproduto;
+        }
+        
+        // Limpa relacionamento com SubGrupoProduto 
+        foreach ($this->model->SubGrupoProdutoS as $model) {
+            $data['codsubgrupoproduto'] = $model->codsubgrupoproduto;
+        }
+        
+        // Limpa relacionamento com Marca
+        foreach ($this->model->MarcaS as $model) {
+            $data['codmarca'] = $model->codmarca;
+        }
+        
+        // Limpa relacionamento com ProdutoImagem
+        foreach ($this->model->ProdutoImagemS as $model) {
+            $data['codproduto'] = $model->codproduto;
+        }
+        
         $this->inactivate();
         
-        
         return $this->create($data);
-       
     }
     
-    
+    public function esvaziarLixeira()
+    {
+        foreach (Imagem::inativo()->get() as $model) {
+            $this->model = $model;
+            $this->delete();
+        }
+        return true;
+    }
 }

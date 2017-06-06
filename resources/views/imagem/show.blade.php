@@ -2,7 +2,7 @@
 @section('content')
 
 <div class='row'>
-    <div class='col-md-4'>
+    <div class='col-md-6'>
         <div class='card'>
             <h4 class="card-header">Detalhes</h4>
             <div class='card-block'>
@@ -22,11 +22,59 @@
                     </tr>
                     <tr> 
                       <th>Arquivo</th> 
-                      <td>{{ $model->arquivo }} {{ $model->url }} {{ $model->path }}</td> 
+                      <td>{{ $model->arquivo }}</td> 
                     </tr>
                   </tbody> 
                 </table>
                 <div class='clearfix'></div>
+            </div>
+        </div>
+        <div class='card'>
+            <h4 class="card-header">Relacionamentos</h4>
+            <div class='card-block'>
+                @foreach($model->GrupoProdutoS as $grupo)
+                <p>
+                    <strong>Grupo:</strong> <a href="{{ url("grupo-produto/{$grupo->codgrupoproduto}") }}">{{ $grupo->grupoproduto }}</a>
+                </p>
+                @endforeach
+                
+                @foreach($model->MarcaS as $marca)
+                <p>
+                    <strong>Marca:</strong> <a href="{{ url("marca/{$marca->codmarca}") }}">{{ $marca->marca }}</a>
+                </p>
+                @endforeach
+
+                @foreach($model->SecaoProdutoS as $secao)
+                <p>
+                    <strong>Seçao Produto:</strong> <a href="{{ url("secao-produto/{$secao->codsecaoproduto}") }}">{{ $secao->secaoproduto }}</a>
+                </p>
+                @endforeach
+
+                @foreach($model->FamiliaProdutoS as $familia)
+                <p>
+                    <strong>Família Produto:</strong> <a href="{{ url("familia-produto/{$familia->codfamiliaproduto}") }}">{{ $familia->familiaproduto }}</a>
+                </p>
+                @endforeach
+               
+                @foreach($model->SubGrupoProdutoS as $subgrupo)
+                <p>
+                    <strong>Sub Grupo:</strong> <a href="{{ url("sub-grupo-produto/{$subgrupo->codsubgrupoproduto}") }}">{{ $subgrupo->subgrupoproduto }}</a>
+                </p>
+                @endforeach
+               
+                @foreach($model->ProdutoS as $produto)
+                <p>
+                    <strong>Produto:</strong>  <a href="{{ url("produto/{$produto->codproduto}") }}">{{ $produto->produto }}</a>
+                </p>
+                @endforeach
+    </div>
+</div>
+    </div>
+    <div class='col-md-6'>
+        <div class='card'>
+            <h4 class="card-header">Imagem</h4>
+            <div class='card-block text-center'>
+                <img class="img-fluid" style="margin: 0 auto" src="{{ $model->url }}">
             </div>
         </div>
     </div>

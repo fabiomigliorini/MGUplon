@@ -1,3 +1,10 @@
+{!! Form::hidden('codproduto', $opt['codproduto']??null) !!}
+{!! Form::hidden('codsecaoproduto', $opt['codsecaoproduto']??null) !!}
+{!! Form::hidden('codfamiliaproduto', $opt['codfamiliaproduto']??null) !!}
+{!! Form::hidden('codgrupoproduto', $opt['codgrupoproduto']??null) !!}
+{!! Form::hidden('codsubgrupoproduto', $opt['codsubgrupoproduto']??null) !!}
+{!! Form::hidden('codmarca', $opt['codmarca']??null) !!}
+
 <fieldset class="form-group">
     {!! Form::label('imagem', 'Imagem') !!}
     <div 

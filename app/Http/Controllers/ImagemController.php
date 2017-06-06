@@ -11,10 +11,10 @@ use MGLara\Http\Controllers\Controller;
 use MGLara\Repositories\ImagemRepository;
 
 use MGLara\Library\Breadcrumb\Breadcrumb;
-use MGLara\Library\JsonEnvelope\Datatable;
 use MGLara\Library\SlimImageCropper\Slim;
 
-use Carbon\Carbon;
+use DB;
+
 
 /**
  * @property  ImagemRepository $repository 
@@ -54,82 +54,108 @@ class ImagemController extends Controller
             ];
         }
         
+        $qry = \MGLara\Models\Imagem::query();
+        $qry->orderBy('codimagem', 'DESC');
+        $filtro['tipo'] = $request->tipo;
+        switch ($filtro['tipo']) {
+            case 'secao':
+                $qry->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('tblsecaoproduto')
+                        ->whereRaw('tblsecaoproduto.codimagem = tblimagem.codimagem');
+                });
+                break;
+            case 'familia':
+                $qry->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('tblfamiliaproduto')
+                        ->whereRaw('tblfamiliaproduto.codimagem = tblimagem.codimagem');
+                });
+                break;
+            case 'grupo':
+                $qry->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('tblgrupoproduto')
+                        ->whereRaw('tblgrupoproduto.codimagem = tblimagem.codimagem');
+                });
+                break;
+            case 'subgrupo':
+                $qry->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('tblsubgrupoproduto')
+                        ->whereRaw('tblsubgrupoproduto.codimagem = tblimagem.codimagem');
+                });
+                break;
+            case 'marca':
+                $qry->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('tblmarca')
+                        ->whereRaw('tblmarca.codimagem = tblimagem.codimagem');
+                });
+                break;
+            case 'outras':
+                $qry->ativo();
+                
+                 $qry->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('tblsecaoproduto')
+                        ->whereRaw('tblsecaoproduto.codimagem = tblimagem.codimagem');
+                });
+                $qry->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('tblfamiliaproduto')
+                        ->whereRaw('tblfamiliaproduto.codimagem = tblimagem.codimagem');
+                });
+                $qry->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('tblgrupoproduto')
+                        ->whereRaw('tblgrupoproduto.codimagem = tblimagem.codimagem');
+                });
+                $qry->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('tblsubgrupoproduto')
+                        ->whereRaw('tblsubgrupoproduto.codimagem = tblimagem.codimagem');
+                });
+                $qry->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('tblmarca')
+                        ->whereRaw('tblmarca.codimagem = tblimagem.codimagem');
+                });
+                $qry->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('tblprodutoimagem')
+                        ->whereRaw('tblprodutoimagem.codimagem = tblimagem.codimagem');
+                });
+                //dd($qry->toSql());
+                break;
+            case 'lixeira':
+                $qry->inativo();
+                break;
+            default:
+                $filtro['tipo'] = 'produto';
+                $qry->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('tblprodutoimagem')
+                        ->whereRaw('tblprodutoimagem.codimagem = tblimagem.codimagem');
+                });
+                break;
+        }
+        
+        $data = $qry->paginate(60);
         
         // retorna View
-        return view('imagem.index', ['bc'=>$this->bc, 'filtro'=>$filtro]);
+        return view('imagem.index', ['bc'=>$this->bc, 'filtro'=>$filtro, 'data'=>$data]);
     }
 
-    /**
-     * Monta json para alimentar a Datatable do index
-     * 
-     * @param  Request $request
-     * @return  json
-     */
-    public function datatable(Request $request) {
-        
-        // Autorizacao
-        $this->repository->authorize('listing');
-
-        // Grava Filtro para montar o formulario da proxima vez que o index for carregado
-        $this->setFiltro([
-            'filtros' => $request['filtros'],
-            'order' => $request['order'],
-        ]);
-        
-        // Ordenacao
-        $columns[0] = 'codimagem';
-        $columns[1] = 'inativo';
-        $columns[2] = 'codimagem';
-        $columns[3] = 'codimagem';
-        $columns[4] = 'observacoes';
-        $columns[5] = 'arquivo';
-
-        $sort = [];
-        if (!empty($request['order'])) {
-            foreach ($request['order'] as $order) {
-                $sort[] = [
-                    'column' => $columns[$order['column']],
-                    'dir' => $order['dir'],
-                ];
-            }
-        }
-
-        // Pega listagem dos registros
-        $regs = $this->repository->listing($request['filtros'], $sort, $request['start'], $request['length']);
-        
-        // Monta Totais
-        $recordsTotal = $regs['recordsTotal'];
-        $recordsFiltered = $regs['recordsFiltered'];
-        
-        // Formata registros para exibir no data table
-        $data = [];
-        foreach ($regs['data'] as $reg) {
-            $data[] = [
-                url('imagem', $reg->codimagem),
-                formataData($reg->inativo, 'C'),
-                formataCodigo($reg->codimagem),
-                $reg->codimagem,
-                $reg->observacoes,
-                $reg->arquivo,
-            ];
-        }
-        
-        // Envelopa os dados no formato do data table
-        $ret = new Datatable($request['draw'], $recordsTotal, $recordsFiltered, $data);
-        
-        // Retorna o JSON
-        return collect($ret);
-        
-    }
-    
-    
     /**
      * Show the form for creating a new resource.
      *
      * @return  \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
+        $opt = $request->all();
+        
         // cria um registro em branco
         $this->repository->new();
         
@@ -140,7 +166,7 @@ class ImagemController extends Controller
         $this->bc->addItem('Novo');
         
         // retorna view
-        return view('imagem.create', ['bc'=>$this->bc, 'model'=>$this->repository->model]);
+        return view('imagem.create', ['bc'=>$this->bc, 'model'=>$this->repository->model, 'opt'=>$opt]);
     }
 
     /**
@@ -263,4 +289,12 @@ class ImagemController extends Controller
         return redirect("imagem/{$this->repository->model->codimagem}"); 
     }
     
+    public function esvaziarLixeira()
+    {
+        // autorizacao
+        $this->repository->authorize('delete');
+        
+        // apaga
+        return ['OK' => $this->repository->esvaziarLixeira()];
+    }
 }

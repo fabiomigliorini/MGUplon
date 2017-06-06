@@ -215,7 +215,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::resource('cest', 'CestController');
 
     /* Imagem */
-    
+    Route::delete('imagem/esvaziar-lixeira', 'ImagemController@esvaziarLixeira');
     Route::resource('imagem', 'ImagemController');
     
     /* Produto Barra */
