@@ -167,19 +167,76 @@ class ImagemRepository extends MGRepository {
         if ($this->model->exists) {
             return false;
         }
-        
+
+        // Busca Codigo
         $seq = DB::select('select nextval(\'tblimagem_codimagem_seq\') as codimagem');
-        
         $this->model->codimagem = $seq[0]->codimagem;
         $this->model->arquivo = $seq[0]->codimagem .'.jpg';
         
         // Salva o arquivo
-        //dd($this->model->path);
         Slim::saveFile($data['imagem'], $this->model->arquivo, $this->model->directory, false);
         
         return $this->model->save();
         
     }
+
+    public function delete($id = null) {
         
+        if (!empty($id)) {
+            $this->findOrFail($id);
+        }
+
+        // Limpa relacionamento com SecaoProduto
+        foreach ($model->SecaoProdutoS as $model) {
+            $repo = new SecaoProdutoRepository();
+            $model->codimagem = null;
+            $repo->model = $model;
+            $repo->update();
+        }
+
+        // Limpa relacionamento com FamiliaProduto
+        foreach ($model->FamiliaProdutoS as $model) {
+            $repo = new FamiliaProdutoRepository();
+            $model->codimagem = null;
+            $repo->model = $model;
+            $repo->update();
+        }
+        
+        // Limpa relacionamento com GrupoProduto
+        foreach ($model->GrupoProdutoS as $model) {
+            $repo = new GrupoProdutoRepository();
+            $model->codimagem = null;
+            $repo->model = $model;
+            $repo->update();
+        }
+        
+        // Limpa relacionamento com SubGrupoProduto 
+        foreach ($model->SubGrupoProdutoS as $model) {
+            $repo = new SubGrupoProdutoRepository();
+            $model->codimagem = null;
+            $repo->model = $model;
+            $repo->update();
+        }
+        
+        // Limpa relacionamento com Marca
+        foreach ($model->MarcaS as $model) {
+            $repo = new MarcaRepository();
+            $model->codimagem = null;
+            $repo->model = $model;
+            $repo->update();
+        }
+        
+        // Limpa relacionamento com ProdutoImagem
+        foreach ($model->ProdutoImagemS as $model) {
+            $repo = new ProdutoImagemRepository();
+            $repo->model = $model;
+            $repo->delete();
+        }
+        
+        return $this->model->delete();
+        
+    }
+    
+    
     
 }
