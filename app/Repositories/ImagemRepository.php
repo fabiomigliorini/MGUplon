@@ -186,6 +186,19 @@ class ImagemRepository extends MGRepository {
             $this->findOrFail($id);
         }
 
+        
+        return $this->model->delete();
+        
+    }
+    
+    public function inactivate($id = null) {
+        if (!empty($id)) {
+            $this->findOrFail($id);
+        }
+        if (!empty($this->model->inativo)) {
+            return true;
+        }
+
         // Limpa relacionamento com SecaoProduto
         foreach ($model->SecaoProdutoS as $model) {
             $repo = new SecaoProdutoRepository();
@@ -233,10 +246,10 @@ class ImagemRepository extends MGRepository {
             $repo->delete();
         }
         
-        return $this->model->delete();
+        $this->model->inativo = Carbon::now();
         
+        return $this->model->save();
     }
-    
     
     
 }
