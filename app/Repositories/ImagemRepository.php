@@ -6,9 +6,12 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
+use DB;
 
 use MGLara\Models\Imagem;
 
+use Illuminate\Support\Facades\Input;
+use MGLara\Library\SlimImageCropper\Slim;
 /**
  * Description of ImagemRepository
  * 
@@ -37,8 +40,13 @@ class ImagemRepository extends MGRepository {
                 'max:200',
                 'nullable',
             ],
+            'arquivo' => [
+                'max:150',
+                'nullable',
+            ],
         ], [
             'observacoes.max' => 'O campo "observacoes" não pode conter mais que 200 caracteres!',
+            'arquivo.max' => 'O campo "arquivo" não pode conter mais que 150 caracteres!',
         ]);
 
         return $this->validator->passes();
@@ -62,8 +70,8 @@ class ImagemRepository extends MGRepository {
             return 'Imagem sendo utilizada em "Marca"!';
         }
         
-        if ($this->model->ProdutoS->count() > 0) {
-            return 'Imagem sendo utilizada em "Produto"!';
+        if ($this->model->ProdutoImagemS->count() > 0) {
+            return 'Imagem sendo utilizada em "ProdutoImagem"!';
         }
         
         if ($this->model->SecaoProdutoS->count() > 0) {
@@ -77,40 +85,44 @@ class ImagemRepository extends MGRepository {
         return false;
     }
     
-    public function listing($filters) {
+    public function listing($filters = [], $sort = [], $start = null, $length = null) {
         
         // Query da Entidade
         $qry = Imagem::query();
         
         // Filtros
-        if (!empty($filters['codimagem'])) {
+         if (!empty($filters['codimagem'])) {
             $qry->where('codimagem', '=', $filters['codimagem']);
         }
 
-        if (!empty($filters['observacoes'])) {
+         if (!empty($filters['observacoes'])) {
             $qry->palavras('observacoes', $filters['observacoes']);
         }
 
-        if (!empty($filters['criacao'])) {
+          if (!empty($filters['criacao'])) {
             $qry->where('criacao', '=', $filters['criacao']);
         }
 
-        if (!empty($filters['codusuariocriacao'])) {
+         if (!empty($filters['codusuariocriacao'])) {
             $qry->where('codusuariocriacao', '=', $filters['codusuariocriacao']);
         }
 
-        if (!empty($filters['alteracao'])) {
+         if (!empty($filters['alteracao'])) {
             $qry->where('alteracao', '=', $filters['alteracao']);
         }
 
-        if (!empty($filters['codusuarioalteracao'])) {
+         if (!empty($filters['codusuarioalteracao'])) {
             $qry->where('codusuarioalteracao', '=', $filters['codusuarioalteracao']);
         }
+
+         if (!empty($filters['arquivo'])) {
+            $qry->palavras('arquivo', $filters['arquivo']);
+        }
+
         
         $count = $qry->count();
-        
+    
         switch ($filters['inativo']) {
-        
             case 2: //Inativos
                 $qry = $qry->inativo();
                 break;
@@ -124,19 +136,13 @@ class ImagemRepository extends MGRepository {
                 break;
         }
         
-        $qry->orderBy('criacao', 'DESC');
-        //$qry->paginate(50);
-        return $qry;
-        
         // Paginacao
-        /*
         if (!empty($start)) {
             $qry->offset($start);
         }
         if (!empty($length)) {
             $qry->limit($length);
         }
-        
         
         // Ordenacao
         foreach ($sort as $s) {
@@ -149,15 +155,31 @@ class ImagemRepository extends MGRepository {
             , 'recordsTotal' => Imagem::count()
             , 'data' => $qry->get()
         ];
-        */
+        
     }
     
-    public function url ($model = null) {
-        if (empty($model)) {
-            $model = $this->model;
+    public function create($data = null) {
+        
+        if (!empty($data)) {
+            $this->new($data);
         }
         
-        return asset('public/imagens/' . $model->observacoes);
+        if ($this->model->exists) {
+            return false;
+        }
+        
+        $seq = DB::select('select nextval(\'tblimagem_codimagem_seq\') as codimagem');
+        
+        $this->model->codimagem = $seq[0]->codimagem;
+        $this->model->arquivo = $seq[0]->codimagem .'.jpg';
+        
+        // Salva o arquivo
+        //dd($this->model->path);
+        Slim::saveFile($data['imagem'], $this->model->arquivo, $this->model->directory, false);
+        
+        return $this->model->save();
+        
     }
+        
     
 }
