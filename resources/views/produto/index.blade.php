@@ -191,9 +191,9 @@ $(document).ready(function () {
             {
                 render: function ( data, type, row ) {
                     var render = ''+
-                        '<a href="' + row[0] + '"><strong>' + row[2] +'</strong></a>' +
+                        '<a href="' + row[0] + '">' + row[2] +'</a>' +
                         '<br>' +
-                        '<a href="' + row[0] + '">' + data +'</a>' +
+                        '<a href="' + row[0] + '"><strong>' + data +'</strong></a>' +
                         '<br>' +
                         '<a href="secao-produto/' + row[5].secaoproduto.codsecaoproduto + '">' + row[5].secaoproduto.secaoproduto +'</a> » '+
                         '<a href="familia-produto/' + row[5].familiaproduto.codfamiliaproduto + '">' + row[5].familiaproduto.familiaproduto +'</a> » '+
