@@ -235,7 +235,26 @@ class ImagemController extends Controller
     public function update(Request $request, $id)
     {
         
-        parent::update($request, $id);
+        // Busca registro para autorizar
+        $this->repository->findOrFail($id);
+
+        // Valida dados
+        $images = Slim::getImages();
+        
+        // busca dados do formulario
+        $data = $request->all();
+        $data['imagem'] = $images[0]['output']['data'];
+        if (!$this->repository->validate($data, $id)) {
+            $this->throwValidationException($request, $this->repository->validator);
+        }
+        
+        // autorizacao
+        $this->repository->authorize('update');
+        
+        // salva
+        if (!$this->repository->update(null, $data)) {
+            abort(500);
+        }
         
         // mensagem re registro criado
         Session::flash('flash_update', 'Imagem alterado!');

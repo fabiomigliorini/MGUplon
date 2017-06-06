@@ -165,6 +165,7 @@ class ImagemRepository extends MGRepository {
         }
         
         if ($this->model->exists) {
+            dd($data);
             return false;
         }
 
@@ -235,6 +236,18 @@ class ImagemRepository extends MGRepository {
         
         return $this->model->delete();
         
+    }
+    
+    public function update($id = null, $data = null) {
+        if (!empty($id)) {
+            $this->findOrFail($id);
+        }
+        
+        $this->inactivate();
+        
+        
+        return $this->create($data);
+       
     }
     
     
