@@ -114,7 +114,7 @@
 
 <div class='card'>
     <div class='card-block table-responsive'>
-        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Produto', 'Imagem', 'Grupos', 'Marca', 'UND', 'Referencia', 'Preço' ]])
+        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Imagem', 'Produto', 'Preços', 'Marca', 'UND', 'Referencia', 'Preço' ]])
         <div class='clearfix'></div>
     </div>
 </div>
@@ -179,20 +179,45 @@ $(document).ready(function () {
         ],
         columnDefs: [
             {
-                targets: [0, 1],
+                targets: [0, 1, 3, 6],
                 visible: false,
             },
             {
                 render: function ( data, type, row ) {
-                    return '<a href="' + row[0] + '">' + data +'</a>';
+                    return '<img width="100" src=' + row[3] + '>';
                 },
                 targets: 2
             },
             {
                 render: function ( data, type, row ) {
-                    return '<img width="100" src=' + row[4] + '>';
+                    var render = ''+
+                        '<a href="' + row[0] + '"><strong>' + row[2] +'</strong></a>' +
+                        '<br>' +
+                        '<a href="' + row[0] + '">' + data +'</a>' +
+                        '<br>' +
+                        '<a href="secao-produto/' + row[5].secaoproduto.codsecaoproduto + '">' + row[5].secaoproduto.secaoproduto +'</a> » '+
+                        '<a href="familia-produto/' + row[5].familiaproduto.codfamiliaproduto + '">' + row[5].familiaproduto.familiaproduto +'</a> » '+
+                        '<a href="grupo-produto/' + row[5].grupoproduto.codgrupoproduto + '">' + row[5].grupoproduto.grupoproduto +'</a> » ' +
+                        '<a href="sub-grupo-produto/' + row[5].subgrupoproduto.codsubgrupoproduto + '">' + row[5].subgrupoproduto.subgrupoproduto +'</a> » ' +
+                        '<a href="marca/' + row[5].marca.codmarca + '">' + row[5].marca.marca +'</a> » ' +
+                        '<span>' + row[5].referencia + '</span>';
+                    return render;
                 },
                 targets: 4
+            },
+            {
+                render: function ( data, type, row ) {
+                    var render ='';
+                    $.each(row[6], function(index, value) {
+                        render += '<div class="row">';
+                        render += '<div class="col-xs-4 text-right">'+ value.preco +'</div>';
+                        render += '<div class="col-xs-4">'+ value.embalagem +'</div>';
+                        render +='</div>';
+                    });
+                    
+                    return render;
+                },
+                targets: 5
             },
             { className: "text-right", "targets": 9 },
         ],

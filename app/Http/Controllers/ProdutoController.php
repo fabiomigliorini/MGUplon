@@ -142,13 +142,37 @@ class ProdutoController extends Controller
                 url('produto', $reg->codproduto),
                 formataData($reg->inativo, 'C'),
                 formataCodigo($reg->codproduto),
-                $reg->produto,
                 empty($reg->codprodutoimagem)?URL::asset('public/imagens/semimagem.jpg'):URL::asset("public/imagens/{$reg->ProdutoImagem->Imagem->arquivo}"),
-                $reg->SubGrupoProduto->GrupoProduto->FamiliaProduto->SecaoProduto->secaoproduto .' » '. $reg->SubGrupoProduto->GrupoProduto->FamiliaProduto->familiaproduto .' » '. $reg->SubGrupoProduto->GrupoProduto->grupoproduto .' » '.$reg->SubGrupoProduto->subgrupoproduto,
-                $reg->Marca->marca,
+                $reg->produto,
+                [
+                    'secaoproduto' => [
+                        'codsecaoproduto' => $reg->SubGrupoProduto->GrupoProduto->FamiliaProduto->codsecaoproduto,
+                        'secaoproduto' => $reg->SubGrupoProduto->GrupoProduto->FamiliaProduto->SecaoProduto->secaoproduto,
+                        
+                    ],
+                    'familiaproduto' => [
+                        'codfamiliaproduto' => $reg->SubGrupoProduto->GrupoProduto->codfamiliaproduto,
+                        'familiaproduto' => $reg->SubGrupoProduto->GrupoProduto->FamiliaProduto->familiaproduto
+                    ],
+                    'grupoproduto' => [
+                        'codgrupoproduto' => $reg->SubGrupoProduto->codgrupoproduto,
+                        'grupoproduto' => $reg->SubGrupoProduto->GrupoProduto->grupoproduto
+                    ],
+                    'subgrupoproduto' => [
+                        'codsubgrupoproduto' => $reg->codsubgrupoproduto,
+                        'subgrupoproduto' => $reg->SubGrupoProduto->subgrupoproduto,
+                    ],
+                    'marca' => [
+                        'marca' => $reg->Marca->marca, 
+                        'codmarca' => $reg->codmarca
+                    ],
+                    'referencia' => $reg->referencia
+                ],
+                $this->repository->precoEmbalagens($reg->ProdutoEmbalagemS()->orderBy(DB::raw('coalesce(quantidade, 0)'))->get(), $reg->preco, $reg->UnidadeMedida->sigla),
                 $reg->UnidadeMedida->sigla,
-                $reg->referencia,
-                formataNumero($reg->preco),
+                $reg->UnidadeMedida->sigla,
+                $reg->UnidadeMedida->sigla,
+                
             ];
         }
         
