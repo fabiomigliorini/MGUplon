@@ -315,28 +315,17 @@ class ImagemController extends Controller
         }
 
         foreach ($this->repository->model->FamiliaProdutoS as $model) {
-            $repo = new FamiliaProdutoRepository();
-            $model->codimagem = null;
-            $repo->model = $model;
-            $repo->update();
+            return redirect("familia-produto/{$model->codfamiliaproduto}"); 
         }
         
         foreach ($this->repository->model->GrupoProdutoS as $model) {
-            $repo = new GrupoProdutoRepository();
-            $model->codimagem = null;
-            $repo->model = $model;
-            $repo->update();
+            return redirect("grupo-produto/{$model->codgrupoproduto}"); 
         }
         
         foreach ($this->repository->model->SubGrupoProdutoS as $model) {
-            $repo = new SubGrupoProdutoRepository();
-            $model->codimagem = null;
-            $repo->model = $model;
-            $repo->update();
+            return redirect("sub-grupo-produto/{$model->codsubgrupoproduto}"); 
         }
-            return redirect("imagem/{$this->repository->model->codimagem}"); 
-    
         
-             
+        return redirect("imagem/{$this->repository->model->codimagem}"); 
     }
 }
