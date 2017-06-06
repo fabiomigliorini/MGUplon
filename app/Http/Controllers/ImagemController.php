@@ -202,8 +202,10 @@ class ImagemController extends Controller
         // Mensagem de registro criado
         Session::flash('flash_create', 'Imagem criado!');
         
+        
+        
         // redireciona para o view
-        return redirect("imagem/{$this->repository->model->codimagem}");
+        return $this->redirecionaPeloRelacionamento();
     }
 
     /**
@@ -286,7 +288,7 @@ class ImagemController extends Controller
         Session::flash('flash_update', 'Imagem alterado!');
         
         // redireciona para view
-        return redirect("imagem/{$this->repository->model->codimagem}"); 
+        return $this->redirecionaPeloRelacionamento();
     }
     
     public function esvaziarLixeira()
@@ -296,5 +298,34 @@ class ImagemController extends Controller
         
         // apaga
         return ['OK' => $this->repository->esvaziarLixeira()];
+    }
+    
+    public function redirecionaPeloRelacionamento()
+    {
+        foreach ($this->repository->model->ProdutoImagemS as $model) {
+            return redirect("produto/{$model->codproduto}"); 
+        }
+        
+        foreach ($this->repository->model->MarcaS as $model) {
+            return redirect("marca/{$model->codmarca}"); 
+        }
+
+        foreach ($this->repository->model->SecaoProdutoS as $model) {
+            return redirect("secao-produto/{$model->codsecaoproduto}"); 
+        }
+
+        foreach ($this->repository->model->FamiliaProdutoS as $model) {
+            return redirect("familia-produto/{$model->codfamiliaproduto}"); 
+        }
+        
+        foreach ($this->repository->model->GrupoProdutoS as $model) {
+            return redirect("grupo-produto/{$model->codgrupoproduto}"); 
+        }
+        
+        foreach ($this->repository->model->SubGrupoProdutoS as $model) {
+            return redirect("sub-grupo-produto/{$model->codsubgrupoproduto}"); 
+        }
+        
+        return redirect("imagem/{$this->repository->model->codimagem}"); 
     }
 }
