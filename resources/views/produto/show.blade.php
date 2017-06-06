@@ -186,7 +186,7 @@
       <h4 class="card-header">
         Imagens
         <div class="btn-group">
-            <a class="btn btn-sm btn-secondary waves-effect" data-toggle="tooltip" href="{{ url("/imagem/create?model=produto&id=$model->codproduto") }}" title="Cadastrar imagem">
+            <a class="btn btn-sm btn-secondary waves-effect" data-toggle="tooltip" href="{{ url("/imagem/create?codproduto=$model->codproduto") }}" title="Cadastrar imagem">
               <i class="fa fa-plus"></i> 
             </a>
             <div class="btn btn-sm btn-secondary waves-effect" data-toggle="modal"  data-target=".modal-alterar-imagem-ordem">
