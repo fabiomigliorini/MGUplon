@@ -141,7 +141,7 @@ class ProdutoController extends Controller
             $data[] = [
                 url('produto', $reg->codproduto),
                 formataData($reg->inativo, 'C'),
-                formataCodigo($reg->codproduto),
+                formataCodigo($reg->codproduto, 6),
                 empty($reg->codprodutoimagem)?URL::asset('public/imagens/semimagem.jpg'):URL::asset("public/imagens/{$reg->ProdutoImagem->Imagem->arquivo}"),
                 $reg->produto,
                 [
@@ -168,11 +168,8 @@ class ProdutoController extends Controller
                     ],
                     'referencia' => $reg->referencia
                 ],
-                $this->repository->precoEmbalagens($reg->ProdutoEmbalagemS()->orderBy(DB::raw('coalesce(quantidade, 0)'))->get(), $reg->preco, $reg->UnidadeMedida->sigla),
-                $reg->UnidadeMedida->sigla,
-                $reg->UnidadeMedida->sigla,
-                $reg->UnidadeMedida->sigla,
-                
+                $this->repository->listingPrecoEmbalagens($reg->ProdutoEmbalagemS()->orderBy(DB::raw('coalesce(quantidade, 0)'))->get(), $reg->preco, $reg->UnidadeMedida->sigla),
+                $this->repository->listingProdutoVariacao($reg->ProdutoVariacaoS()->orderBy(DB::raw("coalesce(variacao, '')"), 'ASC')->get(), $reg->UnidadeMedida->sigla)
             ];
         }
         

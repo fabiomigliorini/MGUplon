@@ -14,6 +14,8 @@ namespace MGLara\Models;
  * @property  varchar(150)                   $arquivo                            
  *
  * Chaves Estrangeiras
+ * @property  Usuario                        $UsuarioCriacao
+ * @property  Usuario                        $UsuarioAlteracao
  *
  * Tabelas Filhas
  * @property  FamiliaProduto[]               $FamiliaProdutoS
@@ -44,6 +46,16 @@ class Imagem extends MGModel
 
 
     // Chaves Estrangeiras
+    public function UsuarioCriacao()
+    {
+        return $this->belongsTo(Usuario::class, 'codusuariocriacao', 'codusuario');
+    }
+
+    public function UsuarioAlteracao()
+    {
+        return $this->belongsTo(Usuario::class, 'codusuarioalteracao', 'codusuario');
+    }
+
 
     // Tabelas Filhas
     public function FamiliaProdutoS()
@@ -82,4 +94,19 @@ class Imagem extends MGModel
         return $this->belongsToMany(Produto::class, 'tblprodutoimagem', 'codimagem', 'codproduto');        
     }
 
+    // Campos calculados
+    public function getUrlAttribute()
+    {
+        return url(asset("public/imagens/{$this->arquivo}"));
+    }
+    
+    public function getPathAttribute()
+    {
+        return "$this->directory/{$this->arquivo}";
+    }
+    
+    public function getDirectoryAttribute()
+    {
+        return public_path("imagens");        
+    }
 }

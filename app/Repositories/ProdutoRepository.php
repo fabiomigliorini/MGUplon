@@ -994,11 +994,12 @@ class ProdutoRepository extends MGRepository {
         $this->alterarImagemPadrao($codimagem, null, null);
     }
     
-    public function precoEmbalagens($produtoembalagens, $preco, $unidademedida) {
+    public function listingPrecoEmbalagens($produtoembalagens, $preco, $unidademedida) {
         $embalagens = [[
             'preco' => formataNumero($preco),
             'embalagem' => $unidademedida
-    ]];
+        ]];
+        
         foreach($produtoembalagens as $pe){
             if(empty($pe->preco)) {
                 $precoembalagens = formataNumero($preco * $pe->quantidade);
@@ -1008,11 +1009,34 @@ class ProdutoRepository extends MGRepository {
             
         $embalagens[] = ['preco'=> $precoembalagens,'embalagem' => $pe->descricao];
             
-            //array_push($embalagens, ['preco' => $precoembalagem, 'embalagem' => $embalagem]);
         }
         
         return $embalagens;
-        
     }
+    
+    public function listingProdutoVariacao($pvs, $unidademedida) {
+        $variacoes = [];
+        foreach ($pvs as $pv) {
             
+            $pbs = $pv->ProdutoBarraS()->leftJoin('tblprodutoembalagem as pe', 'pe.codprodutoembalagem', '=', 'tblprodutobarra.codprodutoembalagem')
+                        ->orderBy(DB::raw('coalesce(pe.quantidade, 0)'), 'ASC')
+                        ->with('ProdutoEmbalagem')->get();
+
+            foreach ($pbs as $pb) {
+                $barras = [
+                    'barras' => $pb->barras,
+                    'embalagem' => !empty($pb->codprodutoembalagem) ? $pb->ProdutoEmbalagem->descricao : $unidademedida
+                ];
+            }
+            
+            $variacoes[] = [
+                'variacao'      => $pv->variacao ?? 'Sem Variação',
+                'marca'         => $pv->marca ?? null,
+                'referencia'    => $pv->referencia,
+                'barras'        => $barras
+            ];
+        }
+        
+        return $variacoes;
+    }
 }
