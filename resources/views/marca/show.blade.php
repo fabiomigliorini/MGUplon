@@ -47,7 +47,9 @@
             </h4>
             <div class='card-block'>
                 @if($model->codimagem)
+                <a href="{{ url("imagem/{$model->Imagem->codimagem}") }}">
                     <img class="img-fluid pull-right" src='{{ $model->Imagem->url }}'>
+                </a>
                 @endif
                 <div class='clearfix'></div>
             </div>

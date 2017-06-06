@@ -171,7 +171,10 @@ class ImagemRepository extends MGRepository {
         // Busca Codigo
         $seq = DB::select('select nextval(\'tblimagem_codimagem_seq\') as codimagem');
         $this->model->codimagem = $seq[0]->codimagem;
-        $this->model->arquivo = $seq[0]->codimagem .'.jpg';
+        $this->model->arquivo = $this->model->codimagem .'.jpg';
+        
+        // TODO: Remover isto depois que desativar o MGLara
+        $this->model->observacoes = $this->model->arquivo;
         
         // Salva o arquivo
         Slim::saveFile($data['imagem'], $this->model->arquivo, $this->model->directory, false);

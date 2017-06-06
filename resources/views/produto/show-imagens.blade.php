@@ -13,7 +13,7 @@
         @endif        
         @foreach($imagens as $i => $imagem)
             <div class="carousel-item {{ ($i == 0)?'active':'' }}">
-                <a href="{{ URL::asset("public/imagens/$imagem->arquivo") }}" target="_blank">
+                <a href="{{ url("imagem/$imagem->codimagem") }}">
                     <img class="d-block img-fluid" src="{{ URL::asset('public/imagens/'.$imagem->arquivo) }}" >
                 </a>
                 <div class="carousel-caption">
