@@ -22,20 +22,23 @@
             </div>
         </div>
         <div class='card'>
-            <h4 class="card-header">Imagem</h4>
+            <h4 class="card-header">
+              Imagem
+              @if ($model->codimagem)
+                <div class="btn-group">
+                    <a class="btn btn-secondary btn-sm waves-effect" data-toggle="tooltip" title="Editar" href="{{ url("/imagem/{$model->Imagem->codimagem}/edit") }}"><i class="fa fa-pencil"></i></a>
+                    <a class="btn btn-secondary btn-sm waves-effect" data-toggle="tooltip" title="Excluir Imagem" href="{{ url("imagem/{$model->Imagem->codimagem}/inactivate") }}" data-activate data-question="Tem certeza que deseja excluir esta imagem?" data-after="location.reload()"><i class="fa fa-trash"></i></a>
+                </div>        
+              @else
+                <a class="btn btn-sm btn-secondary waves-effect" data-toggle="tooltip" href="{{ url("/imagem/create?codgrupoproduto=$model->codgrupoproduto") }}" title="Cadastrar imagem">
+                  <i class="fa fa-plus"></i> 
+                </a>
+              @endif
+            </h4>
             <div class='card-block'>
                 @if($model->codimagem)
-                <div class="text-right">
-                    <button id="delete-imagem" class="btn btn-secondary btn-sm"><i class="fa fa-trash"></i> Excluir</button>
-                    <a href="{{ url("/imagem/create?model=grupo-produto&id=$model->codgrupoproduto") }}" class="btn btn-secondary btn-sm"><i class="fa fa-pencil"></i> Alterar</a>
-                </div>        
                 <a href="{{ url("imagem/{$model->Imagem->codimagem}") }}">
-                    <img class="img-fluid pull-right" src='<?php echo URL::asset('public/imagens/'.$model->Imagem->arquivo);?>'>
-                </a>
-                @else
-                <a title="Cadastrar imagem" href="{{ url("/imagem/create?model=grupo-produto&id=$model->codgrupoproduto") }}" class="btn btn-secondary">
-                    <i class="fa fa-picture-o"></i>
-                    Cadastrar imagem
+                    <img class="img-fluid pull-right" src='{{ $model->Imagem->url }}'>
                 </a>
                 @endif
                 <div class='clearfix'></div>
