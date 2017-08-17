@@ -145,7 +145,7 @@ class ProdutoImagemRepository extends MGRepository {
         $ret = collect();
         foreach ($qry->get() as $item) {
             $imagem = $item->Imagem;
-            $imagem->url = $repo_img->url($item->Imagem);
+            $imagem->url = $repo_img->model->url($item->Imagem);
             if (empty($ret[$item->codproduto])) {
                 $ret[$item->codproduto] = collect();
             }
