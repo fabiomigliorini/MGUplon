@@ -1033,7 +1033,7 @@ class ProdutoRepository extends MGRepository {
                 'variacao'      => $pv->variacao ?? 'Sem Variação',
                 'marca'         => $pv->marca ?? null,
                 'referencia'    => $pv->referencia,
-                'barras'        => $barras
+                'barras'        => $barras ?? ''
             ];
         }
         
