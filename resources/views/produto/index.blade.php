@@ -114,7 +114,7 @@
 
 <div class='card'>
     <div class='card-block table-responsive'>
-        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Imagem', 'Produto', 'Preços', 'Marca', 'UND', 'Referencia', 'Preço' ]])
+        @include('layouts.includes.datatable.html', ['id' => 'datatable', 'colunas' => ['URL', 'Inativo Desde', '#', 'Imagem', 'Produto', 'Preços', 'Variações']])
         <div class='clearfix'></div>
     </div>
 </div>
@@ -179,7 +179,7 @@ $(document).ready(function () {
         ],
         columnDefs: [
             {
-                targets: [0, 1, 3, 6],
+                targets: [0, 1, 3],
                 visible: false,
             },
             {
@@ -212,19 +212,33 @@ $(document).ready(function () {
                         render += '<div class="row">';
                         render += '<div class="col-xs-4 text-right">'+ value.preco +'</div>';
                         render += '<div class="col-xs-4">'+ value.embalagem +'</div>';
-                        render +='</div>';
+                        render += '</div>';
                     });
                     
                     return render;
                 },
                 targets: 5
             },
-            { className: "text-right", "targets": 9 },
+            {
+                render: function ( data, type, row ) {
+                    var render ='';
+                    $.each(row[7], function(index, value) {
+                        render += '<div class="row">';
+                        render += '<div class="">'+ value.variacao +'</div>';
+                        //render += '<div class="col-xs-4">'+ value.embalagem +'</div>';
+                        render += '</div>';
+                    });
+                    
+                    return render;
+                },
+                targets: 6
+            },
+            { className: "text-right", "targets": 3 },
         ],
         initComplete: function(settings, json) {
             datable_datatable.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
             $('#datatable_paginate, #datatable_info').addClass('col-md-6');
-            $('#datatable thead tr:first-child th:last-child').css({ 'min-width': "100px" });
+            $('#datatable thead tr:first-child th:eq(2)').css({ 'min-width': "150px" });
         },
         fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
             if (aData[1] != null) {
