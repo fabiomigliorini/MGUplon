@@ -4,6 +4,14 @@ services:
         build:
             './.docker'
         tty: true
+        command: > 
+            bash -c "chmod -R a+w /opt/www/MGUplon/storage
+            && chmod -R a+w /opt/www/MGUplon/bootstrap 
+            && cd /opt/www/MGUplon 
+            && service nginx start 
+            && service php7.1-fpm start 
+            && composer install 
+            && /bin/bash"
         volumes:
             - ./:/opt/www/MGUplon
         network_mode: host
