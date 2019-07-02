@@ -3,6 +3,7 @@ services:
     mguplon:
         build:
             './.docker'
+        working_dir: /opt/www/MGUplon
         tty: true
         command: > 
             bash -c "chmod -R a+w /opt/www/MGUplon/storage
