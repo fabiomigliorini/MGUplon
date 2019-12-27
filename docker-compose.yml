@@ -5,14 +5,15 @@ services:
             './.docker'
         working_dir: /opt/www/MGUplon
         tty: true
-        command: > 
+        command: >
             bash -c "chmod -R a+w /opt/www/MGUplon/storage
-            && chmod -R a+w /opt/www/MGUplon/bootstrap 
-            && cd /opt/www/MGUplon 
-            && service nginx start 
-            && service php7.1-fpm start 
-            && composer install 
+            && chmod -R a+w /opt/www/MGUplon/bootstrap
+            && cd /opt/www/MGUplon
+            && service nginx start
+            && service php7.1-fpm start
+            && composer install
             && /bin/bash"
         volumes:
             - ./:/opt/www/MGUplon
+            - ../MGLara/:/opt/www/MGLara
         network_mode: host
