@@ -2,6 +2,7 @@ version: '3.5'
 services:
     mguplon:
         build: ./
+        restart: always
         volumes:
             - /opt/www:/opt/www
             - /tmp:/tmp/host
