@@ -10,7 +10,12 @@
 |
 */
 
-Auth::routes();
+// Auth::routes();
+
+Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
+Route::post('login', 'Auth\LoginController@login');
+Route::post('logout', 'Auth\LoginController@logout')->name('logout');
+
 
 /* Acessar da rede interna sem autenticacao, ou da rede externa com autenticacao */
 Route::group(['middleware' => 'redeconfiavel'], function() {
