@@ -65,6 +65,12 @@ class Authenticate
             $reponseData = json_decode((string) $responseAuth->getBody(), true);
 
             if ($responseAuth->getStatusCode() === 200) {
+                if(Auth::user()) {
+                    if(Auth::user()->codusuario != $reponseData['user_id']) {
+                        Auth::logout();
+                        Auth::loginUsingId($reponseData['user_id']);
+                    }
+                }
                 
                 if ($this->auth->guest()) {
                     Auth::loginUsingId($reponseData['user_id']);
